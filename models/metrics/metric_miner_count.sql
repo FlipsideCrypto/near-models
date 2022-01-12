@@ -1,5 +1,7 @@
 {{ config(materialized='table', tags=['metrics']) }}
 
+-- WIP - example of creating metrics table/construct
+
 SELECT 
     date_trunc('day', block_timestamp) as metric_date,
     'daily' as metric_period,
