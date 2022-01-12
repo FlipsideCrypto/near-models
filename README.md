@@ -2,7 +2,7 @@
 
 Curated SQL Views and Metrics for the Near Blockchain.
 
-What's Near? Learn more [here](https://www.near.one/)
+What's Near? Learn more [here](https://near.org/)
 
 ## Setup
 
