@@ -1,0 +1,6 @@
+target/
+dbt_modules/
+logs/
+.env
+.notes
+dbt_docs.sh

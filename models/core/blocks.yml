@@ -1,0 +1,70 @@
+version: 2
+
+models:
+  - name: blocks
+    description: |-
+      This table records all the blocks of Near blockchain.
+
+    columns:
+      - name: block_id
+        description: The block number.
+        tests:
+          - unique
+          - not_null
+
+      - name: block_timestamp
+        description: The timestamp for when the block was collated.
+        tests:
+          - not_null
+
+      - name: block_hash
+        description: Hash of the block (32 Bytes).
+        tests:
+          - unique
+          - not_null
+
+      - name: block_parent_hash
+        description: Hash of the parent block (32 Bytes).
+        tests:
+          - unique
+          - not_null
+
+      - name: gas_limit
+        description: The maximum gas allowed in this block.
+        tests:
+          - not_null
+
+      - name: gas_used
+        description: The total used gas by all transactions in this block.
+        tests:
+          - not_null
+
+      - name: miner
+        description: The address of the beneficiary to whom the mining rewards were given.
+        tests:
+          - not_null
+
+      - name: nonce
+        description: Hash of the generated proof-of-work (8 Bytes).
+        tests:
+          - not_null
+
+      - name: size
+        description: Integer the size of this block in bytes.
+        tests:
+          - not_null
+
+      - name: tx_count
+        description: The number of transactions in the given block.
+        tests:
+          - not_null
+
+      - name: state_root
+        description: The root hash that stores the entire state of the system - account balances, contract storage, contract code and account nonces are inside
+        tests:
+          - not_null
+
+      - name: receipts_root
+        description: The root hash that stores receipts of all transactions included in the block.
+        tests:
+          - not_null
