@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: chainwalker_txs
+  - name: stg_txs
     description: |-
       This table records all the transactions of the Near blockchain.
 

@@ -14,7 +14,7 @@ base_blocks as (
 
     select
         *
-    from {{ ref("chainwalker_blocks") }}
+    from {{ ref("stg_blocks") }}
     where {{ incremental_load_filter("block_timestamp") }}
 
 ),

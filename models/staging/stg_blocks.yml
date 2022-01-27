@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: chainwalker_blocks
+  - name: stg_blocks
     description: |-
       This table records all the blocks of the Near blockchain.
 
