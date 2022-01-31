@@ -22,7 +22,7 @@ final as (
 
     select
         header:height::integer as block_id,
-        header:timestamp::timestamp as block_timestamp,
+        div0(header:timestamp::integer,1000000000)::timestamp as block_timestamp,
         header:hash::string as block_hash,
         header:tx_count::integer as tx_count,
         header:author::string as block_author,
