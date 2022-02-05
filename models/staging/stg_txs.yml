@@ -13,7 +13,7 @@ models:
       - name: tx_block_index
         description: The index of the transaction within the block. Starts at 0.
       - name: offset_id
-        description: Synonmous with block_id for Near
+        description: Synonmous with `block_id` for Near
       - name: block_id
         description: The height of the chain this block corresponds with
       - name: block_timestamp
