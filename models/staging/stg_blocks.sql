@@ -1,7 +1,7 @@
 {{
     config(
         materialized='incremental',
-        unique_key='tx_id',
+        unique_key='block_id',
         incremental_strategy = 'delete+insert',
         tags=['core'],
         cluster_by=['block_timestamp']
