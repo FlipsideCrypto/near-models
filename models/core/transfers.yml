@@ -1,0 +1,51 @@
+version: 2
+
+models:
+  - name: transfers
+    description: |-
+      This table records all the Transfer actions of the Near blockchain.
+
+    columns:
+      - name: tx_id
+        description: The unique id of the transaction.
+        tests:
+          - not_null
+          - unique
+
+      - name: block_timestamp
+        description: The time when the block was mined.
+        tests:
+          - not_null
+
+      - name: signer_id
+        description: Account that signed and sent the transaction
+        tests:
+          - not_null
+
+      - name: reciever_id
+        description: Account receiving the transaction.
+        tests:
+          - not_null
+
+      - name: deposit
+        description: Sum of all NEAR tokens transferred from the Signing account to the Receiver account. This includes tokens sent in a Transfer action(s), and as deposits on Function Call action(s).
+        tests:
+          - not_null
+
+      - name: reciept
+        description:  The final contract/txs execution result.
+        tests:
+          - not_null
+
+      - name: tx_fee
+        description: Total fee paid in NEAR to execute this transaction.
+        tests:
+          - not_null
+
+      - name: tgas_used
+        description: Units of gas required to execute this transaction.
+        tests:
+          - not_null
+
+      - name: status
+        description: Current status of the transaction (Pending, Succeeded, Failed/Finalized or non finalized).
