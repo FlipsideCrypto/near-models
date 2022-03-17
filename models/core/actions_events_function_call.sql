@@ -33,7 +33,7 @@ function_calls as (
   select
 
     action_id,
-    tx_hash,
+    txn_hash,
     block_timestamp,
     action_name,
     method_name,
