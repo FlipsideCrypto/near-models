@@ -18,9 +18,8 @@ addkey_events as (
   select
 
     action_id,
-    tx_hash,
+    txn_hash,
     block_timestamp,
-    action_data, -- temp. to be deleted prior to merge
     action_data:access_key:nonce::float as nonce,
     action_data:public_key::string as public_key,
     action_data:access_key:permission as permission,
