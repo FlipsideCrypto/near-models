@@ -16,7 +16,7 @@ final as (
         *
     from {{ source("chainwalkers","near_txs") }}
     where {{ incremental_load_filter("block_timestamp") }}
-    qualify row_number() over (partition by block_id order by ingested_at desc) = 1
+    qualify row_number() over (partition by tx_id order by ingested_at desc) = 1
 
 )
 
