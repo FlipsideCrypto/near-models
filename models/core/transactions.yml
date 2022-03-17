@@ -1,0 +1,39 @@
+
+version: 2
+
+models:
+  - name: transactions
+    description: "Near transactions."
+
+    columns:
+      - name: block_id
+        description: The block ID.
+        tests:
+          - not_null
+
+      - name: tx_id
+        description: The transaction hash.
+        tests:
+        - not_null
+
+      - name: block_timestamp
+        description: The time the block was minted.
+        tests:
+          - not_null
+
+      - name: tx
+        description: The transaction's information.
+        tests:
+          - not_null
+
+      - name: tx_outcome
+        description: The transaction outcome.
+
+      - name: tx_receipt
+        description: The transaction receipt.
+          
+      - name: tx_receiver
+        description: The transaction receiver.
+
+      - name: tx_signer
+        description: The transaction signer.
