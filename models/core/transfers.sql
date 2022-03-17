@@ -1,4 +1,3 @@
-
 {{
   config(
     materialized='incremental',
@@ -11,14 +10,13 @@
 with
 txs as (
 
-    select 
-      * 
-    from {{ ref('stg_txs') }}
-    where {{ incremental_load_filter('block_timestamp') }} AND 
+  select 
+    * 
+  from {{ ref('stg_txs') }}
+  where {{ incremental_load_filter('block_timestamp') }} 
 
 ),
-
-with 
+ 
 actions as (
 
   select
@@ -45,9 +43,8 @@ actions as (
   lateral flatten( input => tx:actions )
   where action_name = 'Transfer'
 
-  )
+  ),
 
-with
 final as ( 
 
   select 
@@ -56,10 +53,10 @@ final as (
     signer_id,
     reciever_id,
     deposit,
-    try_parse_json(receipt),
     tx_fee,
     Tgas_used,
-    status
+    status,
+    try_parse_json(receipt) as receipt
   from actions
 
   )
