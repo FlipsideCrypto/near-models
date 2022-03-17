@@ -10,7 +10,7 @@
 with
 txs as (
 
-  select * from {{ ref('stg_txs') }}
+  select * from {{ ref('transactions') }}
   where {{ incremental_load_filter('block_timestamp') }}
 
 ),
@@ -19,7 +19,7 @@ actions as (
 
   select
 
-    tx_id,
+    txn_hash,
     block_timestamp,
     index as action_index,
     case
@@ -39,8 +39,8 @@ final as (
 
   select
 
-    concat_ws('-', tx_id, action_index) as action_id,
-    tx_id as tx_hash,
+    concat_ws('-', txn_hash, action_index) as action_id,
+    txn_hash,
     block_timestamp,
     action_index,
     action_name,
