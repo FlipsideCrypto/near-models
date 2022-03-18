@@ -32,9 +32,9 @@ actions as (
       when value like '%CreateAccount%' then value
       else OBJECT_KEYS(value)[0]::string
     end as action_name,
-    actions_data:Transfer.deposit::int / pow(10,24) as deposit,
-    receipt:outcome:tokens_burnt::int / pow(10,24) + tx:outcome:outcome:tokens_burnt::int / pow(10,24) as tx_fee,
-    receipt:outcome:gas_burnt::int/ pow(10,12) + tx:outcome:outcome:gas_burnt::int / pow(10,12) as Tgas_used,
+    actions_data:Transfer.deposit::int as deposit,
+    receipt:outcome:tokens_burnt::int + tx:outcome:outcome:tokens_burnt::int as tx_fee,
+    receipt:outcome:gas_burnt::int + tx:outcome:outcome:gas_burnt::int as gas_used,
     case
         when receipt:outcome:status::string = '{"SuccessValue":""}' then 'Succeeded' 
         else 'Failed'
@@ -54,7 +54,7 @@ final as (
     tx_receiver,
     deposit,
     tx_fee,
-    Tgas_used,
+    gas_used,
     status,
     try_parse_json(receipt) as receipt
   from actions
