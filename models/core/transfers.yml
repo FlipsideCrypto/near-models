@@ -17,18 +17,19 @@ models:
         tests:
           - not_null
 
-      - name: signer_id
+      - name: tx_signer
         description: Account that signed and sent the transaction
         tests:
           - not_null
 
-      - name: reciever_id
+      - name: tx_receiver
         description: Account receiving the transaction.
         tests:
           - not_null
 
-      - name: deposit
-        description: Sum of all NEAR tokens transferred from the Signing account to the Receiver account. This includes tokens sent in a Transfer action(s), and as deposits on Function Call action(s).
+      - name: deposit 
+        description: Sum of all NEAR tokens transferred from the Signing account to the Receiver account. This includes tokens sent in a Transfer action(s), and as deposits on Function Call action(s). 
+        In raw number format, to adjust divide by POW(10,24)
         tests:
           - not_null
 
@@ -38,12 +39,12 @@ models:
           - not_null
 
       - name: tx_fee
-        description: Total fee paid in NEAR to execute this transaction.
+        description: Total fee paid in NEAR to execute this transaction. In raw number format, to adjust divide by POW(10,24)
         tests:
           - not_null
 
-      - name: tgas_used
-        description: Units of gas required to execute this transaction.
+      - name: gas_used
+        description: Units of gas required to execute this transaction. In raw number format, to adjust divide by POW(10,12)
         tests:
           - not_null
 
