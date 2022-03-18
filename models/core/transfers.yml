@@ -6,7 +6,7 @@ models:
       This table records all the Transfer actions of the Near blockchain.
 
     columns:
-      - name: tx_id
+      - name: txn_hash
         description: The unique id of the transaction.
         tests:
           - not_null
