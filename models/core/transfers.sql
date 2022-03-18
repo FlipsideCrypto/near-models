@@ -20,10 +20,10 @@ txs as (
 actions as (
 
   select
-    tx_id,
+    tx_id as txn_hash,
     block_timestamp,
-    tx:signer_id::string as signer_id,
-    tx:receiver_id::string as reciever_id,
+    tx:signer_id::string as tx_signer,
+    tx:receiver_id::string as tx_receiver,
     tx:actions[0] as actions_data,
     tx,  
     tx:outcome:outcome as outcome,
@@ -48,10 +48,10 @@ actions as (
 final as ( 
 
   select 
-    tx_id,
+    txn_id,
     block_timestamp,
-    signer_id,
-    reciever_id,
+    tx_signer,
+    tx_receiver,
     deposit,
     tx_fee,
     Tgas_used,
