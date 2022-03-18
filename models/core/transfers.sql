@@ -48,7 +48,7 @@ actions as (
 final as ( 
 
   select 
-    txn_id,
+    txn_has,
     block_timestamp,
     tx_signer,
     tx_receiver,
