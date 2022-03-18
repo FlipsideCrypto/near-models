@@ -29,10 +29,8 @@ models:
 
       - name: deposit 
         description: Sum of all NEAR tokens transferred from the Signing account to the Receiver account. This includes tokens sent in a Transfer action(s), and as deposits on Function Call action(s). In raw number format, to adjust divide by POW(10,24)
-        tests:
-          - not_null
 
-      - name: reciept
+      - name: receipt
         description:  The final contract/txs execution result.
         tests:
           - not_null
