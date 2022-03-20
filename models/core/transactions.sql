@@ -54,7 +54,7 @@ final as (
     attached_gas,
     transaction_fee
   from transactions
-  
+
 )
 
-select * from transactions
+select * from final
