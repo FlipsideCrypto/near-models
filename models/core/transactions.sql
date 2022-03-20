@@ -23,37 +23,43 @@ with transactions as (
     tx:outcome as tx_outcome,
     tx:receipt as tx_receipt,
     tx:outcome:outcome:gas_burnt::number as transaction_gas_burnt,
-    get(tx:receipt, 0):outcome:gas_burnt::number as receipt_gas_burnt,
-    coalesce(get(tx:receipt, 1):outcome:gas_burnt::number, 0) as receipt_execution_gas_burnt,
-    transaction_gas_burnt + receipt_gas_burnt + receipt_execution_gas_burnt as gas_used,
-    coalesce(get(tx:actions, 0):FunctionCall:gas::number, gas_used) as attached_gas,
     tx:outcome:outcome:tokens_burnt::number as transaction_tokens_burnt,
-    get(tx:receipt, 0):outcome:tokens_burnt::number as receipt_tokens_burnt,
-    coalesce(get(tx:receipt, 1):outcome:tokens_burnt::number, 0) as receipt_execution_tokens_burnt,
-    transaction_tokens_burnt + receipt_tokens_burnt + receipt_execution_tokens_burnt as transaction_fee
+    get(tx:actions, 0):FunctionCall:gas::number as attached_gas
   from {{ ref('stg_txs') }}
   where {{ incremental_load_filter("block_timestamp") }}
 
 ),
 
+receipts as (
+
+  select 
+    txn_hash,
+    sum(value:outcome:gas_burnt::number) as receipt_gas_burnt,
+    sum(value:outcome:tokens_burnt::number) as receipt_tokens_burnt
+  from transactions, lateral flatten( input => tx_receipt )
+  group by 1
+)
+
 final as (
 
   select 
-    block_height,
-    block_hash,
-    txn_hash,
-    block_timestamp,
-    nonce,
-    signature,
-    tx_receiver,
-    tx_signer,
-    tx,
-    tx_outcome,
-    tx_receipt,
-    gas_used,
-    attached_gas,
-    transaction_fee
-  from transactions
+    t.block_height,
+    t.block_hash,
+    t.txn_hash,
+    t.block_timestamp,
+    t.nonce,
+    t.signature,
+    t.tx_receiver,
+    t.tx_signer,
+    t.tx,
+    t.tx_outcome,
+    t.tx_receipt,
+    t.transaction_gas_burnt + r.receipt_gas_burnt as gas_used,
+    t.transaction_tokens_burnt + r.receipt_tokens_burnt as transaction_fee,
+    coalesce(t.attached_gas, gas_used) as attached_gas
+  from transactions as t 
+  join receipts as r 
+    on t.txn_hash = r.txn_hash
 
 )
 
