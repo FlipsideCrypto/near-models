@@ -62,21 +62,6 @@ models:
         tests:
           - not_null
 
-      - name: transaction_gas_burnt
-        description: Convert Transaction To Receipt gas burned.
-        tests:
-          - not_null
-
-      - name: receipt_gas_burnt
-        description: Sending Receipt gas burned.
-        tests:
-          - not_null
-
-      - name: receipt_execution_gas_burnt
-        description: Receipt executing gas burned.
-        tests:
-          - not_null
-
       - name: gas_used
         description: Units of gas required to execute this transaction.
         tests:
@@ -87,24 +72,7 @@ models:
         tests:
           - not_null
 
-      - name: transaction_tokens_burnt
-        description: Convert Transaction To Receipt tokens burned.
-        tests:
-          - not_null
-
-      - name: receipt_tokens_burnt
-        description: Sending Receipt tokens burned.
-        tests:
-          - not_null
-
-      - name: receipt_execution_tokens_burnt
-        description: Receipt executing tokens burned.
-        tests:
-          - not_null
-
       - name: transaction_fee
         description: Total fee paid in yoctoNEAR to execute this transaction.
         tests:
           - not_null
-
-

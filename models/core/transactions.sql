@@ -11,7 +11,6 @@
 with transactions as (
 
   select 
-
     block_id as block_height,
     tx:outcome:block_hash::string as block_hash,
     tx_id as txn_hash,
@@ -35,6 +34,27 @@ with transactions as (
   from {{ ref('stg_txs') }}
   where {{ incremental_load_filter("block_timestamp") }}
 
+),
+
+final as (
+
+  select 
+    block_height,
+    block_hash,
+    txn_hash,
+    block_timestamp,
+    nonce,
+    signature,
+    tx_receiver,
+    tx_signer,
+    tx,
+    tx_outcome,
+    tx_receipt,
+    gas_used,
+    attached_gas,
+    transaction_fee
+  from transactions
+  
 )
 
 select * from transactions
