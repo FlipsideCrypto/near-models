@@ -1,7 +1,7 @@
 {{ 
     config(
         materialized='incremental', 
-        unique_key= 'tx_id',
+        unique_key= 'txn_hash',
         incremental_strategy = 'delete+insert',
         tags=['core', 'transactions'],
         cluster_by = ['block_timestamp']
@@ -38,7 +38,7 @@ receipts as (
     sum(value:outcome:tokens_burnt::number) as receipt_tokens_burnt
   from transactions, lateral flatten( input => tx_receipt )
   group by 1
-)
+),
 
 final as (
 
