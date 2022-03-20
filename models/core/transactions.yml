@@ -6,18 +6,44 @@ models:
     description: "Near transactions."
 
     columns:
-      - name: block_id
-        description: The block ID.
+      - name: block_height
+        description: The most recent block height recorded to the blockchain. The block height is a sequential number of the most recent block in the blockchain.
         tests:
           - not_null
 
-      - name: tx_id
-        description: The transaction hash.
+      - name: block_hash
+        description: Unique identifier (hash) of this block.
         tests:
-        - not_null
+          - not_null
+
+      - name: txn_hash
+        description: Unique identifier (hash) of this transaction.
+        tests:
+          - not_null
+          - unique
 
       - name: block_timestamp
         description: The time the block was minted.
+        tests:
+          - not_null
+
+      - name: nonce
+        description: Nonce is used to determine order of transaction in the pool.
+        tests:
+          - not_null
+
+      - name: signature
+        description: A signature of a hash of the Borsh-serialized Transaction. Signature proves an ownership of the corresponding public_key (which is an AccessKey for a particular account) as well as authenticity of the transaction itself.
+        tests:
+          - not_null
+
+      - name: tx_receiver
+        description: The transaction receiver.
+        tests:
+          - not_null
+
+      - name: tx_signer
+        description: The transaction signer.
         tests:
           - not_null
 
@@ -28,12 +54,57 @@ models:
 
       - name: tx_outcome
         description: The transaction outcome.
+        tests:
+          - not_null
 
       - name: tx_receipt
         description: The transaction receipt.
-          
-      - name: tx_receiver
-        description: The transaction receiver.
+        tests:
+          - not_null
 
-      - name: tx_signer
-        description: The transaction signer.
+      - name: transaction_gas_burnt
+        description: Convert Transaction To Receipt gas burned.
+        tests:
+          - not_null
+
+      - name: receipt_gas_burnt
+        description: Sending Receipt gas burned.
+        tests:
+          - not_null
+
+      - name: receipt_execution_gas_burnt
+        description: Receipt executing gas burned.
+        tests:
+          - not_null
+
+      - name: gas_used
+        description: Units of gas required to execute this transaction.
+        tests:
+          - not_null
+
+      - name: attached_gas
+        description: Units of gas attached to the transaction (this is often higher than 'Gas Used').
+        tests:
+          - not_null
+
+      - name: transaction_tokens_burnt
+        description: Convert Transaction To Receipt tokens burned.
+        tests:
+          - not_null
+
+      - name: receipt_tokens_burnt
+        description: Sending Receipt tokens burned.
+        tests:
+          - not_null
+
+      - name: receipt_execution_tokens_burnt
+        description: Receipt executing tokens burned.
+        tests:
+          - not_null
+
+      - name: transaction_fee
+        description: Total fee paid in yoctoNEAR to execute this transaction.
+        tests:
+          - not_null
+
+
