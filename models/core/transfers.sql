@@ -3,7 +3,7 @@
     materialized='incremental',
     cluster_by='block_timestamp',
     unique_key='tx_id',
-    tags=['transfers']
+    tags=['core', 'transfers']
   )
 }}
 
