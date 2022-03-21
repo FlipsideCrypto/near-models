@@ -20,7 +20,7 @@ txs as (
 actions as (
 
   select
-    tx_id as txn_hash,
+    txn_hash,
     block_timestamp,
     tx:signer_id::string as tx_signer,
     tx:receiver_id::string as tx_receiver,
