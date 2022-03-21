@@ -2,11 +2,7 @@
   config(
     materialized='incremental',
     cluster_by='block_timestamp',
-<<<<<<< HEAD
     unique_key='action_id',
-=======
-    unique_key='tx_id',
->>>>>>> defc589 (added 'core' tag)
     tags=['core', 'transfers']
   )
 }}
