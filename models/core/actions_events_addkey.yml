@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: actions_events
+  - name: actions_events_addkey
     description: |-
       This table extracts all action events from a transaction and stores the argument data under action_data.
 
@@ -36,3 +36,15 @@ models:
         description: Permissions granted to the contract by the signer.
         tests:
           - not_null
+
+      - name: allowance
+        description: Amount of NEAR approved for use in unadjusted format (10^24). NULL if permission is FullAccess.
+        tests:
+
+      - name: method_name
+        description: Name of the method(s) approved for use. NULL if permission is FullAccess.
+        tests:
+
+      - name: receiver_id
+        description: the account ID of the destination of this transaction. NULL if permission is FullAccess.
+        tests:
