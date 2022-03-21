@@ -28,6 +28,7 @@ actions as (
     tx,  
     tx:outcome:outcome as outcome,
     tx:receipt[0] as receipt,
+    receipt:id::string as receipt_id,
     case
       when value like '%CreateAccount%' then value
       else OBJECT_KEYS(value)[0]::string
@@ -56,7 +57,7 @@ final as (
     tx_fee,
     gas_used,
     status,
-    try_parse_json(receipt) as receipt
+    receipt_id,
   from actions
 
   )
