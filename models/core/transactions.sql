@@ -1,11 +1,11 @@
-{{
+{{ 
     config(
-        materialized='incremental',
+        materialized='incremental', 
         unique_key= 'tx_id',
         incremental_strategy = 'delete+insert',
         tags=['core', 'transactions'],
         cluster_by = ['block_timestamp']
-    )
+    ) 
 }}
 
 with transactions as (
