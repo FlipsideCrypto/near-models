@@ -1,6 +1,6 @@
 {{
     config(
-        materialized='incremental', 
+        materialized='incremental',
         unique_key= 'tx_id',
         incremental_strategy = 'delete+insert',
         tags=['core', 'transactions'],
@@ -10,7 +10,7 @@
 
 with transactions as (
 
-  select
+  select 
 
     block_id,
     tx_id,
