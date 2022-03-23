@@ -23,10 +23,10 @@ addkey_events as (
     action_id,
     txn_hash,
     block_timestamp,
-    action_data:access_key:nonce::float as nonce,
+    action_data:access_key:nonce::number as nonce,
     action_data:public_key::string as public_key,
-    action_data:access_key:permission::object as permission,
-    action_data:access_key:permission:FunctionCall:allowance::float as allowance,
+    action_data:access_key:permission as permission,
+    action_data:access_key:permission:FunctionCall:allowance::number as allowance,
     action_data:access_key:permission:FunctionCall:method_names::array as method_name,
     action_data:access_key:permission:FunctionCall:receiver_id::string as receiver_id
 
