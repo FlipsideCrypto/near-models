@@ -1,7 +1,7 @@
 {{
     config(
         materialized='incremental',
-        unique_key='block_id',
+        unique_key='block_height',
         incremental_strategy = 'delete+insert',
         tags=['core'],
         cluster_by=['block_timestamp']
@@ -21,7 +21,7 @@ base_blocks as (
 final as (
 
     select
-        header:height::integer as block_id,
+        header:height::integer as block_height,
         div0(header:timestamp::integer,1000000000)::timestamp as block_timestamp,
         header:hash::string as block_hash,
         header:tx_count::integer as tx_count,
