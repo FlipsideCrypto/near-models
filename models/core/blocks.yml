@@ -6,7 +6,7 @@ models:
       This table records all the blocks of Near blockchain.
 
     columns:
-      - name: block_id
+      - name: block_height
         description: The `block_id` taken from block headers. The block number that represent the length of the blockchain in blocks.
         tests:
           - not_null
@@ -129,12 +129,12 @@ models:
       - name: prev_height
         description: The prev_height taken from block headers.
         tests:
-          
+
 
       - name: prev_state_root
         description: The prev_state_root taken from block headers.
         tests:
-          
+
 
       - name: random_value
         description: The random_value taken from block headers.
