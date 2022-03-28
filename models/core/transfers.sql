@@ -7,42 +7,32 @@
   )
 }}
 
-with
-txs as (
-
-  select 
-    * 
-  from {{ ref('stg_txs') }}
-  where {{ incremental_load_filter('block_timestamp') }} 
+with action_events as(
+  
+select 
+  txn_hash,
+  action_data:deposit::int as deposit
+  from {{ ref('action_events') }}
+  where action_name = 'Transfer'
 
 ),
  
 actions as (
-
   select
-    txn_hash,
-    block_timestamp,
-    tx:signer_id::string as tx_signer,
-    tx:receiver_id::string as tx_receiver,
-    tx:actions[0] as actions_data,
-    tx,  
-    tx:outcome:outcome as outcome,
-    tx:receipt[0] as receipt,
-    receipt:id::string as receipt_id,
+    t.txn_hash,
+    t.block_timestamp,
+    t.tx_receiver,
+    t.tx_signer,
+    a.deposit,
+    t.transaction_fee,
+    t.gas_used,
+    t.tx_receipt[0]:id::string as receipt_id,
     case
-      when value like '%CreateAccount%' then value
-      else OBJECT_KEYS(value)[0]::string
-    end as action_name,
-    actions_data:Transfer.deposit::int as deposit,
-    receipt:outcome:tokens_burnt::int + tx:outcome:outcome:tokens_burnt::int as tx_fee,
-    receipt:outcome:gas_burnt::int + tx:outcome:outcome:gas_burnt::int as gas_used,
-    case
-        when receipt:outcome:status::string = '{"SuccessValue":""}' then 'Succeeded' 
+        when tx_receipt[0]:outcome:status::string = '{"SuccessValue":""}' then 'Succeeded' 
         else 'Failed'
     end as status
-  from txs, 
-  lateral flatten( input => tx:actions )
-  where action_name = 'Transfer'
+  from {{ ref('transactions') }} as t
+  inner join action_events as a on a.txn_hash = t.txn_hash
 
   ),
 
@@ -54,10 +44,10 @@ final as (
     tx_signer,
     tx_receiver,
     deposit,
+    receipt_id,
     tx_fee,
     gas_used,
-    status,
-    receipt_id,
+    status
   from actions
 
   )
