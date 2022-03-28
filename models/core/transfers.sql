@@ -2,7 +2,7 @@
   config(
     materialized='incremental',
     cluster_by='block_timestamp',
-    unique_key='tx_id',
+    unique_key='action_id',
     tags=['core', 'transfers']
   )
 }}
@@ -11,15 +11,17 @@ with action_events as(
   
 select 
   txn_hash,
+  action_id,
   action_data:deposit::int as deposit
-  from {{ ref('action_events') }}
-  where action_name = 'Transfer'
+  from {{ ref('actions_events') }}
+  where action_name = 'Transfer' and {{ incremental_load_filter("block_timestamp") }}
 
 ),
  
 actions as (
   select
     t.txn_hash,
+    a.action_id,
     t.block_timestamp,
     t.tx_receiver,
     t.tx_signer,
@@ -33,6 +35,7 @@ actions as (
     end as status
   from {{ ref('transactions') }} as t
   inner join action_events as a on a.txn_hash = t.txn_hash
+  where {{ incremental_load_filter("block_timestamp") }}
 
   ),
 
@@ -40,12 +43,13 @@ final as (
 
   select 
     txn_hash,
+    action_id,
     block_timestamp,
     tx_signer,
     tx_receiver,
     deposit,
     receipt_id,
-    tx_fee,
+    transaction_fee,
     gas_used,
     status
   from actions

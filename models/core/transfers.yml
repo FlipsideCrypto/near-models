@@ -1,4 +1,6 @@
 
+version: 2
+
 models:
   - name: transfers
     description: |-
@@ -7,6 +9,12 @@ models:
     columns:
       - name: txn_hash
         description: The unique id of the transaction.
+        tests:
+          - not_null
+
+    columns:
+      - name: action_id
+        description: The `action_id` as compiled from `tx_hash` and `action_index`. This is unique for each record.
         tests:
           - not_null
           - unique
@@ -34,7 +42,7 @@ models:
         tests:
           - not_null
 
-      - name: tx_fee
+      - name: transaction_fee
         description: Total fee paid in NEAR to execute this transaction. In raw number format, to adjust divide by POW(10,24)
         tests:
           - not_null
@@ -46,3 +54,6 @@ models:
 
       - name: status
         description: Current status of the transaction (Pending, Succeeded, Failed/Finalized or non finalized).
+        tests:
+          - not_null
+
