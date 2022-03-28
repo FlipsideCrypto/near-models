@@ -37,7 +37,7 @@ actions as (
   inner join action_events as a on a.txn_hash = t.txn_hash
   where {{ incremental_load_filter("block_timestamp") }}
 
-  ),
+),
 
 final as ( 
 
@@ -54,6 +54,6 @@ final as (
     status
   from actions
 
-  )
+)
   
 select * from final
