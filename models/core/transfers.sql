@@ -8,17 +8,18 @@
 }}
 
 with action_events as(
-  
-select 
-  txn_hash,
-  action_id,
-  action_data:deposit::int as deposit
+
+  select 
+    txn_hash,
+    action_id,
+    action_data:deposit::int as deposit
   from {{ ref('actions_events') }}
   where action_name = 'Transfer' and {{ incremental_load_filter("block_timestamp") }}
 
 ),
  
 actions as (
+ 
   select
     t.txn_hash,
     a.action_id,
