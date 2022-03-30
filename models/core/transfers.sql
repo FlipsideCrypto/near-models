@@ -2,64 +2,59 @@
   config(
     materialized='incremental',
     cluster_by='block_timestamp',
-    unique_key='tx_id',
+    unique_key='action_id',
     tags=['core', 'transfers']
   )
 }}
 
-with
-txs as (
+with action_events as(
 
   select 
-    * 
-  from {{ ref('stg_txs') }}
-  where {{ incremental_load_filter('block_timestamp') }} 
+    txn_hash,
+    action_id,
+    action_data:deposit::int as deposit
+  from {{ ref('actions_events') }}
+  where action_name = 'Transfer' and {{ incremental_load_filter("block_timestamp") }}
 
 ),
  
 actions as (
-
+ 
   select
-    txn_hash,
-    block_timestamp,
-    tx:signer_id::string as tx_signer,
-    tx:receiver_id::string as tx_receiver,
-    tx:actions[0] as actions_data,
-    tx,  
-    tx:outcome:outcome as outcome,
-    tx:receipt[0] as receipt,
-    receipt:id::string as receipt_id,
+    t.txn_hash,
+    a.action_id,
+    t.block_timestamp,
+    t.tx_receiver,
+    t.tx_signer,
+    a.deposit,
+    t.transaction_fee,
+    t.gas_used,
+    t.tx_receipt[0]:id::string as receipt_id,
     case
-      when value like '%CreateAccount%' then value
-      else OBJECT_KEYS(value)[0]::string
-    end as action_name,
-    actions_data:Transfer.deposit::int as deposit,
-    receipt:outcome:tokens_burnt::int + tx:outcome:outcome:tokens_burnt::int as tx_fee,
-    receipt:outcome:gas_burnt::int + tx:outcome:outcome:gas_burnt::int as gas_used,
-    case
-        when receipt:outcome:status::string = '{"SuccessValue":""}' then 'Succeeded' 
+        when tx_receipt[0]:outcome:status::string = '{"SuccessValue":""}' then 'Succeeded' 
         else 'Failed'
     end as status
-  from txs, 
-  lateral flatten( input => tx:actions )
-  where action_name = 'Transfer'
+  from {{ ref('transactions') }} as t
+  inner join action_events as a on a.txn_hash = t.txn_hash
+  where {{ incremental_load_filter("block_timestamp") }}
 
-  ),
+),
 
 final as ( 
 
   select 
     txn_hash,
+    action_id,
     block_timestamp,
     tx_signer,
     tx_receiver,
     deposit,
-    tx_fee,
-    gas_used,
-    status,
     receipt_id,
+    transaction_fee,
+    gas_used,
+    status
   from actions
 
-  )
+)
   
 select * from final
