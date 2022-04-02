@@ -12,4 +12,4 @@ _Please include a summary of changes and related issue (if any)._
 # Checklist
 - [ ] Follow [dbt style guide](https://github.com/dbt-labs/corp/blob/main/dbt_style_guide.md)
 - [ ] Tag the person(s) responsible for reviewing proposed changes
-- [ ] Notes to depolyment, if a `full-refresh` is needed for any table
+- [ ] Notes to deployment, if a `full-refresh` is needed for any table
