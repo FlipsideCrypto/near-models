@@ -48,4 +48,3 @@ function_calls as (
 )
 
 select * from function_calls
-limit 1000
