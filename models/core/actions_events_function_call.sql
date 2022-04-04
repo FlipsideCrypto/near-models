@@ -2,8 +2,7 @@
   config(
     materialized='incremental',
     cluster_by='block_timestamp',
-    tags=['near','actions','events','functioncall'],
-    full_refresh=true
+    tags=['near','actions','events','functioncall']
   )
 }}
 
