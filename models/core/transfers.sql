@@ -29,10 +29,10 @@ actions as (
     a.deposit,
     t.transaction_fee,
     t.gas_used,
-    t.tx_receipt[0]:id::string as receipt_id,
+    t.tx_receipt[0]:id::string as receipt_object_id,
     case
-        when tx_receipt[0]:outcome:status::string = '{"SuccessValue":""}' then 'Succeeded' 
-        else 'Failed'
+        when tx_receipt[0]:outcome:status::string = '{"SuccessValue":""}' then True 
+        else False
     end as status
   from {{ ref('transactions') }} as t
   inner join action_events as a on a.txn_hash = t.txn_hash
