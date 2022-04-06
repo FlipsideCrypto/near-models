@@ -38,11 +38,8 @@ models:
           - not_null
 
       - name: deposit
-        description: Sum of all NEAR tokens (figure is not decimal adjusted, 10^24) transferred from the Signing account to the Receiver account. This includes tokens sent in a Transfer action(s), and as deposits on Function Call action(s).
-        tests:
-          - not_null
+        description: Sum of all NEAR tokens (figure is not decimal adjusted, 10^24) transferred from the Signing account to the Receiver account.
+
 
       - name: attached_gas
         description: Units of gas (figure is not decimal adjusted, 10^12) attached to the transaction (this is often higher than 'Gas Used').
-        tests:
-          - not_null

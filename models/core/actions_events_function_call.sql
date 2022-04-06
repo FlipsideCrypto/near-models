@@ -1,6 +1,7 @@
 {{
   config(
     materialized='incremental',
+    unique_key='action_id',
     cluster_by='block_timestamp',
     tags=['near','actions','events','functioncall']
   )
