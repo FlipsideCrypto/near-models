@@ -1,0 +1,17 @@
+
+version: 2
+
+models:
+  - name: metrics_daily_transactions
+    description: "Daily number of near transactions."
+
+    columns:
+      - name: date
+        description: The date.
+        tests:
+          - not_null
+
+      - name: daily_transactions
+        description: The daily number of transactions.
+        tests:
+          - not_null
