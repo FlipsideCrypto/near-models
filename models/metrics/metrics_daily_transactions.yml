@@ -2,7 +2,7 @@
 version: 2
 
 models:
-  - name: number_transactions
+  - name: metrics_daily_transactions
     description: "Daily number of near transactions."
 
     columns:
@@ -11,7 +11,7 @@ models:
         tests:
           - not_null
 
-      - name: number_of_transactions
-        description: The number of transactions.
+      - name: daily_transactions
+        description: The daily number of transactions.
         tests:
-        - not_null
+          - not_null
