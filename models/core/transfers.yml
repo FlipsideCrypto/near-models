@@ -1,0 +1,58 @@
+
+version: 2
+
+models:
+  - name: transfers
+    description: |-
+      This table records all the Transfer actions of the Near blockchain.
+
+    columns:
+      - name: txn_hash
+        description: The unique id of the transaction.
+        tests:
+          - not_null
+
+    columns:
+      - name: action_id
+        description: The `action_id` as compiled from `tx_hash` and `action_index`. This is unique for each record.
+        tests:
+          - not_null
+          - unique
+
+      - name: block_timestamp
+        description: The time when the block was mined.
+        tests:
+          - not_null
+
+      - name: tx_signer
+        description: Account that signed and sent the transaction
+        tests:
+          - not_null
+
+      - name: tx_receiver
+        description: Account receiving the transaction.
+        tests:
+          - not_null
+
+      - name: deposit 
+        description: Sum of all NEAR tokens transferred from the Signing account to the Receiver account. This includes tokens sent in a Transfer action(s). In raw number format, to adjust divide by POW(10,24)
+
+      - name: receipt_object_id
+        description:  The unique id of the reciept object that corresponds to this transaction.
+        tests:
+          - not_null
+
+      - name: transaction_fee
+        description: Total fee paid in NEAR to execute this transaction. In raw number format, to adjust divide by POW(10,24)
+        tests:
+          - not_null
+
+      - name: gas_used
+        description: Units of gas required to execute this transaction. In raw number format, to adjust divide by POW(10,12)
+        tests:
+          - not_null
+
+      - name: status
+        description: Boolean representing the success or failure of the transaction. True for a successful transaction and False for failed transaction.
+        tests:
+          - not_null
