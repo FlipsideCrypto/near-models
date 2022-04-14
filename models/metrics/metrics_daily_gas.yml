@@ -1,0 +1,22 @@
+
+version: 2
+
+models:
+  - name: metrics_daily_gas
+    description: "Daily gas metrics of near transactions."
+
+    columns:
+      - name: date
+        description: The date.
+        tests:
+          - not_null
+
+      - name: daily_gas_used
+        description: The total daily gas used in transactions.
+        tests:
+          - not_null
+
+      - name: average_gas_price
+        description: The average gas price in transactions.
+        tests:
+          - not_null
