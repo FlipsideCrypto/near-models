@@ -13,7 +13,7 @@ with first as (
     select
 
         date_trunc('day', block_timestamp) as date,
-        sum(gas_used) as daily_gas_used
+        sum(gas_used) as daily_gas_used --gas units (10^-12 Tgas)
 
     from {{ ref('transactions') }}
     where {{ incremental_last_x_days("date", 3) }}
