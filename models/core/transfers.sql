@@ -49,7 +49,7 @@ final as (
     tx_signer,
     tx_receiver,
     deposit,
-    receipt_id,
+    receipt_object_id,
     transaction_fee,
     gas_used,
     status
