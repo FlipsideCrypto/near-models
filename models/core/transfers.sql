@@ -14,7 +14,7 @@ with action_events as(
     action_id,
     action_data:deposit::int as deposit
   from {{ ref('actions_events') }}
-  where action_name = 'Transfer' and {{ incremental_load_filter("block_timestamp") }}
+  where action_name = 'Transfer' and {{ incremental_load_filter("ingested_at") }}
 
 ),
  
@@ -33,10 +33,11 @@ actions as (
     case
         when tx_receipt[0]:outcome:status::string = '{"SuccessValue":""}' then True 
         else False
-    end as status
+    end as status,
+    t.ingested_at
   from {{ ref('transactions') }} as t
   inner join action_events as a on a.txn_hash = t.txn_hash
-  where {{ incremental_load_filter("block_timestamp") }}
+  where {{ incremental_load_filter("ingested_at") }}
 
 ),
 
@@ -52,7 +53,8 @@ final as (
     receipt_object_id,
     transaction_fee,
     gas_used,
-    status
+    status,
+    ingested_at
   from actions
 
 )

@@ -43,3 +43,8 @@ models:
 
       - name: receiver_id
         description: the account ID of the destination of this transaction. NULL if permission is FullAccess.
+
+      - name: ingested_at
+        description: The timestamp for when the block was ingested.
+        tests:
+          - not_null

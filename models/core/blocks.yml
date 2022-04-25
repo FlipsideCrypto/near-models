@@ -165,3 +165,8 @@ models:
         description: The validator_reward taken from block headers.
         tests:
           - not_null
+
+      - name: ingested_at
+        description: The timestamp for when the block was ingested.
+        tests:
+          - not_null

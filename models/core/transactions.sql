@@ -24,9 +24,10 @@ with transactions as (
     tx:receipt as tx_receipt,
     tx:outcome:outcome:gas_burnt::number as transaction_gas_burnt,
     tx:outcome:outcome:tokens_burnt::number as transaction_tokens_burnt,
-    get(tx:actions, 0):FunctionCall:gas::number as attached_gas
+    get(tx:actions, 0):FunctionCall:gas::number as attached_gas,
+    ingested_at
   from {{ ref('stg_txs') }}
-  where {{ incremental_load_filter("block_timestamp") }}
+  where {{ incremental_load_filter("ingested_at") }}
 
 ),
 
@@ -56,7 +57,8 @@ final as (
     t.tx_receipt,
     t.transaction_gas_burnt + r.receipt_gas_burnt as gas_used,
     t.transaction_tokens_burnt + r.receipt_tokens_burnt as transaction_fee,
-    coalesce(t.attached_gas, gas_used) as attached_gas
+    coalesce(t.attached_gas, gas_used) as attached_gas,
+    t.ingested_at
   from transactions as t 
   join receipts as r 
     on t.txn_hash = r.txn_hash

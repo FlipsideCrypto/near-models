@@ -15,7 +15,7 @@ final as (
     select
         *
     from {{ source("chainwalkers","near_txs") }}
-    where {{ incremental_load_filter("block_timestamp") }}
+    where {{ incremental_load_filter("ingested_at") }}
     qualify row_number() over (partition by tx_id order by ingested_at desc) = 1
 
 )

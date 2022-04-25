@@ -11,7 +11,7 @@ with
 txs as (
 
   select * from {{ ref('transactions') }}
-  where {{ incremental_load_filter('block_timestamp') }}
+  where {{ incremental_load_filter('ingested_at') }}
 
 ),
 
@@ -29,7 +29,8 @@ actions as (
     case
       when action_name = 'CreateAccount' then '{}'
       else value[action_name]
-    end as action_data
+    end as action_data,
+    ingested_at
 
   from txs, lateral flatten( input => tx:actions )
 
@@ -44,7 +45,8 @@ final as (
     block_timestamp,
     action_index,
     action_name,
-    try_parse_json(action_data) as action_data
+    try_parse_json(action_data) as action_data,
+    ingested_at
 
   from actions
 

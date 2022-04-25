@@ -43,3 +43,8 @@ models:
 
       - name: attached_gas
         description: Units of gas (figure is not decimal adjusted, 10^12) attached to the transaction (this is often higher than 'Gas Used').
+
+      - name: ingested_at
+        description: The timestamp for when the block was ingested.
+        tests:
+          - not_null
