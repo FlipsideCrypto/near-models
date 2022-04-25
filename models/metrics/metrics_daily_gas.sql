@@ -1,6 +1,6 @@
 {{
     config(
-        materialized='incremental',
+        materialized='table',
         unique_key= 'date',
         incremental_strategy = 'delete+insert',
         tags=['metrics', 'transactions'],
