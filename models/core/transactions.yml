@@ -76,3 +76,8 @@ models:
         description: Total fee paid in yoctoNEAR to execute this transaction.
         tests:
           - not_null
+
+      - name: ingested_at
+        description: The timestamp for when the block was ingested.
+        tests:
+          - not_null

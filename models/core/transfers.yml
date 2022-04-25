@@ -56,3 +56,8 @@ models:
         description: Boolean representing the success or failure of the transaction. True for a successful transaction and False for failed transaction.
         tests:
           - not_null
+
+      - name: ingested_at
+        description: The timestamp for when the block was ingested.
+        tests:
+          - not_null

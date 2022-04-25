@@ -15,7 +15,7 @@ base_blocks as (
     select
         *
     from {{ ref("stg_blocks") }}
-    where {{ incremental_load_filter("block_timestamp") }}
+    where {{ incremental_load_filter("ingested_at") }}
 
 ),
 final as (
@@ -52,7 +52,8 @@ final as (
         header:signature::string as signature,
         header:total_supply::float as total_supply,
         header:validator_proposals as validator_proposals,
-        header:validator_reward::float as validator_reward
+        header:validator_reward::float as validator_reward,
+        ingested_at
     from base_blocks
 
 )

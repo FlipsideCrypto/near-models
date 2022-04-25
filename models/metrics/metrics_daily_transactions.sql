@@ -1,8 +1,6 @@
 {{
     config(
-        materialized='incremental',
-        unique_key= 'date',
-        incremental_strategy = 'delete+insert',
+        materialized='table',
         tags=['metrics', 'transactions'],
         cluster_by = ['date']
     )
@@ -16,7 +14,6 @@ with n_transactions as (
         count(distinct txn_hash) as daily_transactions
 
     from {{ ref('transactions') }}
-    where {{ incremental_last_x_days("date", 3) }}
 
     group by 1
 )

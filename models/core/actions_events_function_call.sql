@@ -11,7 +11,7 @@ with
 action_events as (
 
   select * from {{ ref('actions_events') }}
-  where {{ incremental_load_filter('block_timestamp') }}
+  where {{ incremental_load_filter('ingested_at') }}
   and action_name = 'FunctionCall'
 
 ),
@@ -43,7 +43,8 @@ function_calls as (
       else try_parse_json(args_decoded)
     end as args,
     deposit,
-    attached_gas
+    attached_gas,
+    ingested_at
 
   from decoding
 )
