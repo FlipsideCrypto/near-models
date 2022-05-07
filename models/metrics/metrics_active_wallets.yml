@@ -3,11 +3,11 @@ version: 2
 
 models:
   - name: metrics_active_wallets
-    description: "Daily, weekly, and monthly active wallets on NEAR."
+    description: "Daily, rolling 7 day, and rolling 30 day active wallets on NEAR."
 
     columns:
       - name: date
-        description: The date.
+        description: The date (day).
         tests:
           - not_null
 
@@ -16,12 +16,12 @@ models:
         tests:
           - not_null
 
-      - name: weekly_active_wallets
-        description: The number of active wallets in the last week.
+      - name: rolling_7day_active_wallets
+        description: The number of active wallets in the last 7 days.
         tests:
           - not_null
 
-      - name: monthly_active_wallets
-        description: The number of active wallets in the last month.
+      - name: rolling_30day_active_wallets
+        description: The number of active wallets in the last 30 days.
         tests:
           - not_null
