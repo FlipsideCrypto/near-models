@@ -4,6 +4,10 @@ sources:
   - name: chainwalkers
     schema: prod
     database: chainwalkers
+    freshness: # default freshness
+      warn_after: {count: 24, period: hour}
+      error_after: {count: 48, period: hour}
+    loaded_at_field: ingested_at
     tables:
       - name: near_blocks
         description: "Blocks from the Near chain. Note always use the latest ingested at timestamp as duplicates can exist in this table!"
@@ -53,3 +57,19 @@ sources:
             description: A json object containing the tx and any decoded logs
           - name: ingested_at
             description: The time this row was ingested by Chainwalkers
+
+  - name: near
+    schema: prod
+    database: near
+    freshness: # default freshness
+      warn_after: {count: 24, period: hour}
+      error_after: {count: 48, period: hour}
+    loaded_at_field: ingested_at
+
+    tables:
+      - name: blocks
+      - name: transactions
+      - name: transfers
+      - name: actions_events
+      - name: actions_events_addkey
+      - name: actions_events_function_call
