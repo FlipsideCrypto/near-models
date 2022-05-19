@@ -13,4 +13,4 @@ _Please include a summary of changes and related issue (if any)._
 - [ ] Follow [dbt style guide](https://github.com/dbt-labs/corp/blob/main/dbt_style_guide.md)
 - [ ] Tag the person(s) responsible for reviewing proposed changes
 - [ ] Notes to deployment, if a `full-refresh` is needed for any table
-- [ ] Run `dbt docs generate` to update the documentation files if this PR is chainging the models in any way.
+- [ ] Run `dbt docs generate` to update the documentation files if this PR is changing the models in any way.
