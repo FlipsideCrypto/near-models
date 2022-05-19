@@ -64,7 +64,7 @@ sources:
     freshness: # default freshness
       warn_after: {count: 24, period: hour}
       error_after: {count: 48, period: hour}
-      # Additional requirement to make sure `block_timestamp` is also fresh
+      # additional requirement to make sure `block_timestamp` is also fresh
       filter: datediff('hour', block_timestamp, current_timestamp) < 48
     loaded_at_field: ingested_at
 
