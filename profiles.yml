@@ -1,4 +1,4 @@
-near:
+default:
   target: dev
   outputs:
     dev:

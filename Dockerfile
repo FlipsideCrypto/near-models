@@ -1,4 +1,4 @@
-FROM dbt-labs/dbt:1.0.0
+FROM fishtownanalytics/dbt:0.21.1
 WORKDIR /support
 RUN mkdir /root/.dbt
 COPY profiles.yml /root/.dbt
