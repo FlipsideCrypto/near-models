@@ -9,10 +9,6 @@ logs/
 dbt_docs.sh
 *.DS_Store
 
-!target/index.html
-!target/catalog.json
-!target/manifest.json
-
 # Visual Studio Code files
 */.vscode
 *.code-workspace
