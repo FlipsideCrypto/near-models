@@ -1,49 +1,47 @@
-{{
-  config(
-    materialized='incremental',
-    cluster_by='block_timestamp',
-    unique_key='action_id',
-    tags=['core', 'transfers']
-  )
-}}
+{{ config(
+  materialized = 'incremental',
+  cluster_by = ['ingested_at::DATE', 'block_timestamp::DATE'],
+  unique_key = 'action_id',
+  tags = ['core', 'transfers']
+) }}
 
-with action_events as(
+WITH action_events AS(
 
-  select 
+  SELECT
     txn_hash,
     action_id,
-    action_data:deposit::int as deposit
-  from {{ ref('actions_events') }}
-  where action_name = 'Transfer' and {{ incremental_load_filter("ingested_at") }}
-
+    action_data :deposit :: INT AS deposit
+  FROM
+    {{ ref('actions_events') }}
+  WHERE
+    action_name = 'Transfer'
+    AND {{ incremental_load_filter("ingested_at") }}
 ),
- 
-actions as (
- 
-  select
+actions AS (
+  SELECT
     t.txn_hash,
-    a.action_id,
+    A.action_id,
     t.block_timestamp,
     t.tx_receiver,
     t.tx_signer,
-    a.deposit,
+    A.deposit,
     t.transaction_fee,
     t.gas_used,
-    t.tx_receipt[0]:id::string as receipt_object_id,
-    case
-        when tx_receipt[0]:outcome:status::string = '{"SuccessValue":""}' then True 
-        else False
-    end as status,
+    t.tx_receipt [0] :id :: STRING AS receipt_object_id,
+    CASE
+      WHEN tx_receipt [0] :outcome :status :: STRING = '{"SuccessValue":""}' THEN TRUE
+      ELSE FALSE
+    END AS status,
     t.ingested_at
-  from {{ ref('transactions') }} as t
-  inner join action_events as a on a.txn_hash = t.txn_hash
-  where {{ incremental_load_filter("ingested_at") }}
-
+  FROM
+    {{ ref('transactions') }} AS t
+    INNER JOIN action_events AS A
+    ON A.txn_hash = t.txn_hash
+  WHERE
+    {{ incremental_load_filter("ingested_at") }}
 ),
-
-final as ( 
-
-  select 
+FINAL AS (
+  SELECT
     txn_hash,
     action_id,
     block_timestamp,
@@ -55,8 +53,10 @@ final as (
     gas_used,
     status,
     ingested_at
-  from actions
-
+  FROM
+    actions
 )
-  
-select * from final
+SELECT
+  *
+FROM
+  FINAL
