@@ -1,49 +1,56 @@
-{{ 
-    config(
-        materialized='incremental', 
-        unique_key= 'txn_hash',
-        incremental_strategy = 'delete+insert',
-        tags=['core', 'transactions'],
-        cluster_by = ['block_timestamp']
-    ) 
-}}
+{{ config(
+  materialized = 'incremental',
+  unique_key = 'txn_hash',
+  incremental_strategy = 'delete+insert',
+  tags = ['core', 'transactions'],
+  cluster_by = ['ingested_at::DATE', 'block_timestamp::DATE']
+) }}
 
-with transactions as (
+WITH transactions AS (
 
-  select 
-    block_id as block_height,
-    tx:outcome:block_hash::string as block_hash,
-    tx_id as txn_hash,
+  SELECT
+    block_id AS block_height,
+    tx :outcome :block_hash :: STRING AS block_hash,
+    tx_id AS txn_hash,
     block_timestamp,
-    tx:nonce::number as nonce,
-    tx:signature::string as signature,
-    tx:receiver_id::string as tx_receiver,
-    tx:signer_id::string as tx_signer,
+    tx :nonce :: NUMBER AS nonce,
+    tx :signature :: STRING AS signature,
+    tx :receiver_id :: STRING AS tx_receiver,
+    tx :signer_id :: STRING AS tx_signer,
     tx,
-    tx:outcome as tx_outcome,
-    tx:receipt as tx_receipt,
-    tx:outcome:outcome:gas_burnt::number as transaction_gas_burnt,
-    tx:outcome:outcome:tokens_burnt::number as transaction_tokens_burnt,
-    get(tx:actions, 0):FunctionCall:gas::number as attached_gas,
+    tx :outcome AS tx_outcome,
+    tx :receipt AS tx_receipt,
+    tx :outcome :outcome :gas_burnt :: NUMBER AS transaction_gas_burnt,
+    tx :outcome :outcome :tokens_burnt :: NUMBER AS transaction_tokens_burnt,
+    GET(
+      tx :actions,
+      0
+    ) :FunctionCall :gas :: NUMBER AS attached_gas,
     ingested_at
-  from {{ ref('stg_txs') }}
-  where {{ incremental_load_filter("ingested_at") }}
-
+  FROM
+    {{ ref('stg_txs') }}
+  WHERE
+    {{ incremental_load_filter("ingested_at") }}
 ),
-
-receipts as (
-
-  select 
+receipts AS (
+  SELECT
     txn_hash,
-    sum(value:outcome:gas_burnt::number) as receipt_gas_burnt,
-    sum(value:outcome:tokens_burnt::number) as receipt_tokens_burnt
-  from transactions, lateral flatten( input => tx_receipt )
-  group by 1
+    SUM(
+      VALUE :outcome :gas_burnt :: NUMBER
+    ) AS receipt_gas_burnt,
+    SUM(
+      VALUE :outcome :tokens_burnt :: NUMBER
+    ) AS receipt_tokens_burnt
+  FROM
+    transactions,
+    LATERAL FLATTEN(
+      input => tx_receipt
+    )
+  GROUP BY
+    1
 ),
-
-final as (
-
-  select 
+FINAL AS (
+  SELECT
     t.block_height,
     t.block_hash,
     t.txn_hash,
@@ -55,14 +62,19 @@ final as (
     t.tx,
     t.tx_outcome,
     t.tx_receipt,
-    t.transaction_gas_burnt + r.receipt_gas_burnt as gas_used,
-    t.transaction_tokens_burnt + r.receipt_tokens_burnt as transaction_fee,
-    coalesce(t.attached_gas, gas_used) as attached_gas,
+    t.transaction_gas_burnt + r.receipt_gas_burnt AS gas_used,
+    t.transaction_tokens_burnt + r.receipt_tokens_burnt AS transaction_fee,
+    COALESCE(
+      t.attached_gas,
+      gas_used
+    ) AS attached_gas,
     t.ingested_at
-  from transactions as t 
-  join receipts as r 
-    on t.txn_hash = r.txn_hash
-
+  FROM
+    transactions AS t
+    JOIN receipts AS r
+    ON t.txn_hash = r.txn_hash
 )
-
-select * from final
+SELECT
+  *
+FROM
+  FINAL
