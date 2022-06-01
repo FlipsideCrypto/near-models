@@ -36,6 +36,9 @@ This will mount your local near directory into a dbt console where dbt is instal
 `make dbt-docs`
 This will compile your dbt documentation and launch a web-server at http://localhost:8080
 
+Documentation is automatically generated and hosted using Netlify.  
+[![Netlify Status](https://api.netlify.com/api/v1/badges/12fc0079-7428-4771-9923-38ee6599db0f/deploy-status)](https://app.netlify.com/sites/mdao-near/deploys)
+
 ## Project Overview
 
 `/models` - this directory contains SQL files as Jinja templates. DBT will compile these templates and wrap them into create table statements. This means all you have to do is define SQL select statements, while DBT handles the rest. The snowflake table name will match the name of the sql model file.
