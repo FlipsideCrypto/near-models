@@ -3,7 +3,11 @@ version: 2
 
 models:
   - name: receipts
-    description: "Near receipts."
+    description: "Decoded and flattened transaction receipts from the tx_receipts object."
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - receipt_object_id
 
     columns:
 
@@ -11,44 +15,76 @@ models:
         description: "{{ doc('block_timestamp')}}"
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
 
       - name: block_hash
         description: "{{ doc('block_hash')}}"
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
 
       - name: txn_hash
         description: "{{ doc('txn_hash')}}"
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
 
       - name: receipt_object_id
         description: "{{ doc('receipt_object_id')}}"
         tests:
           - not_null
           - unique
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
 
       - name: receipt_outcome_id
         description: "{{ doc('receipt_outcome_id')}}"
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - ARRAY
 
       - name: status_value
         description: "{{ doc('status_value')}}"
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - VARIANT
+                - OBJECT
 
       - name: logs
         description: "{{ doc('logs')}}"
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - ARRAY
 
       - name: proof
         description: "{{ doc('proof')}}"
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - ARRAY
 
       - name: metadata
         description: "{{ doc('metadata')}}"
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - VARIANT
+                - OBJECT
