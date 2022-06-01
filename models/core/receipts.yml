@@ -32,7 +32,6 @@ models:
         description: "{{ doc('receipt_outcome_id')}}"
         tests:
           - not_null
-          - unique
 
       - name: status_value
         description: "{{ doc('status_value')}}"
