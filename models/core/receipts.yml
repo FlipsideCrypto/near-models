@@ -1,0 +1,54 @@
+
+version: 2
+
+models:
+  - name: receipts
+    description: "Near receipts."
+
+    columns:
+
+      - name: block_timestamp
+        description: "{{ doc('block_timestamp')}}"
+        tests:
+          - not_null
+
+      - name: block_hash
+        description: "{{ doc('block_hash')}}"
+        tests:
+          - not_null
+
+      - name: txn_hash
+        description: "{{ doc('txn_hash')}}"
+        tests:
+          - not_null
+
+      - name: receipt_object_id
+        description: "{{ doc('receipt_object_id')}}"
+        tests:
+          - not_null
+          - unique
+
+      - name: receipt_outcome_id
+        description: "{{ doc('receipt_outcome_id')}}"
+        tests:
+          - not_null
+
+      - name: status_value
+        description: "{{ doc('status_value')}}"
+        tests:
+          - not_null
+
+      - name: logs
+        description: "{{ doc('logs')}}"
+        tests:
+          - not_null
+
+      - name: proof
+        description: "{{ doc('proof')}}"
+        tests:
+          - not_null
+
+      - name: metadata
+        description: "{{ doc('metadata')}}"
+        tests:
+          - not_null
