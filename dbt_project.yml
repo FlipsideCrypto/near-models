@@ -34,7 +34,8 @@ models:
   +post-hook: "grant select on {{ this }} to share near_mdao"
 
 tests:
-  +severity: error
+  +warn_if: "between 1 and 25000"
+  +error_if: ">25000"
 
 vars:
   "dbt_date:time_zone": GMT

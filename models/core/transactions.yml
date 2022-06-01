@@ -37,6 +37,10 @@ models:
               column_type_list:
                 - STRING
                 - VARCHAR
+          - tx_gaps:
+              column_block: block_height
+              column_tx_count: tx_count
+              where: BLOCK_TIMESTAMP < CURRENT_DATE
 
       - name: block_timestamp
         description: The time the block was minted.
