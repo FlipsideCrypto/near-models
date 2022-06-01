@@ -1,7 +1,17 @@
-target/
+target/*
 dbt_modules/
+dbt_packages/
 logs/
 .env
+.venv/
+.python-version
 .notes
 dbt_docs.sh
 *.DS_Store
+
+# Visual Studio Code files
+*/.vscode
+*.code-workspace
+.history/
+**/.DS_Store
+.vscode/ 
