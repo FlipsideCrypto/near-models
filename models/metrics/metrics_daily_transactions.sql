@@ -17,7 +17,7 @@ WITH txs AS (
             2
         ) }}
 ),
-WITH n_transactions AS (
+n_transactions AS (
     SELECT
         DATE_TRUNC(
             'day',
