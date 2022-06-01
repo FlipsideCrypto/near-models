@@ -134,9 +134,13 @@ models:
                 - VARCHAR
 
       - name: epoch_sync_data_hash
-        description: The epoch_sync_data_hash taken from block headers.
+        description: The epoch_sync_data_hash taken from block headers, if available.
         tests:
-          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+                - NULL
 
       - name: events
         description: The events taken from block headers.
