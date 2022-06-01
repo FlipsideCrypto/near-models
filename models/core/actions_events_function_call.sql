@@ -1,52 +1,46 @@
-{{
-  config(
-    materialized='incremental',
-    unique_key='action_id',
-    cluster_by='block_timestamp',
-    tags=['near','actions','events','functioncall']
-  )
-}}
+{{ config(
+  materialized = 'incremental',
+  incremental_strategy = 'delete+insert',
+  unique_key = 'action_id',
+  cluster_by = ['block_timestamp'],
+  tags = ['near','actions','events','functioncall']
+) }}
 
-with
-action_events as (
+WITH action_events AS (
 
-  select * from {{ ref('actions_events') }}
-  where {{ incremental_load_filter('ingested_at') }}
-  and action_name = 'FunctionCall'
-
+  SELECT
+    *
+  FROM
+    {{ ref('actions_events') }}
+  WHERE
+    {{ incremental_load_filter('ingested_at') }}
+    AND action_name = 'FunctionCall'
 ),
-
-decoding as (
-select
-
-  *,
-  action_data:args as args,
-  try_base64_decode_string(action_data:args) as args_decoded,
-  action_data:deposit::number as deposit,
-  action_data:gas::number as attached_gas,
-  action_data:method_name::string as method_name
-
-from action_events
-
-),
-
-function_calls as (
-  select
-
-    action_id,
-    txn_hash,
-    block_timestamp,
-    action_name,
-    method_name,
-    case
-      when args_decoded is null then args
-      else try_parse_json(args_decoded)
-    end as args,
-    deposit,
-    attached_gas,
-    ingested_at
-
-  from decoding
-)
-
-select * from function_calls
+decoding AS (
+  SELECT
+    *,
+    action_data :args AS args,
+    COALESCE(TRY_PARSE_JSON(TRY_BASE64_DECODE_STRING(args)), TRY_BASE64_DECODE_STRING(args), args) AS args_decoded,
+    action_data :deposit :: NUMBER AS deposit,
+    action_data :gas :: NUMBER AS attached_gas,
+    action_data :method_name :: STRING AS method_name
+  FROM
+    action_events),
+    function_calls AS (
+      SELECT
+        action_id,
+        txn_hash,
+        block_timestamp,
+        action_name,
+        method_name,
+        args_decoded AS args,
+        deposit,
+        attached_gas,
+        ingested_at
+      FROM
+        decoding
+    )
+  SELECT
+    *
+  FROM
+    function_calls
