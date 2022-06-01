@@ -13,7 +13,10 @@ WITH txs AS (
     FROM
         {{ ref('transactions') }}
     WHERE
-        {{ incremental_load_filter('ingested_at') }}
+        {{ incremental_last_x_days(
+            "ingested_at",
+            2
+        ) }}
 ),
 receipts AS (
     SELECT
