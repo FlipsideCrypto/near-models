@@ -23,33 +23,33 @@ models:
           - not_null
 
       - name: receipt_object_id
-        description: Unique identifier of the receipt object for this transaction.
+        description: "{{ doc('receipt_object_id')}}"
         tests:
           - not_null
           - unique
 
       - name: receipt_outcome_id
-        description: Unique identifier(s) (array) of the receipt outcome for this transaction.
+        description: "{{ doc('receipt_outcome_id')}}"
         tests:
           - not_null
           - unique
 
       - name: status_value
-        description: Status information (object) for this transaction.
+        description: "{{ doc('status_value')}}"
         tests:
           - not_null
 
       - name: logs
-        description: Logs (array) for this transaction.
+        description: "{{ doc('logs')}}"
         tests:
           - not_null
 
       - name: proof
-        description: Proof (array) for this transaction.
+        description: "{{ doc('proof')}}"
         tests:
           - not_null
 
       - name: metadata
-        description: Metadata (object) for this transaction.
+        description: "{{ doc('metadata')}}"
         tests:
           - not_null
