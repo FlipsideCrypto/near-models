@@ -2,7 +2,7 @@
   materialized = 'incremental',
   incremental_strategy = 'delete+insert',
   unique_key = 'action_id',
-  cluster_by = ['block_timestamp'],
+  cluster_by = ['ingested_at::DATE', 'block_timestamp::DATE'],
   tags = ['near','actions','events','functioncall']
 ) }}
 

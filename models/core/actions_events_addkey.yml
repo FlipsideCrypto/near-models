@@ -88,6 +88,7 @@ models:
               column_type_list:
                 - STRING
                 - VARCHAR
+                - NULL
 
       - name: ingested_at
         description: The timestamp for when the block was ingested.
