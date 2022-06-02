@@ -28,7 +28,8 @@ receipts AS (
         VALUE :outcome :status AS status_value,
         VALUE :outcome :logs AS logs,
         VALUE :proof AS proof,
-        VALUE :outcome :metadata AS metadata
+        VALUE :outcome :metadata AS metadata,
+        ingested_at
     FROM
         txs,
         LATERAL FLATTEN(
