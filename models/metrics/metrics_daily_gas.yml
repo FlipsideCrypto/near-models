@@ -7,16 +7,16 @@ models:
 
     columns:
       - name: date
-        description: The date.
+        description: "{{ doc('date')}}"
         tests:
           - not_null
 
       - name: daily_gas_used
-        description: The total daily gas used in transactions. #not decimal adjusted; gas units (10^-12 Tgas)
+        description: "{{ doc('daily_gas_used')}}"
         tests:
           - not_null
 
       - name: avg_gas_price
-        description: The average gas price in transactions. #not decimal adjusted; units in yoctoNEAR (10^-24 NEAR)
+        description: "{{ doc('avg_gas_price')}}"
         tests:
           - not_null

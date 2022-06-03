@@ -7,166 +7,164 @@ models:
 
     columns:
       - name: block_height
-        description: The `block_id` taken from block headers. The block number that represent the length of the blockchain in blocks.
+        description: "{{ doc('block_height')}}"
         tests:
           - not_null
 
       - name: block_timestamp
-        description: The `block_timestamp` taken from block headers.  The time when the block was created.
+        description: "{{ doc('block_timestamp')}}"
         tests:
           - not_null
 
       - name: block_hash
-        description: The `block_hash` taken from block headers. A unique identifier for that block.
+        description: "{{ doc('block_hash')}}"
         tests:
           - not_null
 
       - name: tx_count
-        description: The `tx_count` taken from block headers. The number of transactions included in the block.
+        description: "{{ doc('tx_count')}}"
         tests:
           - not_null
 
       - name: block_author
-        description: The `block_author` taken from block headers. Validators of the blockchain.
+        description: "{{ doc('block_author')}}"
         tests:
           - not_null
 
       - name: block_challenges_result
-        description: The block_challenges_result taken from block headers.
+        description: "{{ doc('block_challenges_result')}}"
         tests:
           - not_null
 
       - name: block_challenges_root
-        description: The block_challenges_root taken from block headers.
+        description: "{{ doc('block_challenges_root')}}"
         tests:
           - not_null
 
       - name: chunk_headers_root
-        description: The chunk_headers_root taken from block headers.
+        description: "{{ doc('chunk_headers_root')}}"
         tests:
           - not_null
 
       - name: chunk_mask
-        description: The chunk_mask taken from block headers.
+        description: "{{ doc('chunk_mask')}}"
         tests:
           - not_null
 
       - name: chunk_receipts_root
-        description: The chunk_receipts_root taken from block headers.
+        description: "{{ doc('chunk_receipts_root')}}"
         tests:
           - not_null
 
       - name: chunk_tx_root
-        description: The chunk_tx_root taken from block headers.
+        description: "{{ doc('chunk_tx_root')}}"
         tests:
           - not_null
 
       - name: chunks
-        description: The chunks taken from block headers. Chunk is an aggregation of transactions which are executed within a particular shard.
+        description: "{{ doc('chunks')}}"
         tests:
           - not_null
 
       - name: chunks_included
-        description: The chunks_included taken from block headers.
+        description: "{{ doc('chunks_included')}}"
         tests:
           - not_null
 
       - name: epoch_id
-        description: The epoch_id taken from block headers.
+        description: "{{ doc('epoch_id')}}"
         tests:
           - not_null
 
       - name: epoch_sync_data_hash
-        description: The epoch_sync_data_hash taken from block headers.
+        description: "{{ doc('epoch_sync_data_hash')}}"
         tests:
           - not_null
 
       - name: events
-        description: The events taken from block headers.
+        description: "{{ doc('events')}}"
         tests:
           - not_null
 
       - name: gas_price
-        description: The gas_price taken from block headers.
+        description: "{{ doc('gas_price')}}"
         tests:
           - not_null
 
       - name: last_ds_final_block
-        description: The last_ds_final_block taken from block headers.
+        description: "{{ doc('last_ds_final_block')}}"
         tests:
           - not_null
 
       - name: last_final_block
-        description: The last_final_block taken from block headers.
+        description: "{{ doc('last_final_block')}}"
         tests:
           - not_null
 
       - name: latest_protocol_version
-        description: The latest_protocol_version taken from block headers.
+        description: "{{ doc('latest_protocol_version')}}"
         tests:
           - not_null
 
       - name: next_bp_hash
-        description: The next_bp_hash taken from block headers.
+        description: "{{ doc('next_bp_hash')}}"
         tests:
           - not_null
 
       - name: next_epoch_id
-        description: The next_epoch_id taken from block headers.
+        description: "{{ doc('next_epoch_id')}}"
         tests:
           - not_null
 
       - name: outcome_root
-        description: The outcome_root taken from block headers.
+        description: "{{ doc('outcome_root')}}"
         tests:
           - not_null
 
       - name: prev_hash
-        description: The prev_hash taken from block headers.
+        description: "{{ doc('prev_hash')}}"
         tests:
           - not_null
 
       - name: prev_height
-        description: The prev_height taken from block headers.
+        description: "{{ doc('prev_height')}}"
         tests:
-
 
       - name: prev_state_root
-        description: The prev_state_root taken from block headers.
+        description: "{{ doc('prev_state_root')}}"
         tests:
 
-
       - name: random_value
-        description: The random_value taken from block headers.
+        description: "{{ doc('random_value')}}"
         tests:
           - not_null
 
       - name: rent_paid
-        description: The rent_paid taken from block headers.
+        description:"{{ doc('rent_paid')}}"
         tests:
           - not_null
 
       - name: signature
-        description: The signature taken from block headers.
+        description: "{{ doc('signature')}}"
         tests:
           - not_null
 
       - name: total_supply
-        description: The total_supply taken from block headers.
+        description: "{{ doc('total_supply')}}"
         tests:
           - not_null
 
       - name: validator_proposals
-        description: The validator_proposals taken from block headers.
+        description: "{{ doc('validator_proposals')}}"
         tests:
           - not_null
 
       - name: validator_reward
-        description: The validator_reward taken from block headers.
+        description: "{{ doc('validator_reward')}}"
         tests:
           - not_null
 
       - name: ingested_at
-        description: The timestamp for when the block was ingested.
+        description: "{{ doc('ingested_at')}}"
         tests:
           - not_null

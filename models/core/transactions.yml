@@ -7,77 +7,77 @@ models:
 
     columns:
       - name: block_height
-        description: The most recent block height recorded to the blockchain. The block height is a sequential number of the most recent block in the blockchain.
+        description: "{{ doc('block_height')}}"
         tests:
           - not_null
 
       - name: block_hash
-        description: Unique identifier (hash) of this block.
+        description: "{{ doc('block_hash')}}"
         tests:
           - not_null
 
       - name: txn_hash
-        description: Unique identifier (hash) of this transaction.
+        description: "{{ doc('txn_hash')}}"
         tests:
           - not_null
           - unique
 
       - name: block_timestamp
-        description: The time the block was minted.
+        description: "{{ doc('block_timestamp')}}"
         tests:
           - not_null
 
       - name: nonce
-        description: Nonce is used to determine order of transaction in the pool.
+        description: "{{ doc('nonce')}}"
         tests:
           - not_null
 
       - name: signature
-        description: A signature of a hash of the Borsh-serialized Transaction. Signature proves an ownership of the corresponding public_key (which is an AccessKey for a particular account) as well as authenticity of the transaction itself.
+        description: "{{ doc('signature')}}"
         tests:
           - not_null
 
       - name: tx_receiver
-        description: The transaction receiver.
+        description: "{{ doc('tx_receiver')}}"
         tests:
           - not_null
 
       - name: tx_signer
-        description: The transaction signer.
+        description: "{{ doc('tx_signer')}}"
         tests:
           - not_null
 
       - name: tx
-        description: The transaction's information.
+        description: "{{ doc('tx')}}"
         tests:
           - not_null
 
       - name: tx_outcome
-        description: The transaction outcome.
+        description: "{{ doc('tx_outcome')}}"
         tests:
           - not_null
 
       - name: tx_receipt
-        description: The transaction receipt.
+        description: "{{ doc('tx_receipt')}}"
         tests:
           - not_null
 
       - name: gas_used
-        description: Units of gas required to execute this transaction.
+        description: "{{ doc('gas_used')}}"
         tests:
           - not_null
 
       - name: attached_gas
-        description: Units of gas attached to the transaction (this is often higher than 'Gas Used').
+        description: "{{ doc('attached_gas')}}"
         tests:
           - not_null
 
       - name: transaction_fee
-        description: Total fee paid in yoctoNEAR to execute this transaction.
+        description: "{{ doc('transaction_fee')}}"
         tests:
           - not_null
 
       - name: ingested_at
-        description: The timestamp for when the block was ingested.
+        description: "{{ doc('ingested_at')}}"
         tests:
           - not_null

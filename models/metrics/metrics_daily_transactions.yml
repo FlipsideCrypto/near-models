@@ -7,11 +7,11 @@ models:
 
     columns:
       - name: date
-        description: The date.
+        description: "{{ doc('date')}}"
         tests:
           - not_null
 
       - name: daily_transactions
-        description: The daily number of transactions.
+        description: "{{ doc('daily_transactions')}}"
         tests:
           - not_null
