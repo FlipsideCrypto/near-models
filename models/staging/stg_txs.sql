@@ -1,23 +1,29 @@
-{{
-    config(
-        materialized='incremental',
-        unique_key='tx_id',
-        incremental_strategy = 'delete+insert',
-        tags=['core', 'transactions'],
-        cluster_by=['block_timestamp']
-        )
-}}
+{{ config(
+    materialized = 'incremental',
+    unique_key = 'tx_id',
+    incremental_strategy = 'delete+insert',
+    tags = ['core', 'transactions'],
+    cluster_by = ['block_timestamp']
+) }}
 
-with
+WITH FINAL AS (
 
-final as (
-
-    select
+    SELECT
         *
-    from {{ source("chainwalkers","near_txs") }}
-    where {{ incremental_load_filter("ingested_at") }}
-    qualify row_number() over (partition by tx_id order by ingested_at desc) = 1
-
+    FROM
+        {{ source(
+            "chainwalkers",
+            "near_txs"
+        ) }}
+    WHERE
+        {{ incremental_load_filter("ingested_at") }}
+        qualify ROW_NUMBER() over (
+            PARTITION BY tx_id
+            ORDER BY
+                ingested_at DESC
+        ) = 1
 )
-
-select * from final
+SELECT
+    *
+FROM
+    FINAL
