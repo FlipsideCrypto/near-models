@@ -1,45 +1,67 @@
-{{
-    config(
-        materialized='table',
-        tags=['metrics', 'transactions'],
-        cluster_by = ['date']
-    )
-}}
+{{ config(
+    materialized = 'incremental',
+    incremental_strategy = 'delete+insert',
+    tags = ['metrics', 'transactions'],
+    cluster_by = ['date']
+) }}
 
-with first as (
+WITH txs AS (
 
-    select
-
-        date_trunc('day', block_timestamp) as date,
-        sum(gas_used) as daily_gas_used --gas units (10^-12 Tgas)
-
-    from {{ ref('transactions') }}
-    group by 1
-
+    SELECT
+        *
+    FROM
+        {{ ref('transactions') }}
+    WHERE
+        {{ incremental_last_x_days(
+            "ingested_at",
+            2
+        ) }}
 ),
-
-second as (
-
-    select
-
-        date_trunc('day', block_timestamp) as date,
-        round(avg(gas_price), 2) as avg_gas_price --units in yoctoNEAR (10^-24 NEAR)
-
-    from {{ ref('blocks') }}
-    group by 1
-
-  ),
-
-final as (
-
-    select
-        f.date,
-        f.daily_gas_used,
-        s.avg_gas_price
-    from first as f
-    join second as s
-        on f.date = s.date
-
-)
-
-select * from final
+blocks AS (
+    SELECT
+        *
+    FROM
+        {{ ref('blocks') }}
+    WHERE
+        {{ incremental_last_x_days(
+            "ingested_at",
+            2
+        ) }}
+),
+gas_used AS (
+    SELECT
+        DATE_TRUNC(
+            'day',
+            block_timestamp
+        ) AS DATE,
+        SUM(gas_used) AS daily_gas_used --gas units (10^-12 Tgas)
+    FROM
+        txs
+    GROUP BY
+        1
+),
+SECOND AS (
+    SELECT
+        DATE_TRUNC(
+            'day',
+            block_timestamp
+        ) AS DATE,
+        ROUND(AVG(gas_price), 2) AS avg_gas_price --units in yoctoNEAR (10^-24 NEAR)
+    FROM
+        blocks
+    GROUP BY
+        1),
+        FINAL AS (
+            SELECT
+                f.date,
+                f.daily_gas_used AS daily_gas_used,
+                s.avg_gas_price AS avg_gas_price
+            FROM
+                gas_used AS f
+                JOIN SECOND AS s
+                ON f.date = s.date
+        )
+    SELECT
+        *
+    FROM
+        FINAL

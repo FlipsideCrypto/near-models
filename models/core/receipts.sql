@@ -3,7 +3,7 @@
     unique_key = 'receipt_object_id',
     incremental_strategy = 'delete+insert',
     tags = ['core', 'transactions'],
-    cluster_by = ['block_timestamp']
+    cluster_by = ['ingested_at::DATE', 'block_timestamp::DATE']
 ) }}
 
 WITH txs AS (
@@ -28,7 +28,8 @@ receipts AS (
         VALUE :outcome :status AS status_value,
         VALUE :outcome :logs AS logs,
         VALUE :proof AS proof,
-        VALUE :outcome :metadata AS metadata
+        VALUE :outcome :metadata AS metadata,
+        ingested_at
     FROM
         txs,
         LATERAL FLATTEN(

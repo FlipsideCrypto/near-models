@@ -5,12 +5,20 @@ models:
   - name: transfers
     description: |-
       This table records all the Transfer actions of the Near blockchain.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - action_id
 
     columns:
       - name: txn_hash
         description: The unique id of the transaction.
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
 
     columns:
       - name: action_id
@@ -18,46 +26,84 @@ models:
         tests:
           - not_null
           - unique
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
 
       - name: block_timestamp
         description: The time when the block was mined.
         tests:
           - not_null
-
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
+                
       - name: tx_signer
         description: Account that signed and sent the transaction
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
 
       - name: tx_receiver
         description: Account receiving the transaction.
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
 
       - name: deposit 
         description: Sum of all NEAR tokens transferred from the Signing account to the Receiver account. This includes tokens sent in a Transfer action(s). In raw number format, to adjust divide by POW(10,24)
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
 
       - name: receipt_object_id
         description:  The unique id of the reciept object that corresponds to this transaction.
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
 
       - name: transaction_fee
         description: Total fee paid in NEAR to execute this transaction. In raw number format, to adjust divide by POW(10,24)
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
 
       - name: gas_used
         description: Units of gas required to execute this transaction. In raw number format, to adjust divide by POW(10,12)
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
 
       - name: status
         description: Boolean representing the success or failure of the transaction. True for a successful transaction and False for failed transaction.
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - BOOLEAN
 
       - name: ingested_at
         description: The timestamp for when the block was ingested.
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ

@@ -1,38 +1,36 @@
-{{
-  config(
-    materialized='incremental',
-    unique_key='action_id',
-    cluster_by='block_timestamp',
-    tags=['actions_events']
-  )
-}}
+{{ config(
+  materialized = 'incremental',
+  unique_key = 'action_id',
+  cluster_by = ['ingested_at::DATE', 'block_timestamp::DATE'],
+  tags = ['actions_events']
+) }}
 
-with
-action_events as (
+WITH action_events AS (
 
-  select * from {{ ref('actions_events') }}
-  where action_name = 'AddKey'
-    and {{ incremental_load_filter('ingested_at') }}
-
+  SELECT
+    *
+  FROM
+    {{ ref('actions_events') }}
+  WHERE
+    action_name = 'AddKey'
+    AND {{ incremental_load_filter('ingested_at') }}
 ),
-
-addkey_events as (
-
-  select
-
+addkey_events AS (
+  SELECT
     action_id,
     txn_hash,
     block_timestamp,
-    action_data:access_key:nonce::number as nonce,
-    action_data:public_key::string as public_key,
-    action_data:access_key:permission as permission,
-    action_data:access_key:permission:FunctionCall:allowance::float as allowance,
-    action_data:access_key:permission:FunctionCall:method_names::array as method_name,
-    action_data:access_key:permission:FunctionCall:receiver_id::string as receiver_id,
+    action_data :access_key :nonce :: NUMBER AS nonce,
+    action_data :public_key :: STRING AS public_key,
+    action_data :access_key :permission AS permission,
+    action_data :access_key :permission :FunctionCall :allowance :: FLOAT AS allowance,
+    action_data :access_key :permission :FunctionCall :method_names :: ARRAY AS method_name,
+    action_data :access_key :permission :FunctionCall :receiver_id :: STRING AS receiver_id,
     ingested_at
-
-  from action_events
-
+  FROM
+    action_events
 )
-
-select * from addkey_events
+SELECT
+  *
+FROM
+  addkey_events

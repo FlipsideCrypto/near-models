@@ -1,22 +1,47 @@
-{{
-    config(
-        materialized='table',
-        tags=['metrics'],
-        cluster_by = ['date']
-    )
-}}
+{{ config(
+    materialized = 'incremental',
+    incremental_strategy = 'delete+insert',
+    tags = ['metrics'],
+    cluster_by = ['date']
+) }}
 
-with active_wallets as (
+WITH txs AS (
 
-    select
-
-        date_trunc('day', block_timestamp) as date,
-        count(distinct tx_signer) as daily_active_wallets,
-        sum(daily_active_wallets) over (order by date rows between 6 preceding and current row) as rolling_7day_active_wallets,
-        sum(daily_active_wallets) over (order by date rows between 29 preceding and current row) as rolling_30day_active_wallets
-
-    from {{ ref('transactions') }}
-    group by 1
+    SELECT
+        *
+    FROM
+        {{ ref('transactions') }}
+    WHERE
+        {{ incremental_last_x_days(
+            "ingested_at",
+            2
+        ) }}
+),
+active_wallets AS (
+    SELECT
+        DATE_TRUNC(
+            'day',
+            block_timestamp
+        ) AS DATE,
+        COUNT(
+            DISTINCT tx_signer
+        ) AS daily_active_wallets,
+        SUM(daily_active_wallets) over (
+            ORDER BY
+                DATE rows BETWEEN 6 preceding
+                AND CURRENT ROW
+        ) AS rolling_7day_active_wallets,
+        SUM(daily_active_wallets) over (
+            ORDER BY
+                DATE rows BETWEEN 29 preceding
+                AND CURRENT ROW
+        ) AS rolling_30day_active_wallets
+    FROM
+        txs
+    GROUP BY
+        1
 )
-
-select * from active_wallets
+SELECT
+    *
+FROM
+    active_wallets

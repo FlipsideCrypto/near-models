@@ -10,8 +10,15 @@ models:
         description: The date.
         tests:
           - not_null
-
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
+                
       - name: daily_transactions
         description: The daily number of transactions.
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT

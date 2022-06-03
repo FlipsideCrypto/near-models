@@ -3,7 +3,11 @@ version: 2
 models:
   - name: actions_events_function_call
     description: |-
-
+      This table extracts all FunctionCall events from actions and decodes the arguments for easy use.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - action_id
 
     columns:
       - name: action_id
@@ -11,40 +15,75 @@ models:
         tests:
           - unique
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
 
       - name: txn_hash
         description: The hash of the transaction, this is the primary key for this table.
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
 
       - name: block_timestamp
         description: The `block_timestamp` taken from block headers.  The time when the block was created.
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
 
       - name: action_name
         description: The name of the action performed.
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
 
       - name: method_name
         description: The method called within the action `FunctionCall`.
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
 
       - name: args
         description: Decoded (where possible) arguments passed alongside the `method_name`.  If decoding failed, the table will contain the raw message.
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
 
       - name: deposit
         description: Sum of all NEAR tokens (figure is not decimal adjusted, 10^24) transferred from the Signing account to the Receiver account.
-
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
 
       - name: attached_gas
         description: Units of gas (figure is not decimal adjusted, 10^12) attached to the transaction (this is often higher than 'Gas Used').
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
 
       - name: ingested_at
         description: The timestamp for when the block was ingested.
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ

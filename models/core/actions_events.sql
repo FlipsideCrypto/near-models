@@ -1,55 +1,56 @@
-{{
-  config(
-    materialized='incremental',
-    cluster_by='block_timestamp',
-    unique_key='action_id',
-    tags=['actions']
-  )
-}}
+{{ config(
+  materialized = 'incremental',
+  cluster_by = ['ingested_at::DATE', 'block_timestamp::DATE'],
+  unique_key = 'action_id',
+  tags = ['actions']
+) }}
 
-with
-txs as (
+WITH txs AS (
 
-  select * from {{ ref('transactions') }}
-  where {{ incremental_load_filter('ingested_at') }}
-
+  SELECT
+    *
+  FROM
+    {{ ref('transactions') }}
+  WHERE
+    {{ incremental_load_filter('ingested_at') }}
 ),
-
-actions as (
-
-  select
-
+actions AS (
+  SELECT
     txn_hash,
     block_timestamp,
-    index as action_index,
-    case
-      when value like '%CreateAccount%' then value
-      else OBJECT_KEYS(value)[0]::string
-    end as action_name,
-    case
-      when action_name = 'CreateAccount' then '{}'
-      else value[action_name]
-    end as action_data,
+    INDEX AS action_index,
+    CASE
+      WHEN VALUE LIKE '%CreateAccount%' THEN VALUE
+      ELSE object_keys(VALUE) [0] :: STRING
+    END AS action_name,
+    CASE
+      WHEN action_name = 'CreateAccount' THEN '{}'
+      ELSE VALUE [action_name]
+    END AS action_data,
     ingested_at
-
-  from txs, lateral flatten( input => tx:actions )
-
+  FROM
+    txs,
+    LATERAL FLATTEN(
+      input => tx :actions
+    )
 ),
-
-final as (
-
-  select
-
-    concat_ws('-', txn_hash, action_index) as action_id,
+FINAL AS (
+  SELECT
+    concat_ws(
+      '-',
+      txn_hash,
+      action_index
+    ) AS action_id,
     txn_hash,
     block_timestamp,
     action_index,
     action_name,
-    try_parse_json(action_data) as action_data,
+    TRY_PARSE_JSON(action_data) AS action_data,
     ingested_at
-
-  from actions
-
+  FROM
+    actions
 )
-
-select * from final
+SELECT
+  *
+FROM
+  FINAL

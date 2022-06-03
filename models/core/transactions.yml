@@ -4,80 +4,149 @@ version: 2
 models:
   - name: transactions
     description: "Near transactions."
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - txn_hash
 
     columns:
       - name: block_height
         description: The most recent block height recorded to the blockchain. The block height is a sequential number of the most recent block in the blockchain.
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
 
       - name: block_hash
         description: Unique identifier (hash) of this block.
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
 
       - name: txn_hash
         description: Unique identifier (hash) of this transaction.
         tests:
           - not_null
           - unique
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+          - tx_gaps:
+              column_block: block_height
+              column_tx_count: tx_count
+              where: BLOCK_TIMESTAMP < CURRENT_DATE
 
       - name: block_timestamp
         description: The time the block was minted.
         tests:
           - not_null
+          - dbt_expectations.expect_row_values_to_have_recent_data:
+              datepart: day
+              interval: 1
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
 
       - name: nonce
         description: Nonce is used to determine order of transaction in the pool.
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
 
       - name: signature
         description: A signature of a hash of the Borsh-serialized Transaction. Signature proves an ownership of the corresponding public_key (which is an AccessKey for a particular account) as well as authenticity of the transaction itself.
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
 
       - name: tx_receiver
         description: The transaction receiver.
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
 
       - name: tx_signer
         description: The transaction signer.
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
 
       - name: tx
         description: The transaction's information.
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - OBJECT
+                - VARIANT
 
       - name: tx_outcome
         description: The transaction outcome.
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - OBJECT
+                - VARIANT
 
       - name: tx_receipt
         description: The transaction receipt.
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - ARRAY
+                - VARIANT
+                - OBJECT
 
       - name: gas_used
         description: Units of gas required to execute this transaction.
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
 
       - name: attached_gas
         description: Units of gas attached to the transaction (this is often higher than 'Gas Used').
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
 
       - name: transaction_fee
         description: Total fee paid in yoctoNEAR to execute this transaction.
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
 
       - name: ingested_at
         description: The timestamp for when the block was ingested.
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
