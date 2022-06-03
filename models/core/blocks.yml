@@ -140,7 +140,7 @@ models:
           - not_null
 
       - name: rent_paid
-        description:"{{ doc('rent_paid')}}"
+        description: "{{ doc('rent_paid')}}"
         tests:
           - not_null
 

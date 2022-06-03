@@ -7,7 +7,7 @@ models:
 
     columns:
       - name: action_id
-        description:
+        description: "{{ doc('action_id')}}"
         tests:
           - unique
           - not_null
