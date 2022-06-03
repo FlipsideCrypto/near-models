@@ -21,6 +21,7 @@ models:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
+                - FLOAT
 
       - name: avg_gas_price
         description: The average gas price in transactions. NOT Decimal adjusted; units in yoctoNEAR (10^-24 NEAR)
@@ -29,3 +30,4 @@ models:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
+                - FLOAT

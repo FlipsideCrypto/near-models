@@ -113,6 +113,8 @@ models:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - ARRAY
+                - VARIANT
+                - OBJECT
 
       - name: gas_used
         description: Units of gas required to execute this transaction.
@@ -121,6 +123,7 @@ models:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
+                - FLOAT
 
       - name: attached_gas
         description: Units of gas attached to the transaction (this is often higher than 'Gas Used').
@@ -129,6 +132,7 @@ models:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
+                - FLOAT
 
       - name: transaction_fee
         description: Total fee paid in yoctoNEAR to execute this transaction.
@@ -137,6 +141,7 @@ models:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
+                - FLOAT
 
       - name: ingested_at
         description: The timestamp for when the block was ingested.

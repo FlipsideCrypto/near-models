@@ -49,7 +49,8 @@ models:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
-
+                - FLOAT
+                
       - name: block_author
         description: The `block_author` taken from block headers. Validators of the blockchain.
         tests:
@@ -66,6 +67,8 @@ models:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - ARRAY
+                - VARIANT
+                - OBJECT
 
       - name: block_challenges_root
         description: The block_challenges_root taken from block headers. TODO check this column expectation, number?
@@ -92,6 +95,8 @@ models:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - ARRAY
+                - VARIANT
+                - OBJECT
 
       - name: chunk_receipts_root
         description: The chunk_receipts_root taken from block headers.
@@ -118,6 +123,8 @@ models:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - ARRAY
+                - VARIANT
+                - OBJECT
 
       - name: chunks_included
         description: The chunks_included taken from block headers.
@@ -152,7 +159,9 @@ models:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - ARRAY
-
+                - VARIANT
+                - OBJECT
+                
       - name: gas_price
         description: The gas_price taken from block headers, number is not decimal adjusted.
         tests:
@@ -160,7 +169,8 @@ models:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
-
+                - FLOAT
+                
       - name: last_ds_final_block
         description: The last_ds_final_block taken from block headers.
         tests:
@@ -186,7 +196,8 @@ models:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
-
+                - FLOAT
+                
       - name: next_bp_hash
         description: The next_bp_hash taken from block headers.
         tests:
@@ -229,7 +240,8 @@ models:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
-
+                - FLOAT
+                
       - name: prev_state_root
         description: The prev_state_root taken from block headers. TODO can this be null?
         tests:
@@ -254,7 +266,8 @@ models:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
-
+                - FLOAT
+                
       - name: signature
         description: The signature taken from block headers.
         tests:
@@ -271,7 +284,8 @@ models:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
-
+                - FLOAT
+                
       - name: validator_proposals
         description: The validator_proposals taken from block headers.
         tests:
@@ -279,6 +293,8 @@ models:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - ARRAY
+                - VARIANT
+                - OBJECT
 
       - name: validator_reward
         description: The validator_reward taken from block headers.
@@ -287,6 +303,7 @@ models:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
+                - FLOAT
 
       - name: ingested_at
         description: The timestamp for when the block was ingested.
