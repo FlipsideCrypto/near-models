@@ -10,13 +10,24 @@ models:
         description: "{{ doc('date')}}"
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
 
       - name: daily_gas_used
-        description: "{{ doc('daily_gas_used')}}"
+        description: The total daily gas used in transactions. NOT Decimal adjusted; gas units (10^-12 Tgas)
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
 
       - name: avg_gas_price
-        description: "{{ doc('avg_gas_price')}}"
+        description: The average gas price in transactions. NOT Decimal adjusted; units in yoctoNEAR (10^-24 NEAR)
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT

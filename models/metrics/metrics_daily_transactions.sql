@@ -1,21 +1,37 @@
-{{
-    config(
-        materialized='table',
-        tags=['metrics', 'transactions'],
-        cluster_by = ['date']
-    )
-}}
+{{ config(
+    materialized = 'incremental',
+    incremental_strategy = 'delete+insert',
+    tags = ['metrics', 'transactions'],
+    cluster_by = ['date']
+) }}
 
-with n_transactions as (
+WITH txs AS (
 
-    select
-
-        date_trunc('day', block_timestamp) as date,
-        count(distinct txn_hash) as daily_transactions
-
-    from {{ ref('transactions') }}
-
-    group by 1
+    SELECT
+        *
+    FROM
+        {{ ref('transactions') }}
+    WHERE
+        {{ incremental_last_x_days(
+            "ingested_at",
+            2
+        ) }}
+),
+n_transactions AS (
+    SELECT
+        DATE_TRUNC(
+            'day',
+            block_timestamp
+        ) AS DATE,
+        COUNT(
+            DISTINCT txn_hash
+        ) AS daily_transactions
+    FROM
+        txs
+    GROUP BY
+        1
 )
-
-select * from n_transactions
+SELECT
+    *
+FROM
+    n_transactions

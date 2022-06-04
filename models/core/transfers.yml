@@ -5,12 +5,20 @@ models:
   - name: transfers
     description: |-
       This table records all the Transfer actions of the Near blockchain.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - action_id
 
     columns:
       - name: txn_hash
         description: "{{ doc('txn_hash')}}"
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
 
     columns:
       - name: action_id
@@ -18,46 +26,84 @@ models:
         tests:
           - not_null
           - unique
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
 
       - name: block_timestamp
         description: "{{ doc('block_timestamp')}}"
         tests:
           - not_null
-
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
+                
       - name: tx_signer
         description: "{{ doc('tx_signer')}}"
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
 
       - name: tx_receiver
         description: "{{ doc('tx_receiver')}}"
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
 
-      - name: deposit
-        description: "{{ doc('deposit')}}"
+      - name: deposit 
+        description: Sum of all NEAR tokens transferred from the Signing account to the Receiver account. This includes tokens sent in a Transfer action(s). In raw number format, to adjust divide by POW(10,24)
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
 
       - name: receipt_object_id
         description:  "{{ doc('receipt_object_id')}}"
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
 
       - name: transaction_fee
         description: "{{ doc('transaction_fee')}}"
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
 
       - name: gas_used
         description: "{{ doc('gas_used')}}"
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
 
       - name: status
         description: "{{ doc('status')}}"
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - BOOLEAN
 
       - name: ingested_at
         description: "{{ doc('ingested_at')}}"
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ

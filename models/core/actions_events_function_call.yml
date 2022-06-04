@@ -3,7 +3,11 @@ version: 2
 models:
   - name: actions_events_function_call
     description: |-
-
+      This table extracts all FunctionCall events from actions and decodes the arguments for easy use.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - action_id
 
     columns:
       - name: action_id
@@ -11,40 +15,75 @@ models:
         tests:
           - unique
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
 
       - name: txn_hash
         description: "{{ doc('txn_hash')}}"
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
 
       - name: block_timestamp
         description: "{{ doc('block_timestamp')}}"
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
 
       - name: action_name
         description: "{{ doc('action_name')}}"
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
 
       - name: method_name
         description: "{{ doc('method_name')}}"
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
 
       - name: args
         description: "{{ doc('args')}}"
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
 
       - name: deposit
-        description: "{{ doc('deposit')}}"
-
+        description: Sum of all NEAR tokens (figure is not decimal adjusted, 10^24) transferred from the Signing account to the Receiver account.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
 
       - name: attached_gas
-        description: "{{ doc('attached_gas')}}"
+        description: Units of gas (figure is not decimal adjusted, 10^12) attached to the transaction (this is often higher than 'Gas Used').
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
 
       - name: ingested_at
         description: "{{ doc('ingested_at')}}"
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ

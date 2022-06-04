@@ -4,6 +4,10 @@ models:
   - name: actions_events_addkey
     description: |-
       This table extracts all AddKey events from actions and stores the argument data under action_data.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - action_id
 
     columns:
       - name: action_id
@@ -11,40 +15,89 @@ models:
         tests:
           - unique
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
 
       - name: txn_hash
         description: "{{ doc('txn_hash')}}"
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
 
       - name: block_timestamp
         description: "{{ doc('block_timestamp')}}"
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
 
       - name: nonce
         description: "{{ doc('nonce')}}"
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
 
       - name: public_key
-        description: "{{ doc('public_key')}}"
-
+        description: The public key of an AccessKey which was used to sign the original transaction. In case of a deposit refund, the public key is empty (all bytes are 0).
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+                - NULL
+                
       - name: permission
         description: "{{ doc('permission')}}"
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+                - OBJECT
+                - VARIANT
 
       - name: allowance
-        description: "{{ doc('allowance')}}"
+        description: Amount of NEAR approved for use in unadjusted format (10^24). NULL if permission is FullAccess.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
+                - NULL
 
       - name: method_name
-        description: "{{ doc('method_name')}}"
+        description: Name of the method(s) approved for use. NULL if permission is FullAccess.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - ARRAY
+                - VARIANT
+                - OBJECT
+                - NULL
 
       - name: receiver_id
-        description: "{{ doc('receiver_id')}}"
+        description: the account ID of the destination of this transaction. NULL if permission is FullAccess.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+                - NULL
 
       - name: ingested_at
         description: "{{ doc('ingested_at')}}"
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
