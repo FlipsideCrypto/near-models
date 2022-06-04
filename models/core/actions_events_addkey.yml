@@ -47,7 +47,7 @@ models:
                 - FLOAT
 
       - name: public_key
-        description: The public key of an AccessKey which was used to sign the original transaction. In case of a deposit refund, the public key is empty (all bytes are 0).
+        description: "{{ doc('public_key')}}"
         tests:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
@@ -67,7 +67,7 @@ models:
                 - VARIANT
 
       - name: allowance
-        description: Amount of NEAR approved for use in unadjusted format (10^24). NULL if permission is FullAccess.
+        description: "{{ doc('allowance')}}"
         tests:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
@@ -76,7 +76,7 @@ models:
                 - NULL
 
       - name: method_name
-        description: Name of the method(s) approved for use. NULL if permission is FullAccess.
+        description: "{{ doc('method_name')}}"
         tests:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
@@ -86,7 +86,7 @@ models:
                 - NULL
 
       - name: receiver_id
-        description: the account ID of the destination of this transaction. NULL if permission is FullAccess.
+        description: "{{ doc('receiver_id')}}"
         tests:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:

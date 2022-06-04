@@ -65,7 +65,7 @@ models:
                 - VARCHAR
 
       - name: deposit
-        description: Sum of all NEAR tokens (figure is not decimal adjusted, 10^24) transferred from the Signing account to the Receiver account.
+        description: "{{ doc('deposit')}}"
         tests:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
@@ -73,7 +73,7 @@ models:
                 - FLOAT
 
       - name: attached_gas
-        description: Units of gas (figure is not decimal adjusted, 10^12) attached to the transaction (this is often higher than 'Gas Used').
+        description: "{{ doc('attached_gas')}}"
         tests:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
