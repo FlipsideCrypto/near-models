@@ -7,7 +7,7 @@ models:
 
     columns:
       - name: date
-        description: The date (day).
+        description: "{{ doc('date')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -15,7 +15,7 @@ models:
                 - TIMESTAMP_NTZ
 
       - name: daily_active_wallets
-        description: The daily number of active wallets.
+        description: "{{ doc('daily_active_wallets')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -24,7 +24,7 @@ models:
                 - FLOAT
 
       - name: rolling_7day_active_wallets
-        description: The number of active wallets in the last 7 days.
+        description: "{{ doc('rolling_7day_active_wallets')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -33,7 +33,7 @@ models:
                 - FLOAT
 
       - name: rolling_30day_active_wallets
-        description: The number of active wallets in the last 30 days.
+        description: "{{ doc('rolling_30day_active_wallets')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:

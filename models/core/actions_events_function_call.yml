@@ -11,7 +11,7 @@ models:
 
     columns:
       - name: action_id
-        description: The `action_id` as compiled from `tx_id` and `action_index`. This is unique for each record.
+        description: "{{ doc('action_id')}}"
         tests:
           - unique
           - not_null
@@ -21,7 +21,7 @@ models:
                 - VARCHAR
 
       - name: txn_hash
-        description: The hash of the transaction, this is the primary key for this table.
+        description: "{{ doc('txn_hash')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -30,7 +30,7 @@ models:
                 - VARCHAR
 
       - name: block_timestamp
-        description: The `block_timestamp` taken from block headers.  The time when the block was created.
+        description: "{{ doc('block_timestamp')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -38,7 +38,7 @@ models:
                 - TIMESTAMP_NTZ
 
       - name: action_name
-        description: The name of the action performed.
+        description: "{{ doc('action_name')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -47,7 +47,7 @@ models:
                 - VARCHAR
 
       - name: method_name
-        description: The method called within the action `FunctionCall`.
+        description: "{{ doc('method_name')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -56,7 +56,7 @@ models:
                 - VARCHAR
 
       - name: args
-        description: Decoded (where possible) arguments passed alongside the `method_name`.  If decoding failed, the table will contain the raw message.
+        description: "{{ doc('args')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -65,7 +65,7 @@ models:
                 - VARCHAR
 
       - name: deposit
-        description: Sum of all NEAR tokens (figure is not decimal adjusted, 10^24) transferred from the Signing account to the Receiver account.
+        description: "{{ doc('deposit')}}"
         tests:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
@@ -73,7 +73,7 @@ models:
                 - FLOAT
 
       - name: attached_gas
-        description: Units of gas (figure is not decimal adjusted, 10^12) attached to the transaction (this is often higher than 'Gas Used').
+        description: "{{ doc('attached_gas')}}"
         tests:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
@@ -81,7 +81,7 @@ models:
                 - FLOAT
 
       - name: ingested_at
-        description: The timestamp for when the block was ingested.
+        description: "{{ doc('ingested_at')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:

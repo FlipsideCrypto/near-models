@@ -11,7 +11,7 @@ models:
 
     columns:
       - name: action_id
-        description: The `action_id` as compiled from `tx_id` and `action_index`. This is unique for each record.
+        description: "{{ doc('action_id')}}"
         tests:
           - unique
           - not_null
@@ -21,7 +21,7 @@ models:
                 - VARCHAR
 
       - name: txn_hash
-        description: The hash of the transaction..
+        description: "{{ doc('txn_hash')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -30,7 +30,7 @@ models:
                 - VARCHAR
 
       - name: block_timestamp
-        description: The `block_timestamp` taken from block headers.  The time when the block was created.
+        description: "{{ doc('block_timestamp')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -38,7 +38,7 @@ models:
                 - TIMESTAMP_NTZ
 
       - name: nonce
-        description: Nonce for transactions.
+        description: "{{ doc('nonce')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -47,7 +47,7 @@ models:
                 - FLOAT
 
       - name: public_key
-        description: The public key of an AccessKey which was used to sign the original transaction. In case of a deposit refund, the public key is empty (all bytes are 0).
+        description: "{{ doc('public_key')}}"
         tests:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
@@ -56,7 +56,7 @@ models:
                 - NULL
                 
       - name: permission
-        description: Permissions granted to the contract by the signer.
+        description: "{{ doc('permission')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -67,7 +67,7 @@ models:
                 - VARIANT
 
       - name: allowance
-        description: Amount of NEAR approved for use in unadjusted format (10^24). NULL if permission is FullAccess.
+        description: "{{ doc('allowance')}}"
         tests:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
@@ -76,7 +76,7 @@ models:
                 - NULL
 
       - name: method_name
-        description: Name of the method(s) approved for use. NULL if permission is FullAccess.
+        description: "{{ doc('method_name')}}"
         tests:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
@@ -86,7 +86,7 @@ models:
                 - NULL
 
       - name: receiver_id
-        description: the account ID of the destination of this transaction. NULL if permission is FullAccess.
+        description: "{{ doc('receiver_id')}}"
         tests:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
@@ -95,7 +95,7 @@ models:
                 - NULL
 
       - name: ingested_at
-        description: The timestamp for when the block was ingested.
+        description: "{{ doc('ingested_at')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
