@@ -11,6 +11,14 @@ models:
             - action_id
 
     columns:
+      - name: block_timestamp
+        description: "{{ doc('block_timestamp')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
+
       - name: txn_hash
         description: "{{ doc('txn_hash')}}"
         tests:
@@ -20,7 +28,6 @@ models:
                 - STRING
                 - VARCHAR
 
-    columns:
       - name: action_id
         description: "{{ doc('action_id')}}"
         tests:
@@ -31,14 +38,15 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: block_timestamp
-        description: "{{ doc('block_timestamp')}}"
+      - name: receipt_object_id
+        description:  "{{ doc('receipt_object_id')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - TIMESTAMP_NTZ
-                
+                - STRING
+                - VARCHAR
+
       - name: tx_signer
         description: "{{ doc('tx_signer')}}"
         tests:
@@ -57,22 +65,13 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: deposit 
+      - name: deposit
         description: "{{ doc('deposit')}}"
         tests:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
                 - FLOAT
-
-      - name: receipt_object_id
-        description:  "{{ doc('receipt_object_id')}}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
 
       - name: transaction_fee
         description: "{{ doc('transaction_fee')}}"
