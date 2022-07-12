@@ -3,7 +3,8 @@
     unique_key = 'block_id',
     incremental_strategy = 'delete+insert',
     tags = ['core'],
-    cluster_by = ['block_timestamp']
+    cluster_by = ['block_timestamp'],
+    enabled = false
 ) }}
 
 WITH FINAL AS (

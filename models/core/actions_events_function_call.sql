@@ -3,7 +3,8 @@
   incremental_strategy = 'delete+insert',
   unique_key = 'action_id',
   cluster_by = ['ingested_at::DATE', 'block_timestamp::DATE'],
-  tags = ['near','actions','events','functioncall']
+  tags = ['near','actions','events','functioncall'],
+  enabled = false
 ) }}
 
 WITH action_events AS (

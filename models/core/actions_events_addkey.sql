@@ -2,7 +2,8 @@
   materialized = 'incremental',
   unique_key = 'action_id',
   cluster_by = ['ingested_at::DATE', 'block_timestamp::DATE'],
-  tags = ['actions_events']
+  tags = ['actions_events'],
+  enabled = false
 ) }}
 
 WITH action_events AS (

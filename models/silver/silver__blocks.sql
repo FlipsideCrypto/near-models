@@ -2,8 +2,7 @@
     materialized = 'incremental',
     unique_key = 'block_height',
     incremental_strategy = 'delete+insert',
-    tags = ['core'],
-    cluster_by = ['ingested_at::DATE', 'block_timestamp::DATE']
+    cluster_by = ['_inserted_timestamp::DATE']
 ) }}
 
 WITH base_blocks AS (
@@ -11,9 +10,14 @@ WITH base_blocks AS (
     SELECT
         *
     FROM
-        {{ ref("stg_blocks") }}
+        {{ ref('bronze__blocks') }}
     WHERE
-        {{ incremental_load_filter("ingested_at") }}
+        {{ incremental_load_filter('_inserted_timestamp') }}
+        qualify ROW_NUMBER() over (
+            PARTITION BY block_id
+            ORDER BY
+                _inserted_timestamp DESC
+        ) = 1
 ),
 FINAL AS (
     SELECT
@@ -52,7 +56,8 @@ FINAL AS (
         header :total_supply :: FLOAT AS total_supply,
         header :validator_proposals AS validator_proposals,
         header :validator_reward :: FLOAT AS validator_reward,
-        ingested_at
+        _ingested_at,
+        _inserted_timestamp
     FROM
         base_blocks
 )

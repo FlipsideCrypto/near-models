@@ -2,7 +2,7 @@
   -- dbt makes it easy to query your target table by using the "{{ this }}" variable.
 
 {% if is_incremental() %}
-{{ time_col }} > (
+{{ time_col }} >= (
   SELECT
     MAX(
       {{ time_col }}

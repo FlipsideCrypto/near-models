@@ -3,7 +3,8 @@
     unique_key = 'receipt_object_id',
     incremental_strategy = 'delete+insert',
     tags = ['core', 'transactions'],
-    cluster_by = ['ingested_at::DATE', 'block_timestamp::DATE']
+    cluster_by = ['ingested_at::DATE', 'block_timestamp::DATE'],
+    enabled = false
 ) }}
 
 WITH txs AS (

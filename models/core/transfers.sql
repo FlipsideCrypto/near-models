@@ -2,7 +2,8 @@
   materialized = 'incremental',
   cluster_by = ['ingested_at::DATE', 'block_timestamp::DATE'],
   unique_key = 'action_id',
-  tags = ['core', 'transfers']
+  tags = ['core', 'transfers'],
+  enabled = false
 ) }}
 
 WITH action_events AS(

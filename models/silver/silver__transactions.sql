@@ -2,16 +2,28 @@
   materialized = 'incremental',
   unique_key = 'txn_hash',
   incremental_strategy = 'delete+insert',
-  tags = ['core', 'transactions'],
-  cluster_by = ['ingested_at::DATE', 'block_timestamp::DATE']
+  cluster_by = ['_inserted_timestamp::DATE']
 ) }}
 
-WITH transactions AS (
+WITH base_transactions AS (
 
+  SELECT
+    *
+  FROM
+    {{ ref('bronze__transactions') }}
+  WHERE
+    {{ incremental_load_filter('_inserted_timestamp') }}
+    qualify ROW_NUMBER() over (
+      PARTITION BY txn_hash
+      ORDER BY
+        _inserted_timestamp DESC
+    ) = 1
+),
+transactions AS (
   SELECT
     block_id AS block_height,
     tx :outcome :block_hash :: STRING AS block_hash,
-    tx_id AS txn_hash,
+    txn_hash,
     block_timestamp,
     tx :nonce :: NUMBER AS nonce,
     tx :signature :: STRING AS signature,
@@ -26,11 +38,10 @@ WITH transactions AS (
       tx :actions,
       0
     ) :FunctionCall :gas :: NUMBER AS attached_gas,
-    ingested_at
+    _ingested_at,
+    _inserted_timestamp
   FROM
-    {{ ref('stg_txs') }}
-  WHERE
-    {{ incremental_load_filter("ingested_at") }}
+    base_transactions
 ),
 receipts AS (
   SELECT
@@ -68,7 +79,8 @@ FINAL AS (
       t.attached_gas,
       gas_used
     ) AS attached_gas,
-    t.ingested_at
+    t._ingested_at,
+    t._inserted_timestamp
   FROM
     transactions AS t
     JOIN receipts AS r

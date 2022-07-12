@@ -2,7 +2,8 @@
     materialized = 'incremental',
     incremental_strategy = 'delete+insert',
     tags = ['metrics'],
-    cluster_by = ['date']
+    cluster_by = ['date'],
+    enabled = false
 ) }}
 
 WITH txs AS (

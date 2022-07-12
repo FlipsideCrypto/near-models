@@ -4,7 +4,7 @@
 
 SELECT
     record_id,
-    tx_id,
+    tx_id AS txn_hash,
     tx_block_index,
     offset_id,
     block_id,

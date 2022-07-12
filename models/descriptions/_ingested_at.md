@@ -1,4 +1,4 @@
-{% docs ingested_at %}
+{% docs _ingested_at %}
 
 The timestamp for when the block was ingested.
 

@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: blocks
+  - name: silver__blocks
     description: |-
       This table records all the blocks of Near blockchain.
     tests:
@@ -50,7 +50,7 @@ models:
               column_type_list:
                 - NUMBER
                 - FLOAT
-                
+
       - name: block_author
         description: "{{ doc('block_author')}}"
         tests:
@@ -161,7 +161,7 @@ models:
                 - ARRAY
                 - VARIANT
                 - OBJECT
-                
+
       - name: gas_price
         description: "{{ doc('gas_price')}}"
         tests:
@@ -170,7 +170,7 @@ models:
               column_type_list:
                 - NUMBER
                 - FLOAT
-                
+
       - name: last_ds_final_block
         description: "{{ doc('last_ds_final_block')}}"
         tests:
@@ -197,7 +197,7 @@ models:
               column_type_list:
                 - NUMBER
                 - FLOAT
-                
+
       - name: next_bp_hash
         description: "{{ doc('next_bp_hash')}}"
         tests:
@@ -241,7 +241,7 @@ models:
               column_type_list:
                 - NUMBER
                 - FLOAT
-                
+
       - name: prev_state_root
         description: "{{ doc('prev_state_root')}}"
         tests:
@@ -267,7 +267,7 @@ models:
               column_type_list:
                 - NUMBER
                 - FLOAT
-                
+
       - name: signature
         description: "{{ doc('signature')}}"
         tests:
@@ -285,7 +285,7 @@ models:
               column_type_list:
                 - NUMBER
                 - FLOAT
-                
+
       - name: validator_proposals
         description: "{{ doc('validator_proposals')}}"
         tests:
@@ -305,8 +305,16 @@ models:
                 - NUMBER
                 - FLOAT
 
-      - name: ingested_at
-        description: "{{ doc('ingested_at')}}"
+      - name: _ingested_at
+        description: "{{ doc('_ingested_at')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
+
+      - name: _inserted_timestamp
+        description: "{{ doc('_inserted_timestamp')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
