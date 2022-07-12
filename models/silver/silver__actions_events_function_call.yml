@@ -1,9 +1,9 @@
 version: 2
 
 models:
-  - name: actions_events
+  - name: actions_events_function_call
     description: |-
-      This table extracts all action events from a transaction and stores the argument data under action_data.
+      This table extracts all FunctionCall events from actions and decodes the arguments for easy use.
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
@@ -37,14 +37,6 @@ models:
               column_type_list:
                 - TIMESTAMP_NTZ
 
-      - name: action_index
-        description: "{{ doc('action_index')}}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - NUMBER
-
       - name: action_name
         description: "{{ doc('action_name')}}"
         tests:
@@ -54,17 +46,50 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: action_data
-        description: "{{ doc('action_data')}}"
+      - name: method_name
+        description: "{{ doc('method_name')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - OBJECT
-                - VARIANT
+                - STRING
+                - VARCHAR
 
-      - name: ingested_at
-        description: "{{ doc('ingested_at')}}"
+      - name: args
+        description: "{{ doc('args')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: deposit
+        description: "{{ doc('deposit')}}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
+
+      - name: attached_gas
+        description: "{{ doc('attached_gas')}}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
+
+      - name: _ingested_at
+        description: "{{ doc('_ingested_at')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
+
+      - name: _inserted_timestamp
+        description: "{{ doc('_inserted_timestamp')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:

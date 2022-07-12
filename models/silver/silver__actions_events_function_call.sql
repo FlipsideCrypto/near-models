@@ -1,10 +1,8 @@
 {{ config(
   materialized = 'incremental',
   incremental_strategy = 'delete+insert',
-  unique_key = 'action_id',
-  cluster_by = ['ingested_at::DATE', 'block_timestamp::DATE'],
-  tags = ['near','actions','events','functioncall'],
-  enabled = false
+  cluster_by = ['_inserted_timestamp::DATE'],
+  unique_key = 'action_id'
 ) }}
 
 WITH action_events AS (
@@ -14,7 +12,7 @@ WITH action_events AS (
   FROM
     {{ ref('actions_events') }}
   WHERE
-    {{ incremental_load_filter('ingested_at') }}
+    {{ incremental_load_filter('_inserted_timestamp') }}
     AND action_name = 'FunctionCall'
 ),
 decoding AS (
@@ -37,7 +35,8 @@ decoding AS (
         args_decoded AS args,
         deposit,
         attached_gas,
-        ingested_at
+        _ingested_at,
+        _inserted_timestamp
       FROM
         decoding
     )

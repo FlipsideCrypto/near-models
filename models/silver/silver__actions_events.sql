@@ -1,9 +1,8 @@
 {{ config(
   materialized = 'incremental',
-  cluster_by = ['ingested_at::DATE', 'block_timestamp::DATE'],
+  incremental_strategy = 'delete+insert',
+  cluster_by = ['_inserted_timestamp::DATE'],
   unique_key = 'action_id',
-  tags = ['actions'],
-  enabled = false
 ) }}
 
 WITH txs AS (
@@ -11,9 +10,9 @@ WITH txs AS (
   SELECT
     *
   FROM
-    {{ ref('transactions') }}
+    {{ ref('silver__transactions') }}
   WHERE
-    {{ incremental_load_filter('ingested_at') }}
+    {{ incremental_load_filter('_inserted_timestamp') }}
 ),
 actions AS (
   SELECT
@@ -28,7 +27,8 @@ actions AS (
       WHEN action_name = 'CreateAccount' THEN '{}'
       ELSE VALUE [action_name]
     END AS action_data,
-    ingested_at
+    _ingested_at,
+    _inserted_timestamp
   FROM
     txs,
     LATERAL FLATTEN(
@@ -47,7 +47,8 @@ FINAL AS (
     action_index,
     action_name,
     TRY_PARSE_JSON(action_data) AS action_data,
-    ingested_at
+    _ingested_at,
+    _inserted_timestamp
   FROM
     actions
 )

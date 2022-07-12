@@ -1,9 +1,9 @@
 version: 2
 
 models:
-  - name: actions_events_addkey
+  - name: silver__actions_events
     description: |-
-      This table extracts all AddKey events from actions and stores the argument data under action_data.
+      This table extracts all action events from a transaction and stores the argument data under action_data.
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
@@ -37,65 +37,42 @@ models:
               column_type_list:
                 - TIMESTAMP_NTZ
 
-      - name: nonce
-        description: "{{ doc('nonce')}}"
+      - name: action_index
+        description: "{{ doc('action_index')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
-                - FLOAT
 
-      - name: public_key
-        description: "{{ doc('public_key')}}"
-        tests:
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
-                - NULL
-                
-      - name: permission
-        description: "{{ doc('permission')}}"
+      - name: action_name
+        description: "{{ doc('action_name')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
                 - VARCHAR
+
+      - name: action_data
+        description: "{{ doc('action_data')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
                 - OBJECT
                 - VARIANT
 
-      - name: allowance
-        description: "{{ doc('allowance')}}"
+      - name: _ingested_at
+        description: "{{ doc('_ingested_at')}}"
         tests:
+          - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - NUMBER
-                - FLOAT
-                - NULL
+                - TIMESTAMP_NTZ
 
-      - name: method_name
-        description: "{{ doc('method_name')}}"
-        tests:
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - ARRAY
-                - VARIANT
-                - OBJECT
-                - NULL
-
-      - name: receiver_id
-        description: "{{ doc('receiver_id')}}"
-        tests:
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
-                - NULL
-
-      - name: ingested_at
-        description: "{{ doc('ingested_at')}}"
+      - name: _inserted_timestamp
+        description: "{{ doc('_inserted_timestamp')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:

@@ -1,9 +1,8 @@
 {{ config(
   materialized = 'incremental',
+  incremental_strategy = 'delete+insert',
   unique_key = 'action_id',
-  cluster_by = ['ingested_at::DATE', 'block_timestamp::DATE'],
-  tags = ['actions_events'],
-  enabled = false
+  cluster_by = ['_inserted_timestamp::DATE'],
 ) }}
 
 WITH action_events AS (
@@ -14,7 +13,7 @@ WITH action_events AS (
     {{ ref('actions_events') }}
   WHERE
     action_name = 'AddKey'
-    AND {{ incremental_load_filter('ingested_at') }}
+    AND {{ incremental_load_filter('_inserted_timestamp') }}
 ),
 addkey_events AS (
   SELECT
@@ -27,7 +26,8 @@ addkey_events AS (
     action_data :access_key :permission :FunctionCall :allowance :: FLOAT AS allowance,
     action_data :access_key :permission :FunctionCall :method_names :: ARRAY AS method_name,
     action_data :access_key :permission :FunctionCall :receiver_id :: STRING AS receiver_id,
-    ingested_at
+    _ingested_at,
+    _inserted_timestamp
   FROM
     action_events
 )
