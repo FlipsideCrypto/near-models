@@ -1,9 +1,8 @@
 {{ config(
   materialized = 'incremental',
-  cluster_by = ['ingested_at::DATE', 'block_timestamp::DATE'],
+  cluster_by = ['_inserted_timestamp::DATE'],
   unique_key = 'action_id',
-  tags = ['core', 'transfers'],
-  enabled = false
+  incremental_strategy = 'delete+insert'
 ) }}
 
 WITH action_events AS(
@@ -13,10 +12,10 @@ WITH action_events AS(
     action_id,
     action_data :deposit :: INT AS deposit
   FROM
-    {{ ref('actions_events') }}
+    {{ ref('silver__actions_events') }}
   WHERE
     action_name = 'Transfer'
-    AND {{ incremental_load_filter("ingested_at") }}
+    AND {{ incremental_load_filter("_inserted_timestamp") }}
 ),
 actions AS (
   SELECT
@@ -33,13 +32,14 @@ actions AS (
       WHEN tx_receipt [0] :outcome :status :: STRING = '{"SuccessValue":""}' THEN TRUE
       ELSE FALSE
     END AS status,
-    t.ingested_at
+    t._ingested_at,
+    t._inserted_timestamp
   FROM
-    {{ ref('transactions') }} AS t
+    {{ ref('silver__transactions') }} AS t
     INNER JOIN action_events AS A
     ON A.txn_hash = t.txn_hash
   WHERE
-    {{ incremental_load_filter("ingested_at") }}
+    {{ incremental_load_filter("_inserted_timestamp") }}
 ),
 FINAL AS (
   SELECT
@@ -53,7 +53,8 @@ FINAL AS (
     transaction_fee,
     gas_used,
     status,
-    ingested_at
+    _ingested_at,
+    _inserted_timestamp
   FROM
     actions
 )
