@@ -17,5 +17,5 @@ SELECT
 FROM
     {{ source(
         "chainwalkers",
-        "near_blocks"
+        "near_txs"
     ) }}
