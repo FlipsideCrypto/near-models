@@ -2,9 +2,7 @@
     materialized = 'incremental',
     unique_key = 'receipt_object_id',
     incremental_strategy = 'delete+insert',
-    tags = ['core', 'transactions'],
-    cluster_by = ['ingested_at::DATE', 'block_timestamp::DATE'],
-    enabled = false
+    cluster_by = ['_inserted_timestamp::DATE'],
 ) }}
 
 WITH txs AS (
@@ -12,12 +10,9 @@ WITH txs AS (
     SELECT
         *
     FROM
-        {{ ref('transactions') }}
+        {{ ref('silver__transactions') }}
     WHERE
-        {{ incremental_last_x_days(
-            "ingested_at",
-            2
-        ) }}
+        {{ incremental_load_filter('_inserted_timestamp') }}
 ),
 receipts AS (
     SELECT
@@ -30,14 +25,13 @@ receipts AS (
         VALUE :outcome :logs AS logs,
         VALUE :proof AS proof,
         VALUE :outcome :metadata AS metadata,
-        ingested_at
+        _ingested_at,
+        _inserted_timestamp
     FROM
         txs,
         LATERAL FLATTEN(
             input => tx_receipt
         )
-    ORDER BY
-        block_timestamp DESC
 )
 SELECT
     *

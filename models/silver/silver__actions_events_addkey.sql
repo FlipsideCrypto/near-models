@@ -10,7 +10,7 @@ WITH action_events AS (
   SELECT
     *
   FROM
-    {{ ref('actions_events') }}
+    {{ ref('silver__actions_events') }}
   WHERE
     action_name = 'AddKey'
     AND {{ incremental_load_filter('_inserted_timestamp') }}

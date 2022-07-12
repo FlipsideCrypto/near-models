@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: actions_events_addkey
+  - name: silver__actions_events_addkey
     description: |-
       This table extracts all AddKey events from actions and stores the argument data under action_data.
     tests:

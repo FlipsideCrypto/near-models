@@ -10,7 +10,7 @@ WITH action_events AS (
   SELECT
     *
   FROM
-    {{ ref('actions_events') }}
+    {{ ref('silver__actions_events') }}
   WHERE
     {{ incremental_load_filter('_inserted_timestamp') }}
     AND action_name = 'FunctionCall'
