@@ -21,7 +21,6 @@ SELECT
     chunk_tx_root,
     chunk_mask,
     chunk_receipts_root,
-    chunk_tx_root,
     chunks,
     chunks_included,
     epoch_id,
