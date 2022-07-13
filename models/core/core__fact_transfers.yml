@@ -2,7 +2,7 @@
 version: 2
 
 models:
-  - name: silver__transfers
+  - name: core__fact_transfers
     description: |-
       This table records all the Transfer actions of the Near blockchain.
     tests:
@@ -99,19 +99,3 @@ models:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - BOOLEAN
-
-      - name: _ingested_at
-        description: "{{ doc('_ingested_at')}}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - TIMESTAMP_NTZ
-
-      - name: _inserted_timestamp
-        description: "{{ doc('_inserted_timestamp')}}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - TIMESTAMP_NTZ

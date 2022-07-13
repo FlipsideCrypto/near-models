@@ -1,18 +1,25 @@
-
 version: 2
 
 models:
-  - name: silver__transfers
-    description: |-
-      This table records all the Transfer actions of the Near blockchain.
+  - name: core__fact_transactions
+    description: "Near transactions."
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
-            - action_id
+            - txn_hash
 
     columns:
-      - name: txn_hash
-        description: "{{ doc('txn_hash')}}"
+      - name: block_height
+        description: "{{ doc('block_height')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
+
+      - name: block_hash
+        description: "{{ doc('block_hash')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -20,9 +27,8 @@ models:
                 - STRING
                 - VARCHAR
 
-    columns:
-      - name: action_id
-        description: "{{ doc('action_id')}}"
+      - name: txn_hash
+        description: "{{ doc('txn_hash')}}"
         tests:
           - not_null
           - unique
@@ -30,17 +36,32 @@ models:
               column_type_list:
                 - STRING
                 - VARCHAR
+          - tx_gaps:
+              column_block: block_height
+              column_tx_count: tx_count
+              where: BLOCK_TIMESTAMP < CURRENT_DATE
 
       - name: block_timestamp
         description: "{{ doc('block_timestamp')}}"
         tests:
           - not_null
+          - dbt_expectations.expect_row_values_to_have_recent_data:
+              datepart: day
+              interval: 1
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - TIMESTAMP_NTZ
-                
-      - name: tx_signer
-        description: "{{ doc('tx_signer')}}"
+
+      - name: nonce
+        description: "{{ doc('nonce')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+
+      - name: signature
+        description: "{{ doc('signature')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -57,16 +78,8 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: deposit 
-        description: "{{ doc('deposit')}}"
-        tests:
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - NUMBER
-                - FLOAT
-
-      - name: receipt_object_id
-        description:  "{{ doc('receipt_object_id')}}"
+      - name: tx_signer
+        description: "{{ doc('tx_signer')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -74,14 +87,14 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: transaction_fee
-        description: "{{ doc('transaction_fee')}}"
+      - name: tx
+        description: "{{ doc('tx')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - NUMBER
-                - FLOAT
+                - OBJECT
+                - VARIANT
 
       - name: gas_used
         description: "{{ doc('gas_used')}}"
@@ -92,26 +105,20 @@ models:
                 - NUMBER
                 - FLOAT
 
-      - name: status
-        description: "{{ doc('status')}}"
+      - name: attached_gas
+        description: "{{ doc('attached_gas')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - BOOLEAN
+                - NUMBER
+                - FLOAT
 
-      - name: _ingested_at
-        description: "{{ doc('_ingested_at')}}"
+      - name: transaction_fee
+        description: "{{ doc('transaction_fee')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - TIMESTAMP_NTZ
-
-      - name: _inserted_timestamp
-        description: "{{ doc('_inserted_timestamp')}}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - TIMESTAMP_NTZ
+                - NUMBER
+                - FLOAT

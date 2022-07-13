@@ -1,31 +1,29 @@
-
 version: 2
 
 models:
-  - name: silver__transfers
+  - name: core__fact_actions_events_addkey
     description: |-
-      This table records all the Transfer actions of the Near blockchain.
+      This table extracts all AddKey events from actions and stores the argument data under action_data.
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - action_id
 
     columns:
-      - name: txn_hash
-        description: "{{ doc('txn_hash')}}"
+      - name: action_id
+        description: "{{ doc('action_id')}}"
         tests:
+          - unique
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
                 - VARCHAR
 
-    columns:
-      - name: action_id
-        description: "{{ doc('action_id')}}"
+      - name: txn_hash
+        description: "{{ doc('txn_hash')}}"
         tests:
           - not_null
-          - unique
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
@@ -38,44 +36,9 @@ models:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - TIMESTAMP_NTZ
-                
-      - name: tx_signer
-        description: "{{ doc('tx_signer')}}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
 
-      - name: tx_receiver
-        description: "{{ doc('tx_receiver')}}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
-
-      - name: deposit 
-        description: "{{ doc('deposit')}}"
-        tests:
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - NUMBER
-                - FLOAT
-
-      - name: receipt_object_id
-        description:  "{{ doc('receipt_object_id')}}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
-
-      - name: transaction_fee
-        description: "{{ doc('transaction_fee')}}"
+      - name: nonce
+        description: "{{ doc('nonce')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -83,35 +46,50 @@ models:
                 - NUMBER
                 - FLOAT
 
-      - name: gas_used
-        description: "{{ doc('gas_used')}}"
+      - name: public_key
+        description: "{{ doc('public_key')}}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+                - NULL
+
+      - name: permission
+        description: "{{ doc('permission')}}"
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+                - OBJECT
+                - VARIANT
+
+      - name: allowance
+        description: "{{ doc('allowance')}}"
+        tests:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
                 - FLOAT
+                - NULL
 
-      - name: status
-        description: "{{ doc('status')}}"
+      - name: method_name
+        description: "{{ doc('method_name')}}"
         tests:
-          - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - BOOLEAN
+                - ARRAY
+                - VARIANT
+                - OBJECT
+                - NULL
 
-      - name: _ingested_at
-        description: "{{ doc('_ingested_at')}}"
+      - name: receiver_id
+        description: "{{ doc('receiver_id')}}"
         tests:
-          - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - TIMESTAMP_NTZ
-
-      - name: _inserted_timestamp
-        description: "{{ doc('_inserted_timestamp')}}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - TIMESTAMP_NTZ
+                - STRING
+                - VARCHAR
+                - NULL
