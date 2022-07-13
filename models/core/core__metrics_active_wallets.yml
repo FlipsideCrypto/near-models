@@ -1,0 +1,41 @@
+version: 2
+
+models:
+  - name: core__metrics_active_wallets
+    description: "Daily, rolling 7 day, and rolling 30 day active wallets on NEAR."
+
+    columns:
+      - name: date
+        description: "{{ doc('date')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
+
+      - name: daily_active_wallets
+        description: "{{ doc('daily_active_wallets')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
+
+      - name: rolling_7day_active_wallets
+        description: "{{ doc('rolling_7day_active_wallets')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
+
+      - name: rolling_30day_active_wallets
+        description: "{{ doc('rolling_30day_active_wallets')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
