@@ -1,9 +1,8 @@
-
 version: 2
 
 models:
-  - name: metrics_daily_gas
-    description: "Daily gas metrics of near transactions."
+  - name: metrics__daily_transactions
+    description: "Daily number of near transactions."
 
     columns:
       - name: date
@@ -14,17 +13,8 @@ models:
               column_type_list:
                 - TIMESTAMP_NTZ
 
-      - name: daily_gas_used
-        description: "{{ doc('daily_gas_used')}}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - NUMBER
-                - FLOAT
-
-      - name: avg_gas_price
-        description: "{{ doc('avg_gas_price')}}"
+      - name: daily_transactions
+        description: "{{ doc('daily_transactions')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:

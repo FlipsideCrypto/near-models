@@ -2,8 +2,7 @@
     materialized = 'incremental',
     incremental_strategy = 'delete+insert',
     tags = ['metrics'],
-    cluster_by = ['date'],
-    enabled = false
+    cluster_by = ['date']
 ) }}
 
 WITH txs AS (
@@ -11,12 +10,9 @@ WITH txs AS (
     SELECT
         *
     FROM
-        {{ ref('transactions') }}
+        {{ ref('silver__transactions') }}
     WHERE
-        {{ incremental_last_x_days(
-            "ingested_at",
-            2
-        ) }}
+        {{ incremental_load_filter('_inserted_timestamp') }}
 ),
 active_wallets AS (
     SELECT
