@@ -12,7 +12,10 @@ WITH txs AS (
     FROM
         {{ ref('silver__transactions') }}
     WHERE
-        {{ incremental_load_filter('_inserted_timestamp') }}
+        {{ incremental_last_x_days(
+            "_inserted_timestamp",
+            2
+        ) }}
 ),
 active_wallets AS (
     SELECT
