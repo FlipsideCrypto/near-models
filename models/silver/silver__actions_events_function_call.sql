@@ -28,7 +28,7 @@ decoding AS (
     function_calls AS (
       SELECT
         action_id,
-        txn_hash,
+        tx_hash,
         block_timestamp,
         action_name,
         method_name,

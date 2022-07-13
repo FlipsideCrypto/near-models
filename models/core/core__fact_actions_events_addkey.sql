@@ -11,7 +11,7 @@ WITH actions_events_addkey AS (
 )
 SELECT
     action_id,
-    txn_hash,
+    tx_hash,
     block_timestamp,
     nonce,
     public_key,

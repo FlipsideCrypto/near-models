@@ -6,7 +6,7 @@ models:
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
-            - txn_hash
+            - tx_hash
 
     columns:
       - name: block_height
@@ -27,8 +27,8 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: txn_hash
-        description: "{{ doc('txn_hash')}}"
+      - name: tx_hash
+        description: "{{ doc('tx_hash')}}"
         tests:
           - not_null
           - unique

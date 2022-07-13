@@ -18,7 +18,7 @@ WITH action_events AS (
 addkey_events AS (
   SELECT
     action_id,
-    txn_hash,
+    tx_hash,
     block_timestamp,
     action_data :access_key :nonce :: NUMBER AS nonce,
     action_data :public_key :: STRING AS public_key,

@@ -8,7 +8,7 @@
 WITH action_events AS(
 
   SELECT
-    txn_hash,
+    tx_hash,
     action_id,
     action_data :deposit :: INT AS deposit
   FROM
@@ -19,7 +19,7 @@ WITH action_events AS(
 ),
 actions AS (
   SELECT
-    t.txn_hash,
+    t.tx_hash,
     A.action_id,
     t.block_timestamp,
     t.tx_receiver,
@@ -37,13 +37,13 @@ actions AS (
   FROM
     {{ ref('silver__transactions') }} AS t
     INNER JOIN action_events AS A
-    ON A.txn_hash = t.txn_hash
+    ON A.tx_hash = t.tx_hash
   WHERE
     {{ incremental_load_filter("_inserted_timestamp") }}
 ),
 FINAL AS (
   SELECT
-    txn_hash,
+    tx_hash,
     action_id,
     block_timestamp,
     tx_signer,

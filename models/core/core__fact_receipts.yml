@@ -26,8 +26,8 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: txn_hash
-        description: "{{ doc('txn_hash')}}"
+      - name: tx_hash
+        description: "{{ doc('tx_hash')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:

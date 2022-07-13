@@ -18,7 +18,7 @@ receipts AS (
     SELECT
         block_timestamp,
         block_hash,
-        txn_hash,
+        tx_hash,
         VALUE :id :: STRING AS receipt_object_id,
         VALUE :outcome :receipt_ids AS receipt_outcome_id,
         VALUE :outcome :status AS status_value,

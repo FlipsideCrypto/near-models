@@ -12,7 +12,7 @@ WITH receipts AS (
 SELECT
     block_timestamp,
     block_hash,
-    txn_hash,
+    tx_hash,
     receipt_object_id,
     receipt_outcome_id,
     status_value,

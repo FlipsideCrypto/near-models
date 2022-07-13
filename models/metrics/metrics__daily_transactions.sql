@@ -24,7 +24,7 @@ n_transactions AS (
             block_timestamp
         ) AS DATE,
         COUNT(
-            DISTINCT txn_hash
+            DISTINCT tx_hash
         ) AS daily_transactions
     FROM
         txs

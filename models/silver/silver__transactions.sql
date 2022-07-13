@@ -1,6 +1,6 @@
 {{ config(
   materialized = 'incremental',
-  unique_key = 'txn_hash',
+  unique_key = 'tx_hash',
   incremental_strategy = 'delete+insert',
   cluster_by = ['_inserted_timestamp::DATE']
 ) }}
@@ -14,7 +14,7 @@ WITH base_transactions AS (
   WHERE
     {{ incremental_load_filter('_inserted_timestamp') }}
     qualify ROW_NUMBER() over (
-      PARTITION BY txn_hash
+      PARTITION BY tx_hash
       ORDER BY
         _inserted_timestamp DESC
     ) = 1
@@ -23,7 +23,7 @@ transactions AS (
   SELECT
     block_id AS block_height,
     tx :outcome :block_hash :: STRING AS block_hash,
-    txn_hash,
+    tx_hash,
     block_timestamp,
     tx :nonce :: NUMBER AS nonce,
     tx :signature :: STRING AS signature,
@@ -43,7 +43,7 @@ transactions AS (
 ),
 receipts AS (
   SELECT
-    txn_hash,
+    tx_hash,
     SUM(
       VALUE :outcome :gas_burnt :: NUMBER
     ) AS receipt_gas_burnt,
@@ -62,7 +62,7 @@ FINAL AS (
   SELECT
     t.block_height,
     t.block_hash,
-    t.txn_hash,
+    t.tx_hash,
     t.block_timestamp,
     t.nonce,
     t.signature,
@@ -80,7 +80,7 @@ FINAL AS (
   FROM
     transactions AS t
     JOIN receipts AS r
-    ON t.txn_hash = r.txn_hash
+    ON t.tx_hash = r.tx_hash
 )
 SELECT
   *

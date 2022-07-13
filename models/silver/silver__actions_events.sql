@@ -16,7 +16,7 @@ WITH txs AS (
 ),
 actions AS (
   SELECT
-    txn_hash,
+    tx_hash,
     block_timestamp,
     INDEX AS action_index,
     CASE
@@ -39,10 +39,10 @@ FINAL AS (
   SELECT
     concat_ws(
       '-',
-      txn_hash,
+      tx_hash,
       action_index
     ) AS action_id,
-    txn_hash,
+    tx_hash,
     block_timestamp,
     action_index,
     action_name,

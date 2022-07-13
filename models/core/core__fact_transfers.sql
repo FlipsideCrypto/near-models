@@ -10,7 +10,7 @@ WITH transfers AS (
         {{ ref('silver__transfers') }}
 )
 SELECT
-    txn_hash,
+    tx_hash,
     action_id,
     block_timestamp,
     tx_signer,
