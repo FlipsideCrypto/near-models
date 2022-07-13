@@ -27,9 +27,9 @@ actions AS (
     A.deposit,
     t.transaction_fee,
     t.gas_used,
-    t.tx_receipt [0] :id :: STRING AS receipt_object_id,
+    t.tx :receipt [0] :id :: STRING AS receipt_object_id,
     CASE
-      WHEN tx_receipt [0] :outcome :status :: STRING = '{"SuccessValue":""}' THEN TRUE
+      WHEN tx :receipt [0] :outcome :status :: STRING = '{"SuccessValue":""}' THEN TRUE
       ELSE FALSE
     END AS status,
     t._ingested_at,

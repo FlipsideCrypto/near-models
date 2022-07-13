@@ -30,7 +30,7 @@ receipts AS (
     FROM
         txs,
         LATERAL FLATTEN(
-            input => tx_receipt
+            input => tx: receipt
         )
 )
 SELECT

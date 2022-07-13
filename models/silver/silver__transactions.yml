@@ -96,25 +96,6 @@ models:
                 - OBJECT
                 - VARIANT
 
-      - name: tx_outcome
-        description: "{{ doc('tx_outcome')}}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - OBJECT
-                - VARIANT
-
-      - name: tx_receipt
-        description: "{{ doc('tx_receipt')}}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - ARRAY
-                - VARIANT
-                - OBJECT
-
       - name: gas_used
         description: "{{ doc('gas_used')}}"
         tests:

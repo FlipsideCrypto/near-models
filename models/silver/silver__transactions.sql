@@ -30,8 +30,6 @@ transactions AS (
     tx :receiver_id :: STRING AS tx_receiver,
     tx :signer_id :: STRING AS tx_signer,
     tx,
-    tx :outcome AS tx_outcome,
-    tx :receipt AS tx_receipt,
     tx :outcome :outcome :gas_burnt :: NUMBER AS transaction_gas_burnt,
     tx :outcome :outcome :tokens_burnt :: NUMBER AS transaction_tokens_burnt,
     GET(
@@ -55,7 +53,7 @@ receipts AS (
   FROM
     transactions,
     LATERAL FLATTEN(
-      input => tx_receipt
+      input => tx :receipt
     )
   GROUP BY
     1
@@ -71,8 +69,6 @@ FINAL AS (
     t.tx_receiver,
     t.tx_signer,
     t.tx,
-    t.tx_outcome,
-    t.tx_receipt,
     t.transaction_gas_burnt + r.receipt_gas_burnt AS gas_used,
     t.transaction_tokens_burnt + r.receipt_tokens_burnt AS transaction_fee,
     COALESCE(
