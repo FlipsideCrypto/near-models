@@ -1,4 +1,3 @@
-
 version: 2
 
 models:
@@ -20,7 +19,6 @@ models:
                 - STRING
                 - VARCHAR
 
-    columns:
       - name: action_id
         description: "{{ doc('action_id')}}"
         tests:
@@ -38,7 +36,7 @@ models:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - TIMESTAMP_NTZ
-                
+
       - name: tx_signer
         description: "{{ doc('tx_signer')}}"
         tests:
@@ -57,7 +55,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: deposit 
+      - name: deposit
         description: "{{ doc('deposit')}}"
         tests:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -66,7 +64,7 @@ models:
                 - FLOAT
 
       - name: receipt_object_id
-        description:  "{{ doc('receipt_object_id')}}"
+        description: "{{ doc('receipt_object_id')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
