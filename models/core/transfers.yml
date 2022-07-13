@@ -5,10 +5,10 @@ models:
   - name: transfers
     description: |-
       This table records all the Transfer actions of the Near blockchain.
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - action_id
+    #tests:
+    #  - dbt_utils.unique_combination_of_columns:
+    #      combination_of_columns:
+    #        - action_id
 
     columns:
       - name: block_timestamp
@@ -32,7 +32,6 @@ models:
         description: "{{ doc('action_id')}}"
         tests:
           - not_null
-          - unique
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
@@ -42,6 +41,7 @@ models:
         description:  "{{ doc('receipt_object_id')}}"
         tests:
           - not_null
+          - unique
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING

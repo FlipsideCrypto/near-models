@@ -20,6 +20,7 @@ WITH action_events AS(
 txs AS (
   SELECT
     txn_hash,
+    tx_receipt,
     block_timestamp,
     tx_receiver,
     tx_signer,
@@ -40,7 +41,7 @@ receipts AS (
     txn_hash,
     VALUE :id :: STRING AS receipt_object_id
   FROM
-    {{ ref('transactions') }},
+    txs,
     LATERAL FLATTEN(
       input => tx_receipt
     )
