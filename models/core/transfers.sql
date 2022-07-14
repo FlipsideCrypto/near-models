@@ -1,7 +1,7 @@
 {{ config(
   materialized = 'incremental',
   cluster_by = ['ingested_at::DATE', 'block_timestamp::DATE'],
-  unique_key = 'receipt_object_id',
+  unique_key = 'action_id',
   tags = ['core', 'transfers']
 ) }}
 
@@ -20,7 +20,7 @@ WITH action_events AS(
 txs AS (
   SELECT
     txn_hash,
-    tx_receipt,
+    tx :receipt AS tx_receipt,
     block_timestamp,
     tx_receiver,
     tx_signer,
@@ -39,29 +39,33 @@ txs AS (
 receipts AS (
   SELECT
     txn_hash,
-    VALUE :id :: STRING AS receipt_object_id
+    ARRAY_AGG(
+      VALUE :id
+    ) AS receipt_object_id
   FROM
     txs,
     LATERAL FLATTEN(
       input => tx_receipt
     )
+  GROUP BY
+    1
 ),
 actions AS (
   SELECT
     t.txn_hash,
+    r.receipt_object_id,
     t.block_timestamp,
     t.tx_receiver,
     t.tx_signer,
     t.transaction_fee,
     t.gas_used,
     t.status,
-    r.receipt_object_id,
     A.action_id,
     A.deposit,
     t.ingested_at
   FROM
     txs AS t
-    LEFT JOIN receipts AS r
+    INNER JOIN receipts AS r
     ON r.txn_hash = t.txn_hash
     INNER JOIN action_events AS A
     ON A.txn_hash = t.txn_hash
