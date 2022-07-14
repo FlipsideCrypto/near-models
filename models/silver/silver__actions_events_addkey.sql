@@ -19,6 +19,7 @@ addkey_events AS (
   SELECT
     action_id,
     tx_hash,
+    block_id,
     block_timestamp,
     action_data :access_key :nonce :: NUMBER AS nonce,
     action_data :public_key :: STRING AS public_key,

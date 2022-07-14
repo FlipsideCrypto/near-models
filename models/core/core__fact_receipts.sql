@@ -11,7 +11,7 @@ WITH receipts AS (
 )
 SELECT
     block_timestamp,
-    block_hash,
+    block_id,
     tx_hash,
     receipt_object_id,
     receipt_outcome_id,

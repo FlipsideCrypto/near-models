@@ -12,6 +12,7 @@ WITH actions_events AS (
 SELECT
     action_id,
     tx_hash,
+    block_id,
     block_timestamp,
     action_index,
     action_name,

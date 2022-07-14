@@ -9,8 +9,8 @@ models:
             - tx_hash
 
     columns:
-      - name: block_height
-        description: "{{ doc('block_height')}}"
+      - name: block_id
+        description: "{{ doc('block_id')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -37,7 +37,7 @@ models:
                 - STRING
                 - VARCHAR
           - tx_gaps:
-              column_block: block_height
+              column_block: block_id
               column_tx_count: tx_count
               where: BLOCK_TIMESTAMP < CURRENT_DATE
 

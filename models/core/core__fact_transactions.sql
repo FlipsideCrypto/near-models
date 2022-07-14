@@ -11,7 +11,7 @@ WITH transactions AS (
 )
 SELECT
     tx_hash,
-    block_height,
+    block_id,
     block_hash,
     block_timestamp,
     nonce,

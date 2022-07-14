@@ -10,7 +10,7 @@ WITH blocks AS (
         {{ ref('silver__blocks') }}
 )
 SELECT
-    block_height,
+    block_id AS block_height,
     block_timestamp,
     block_hash,
     tx_count,

@@ -12,6 +12,7 @@ WITH transfers AS (
 SELECT
     tx_hash,
     action_id,
+    block_id,
     block_timestamp,
     tx_signer,
     tx_receiver,

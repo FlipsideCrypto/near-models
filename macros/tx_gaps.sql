@@ -9,7 +9,7 @@ WITH block_base AS (
         {{ column_block }},
         {{ column_tx_count }}
     FROM
-        {{ ref('blocks') }}
+        {{ ref('silver__blocks') }}
 ),
 model_name AS (
     SELECT

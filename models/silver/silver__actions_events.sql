@@ -17,6 +17,7 @@ WITH txs AS (
 actions AS (
   SELECT
     tx_hash,
+    block_id,
     block_timestamp,
     INDEX AS action_index,
     CASE
@@ -43,6 +44,7 @@ FINAL AS (
       action_index
     ) AS action_id,
     tx_hash,
+    block_id,
     block_timestamp,
     action_index,
     action_name,

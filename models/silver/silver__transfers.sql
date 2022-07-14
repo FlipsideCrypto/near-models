@@ -20,6 +20,7 @@ WITH action_events AS(
 actions AS (
   SELECT
     t.tx_hash,
+    t.block_id,
     A.action_id,
     t.block_timestamp,
     t.tx_receiver,
@@ -44,6 +45,7 @@ actions AS (
 FINAL AS (
   SELECT
     tx_hash,
+    block_id,
     action_id,
     block_timestamp,
     tx_signer,

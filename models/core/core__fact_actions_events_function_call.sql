@@ -12,6 +12,7 @@ WITH actions_events_function_call AS (
 SELECT
     action_id,
     tx_hash,
+    block_id,
     block_timestamp,
     action_name,
     method_name,

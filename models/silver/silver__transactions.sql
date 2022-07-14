@@ -21,7 +21,7 @@ WITH base_transactions AS (
 ),
 transactions AS (
   SELECT
-    block_id AS block_height,
+    block_id AS block_id,
     tx :outcome :block_hash :: STRING AS block_hash,
     tx_hash,
     block_timestamp,
@@ -60,7 +60,7 @@ receipts AS (
 ),
 FINAL AS (
   SELECT
-    t.block_height,
+    t.block_id,
     t.block_hash,
     t.tx_hash,
     t.block_timestamp,

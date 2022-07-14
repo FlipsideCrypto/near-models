@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'incremental',
-    unique_key = 'block_height',
+    unique_key = 'block_id',
     incremental_strategy = 'delete+insert',
     cluster_by = ['_inserted_timestamp::DATE']
 ) }}
@@ -21,7 +21,7 @@ WITH base_blocks AS (
 ),
 FINAL AS (
     SELECT
-        header :height :: INTEGER AS block_height,
+        block_id,
         div0(
             header :timestamp :: INTEGER,
             1000000000
