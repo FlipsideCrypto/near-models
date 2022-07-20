@@ -2,13 +2,22 @@
     materialized = 'incremental',
     unique_key = 'block_id',
     incremental_strategy = 'delete+insert',
-    cluster_by = ['_inserted_timestamp::DATE']
+    cluster_by = ['block_timestamp::DATE', '_inserted_timestamp::DATE'],
 ) }}
 
 WITH base_blocks AS (
 
     SELECT
-        *
+        record_id,
+        offset_id,
+        block_id,
+        block_timestamp,
+        network,
+        chain_id,
+        tx_count,
+        header,
+        _ingested_at,
+        _inserted_timestamp
     FROM
         {{ ref('bronze__blocks') }}
     WHERE
@@ -22,10 +31,7 @@ WITH base_blocks AS (
 FINAL AS (
     SELECT
         block_id,
-        div0(
-            header :timestamp :: INTEGER,
-            1000000000
-        ) :: TIMESTAMP AS block_timestamp,
+        block_timestamp,
         header :hash :: STRING AS block_hash,
         header :tx_count :: INTEGER AS tx_count,
         header :author :: STRING AS block_author,
