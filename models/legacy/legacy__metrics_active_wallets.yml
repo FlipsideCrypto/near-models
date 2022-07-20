@@ -5,7 +5,7 @@ models:
     description: deprecating soon - please migrate query from the `flipside_prod_db.mdao_near.X` database to `mdao_near.core.X`
 
     columns:
-      - name: date
+      - name: DATE
         description: "{{ doc('date')}}"
         tests:
           - not_null
@@ -13,7 +13,7 @@ models:
               column_type_list:
                 - TIMESTAMP_NTZ
 
-      - name: daily_active_wallets
+      - name: DAILY_ACTIVE_WALLETS
         description: "{{ doc('daily_active_wallets')}}"
         tests:
           - not_null
@@ -22,7 +22,7 @@ models:
                 - NUMBER
                 - FLOAT
 
-      - name: rolling_7day_active_wallets
+      - name: ROLLING_7DAY_ACTIVE_WALLETS
         description: "{{ doc('rolling_7day_active_wallets')}}"
         tests:
           - not_null
@@ -31,7 +31,7 @@ models:
                 - NUMBER
                 - FLOAT
 
-      - name: rolling_30day_active_wallets
+      - name: ROLLING_30DAY_ACTIVE_WALLETS
         description: "{{ doc('rolling_30day_active_wallets')}}"
         tests:
           - not_null

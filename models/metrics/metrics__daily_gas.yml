@@ -5,7 +5,7 @@ models:
     description: "Daily gas metrics of near transactions."
 
     columns:
-      - name: date
+      - name: DATE
         description: "{{ doc('date')}}"
         tests:
           - not_null
@@ -13,7 +13,7 @@ models:
               column_type_list:
                 - TIMESTAMP_NTZ
 
-      - name: daily_gas_used
+      - name: DAILY_GAS_USED
         description: "{{ doc('daily_gas_used')}}"
         tests:
           - not_null
@@ -22,7 +22,7 @@ models:
                 - NUMBER
                 - FLOAT
 
-      - name: avg_gas_price
+      - name: AVG_GAS_PRICE
         description: "{{ doc('avg_gas_price')}}"
         tests:
           - not_null

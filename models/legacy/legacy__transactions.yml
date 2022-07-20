@@ -9,7 +9,7 @@ models:
             - txn_hash
 
     columns:
-      - name: block_height
+      - name: BLOCK_HEIGHT
         description: "{{ doc('block_height')}}"
         tests:
           - not_null
@@ -18,7 +18,7 @@ models:
                 - NUMBER
                 - FLOAT
 
-      - name: block_hash
+      - name: BLOCK_HASH
         description: "{{ doc('block_hash')}}"
         tests:
           - not_null
@@ -27,7 +27,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: txn_hash
+      - name: TXN_HASH
         description: "{{ doc('txn_hash')}}"
         tests:
           - not_null
@@ -41,7 +41,7 @@ models:
               column_tx_count: tx_count
               where: BLOCK_TIMESTAMP < CURRENT_DATE
 
-      - name: block_timestamp
+      - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp')}}"
         tests:
           - not_null
@@ -52,7 +52,7 @@ models:
               column_type_list:
                 - TIMESTAMP_NTZ
 
-      - name: nonce
+      - name: NONCE
         description: "{{ doc('nonce')}}"
         tests:
           - not_null
@@ -60,7 +60,7 @@ models:
               column_type_list:
                 - NUMBER
 
-      - name: signature
+      - name: SIGNATURE
         description: "{{ doc('signature')}}"
         tests:
           - not_null
@@ -69,7 +69,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: tx_receiver
+      - name: TX_RECEIVER
         description: "{{ doc('tx_receiver')}}"
         tests:
           - not_null
@@ -78,7 +78,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: tx_signer
+      - name: TX_SIGNER
         description: "{{ doc('tx_signer')}}"
         tests:
           - not_null
@@ -87,7 +87,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: tx
+      - name: TX
         description: "{{ doc('tx')}}"
         tests:
           - not_null
@@ -96,7 +96,7 @@ models:
                 - OBJECT
                 - VARIANT
 
-      - name: gas_used
+      - name: GAS_USED
         description: "{{ doc('gas_used')}}"
         tests:
           - not_null
@@ -105,7 +105,7 @@ models:
                 - NUMBER
                 - FLOAT
 
-      - name: attached_gas
+      - name: ATTACHED_GAS
         description: "{{ doc('attached_gas')}}"
         tests:
           - not_null
@@ -114,7 +114,7 @@ models:
                 - NUMBER
                 - FLOAT
 
-      - name: transaction_fee
+      - name: TRANSACTION_FEE
         description: "{{ doc('transaction_fee')}}"
         tests:
           - not_null
@@ -123,7 +123,7 @@ models:
                 - NUMBER
                 - FLOAT
 
-      - name: ingested_at
+      - name: INGESTED_AT
         description: "{{ doc('_ingested_at')}}"
         tests:
           - not_null

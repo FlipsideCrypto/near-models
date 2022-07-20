@@ -10,7 +10,7 @@ models:
             - action_id
 
     columns:
-      - name: tx_hash
+      - name: TX_HASH
         description: "{{ doc('tx_hash')}}"
         tests:
           - not_null
@@ -19,7 +19,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: action_id
+      - name: ACTION_ID
         description: "{{ doc('action_id')}}"
         tests:
           - not_null
@@ -29,7 +29,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: block_id
+      - name: BLOCK_ID
         description: "{{ doc('block_id')}}"
         tests:
           - not_null
@@ -38,7 +38,7 @@ models:
                 - NUMBER
                 - FLOAT
 
-      - name: block_timestamp
+      - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp')}}"
         tests:
           - not_null
@@ -46,7 +46,7 @@ models:
               column_type_list:
                 - TIMESTAMP_NTZ
 
-      - name: tx_signer
+      - name: TX_SIGNER
         description: "{{ doc('tx_signer')}}"
         tests:
           - not_null
@@ -55,7 +55,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: tx_receiver
+      - name: TX_RECEIVER
         description: "{{ doc('tx_receiver')}}"
         tests:
           - not_null
@@ -64,7 +64,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: deposit
+      - name: DEPOSIT
         description: "{{ doc('deposit')}}"
         tests:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -72,7 +72,7 @@ models:
                 - NUMBER
                 - FLOAT
 
-      - name: receipt_object_id
+      - name: RECEIPT_OBJECT_ID
         description: "{{ doc('receipt_object_id')}}"
         tests:
           - not_null
@@ -81,7 +81,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: transaction_fee
+      - name: TRANSACTION_FEE
         description: "{{ doc('transaction_fee')}}"
         tests:
           - not_null
@@ -90,7 +90,7 @@ models:
                 - NUMBER
                 - FLOAT
 
-      - name: gas_used
+      - name: GAS_USED
         description: "{{ doc('gas_used')}}"
         tests:
           - not_null
@@ -99,7 +99,7 @@ models:
                 - NUMBER
                 - FLOAT
 
-      - name: status
+      - name: STATUS
         description: "{{ doc('status')}}"
         tests:
           - not_null

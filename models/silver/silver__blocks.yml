@@ -13,7 +13,7 @@ models:
           where: BLOCK_TIMESTAMP < CURRENT_DATE
 
     columns:
-      - name: block_id
+      - name: BLOCK_ID
         description: "{{ doc('block_id')}}"
         tests:
           - not_null
@@ -22,7 +22,7 @@ models:
                 - NUMBER
                 - FLOAT
 
-      - name: block_timestamp
+      - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp')}}"
         tests:
           - not_null
@@ -33,7 +33,7 @@ models:
               column_type_list:
                 - TIMESTAMP_NTZ
 
-      - name: block_hash
+      - name: BLOCK_HASH
         description: "{{ doc('block_hash')}}"
         tests:
           - not_null
@@ -42,7 +42,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: tx_count
+      - name: TX_COUNT
         description: "{{ doc('tx_count')}}"
         tests:
           - not_null
@@ -51,7 +51,7 @@ models:
                 - NUMBER
                 - FLOAT
 
-      - name: block_author
+      - name: BLOCK_AUTHOR
         description: "{{ doc('block_author')}}"
         tests:
           - not_null
@@ -60,7 +60,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: block_challenges_result
+      - name: BLOCK_CHALLENGES_RESULT
         description: "{{ doc('block_challenges_result')}}"
         tests:
           - not_null
@@ -70,7 +70,7 @@ models:
                 - VARIANT
                 - OBJECT
 
-      - name: block_challenges_root
+      - name: BLOCK_CHALLENGES_ROOT
         description: "{{ doc('block_challenges_root')}}"
         tests:
           - not_null
@@ -79,7 +79,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: chunk_headers_root
+      - name: CHUNK_HEADERS_ROOT
         description: "{{ doc('chunk_headers_root')}}"
         tests:
           - not_null
@@ -88,7 +88,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: chunk_mask
+      - name: CHUNK_MASK
         description: "{{ doc('chunk_mask')}}"
         tests:
           - not_null
@@ -98,7 +98,7 @@ models:
                 - VARIANT
                 - OBJECT
 
-      - name: chunk_receipts_root
+      - name: CHUNK_RECEIPTS_ROOT
         description: "{{ doc('chunk_receipts_root')}}"
         tests:
           - not_null
@@ -107,7 +107,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: chunk_tx_root
+      - name: CHUNK_TX_ROOT
         description: "{{ doc('chunk_tx_root')}}"
         tests:
           - not_null
@@ -116,7 +116,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: chunks
+      - name: CHUNKS
         description: "{{ doc('chunks')}}"
         tests:
           - not_null
@@ -126,7 +126,7 @@ models:
                 - VARIANT
                 - OBJECT
 
-      - name: chunks_included
+      - name: CHUNKS_INCLUDED
         description: "{{ doc('chunks_included')}}"
         tests:
           - not_null
@@ -134,7 +134,7 @@ models:
               column_type_list:
                 - NUMBER
 
-      - name: epoch_id
+      - name: EPOCH_ID
         description: "{{ doc('epoch_id')}}"
         tests:
           - not_null
@@ -143,7 +143,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: epoch_sync_data_hash
+      - name: EPOCH_SYNC_DATA_HASH
         description: "{{ doc('epoch_sync_data_hash')}}"
         tests:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -152,7 +152,7 @@ models:
                 - VARCHAR
                 - NULL
 
-      - name: events
+      - name: EVENTS
         description: "{{ doc('events')}}"
         tests:
           - not_null
@@ -162,7 +162,7 @@ models:
                 - VARIANT
                 - OBJECT
 
-      - name: gas_price
+      - name: GAS_PRICE
         description: "{{ doc('gas_price')}}"
         tests:
           - not_null
@@ -171,7 +171,7 @@ models:
                 - NUMBER
                 - FLOAT
 
-      - name: last_ds_final_block
+      - name: LAST_DS_FINAL_BLOCK
         description: "{{ doc('last_ds_final_block')}}"
         tests:
           - not_null
@@ -180,7 +180,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: last_final_block
+      - name: LAST_FINAL_BLOCK
         description: "{{ doc('last_final_block')}}"
         tests:
           - not_null
@@ -189,7 +189,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: latest_protocol_version
+      - name: LATEST_PROTOCOL_VERSION
         description: "{{ doc('latest_protocol_version')}}"
         tests:
           - not_null
@@ -198,7 +198,7 @@ models:
                 - NUMBER
                 - FLOAT
 
-      - name: next_bp_hash
+      - name: NEXT_BP_HASH
         description: "{{ doc('next_bp_hash')}}"
         tests:
           - not_null
@@ -207,7 +207,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: next_epoch_id
+      - name: NEXT_EPOCH_ID
         description: "{{ doc('next_epoch_id')}}"
         tests:
           - not_null
@@ -216,7 +216,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: outcome_root
+      - name: OUTCOME_ROOT
         description: "{{ doc('outcome_root')}}"
         tests:
           - not_null
@@ -225,7 +225,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: prev_hash
+      - name: PREV_HASH
         description: "{{ doc('prev_hash')}}"
         tests:
           - not_null
@@ -234,7 +234,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: prev_height
+      - name: PREV_HEIGHT
         description: "{{ doc('prev_height')}}"
         tests:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -242,7 +242,7 @@ models:
                 - NUMBER
                 - FLOAT
 
-      - name: prev_state_root
+      - name: PREV_STATE_ROOT
         description: "{{ doc('prev_state_root')}}"
         tests:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -250,7 +250,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: random_value
+      - name: RANDOM_VALUE
         description: "{{ doc('random_value')}}"
         tests:
           - not_null
@@ -259,7 +259,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: rent_paid
+      - name: RENT_PAID
         description: "{{ doc('rent_paid')}}"
         tests:
           - not_null
@@ -268,7 +268,7 @@ models:
                 - NUMBER
                 - FLOAT
 
-      - name: signature
+      - name: SIGNATURE
         description: "{{ doc('signature')}}"
         tests:
           - not_null
@@ -277,7 +277,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: total_supply
+      - name: TOTAL_SUPPLY
         description: "{{ doc('total_supply')}}"
         tests:
           - not_null
@@ -286,7 +286,7 @@ models:
                 - NUMBER
                 - FLOAT
 
-      - name: validator_proposals
+      - name: VALIDATOR_PROPOSALS
         description: "{{ doc('validator_proposals')}}"
         tests:
           - not_null
@@ -296,7 +296,7 @@ models:
                 - VARIANT
                 - OBJECT
 
-      - name: validator_reward
+      - name: VALIDATOR_REWARD
         description: "{{ doc('validator_reward')}}"
         tests:
           - not_null
@@ -305,7 +305,7 @@ models:
                 - NUMBER
                 - FLOAT
 
-      - name: _ingested_at
+      - name: _INGESTED_AT
         description: "{{ doc('_ingested_at')}}"
         tests:
           - not_null
@@ -313,7 +313,7 @@ models:
               column_type_list:
                 - TIMESTAMP_NTZ
 
-      - name: _inserted_timestamp
+      - name: _INSERTED_TIMESTAMP
         description: "{{ doc('_inserted_timestamp')}}"
         tests:
           - not_null

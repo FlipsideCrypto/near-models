@@ -10,7 +10,7 @@ models:
             - action_id
 
     columns:
-      - name: action_id
+      - name: ACTION_ID
         description: "{{ doc('action_id')}}"
         tests:
           - unique
@@ -20,7 +20,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: tx_hash
+      - name: TX_HASH
         description: "{{ doc('tx_hash')}}"
         tests:
           - not_null
@@ -29,7 +29,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: block_id
+      - name: BLOCK_ID
         description: "{{ doc('block_id')}}"
         tests:
           - not_null
@@ -38,7 +38,7 @@ models:
                 - NUMBER
                 - FLOAT
 
-      - name: block_timestamp
+      - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp')}}"
         tests:
           - not_null
@@ -46,7 +46,7 @@ models:
               column_type_list:
                 - TIMESTAMP_NTZ
 
-      - name: action_name
+      - name: ACTION_NAME
         description: "{{ doc('action_name')}}"
         tests:
           - not_null
@@ -55,7 +55,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: method_name
+      - name: METHOD_NAME
         description: "{{ doc('method_name')}}"
         tests:
           - not_null
@@ -64,7 +64,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: args
+      - name: ARGS
         description: "{{ doc('args')}}"
         tests:
           - not_null
@@ -73,7 +73,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: deposit
+      - name: DEPOSIT
         description: "{{ doc('deposit')}}"
         tests:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -81,7 +81,7 @@ models:
                 - NUMBER
                 - FLOAT
 
-      - name: attached_gas
+      - name: ATTACHED_GAS
         description: "{{ doc('attached_gas')}}"
         tests:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -89,7 +89,7 @@ models:
                 - NUMBER
                 - FLOAT
 
-      - name: _ingested_at
+      - name: _INGESTED_AT
         description: "{{ doc('_ingested_at')}}"
         tests:
           - not_null
@@ -97,7 +97,7 @@ models:
               column_type_list:
                 - TIMESTAMP_NTZ
 
-      - name: _inserted_timestamp
+      - name: _INSERTED_TIMESTAMP
         description: "{{ doc('_inserted_timestamp')}}"
         tests:
           - not_null

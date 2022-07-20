@@ -10,7 +10,7 @@ models:
             - action_id
 
     columns:
-      - name: action_id
+      - name: ACTION_ID
         description: "{{ doc('action_id')}}"
         tests:
           - unique
@@ -20,7 +20,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: tx_hash
+      - name: TX_HASH
         description: "{{ doc('tx_hash')}}"
         tests:
           - not_null
@@ -29,7 +29,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: block_id
+      - name: BLOCK_ID
         description: "{{ doc('block_id')}}"
         tests:
           - not_null
@@ -38,7 +38,7 @@ models:
                 - NUMBER
                 - FLOAT
 
-      - name: block_timestamp
+      - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp')}}"
         tests:
           - not_null
@@ -46,7 +46,7 @@ models:
               column_type_list:
                 - TIMESTAMP_NTZ
 
-      - name: nonce
+      - name: NONCE
         description: "{{ doc('nonce')}}"
         tests:
           - not_null
@@ -55,7 +55,7 @@ models:
                 - NUMBER
                 - FLOAT
 
-      - name: public_key
+      - name: PUBLIC_KEY
         description: "{{ doc('public_key')}}"
         tests:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -64,7 +64,7 @@ models:
                 - VARCHAR
                 - NULL
 
-      - name: permission
+      - name: PERMISSION
         description: "{{ doc('permission')}}"
         tests:
           - not_null
@@ -75,7 +75,7 @@ models:
                 - OBJECT
                 - VARIANT
 
-      - name: allowance
+      - name: ALLOWANCE
         description: "{{ doc('allowance')}}"
         tests:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -84,7 +84,7 @@ models:
                 - FLOAT
                 - NULL
 
-      - name: method_name
+      - name: METHOD_NAME
         description: "{{ doc('method_name')}}"
         tests:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -94,7 +94,7 @@ models:
                 - OBJECT
                 - NULL
 
-      - name: receiver_id
+      - name: RECEIVER_ID
         description: "{{ doc('receiver_id')}}"
         tests:
           - dbt_expectations.expect_column_values_to_be_in_type_list:

@@ -8,7 +8,17 @@
 WITH base_transactions AS (
 
   SELECT
-    *
+    record_id,
+    tx_hash,
+    tx_block_index,
+    offset_id,
+    block_id,
+    block_timestamp,
+    network,
+    chain_id,
+    tx,
+    _ingested_at,
+    _inserted_timestamp
   FROM
     {{ ref('bronze__transactions') }}
   WHERE

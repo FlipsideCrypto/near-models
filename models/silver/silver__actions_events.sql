@@ -8,7 +8,20 @@
 WITH txs AS (
 
   SELECT
-    *
+    block_id,
+    block_hash,
+    tx_hash,
+    block_timestamp,
+    nonce,
+    signature,
+    tx_receiver,
+    tx_signer,
+    tx,
+    gas_used,
+    transaction_fee,
+    attached_gas,
+    _ingested_at,
+    _inserted_timestamp
   FROM
     {{ ref('silver__transactions') }}
   WHERE

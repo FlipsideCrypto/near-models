@@ -5,7 +5,7 @@ models:
     description: "Daily number of near transactions."
 
     columns:
-      - name: date
+      - name: DATE
         description: "{{ doc('date')}}"
         tests:
           - not_null
@@ -13,7 +13,7 @@ models:
               column_type_list:
                 - TIMESTAMP_NTZ
 
-      - name: daily_transactions
+      - name: DAILY_TRANSACTIONS
         description: "{{ doc('daily_transactions')}}"
         tests:
           - not_null
