@@ -2,7 +2,7 @@
   materialized = 'incremental',
   incremental_strategy = 'delete+insert',
   unique_key = 'action_id',
-  cluster_by = ['_inserted_timestamp::DATE', 'block_timestamp::DATE'],
+  cluster_by = ['block_timestamp::DATE', '_inserted_timestamp::DATE'],
 ) }}
 
 WITH action_events AS (

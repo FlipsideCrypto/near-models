@@ -2,7 +2,7 @@
     materialized = 'incremental',
     unique_key = 'receipt_object_id',
     incremental_strategy = 'delete+insert',
-    cluster_by = ['_inserted_timestamp::DATE', 'block_timestamp::DATE'],
+    cluster_by = ['block_timestamp::DATE', '_inserted_timestamp::DATE'],
 ) }}
 
 WITH txs AS (
