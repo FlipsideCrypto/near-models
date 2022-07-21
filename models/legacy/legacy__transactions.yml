@@ -1,0 +1,132 @@
+version: 2
+
+models:
+  - name: legacy__fact_transactions
+    description: deprecating soon - please migrate query from the `flipside_prod_db.mdao_near.X` database to `mdao_near.core.X`
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - txn_hash
+
+    columns:
+      - name: BLOCK_HEIGHT
+        description: "{{ doc('block_height')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
+
+      - name: BLOCK_HASH
+        description: "{{ doc('block_hash')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: TXN_HASH
+        description: "{{ doc('txn_hash')}}"
+        tests:
+          - not_null
+          - unique
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+          - tx_gaps:
+              column_block: block_height
+              column_tx_count: tx_count
+              where: BLOCK_TIMESTAMP < CURRENT_DATE
+
+      - name: BLOCK_TIMESTAMP
+        description: "{{ doc('block_timestamp')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_row_values_to_have_recent_data:
+              datepart: day
+              interval: 1
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
+
+      - name: NONCE
+        description: "{{ doc('nonce')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+
+      - name: SIGNATURE
+        description: "{{ doc('signature')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: TX_RECEIVER
+        description: "{{ doc('tx_receiver')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: TX_SIGNER
+        description: "{{ doc('tx_signer')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: TX
+        description: "{{ doc('tx')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - OBJECT
+                - VARIANT
+
+      - name: GAS_USED
+        description: "{{ doc('gas_used')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
+
+      - name: ATTACHED_GAS
+        description: "{{ doc('attached_gas')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
+
+      - name: TRANSACTION_FEE
+        description: "{{ doc('transaction_fee')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
+
+      - name: INGESTED_AT
+        description: "{{ doc('_ingested_at')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
