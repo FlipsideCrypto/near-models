@@ -34,7 +34,7 @@ on-run-start:
 # as tables. These settings can be overridden in the individual model files
 # using the `{{ config(...) }}` macro.
 models:
-  +post-hook: "{% if target.name == 'prod_cloud' %} grant select on {{ this }} to share near_mdao {% endif %}"
+  +post-hook: "{% if target.name == 'prod_cloud' and this.schema != 'bronze' %} grant select on {{ this }} to share near_mdao {% endif %}"
 
 tests:
   +warn_if: "between 1 and 25000"
