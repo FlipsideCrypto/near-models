@@ -1,5 +1,6 @@
 {{ config(
-    materialized = 'view'
+    materialized = 'view',
+    secure = true
 ) }}
 
 WITH actions_events AS (

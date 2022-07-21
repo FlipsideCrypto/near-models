@@ -1,5 +1,6 @@
 {{ config(
-    materialized = 'view'
+    materialized = 'view',
+    secure = true
 ) }}
 
 WITH transactions AS (
