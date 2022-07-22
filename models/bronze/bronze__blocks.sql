@@ -1,6 +1,5 @@
 {{ config (
-    materialized = 'view',
-    secure = true
+    materialized = 'view'
 ) }}
 
 SELECT
