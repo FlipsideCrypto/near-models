@@ -14,10 +14,10 @@ SF_ACCOUNT=zsniary-metricsdao
 SF_USERNAME=<your_metrics_dao_snowflake_username>
 SF_PASSWORD=<your_metrics_dao_snowflake_password>
 SF_REGION=us-east-1
-SF_DATABASE=NEAR
+SF_DATABASE=NEAR_DEV
 SF_WAREHOUSE=DEFAULT
 SF_ROLE=PUBLIC
-SF_SCHEMA=DEV
+SF_SCHEMA=SILVER
 ```
 
 3. New to DBT? It's pretty dope. Read up on it [here](https://www.getdbt.com/docs/)

@@ -10,7 +10,7 @@ near:
       region: "{{ env_var('REGION') }}"
       database: "{{ env_var('DATABASE_DEV') }}"
       warehouse: "{{ env_var('WAREHOUSE_DEV') }}"
-      schema: DEV
+      schema: SILVER
       threads: 4
       client_session_keep_alive: False
       query_tag: gh_actions
@@ -23,7 +23,7 @@ near:
       region: "{{ env_var('REGION') }}"
       database: "{{ env_var('DATABASE_PROD') }}"
       warehouse: "{{ env_var('WAREHOUSE_PROD') }}"
-      schema: PROD
+      schema: SILVER
       threads: 4
       client_session_keep_alive: False
       query_tag: gh_actions

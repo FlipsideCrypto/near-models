@@ -1,0 +1,23 @@
+version: 2
+
+models:
+  - name: metrics__daily_transactions
+    description: "Daily number of near transactions."
+
+    columns:
+      - name: DATE
+        description: "{{ doc('date')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
+
+      - name: DAILY_TRANSACTIONS
+        description: "{{ doc('daily_transactions')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
