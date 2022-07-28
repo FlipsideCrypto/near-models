@@ -1,0 +1,90 @@
+version: 2
+
+models:
+  - name: core__ez_usn
+    description: |-
+      This table records all the usn transaction in the near db
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - tx_hash
+
+    columns:    
+      - name: BLOCK_TIMESTAMP
+        description: "{{ doc('block_timestamp')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
+
+      - name: BLOCK_ID
+        description: "{{ doc('block_id')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
+
+      - name: METHOD_NAMES
+        description: "{{ doc('method_names')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: TX_HASH
+        description: "{{ doc('tx_hash')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: TX_RECEIVER
+        description: "{{ doc('tx_receiver')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: TX_SIGNER
+        description: "{{ doc('tx_signer')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+
+      - name: OLD_OWNER
+        description: "{{ doc('old_owner')}}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+      
+      - name: NEW_OWNER
+        description: "{{ doc('new_owner')}}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: AMOUNT
+        description: "{{ doc('amount')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
