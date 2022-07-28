@@ -19,8 +19,9 @@ WITH action_events AS(
 ),
 txs AS (
   SELECT
-    txn_hash,
+    tx_hash,
     tx :receipt AS tx_receipt,
+    block_id,
     block_timestamp,
     tx_receiver,
     tx_signer,
@@ -30,15 +31,16 @@ txs AS (
       WHEN tx :receipt [0] :outcome :status :: STRING = '{"SuccessValue":""}' THEN TRUE
       ELSE FALSE
     END AS status,
-    ingested_at
+    _ingested_at,
+    _inserted_timestamp
   FROM
-    {{ ref('transactions') }}
+    {{ ref('silver__transactions') }}
   WHERE
     {{ incremental_load_filter("_inserted_timestamp") }}
 ),
 receipts AS (
   SELECT
-    txn_hash,
+    tx_hash,
     ARRAY_AGG(
       VALUE :id
     ) AS receipt_object_id
@@ -52,33 +54,36 @@ receipts AS (
 ),
 actions AS (
   SELECT
-    t.txn_hash,
-    r.receipt_object_id,
+    t.tx_hash,
+    A.action_id,
+    t.block_id,
     t.block_timestamp,
-    t.tx_receiver,
     t.tx_signer,
+    t.tx_receiver,
+    A.deposit,
+    r.receipt_object_id,
     t.transaction_fee,
     t.gas_used,
     t.status,
-    A.action_id,
-    A.deposit,
-    t.ingested_at
+    t._ingested_at,
+    t._inserted_timestamp
   FROM
     txs AS t
     INNER JOIN receipts AS r
-    ON r.txn_hash = t.txn_hash
+    ON r.tx_hash = t.tx_hash
     INNER JOIN action_events AS A
-    ON A.txn_hash = t.txn_hash
+    ON A.tx_hash = t.tx_hash
 ),
 FINAL AS (
   SELECT
-    block_timestamp,
-    txn_hash,
+    tx_hash,
     action_id,
-    receipt_object_id,
+    block_id,
+    block_timestamp,
     tx_signer,
     tx_receiver,
     deposit,
+    receipt_object_id,
     transaction_fee,
     gas_used,
     status,
