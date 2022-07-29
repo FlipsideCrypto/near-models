@@ -20,4 +20,5 @@ SELECT
     old_owner,
     new_owner,
     amount
-FROM transactions
+FROM
+    transactions
