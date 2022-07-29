@@ -28,7 +28,7 @@ SELECT
     _ingested_at,
     _inserted_timestamp
 FROM txs
-where tx_receiver = 'usn'
+WHERE tx_receiver = 'usn'
 ),
 
 usn_method_call AS (
@@ -43,7 +43,7 @@ SELECT
     _ingested_at,
     _inserted_timestamp
 FROM usn_tx
-where method_names='ft_transfer_call' or method_names='ft_transfer' or method_names='withdraw'
+WHERE method_names='ft_transfer_call' or method_names='ft_transfer' or method_names='withdraw'
 ),
 
 parse_event AS (
