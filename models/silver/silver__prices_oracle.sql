@@ -14,6 +14,12 @@ WITH txs AS (
     WHERE
         {{ incremental_load_filter('_inserted_timestamp') }}
 ),
+token_labels AS (
+    SELECT
+        *
+    FROM
+        {{ ref('seeds__token_labels') }}
+),
 oracle_msgs AS (
     SELECT
         block_id,
@@ -45,7 +51,7 @@ prices AS (
         tx_receiver,
         actions_len,
         INDEX,
-        VALUE :asset_id :: STRING AS asset_id,
+        VALUE :asset_id :: STRING AS token_contract,
         CASE
             WHEN asset_id = 'aurora' THEN VALUE :price :multiplier :: DOUBLE / pow (
                 10,
@@ -62,8 +68,25 @@ prices AS (
         LATERAL FLATTEN(
             input => response :prices
         )
+),
+add_labels AS (
+    SELECT
+        p.block_id,
+        p.tx_hash,
+        p.block_timestamp,
+        p.actions_len,
+        p.index,
+        l.token,
+        l.symbol,
+        p.token_contract,
+        p.price_usd,
+        p.tx_receiver AS source,
+        p._inserted_timestamp
+    FROM
+        prices p
+        LEFT JOIN token_labels l USING (token_contract)
 )
 SELECT
     *
 FROM
-    prices
+    add_labels
