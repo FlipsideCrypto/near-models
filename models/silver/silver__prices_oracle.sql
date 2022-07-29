@@ -53,7 +53,7 @@ prices AS (
         INDEX,
         VALUE :asset_id :: STRING AS token_contract,
         CASE
-            WHEN asset_id = 'aurora' THEN VALUE :price :multiplier :: DOUBLE / pow (
+            WHEN token_contract = 'aurora' THEN VALUE :price :multiplier :: DOUBLE / pow (
                 10,
                 7
             )
