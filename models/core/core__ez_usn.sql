@@ -17,8 +17,6 @@ SELECT
     tx_hash,
     tx_receiver,
     tx_signer,
-    old_owner,
-    new_owner,
     amount
 FROM
     transactions
