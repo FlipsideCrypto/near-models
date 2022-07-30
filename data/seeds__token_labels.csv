@@ -1,0 +1,12 @@
+token,symbol,token_contract
+NEAR,NEAR,wrap.near
+Wrapped Ether,wETH,c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.factory.bridge.near
+Wrapped Bitcoin,wBTC,2260fac5e5542a773aa44fbcfedf7c193bc2c599.factory.bridge.near
+Tether USD,USDT,dac17f958d2ee523a2206206994597c13d831ec7.factory.bridge.near
+USN,USN,usn
+Bridged Aurora,AURORA,aaaaaa20d9e0e2461697782ef11675f668207961.factory.bridge.near
+USD Coin,USDC,a0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.factory.bridge.near
+Meta Pool Liquid Staking Token,stNEAR,meta-pool.near
+Dai Stablecoin,DAI,6b175474e89094c44da98b954eedeac495271d0f.factory.bridge.near
+Aurora,AURORA,aurora
+LiNEAR,LiNEAR,linear-protocol.near
