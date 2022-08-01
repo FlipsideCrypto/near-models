@@ -1,0 +1,41 @@
+version: 2
+
+models:
+  - name: metrics__active_contracts
+    description: "Daily, rolling 7 day, and rolling 30 day active contracts on NEAR."
+
+    columns:
+      - name: DATE
+        description: The date (day).
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
+
+      - name: DAILY_ACTIVE_CONTRACTS
+        description: The daily number of active Contracts
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
+
+      - name: ROLLING_7DAY_ACTIVE_CONTRACTS
+        description: The number of active Contracts in the last 7 days.
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
+
+      - name: ROLLING_30DAY_ACTIVE_CONTRACTS
+        description: The number of active Contracts in the last 30 days.
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
