@@ -29,6 +29,16 @@ WITH base_transactions AS (
         _inserted_timestamp DESC
     ) = 1
 ),
+
+actions as (
+    select 
+        tx_hash,
+        sum(value:FunctionCall:gas) as attached_gas
+    from base_transactions,
+    lateral flatten(input => tx:actions)
+    group by 1
+),
+
 transactions AS (
   SELECT
     block_id AS block_id,
@@ -42,10 +52,6 @@ transactions AS (
     tx,
     tx :outcome :outcome :gas_burnt :: NUMBER AS transaction_gas_burnt,
     tx :outcome :outcome :tokens_burnt :: NUMBER AS transaction_tokens_burnt,
-    GET(
-      tx :actions,
-      0
-    ) :FunctionCall :gas :: NUMBER AS attached_gas,
     _ingested_at,
     _inserted_timestamp
   FROM
@@ -81,16 +87,17 @@ FINAL AS (
     t.tx,
     t.transaction_gas_burnt + r.receipt_gas_burnt AS gas_used,
     t.transaction_tokens_burnt + r.receipt_tokens_burnt AS transaction_fee,
-    COALESCE(
-      t.attached_gas,
-      gas_used
-    ) AS attached_gas,
     t._ingested_at,
-    t._inserted_timestamp
+    t._inserted_timestamp,
+    COALESCE(
+        actions.attached_gas,
+        gas_used
+    ) AS attached_gas
   FROM
     transactions AS t
     JOIN receipts AS r
     ON t.tx_hash = r.tx_hash
+    join actions on t.tx_hash = actions.tx_hash
 )
 SELECT
   *
