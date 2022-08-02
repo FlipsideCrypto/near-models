@@ -89,7 +89,10 @@ FINAL AS (
     t.transaction_tokens_burnt + r.receipt_tokens_burnt AS transaction_fee,
     t._ingested_at,
     t._inserted_timestamp,
-    actions.attached_gas as attached_gas
+    COALESCE(
+        actions.attached_gas,
+        gas_used
+    ) AS attached_gas
   FROM
     transactions AS t
     JOIN receipts AS r
