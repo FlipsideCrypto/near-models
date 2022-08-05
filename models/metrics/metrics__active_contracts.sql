@@ -13,7 +13,7 @@ WITH txs AS (
     FROM
         {{ ref('silver__transactions') }} t
     JOIN
-        {{ ref('silver__action_events_function_call') }} aefc
+        {{ ref('silver__actions_events_function_call') }} aefc
     ON t.tx_hash = aefc.tx_hash
     WHERE
        1=1
@@ -26,23 +26,23 @@ WITH txs AS (
         {% endif %}
       ), daily as (
       SELECT
-          txn.date
+          txs.date
           , COUNT(distinct tx_receiver) as daily_active_contracts
-      FROM txn
+      FROM txs
       GROUP BY 1
           ),
       weekly as (
           SELECT
-              date_trunc('week' , txn.date)::date as week
+              date_trunc('week' , txs.date)::date as week
               , COUNT(distinct tx_receiver) as weekly_active_contracts
-      FROM txn
+      FROM txs
       GROUP BY 1
           ),
       monthly as (
           SELECT
-              date_trunc('month' , txn.date)::date as month
+              date_trunc('month' , txs.date)::date as month
               , COUNT(distinct tx_receiver) as montlhy_active_contracts
-      FROM txn
+      FROM txs
       GROUP BY 1
           )
 SELECT
