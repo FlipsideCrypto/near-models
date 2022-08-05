@@ -34,7 +34,6 @@ models:
       - name: MONTHLY_ACTIVE_CONTRACTS
         description: The number of active contracts for month of the date.
         tests:
-          - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
