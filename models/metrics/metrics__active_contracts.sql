@@ -8,44 +8,50 @@
 WITH txs AS (
 
     SELECT
-        *
+      t.block_timestamp::date as date
+      , t.tx_receiver
     FROM
-        {{ ref('silver__action_events') }} ae
+        {{ ref('silver__transactions') }} t
+    JOIN
+        {{ ref('silver__action_events_function_call') }} aefc
+    ON t.tx_hash = aefc.tx_hash
     WHERE
-       ae.action_name = 'DeployContract'
+       1=1
       {% if is_incremental() %}
       AND
         {{ incremental_last_x_days(
-            "_inserted_timestamp",
+            "t._inserted_timestamp",
             2
         ) }}
         {% endif %}
-),
-active_contracts AS (
-    SELECT
-        DATE_TRUNC(
-            'day',
-            block_timestamp
-        ) AS DATE,
-        COUNT(
-            DISTINCT ae.action_data
-        ) AS daily_active_contracts,
-        SUM(daily_active_contracts) over (
-            ORDER BY
-                DATE rows BETWEEN 6 preceding
-                AND CURRENT ROW
-        ) AS rolling_7day_active_contracts,
-        SUM(daily_active_contracts) over (
-            ORDER BY
-                DATE rows BETWEEN 29 preceding
-                AND CURRENT ROW
-        ) AS rolling_30day_active_contracts
-    FROM
-        txs
-    GROUP BY
-        1
-)
+      ), daily as (
+      SELECT
+          txn.date
+          , COUNT(distinct tx_receiver) as daily_active_contracts
+      FROM txn
+      GROUP BY 1
+          ),
+      weekly as (
+          SELECT
+              date_trunc('week' , txn.date)::date as week
+              , COUNT(distinct tx_receiver) as weekly_active_contracts
+      FROM txn
+      GROUP BY 1
+          ),
+      monthly as (
+          SELECT
+              date_trunc('month' , txn.date)::date as month
+              , COUNT(distinct tx_receiver) as montlhy_active_contracts
+      FROM txn
+      GROUP BY 1
+          )
 SELECT
-    *
-FROM
-    active_contracts
+   daily.*
+  , weekly_active_contracts
+  , montlhy_active_contracts
+FROM daily
+LEFT JOIN weekly
+  ON weekly.week   = date_trunc('week'  , daily.date)::date
+LEFT JOIN monthly
+  ON monthly.month = date_trunc('month' , daily.date)::date
+ORDER BY 1
