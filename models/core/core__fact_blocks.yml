@@ -8,9 +8,6 @@ models:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - block_id
-      - sequence_gaps:
-          column_name: block_id
-          where: BLOCK_TIMESTAMP < CURRENT_DATE
 
     columns:
       - name: BLOCK_ID
