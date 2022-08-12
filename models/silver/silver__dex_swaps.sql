@@ -79,7 +79,7 @@ token_out_labels AS (
     SELECT
         *
     FROM
-        {{ ref("silver__token_labels") }}
+        token_in_labels
 ),
 final_table AS (
     SELECT
@@ -126,11 +126,13 @@ SELECT
     trader,
     pool_id,
     token_in,
+    token_labels_in.symbol AS token_in_symbol,
     TRIM(REGEXP_SUBSTR(log_data, '\\W[\\d]{1,}\\W', 1, 1)) :: bigint / pow(
         10,
         token_labels_in.decimals
     ) :: numeric AS amount_in,
     token_out,
+    token_labels_out.symbol AS token_out_symbol,
     TRIM(REGEXP_SUBSTR(log_data, '\\W[\\d]{1,}\\W', 1, 2)) :: bigint / pow(
         10,
         token_labels_out.decimals
