@@ -7,7 +7,7 @@ models:
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
-            - action_id
+            - swap_id
 
     columns:
       - name: BLOCK_ID
@@ -36,8 +36,8 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: ACTION_ID
-        description: "{{ doc('action_id')}}"
+      - name: SWAP_ID
+        description: "{{ doc('swap_id')}}"
         tests:
           - not_null
           - unique
@@ -46,8 +46,8 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: TX_SIGNER
-        description: "{{ doc('tx_signer')}}"
+      - name: PLATFORM
+        description: "{{ doc('platform')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -55,8 +55,8 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: TX_RECEIVER
-        description: "{{ doc('tx_receiver')}}"
+      - name: TRADER
+        description: "{{ doc('trader')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -70,6 +70,7 @@ models:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
+                - FLOAT
 
       - name: TOKEN_IN
         description: "{{ doc('token_in')}}"
@@ -87,6 +88,7 @@ models:
               column_type_list:
                 - NUMBER
                 - FLOAT
+                - DOUBLE
 
       - name: TOKEN_OUT
         description: "{{ doc('token_out')}}"
@@ -99,11 +101,11 @@ models:
       - name: AMOUNT_OUT
         description: "{{ doc('amount_out')}}"
         tests:
-          - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
                 - FLOAT
+                - DOUBLE
 
       - name: SWAP_INDEX
         description: "{{ doc('swap_index')}}"

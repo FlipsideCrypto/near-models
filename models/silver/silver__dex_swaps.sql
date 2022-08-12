@@ -1,6 +1,6 @@
 {{ config(
     materialized = "incremental",
-    unique_key = "action_id",
+    unique_key = "swap_id",
     incremental_strategy = "delete+insert",
     cluster_by = ["block_timestamp::DATE", "_inserted_timestamp::DATE"],
 ) }}
@@ -11,20 +11,12 @@ WITH actions AS (
         block_id,
         block_timestamp,
         tx_hash,
-        action_id,
         args,
-        NULLIF(
-            j.value :amount_in,
-            NULL
-        ) :: bigint AS amount_in,
-        NULLIF(
-            j.value :min_amount_out,
-            NULL
-        ) :: bigint AS amount_out,
+        method_name,
         NULLIF(
             j.value :pool_id,
             NULL
-        ) :: text AS pool_id,
+        ) AS pool_id,
         NULLIF(
             j.value :token_in,
             NULL
@@ -41,6 +33,11 @@ WITH actions AS (
     WHERE
         method_name = 'swap'
         AND args LIKE '%actions%'
+        AND NOT RLIKE(
+            pool_id,
+            '.*[a-z].*',
+            'i'
+        )
         AND {{ incremental_load_filter("_inserted_timestamp") }}
 ),
 receipts AS (
@@ -75,12 +72,19 @@ transactions AS (
 final_table AS (
     SELECT
         DISTINCT actions.swap_index,
+        actions._inserted_timestamp,
         actions.block_id,
         actions.block_timestamp,
         actions.tx_hash,
-        actions.action_id,
-        transactions.tx_signer,
-        transactions.tx_receiver,
+        CONCAT(
+            actions.tx_hash,
+            '-',
+            actions.swap_index
+        ) AS swap_id,
+        logs,
+        logs [swap_index] AS log_data,
+        transactions.tx_signer AS trader,
+        transactions.tx_receiver AS platform,
         LAST_VALUE(
             receipts.success_or_fail
         ) over (
@@ -88,12 +92,9 @@ final_table AS (
             ORDER BY
                 receipts.success_or_fail DESC
         ) AS txn_status,
-        actions.pool_id,
-        actions.amount_in,
-        actions.amount_out,
+        actions.pool_id :: INT AS pool_id,
         actions.token_in,
-        actions.token_out,
-        actions._inserted_timestamp
+        actions.token_out
     FROM
         actions
         JOIN receipts
@@ -108,20 +109,20 @@ SELECT
     block_id,
     block_timestamp,
     tx_hash,
-    action_id,
-    tx_signer,
-    tx_receiver,
+    swap_id,
+    platform,
+    trader,
     pool_id,
     token_in,
-    amount_in,
+    TRIM(REGEXP_SUBSTR(log_data, '\\W[\\d]{1,}\\W', 1, 1)) :: bigint AS amount_in,
     token_out,
-    amount_out,
+    TRIM(REGEXP_SUBSTR(log_data, '\\W[\\d]{1,}\\W', 1, 2)) :: bigint AS amount_out,
     swap_index,
     _inserted_timestamp
 FROM
     final_table
 WHERE
     txn_status = 'Success'
+    AND log_data IS NOT NULL
 ORDER BY
-    tx_hash,
-    swap_index
+    swap_id DESC
