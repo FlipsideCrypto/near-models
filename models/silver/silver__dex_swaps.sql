@@ -69,6 +69,18 @@ transactions AS (
     WHERE
         {{ incremental_load_filter("_inserted_timestamp") }}
 ),
+token_in_labels AS (
+    SELECT
+        *
+    FROM
+        {{ ref("silver__token_labels") }}
+),
+token_out_labels AS (
+    SELECT
+        *
+    FROM
+        {{ ref("silver__token_labels") }}
+),
 final_table AS (
     SELECT
         DISTINCT actions.swap_index,
@@ -114,13 +126,23 @@ SELECT
     trader,
     pool_id,
     token_in,
-    TRIM(REGEXP_SUBSTR(log_data, '\\W[\\d]{1,}\\W', 1, 1)) :: bigint AS amount_in,
+    TRIM(REGEXP_SUBSTR(log_data, '\\W[\\d]{1,}\\W', 1, 1)) :: bigint / pow(
+        10,
+        token_labels_in.decimals
+    ) :: numeric AS amount_in,
     token_out,
-    TRIM(REGEXP_SUBSTR(log_data, '\\W[\\d]{1,}\\W', 1, 2)) :: bigint AS amount_out,
+    TRIM(REGEXP_SUBSTR(log_data, '\\W[\\d]{1,}\\W', 1, 2)) :: bigint / pow(
+        10,
+        token_labels_out.decimals
+    ) :: numeric AS amount_out,
     swap_index,
     _inserted_timestamp
 FROM
     final_table
+    LEFT JOIN token_labels AS token_labels_in
+    ON final_table.token_in = token_labels_in.token_contract
+    LEFT JOIN token_labels AS token_labels_out
+    ON final_table.token_out = token_labels_out.token_contract
 WHERE
     txn_status = 'Success'
     AND log_data IS NOT NULL
