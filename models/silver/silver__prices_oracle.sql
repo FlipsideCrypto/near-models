@@ -18,7 +18,7 @@ token_labels AS (
     SELECT
         *
     FROM
-        {{ ref('seeds__token_labels') }}
+        {{ ref('silver__token_labels') }}
 ),
 oracle_msgs AS (
     SELECT
