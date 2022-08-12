@@ -35,8 +35,7 @@ FINAL AS (
         amount_in,
         token_out_symbol AS token_out,
         token_out AS token_out_contract,
-        amount_out,
-        swap_index
+        amount_out
     FROM
         dex_swaps
     WHERE

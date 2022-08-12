@@ -72,6 +72,14 @@ models:
                 - NUMBER
                 - FLOAT
 
+      - name: TOKEN_IN_SYMBOL
+        description: "{{ doc('symbol')}}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
       - name: TOKEN_IN
         description: "{{ doc('token_in')}}"
         tests:
@@ -98,6 +106,14 @@ models:
                 - STRING
                 - VARCHAR
 
+      - name: TOKEN_OUT_SYMBOL
+        description: "{{ doc('symbol')}}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
       - name: AMOUNT_OUT
         description: "{{ doc('amount_out')}}"
         tests:
@@ -106,11 +122,3 @@ models:
                 - NUMBER
                 - FLOAT
                 - DOUBLE
-
-      - name: SWAP_INDEX
-        description: "{{ doc('swap_index')}}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - NUMBER
