@@ -36,10 +36,6 @@ models:
               column_type_list:
                 - STRING
                 - VARCHAR
-          - tx_gaps:
-              column_block: block_id
-              column_tx_count: tx_count
-              where: BLOCK_TIMESTAMP < CURRENT_DATE
 
       - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp')}}"
