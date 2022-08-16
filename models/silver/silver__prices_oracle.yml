@@ -1,12 +1,9 @@
 version: 2
 
 models:
-  - name: core__fact_transactions
-    description: "Near transactions."
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - tx_hash
+  - name: silver__prices_oracle
+    description: |-
+      This table parses messages from the contract `priceoracle.near` and extracts the available price data.
 
     columns:
       - name: BLOCK_ID
@@ -17,25 +14,6 @@ models:
               column_type_list:
                 - NUMBER
                 - FLOAT
-
-      - name: BLOCK_HASH
-        description: "{{ doc('block_hash')}}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
-
-      - name: TX_HASH
-        description: "{{ doc('tx_hash')}}"
-        tests:
-          - not_null
-          - unique
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
 
       - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp')}}"
@@ -48,16 +26,8 @@ models:
               column_type_list:
                 - TIMESTAMP_NTZ
 
-      - name: NONCE
-        description: "{{ doc('nonce')}}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - NUMBER
-
-      - name: SIGNATURE
-        description: "{{ doc('signature')}}"
+      - name: TX_HASH
+        description: "{{ doc('tx_hash')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -65,8 +35,16 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: TX_RECEIVER
-        description: "{{ doc('tx_receiver')}}"
+      - name: INDEX
+        description: "{{ doc('index')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+
+      - name: TOKEN
+        description: "{{ doc('token')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -74,8 +52,8 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: TX_SIGNER
-        description: "{{ doc('tx_signer')}}"
+      - name: SYMBOL
+        description: "{{ doc('symbol')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -83,38 +61,37 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: TX
-        description: "{{ doc('tx')}}"
+      - name: TOKEN_CONTRACT
+        description: "{{ doc('token_contract')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - OBJECT
-                - VARIANT
+                - STRING
+                - VARCHAR
 
-      - name: GAS_USED
-        description: "{{ doc('gas_used')}}"
+      - name: PRICE_USD
+        description: "{{ doc('price_usd')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - NUMBER
                 - FLOAT
+                - DOUBLE
 
-      - name: ATTACHED_GAS
-        description: "{{ doc('attached_gas')}}"
+      - name: SOURCE
+        description: "{{ doc('source')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - NUMBER
-                - FLOAT
+                - STRING
+                - VARCHAR
 
-      - name: TRANSACTION_FEE
-        description: "{{ doc('transaction_fee')}}"
+      - name: _INSERTED_TIMESTAMP
+        description: "{{ doc('_inserted_timestamp')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - NUMBER
-                - FLOAT
+                - TIMESTAMP_NTZ

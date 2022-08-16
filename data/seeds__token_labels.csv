@@ -1,0 +1,32 @@
+token,symbol,token_contract,decimals
+Aurora,AURORA,aurora,18
+Berry Club,BANANA,berryclub.ek.near,18
+Bridged Aurora,AURORA,aaaaaa20d9e0e2461697782ef11675f668207961.factory.bridge.near,18
+Burrow,BRRR,token.burrow.near,18
+Chainlink,LINK,514910771af9ca656af840dff83e8264ecf986ca.factory.bridge.near,18
+Cheddar Farm,Cheddar,token.cheddar.near,24
+Cryptoheroes,PXT,pixeltoken.near,6
+cUSD,cUSD,cusd.token.a11bd.near,24
+Dai Stablecoin,DAI,6b175474e89094c44da98b954eedeac495271d0f.factory.bridge.near,18
+Flux Token,FLX,3ea8ea4237344c9931214796d9417af1a1180770.factory.bridge.near,18
+Gitcoin,GTC,de30da39c46104798bb5aa3fe8b9e0e1f348163f.factory.bridge.near,18
+Hakuna Matata,HAK,hak.tkn.near,18
+HAPI,HAPI,d9c2d319cd7e6177336b0a9c93c21cb48d84fb54.factory.bridge.near,18
+LiNEAR,LiNEAR,linear-protocol.near,24
+Marma J,marmaj,marmaj.tkn.near,18
+Meta Pool,META,meta-token.near,18
+Meta Pool Liquid Staking Token,stNEAR,meta-pool.near,24
+NEAR,NEAR,wrap.near,24
+nUSDO,nUSDO,v3.oin_finance.near,8
+Octopus Network,OCT,f5cfbc74057c610c8ef151a439252680ac68c6dc.factory.bridge.near,18
+oinfinance,OIN,9aeb50f542050172359a0e1a25a9933bc8c01259.factory.bridge.near,8
+Paras,PARAS,token.paras.near,18
+Pulse,PULSE,52a047ee205701895ee06a375492490ec9c597ce.factory.bridge.near,18
+Ref Finance,REF,token.v2.ref-finance.near,18
+Shroom Kingdom,SHRM,token.shrm.near,18
+Skyward,SKYWARD,token.skyward.near,18
+Tether USD,USDT,dac17f958d2ee523a2206206994597c13d831ec7.factory.bridge.near,6
+USD Coin,USDC,a0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.factory.bridge.near,6
+USN,USN,usn,18
+Wrapped Bitcoin,wBTC,2260fac5e5542a773aa44fbcfedf7c193bc2c599.factory.bridge.near,8
+Wrapped Ether,wETH,c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.factory.bridge.near,18
