@@ -16,23 +16,59 @@ WITH txs AS (
 ),
 usn_tx AS (
     SELECT
-        block_timestamp,
         block_id,
         tx_hash,
+        block_timestamp,
         tx_receiver,
         tx_signer,
-        tx: receipt [3]: outcome: logs :: variant AS events,
-        tx: actions [0]: FunctionCall: method_name :: STRING AS method_names,
+        tx,
+        tx: actions[0]: FunctionCall: method_name :: STRING AS method_names,
         _ingested_at,
-        _inserted_timestamp,
-        tx
+        _inserted_timestamp
     FROM
-        transactions
+        txs
     WHERE
         tx_receiver = 'usn'
         OR tx_signer = 'usn'
 ),
-parse_event AS (
+
+transfer_call_withdraw_events AS (
+    SELECT
+        block_id,
+        tx_hash,
+        block_timestamp,
+        tx_receiver,
+        tx_signer,
+        tx,
+        method_names,
+        tx: receipt[0]: outcome: logs :: VARIANT AS events,
+        _ingested_at,
+        _inserted_timestamp
+    FROM
+        usn_tx
+    WHERE
+        method_names = 'ft_transfer_call'
+        OR method_names = 'withdraw'
+),
+buy_sell_events AS (
+    SELECT
+        block_id,
+        tx_hash,
+        block_timestamp,
+        tx_receiver,
+        tx_signer,
+        method_names,
+        tx,
+        tx: receipt[3]: outcome: logs :: VARIANT AS events,
+        _ingested_at,
+        _inserted_timestamp
+    FROM
+        usn_tx
+    WHERE
+        method_names = 'buy'
+        OR method_names = 'sell'
+),
+parse_buy_sell_event AS (
     SELECT
         block_timestamp,
         block_id,
@@ -44,10 +80,38 @@ parse_event AS (
         _ingested_at,
         _inserted_timestamp
     FROM
-        usn_tx,
+        buy_sell_events,
         LATERAL FLATTEN(
-            input => usn_tx.events
+            input => buy_sell_events.events
         ) AS flatten_events
+),
+parse_transfer_withdraw_event AS (
+    SELECT
+        block_timestamp,
+        block_id,
+        tx_hash,
+        tx_receiver,
+        tx_signer,
+        method_names,
+        flatten_events.value AS events,
+        _ingested_at,
+        _inserted_timestamp
+    FROM
+        transfer_call_withdraw_events,
+        LATERAL FLATTEN(
+            input => transfer_call_withdraw_events.events
+        ) AS flatten_events
+),
+combined AS (
+    SELECT
+        *
+    FROM
+        parse_buy_sell_event
+    UNION
+    SELECT
+        *
+    FROM
+        parse_transfer_withdraw_event
 ),
 extract_events_logs AS (
     SELECT
@@ -65,7 +129,7 @@ extract_events_logs AS (
         _ingested_at,
         _inserted_timestamp
     FROM
-        parse_event
+        combined
 ),
 extract_logs_data AS (
     SELECT
@@ -81,7 +145,7 @@ extract_logs_data AS (
     FROM
         extract_events_logs
 ),
-extract_event_data AS (
+FINAL AS (
     SELECT
         block_timestamp,
         block_id,
@@ -89,7 +153,7 @@ extract_event_data AS (
         tx_receiver,
         tx_signer,
         method_names,
-        event_data: data [0]: amount :: DOUBLE / pow(
+        event_data: data[0]: amount :: DOUBLE / pow(
             10,
             18
         ) AS amount,
@@ -97,49 +161,6 @@ extract_event_data AS (
         _inserted_timestamp
     FROM
         extract_logs_data
-),
-buy_events AS (
-    SELECT
-        block_timestamp,
-        block_id,
-        tx_hash,
-        tx_receiver,
-        tx_signer,
-        method_names,
-        amount,
-        _ingested_at,
-        _inserted_timestamp
-    FROM
-        extract_event_data
-    WHERE
-        method_names = 'buy'
-),
-sell_events AS (
-    SELECT
-        block_timestamp,
-        block_id,
-        tx_hash,
-        tx_receiver,
-        tx_signer,
-        method_names,
-        amount,
-        _ingested_at,
-        _inserted_timestamp
-    FROM
-        extract_event_data
-    WHERE
-        method_names = 'sell'
-),
-FINAL AS (
-    SELECT
-        *
-    FROM
-        buy_events
-    UNION
-    SELECT
-        *
-    FROM
-        sell_events
 )
 SELECT
     *
