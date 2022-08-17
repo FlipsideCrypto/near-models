@@ -29,16 +29,20 @@ WITH base_transactions AS (
         _inserted_timestamp DESC
     ) = 1
 ),
-
-actions as (
-    select 
-        tx_hash,
-        sum(value:FunctionCall:gas) as attached_gas
-    from base_transactions,
-    lateral flatten(input => tx:actions)
-    group by 1
+actions AS (
+  SELECT
+    tx_hash,
+    SUM(
+      VALUE :FunctionCall :gas
+    ) AS attached_gas
+  FROM
+    base_transactions,
+    LATERAL FLATTEN(
+      input => tx :actions
+    )
+  GROUP BY
+    1
 ),
-
 transactions AS (
   SELECT
     block_id AS block_id,
@@ -60,6 +64,7 @@ transactions AS (
 receipts AS (
   SELECT
     tx_hash,
+    VALUE :outcome :status :: variant AS status_value,
     SUM(
       VALUE :outcome :gas_burnt :: NUMBER
     ) AS receipt_gas_burnt,
@@ -72,7 +77,8 @@ receipts AS (
       input => tx :receipt
     )
   GROUP BY
-    1
+    1,
+    2
 ),
 FINAL AS (
   SELECT
@@ -90,16 +96,43 @@ FINAL AS (
     t._ingested_at,
     t._inserted_timestamp,
     COALESCE(
-        actions.attached_gas,
-        gas_used
-    ) AS attached_gas
+      actions.attached_gas,
+      gas_used
+    ) AS attached_gas,
+    CASE
+      WHEN PARSE_JSON(
+        r.status_value
+      ) :Failure IS NOT NULL THEN 'Fail'
+      ELSE 'Success'
+    END AS success_or_fail
   FROM
     transactions AS t
     JOIN receipts AS r
     ON t.tx_hash = r.tx_hash
-    join actions on t.tx_hash = actions.tx_hash
+    JOIN actions
+    ON t.tx_hash = actions.tx_hash
 )
 SELECT
-  *
+  DISTINCT tx_hash,
+  block_id,
+  block_hash,
+  block_timestamp,
+  nonce,
+  signature,
+  tx_receiver,
+  tx_signer,
+  tx,
+  gas_used,
+  transaction_fee,
+  _INGESTED_AT,
+  _INSERTED_TIMESTAMP,
+  attached_gas,
+  LAST_VALUE(
+    success_or_fail
+  ) over (
+    PARTITION BY tx_hash
+    ORDER BY
+      success_or_fail DESC
+  ) AS tx_status
 FROM
   FINAL
