@@ -64,21 +64,30 @@ transactions AS (
 receipts AS (
   SELECT
     tx_hash,
-    VALUE :outcome :status :: variant AS status_value,
+    IFF(
+      VALUE :outcome :status :Failure IS NOT NULL,
+      'Fail',
+      'Success'
+    ) AS success_or_fail,
     SUM(
       VALUE :outcome :gas_burnt :: NUMBER
+    ) over (
+      PARTITION BY tx_hash
+      ORDER BY
+        tx_hash DESC
     ) AS receipt_gas_burnt,
     SUM(
       VALUE :outcome :tokens_burnt :: NUMBER
+    ) over (
+      PARTITION BY tx_hash
+      ORDER BY
+        tx_hash DESC
     ) AS receipt_tokens_burnt
   FROM
     transactions,
     LATERAL FLATTEN(
       input => tx :receipt
     )
-  GROUP BY
-    1,
-    2
 ),
 FINAL AS (
   SELECT
@@ -99,12 +108,13 @@ FINAL AS (
       actions.attached_gas,
       gas_used
     ) AS attached_gas,
-    CASE
-      WHEN PARSE_JSON(
-        r.status_value
-      ) :Failure IS NOT NULL THEN 'Fail'
-      ELSE 'Success'
-    END AS success_or_fail
+    LAST_VALUE(
+      r.success_or_fail
+    ) over (
+      PARTITION BY r.tx_hash
+      ORDER BY
+        r.success_or_fail DESC
+    ) AS tx_status
   FROM
     transactions AS t
     JOIN receipts AS r
@@ -127,12 +137,6 @@ SELECT
   _INGESTED_AT,
   _INSERTED_TIMESTAMP,
   attached_gas,
-  LAST_VALUE(
-    success_or_fail
-  ) over (
-    PARTITION BY tx_hash
-    ORDER BY
-      success_or_fail DESC
-  ) AS tx_status
+  tx_status
 FROM
   FINAL
