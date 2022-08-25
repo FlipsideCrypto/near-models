@@ -6,7 +6,7 @@ models:
 
     columns:
       - name: DATE
-        description: The date (day).
+        description: "{{ doc('date')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -14,7 +14,7 @@ models:
                 - TIMESTAMP_NTZ
 
       - name: DAILY_ACTIVE_CONTRACTS
-        description: The daily number of active Contracts
+        description: "{{ doc('daily_active_contracts')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -23,7 +23,7 @@ models:
                 - FLOAT
 
       - name: WEEKLY_ACTIVE_CONTRACTS
-        description: The number of active contracts for week of the date.
+        description: "{{ doc('weekly_active_contracts')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -32,7 +32,7 @@ models:
                 - FLOAT
 
       - name: MONTHLY_ACTIVE_CONTRACTS
-        description: The number of active contracts for month of the date.
+        description: "{{ doc('monthly_active_contracts')}}"
         tests:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
