@@ -17,6 +17,7 @@ SELECT
     tx_hash,
     tx_receiver,
     tx_signer,
+    tx_status,
     amount
 FROM
     transactions
