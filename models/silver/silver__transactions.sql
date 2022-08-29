@@ -29,16 +29,20 @@ WITH base_transactions AS (
         _inserted_timestamp DESC
     ) = 1
 ),
-
-actions as (
-    select 
-        tx_hash,
-        sum(value:FunctionCall:gas) as attached_gas
-    from base_transactions,
-    lateral flatten(input => tx:actions)
-    group by 1
+actions AS (
+  SELECT
+    tx_hash,
+    SUM(
+      VALUE :FunctionCall :gas
+    ) AS attached_gas
+  FROM
+    base_transactions,
+    LATERAL FLATTEN(
+      input => tx :actions
+    )
+  GROUP BY
+    1
 ),
-
 transactions AS (
   SELECT
     block_id AS block_id,
@@ -60,19 +64,30 @@ transactions AS (
 receipts AS (
   SELECT
     tx_hash,
+    IFF(
+      VALUE :outcome :status :Failure IS NOT NULL,
+      'Fail',
+      'Success'
+    ) AS success_or_fail,
     SUM(
       VALUE :outcome :gas_burnt :: NUMBER
+    ) over (
+      PARTITION BY tx_hash
+      ORDER BY
+        tx_hash DESC
     ) AS receipt_gas_burnt,
     SUM(
       VALUE :outcome :tokens_burnt :: NUMBER
+    ) over (
+      PARTITION BY tx_hash
+      ORDER BY
+        tx_hash DESC
     ) AS receipt_tokens_burnt
   FROM
     transactions,
     LATERAL FLATTEN(
       input => tx :receipt
     )
-  GROUP BY
-    1
 ),
 FINAL AS (
   SELECT
@@ -90,16 +105,38 @@ FINAL AS (
     t._ingested_at,
     t._inserted_timestamp,
     COALESCE(
-        actions.attached_gas,
-        gas_used
-    ) AS attached_gas
+      actions.attached_gas,
+      gas_used
+    ) AS attached_gas,
+    LAST_VALUE(
+      r.success_or_fail
+    ) over (
+      PARTITION BY r.tx_hash
+      ORDER BY
+        r.success_or_fail DESC
+    ) AS tx_status
   FROM
     transactions AS t
     JOIN receipts AS r
     ON t.tx_hash = r.tx_hash
-    join actions on t.tx_hash = actions.tx_hash
+    JOIN actions
+    ON t.tx_hash = actions.tx_hash
 )
 SELECT
-  *
+  DISTINCT tx_hash,
+  block_id,
+  block_hash,
+  block_timestamp,
+  nonce,
+  signature,
+  tx_receiver,
+  tx_signer,
+  tx,
+  gas_used,
+  transaction_fee,
+  _INGESTED_AT,
+  _INSERTED_TIMESTAMP,
+  attached_gas,
+  tx_status
 FROM
   FINAL
