@@ -4,11 +4,7 @@ models:
   - name: silver__usn_supply
     description: |-
       This table records all the usn transaction in the near db
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - tx_hash
-
+      
     columns:    
       - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp')}}"
@@ -27,8 +23,8 @@ models:
                 - NUMBER
                 - FLOAT
 
-      - name: METHOD_NAMES
-        description: "{{ doc('method_names')}}"
+      - name: STATUS
+        description: "{{ doc('tx_status')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -45,8 +41,8 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: TX_RECEIVER
-        description: "{{ doc('tx_receiver')}}"
+      - name: FROM_ADDRESS
+        description: "{{ doc('from_address')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -54,24 +50,22 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: TX_SIGNER
-        description: "{{ doc('tx_signer')}}"
+      - name: TO_ADDRESS
+        description: "{{ doc('to_address')}}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+      
+      - name: EVENT
+        description: "{{ doc('event')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
                 - VARCHAR
-
-      - name: TX_STATUS
-        description: "{{ doc('tx_status')}}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
-
 
       - name: AMOUNT
         description: "{{ doc('amount')}}"

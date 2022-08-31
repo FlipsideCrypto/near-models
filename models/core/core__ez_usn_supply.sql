@@ -13,11 +13,11 @@ WITH transactions AS (
 SELECT
     block_timestamp,
     block_id,
-    method_names,
     tx_hash,
-    tx_receiver,
-    tx_signer,
-    tx_status,
+    status,
+    event,
+    from_address,
+    to_address,
     amount
 FROM
     transactions

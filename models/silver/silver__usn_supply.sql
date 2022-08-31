@@ -29,7 +29,9 @@ logs AS (
         REGEXP_SUBSTR(
             status_value,
             'Success'
-        ) AS reg_success
+        ) AS reg_success,
+        _ingested_at,
+        _inserted_timestamp
     FROM
         txs,
         TABLE(FLATTEN(input => logs))
@@ -54,7 +56,9 @@ FINAL AS (
             VALUE :owner_id,
             VALUE :old_owner_id
         ) :: STRING AS from_address,
-        VALUE :new_owner_id :: STRING AS to_address
+        VALUE :new_owner_id :: STRING AS to_address,
+        _ingested_at,
+        _inserted_timestamp
     FROM
         logs,
         TABLE(FLATTEN(input => data_log))
