@@ -1,8 +1,8 @@
 version: 2
 
 models:
-  - name: legacy__metrics_active_wallets
-    description: deprecating soon - please migrate query from the `flipside_prod_db.mdao_near.X` database to `mdao_near.core.X`
+  - name: metrics__active_contracts
+    description: "Daily, weekly, and monthly active contracts on NEAR."
 
     columns:
       - name: DATE
@@ -13,8 +13,8 @@ models:
               column_type_list:
                 - TIMESTAMP_NTZ
 
-      - name: DAILY_ACTIVE_WALLETS
-        description: "{{ doc('daily_active_wallets')}}"
+      - name: DAILY_ACTIVE_CONTRACTS
+        description: "{{ doc('daily_active_contracts')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -22,8 +22,8 @@ models:
                 - NUMBER
                 - FLOAT
 
-      - name: ROLLING_7DAY_ACTIVE_WALLETS
-        description: "{{ doc('rolling_7day_active_wallets')}}"
+      - name: WEEKLY_ACTIVE_CONTRACTS
+        description: "{{ doc('weekly_active_contracts')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -31,10 +31,9 @@ models:
                 - NUMBER
                 - FLOAT
 
-      - name: ROLLING_30DAY_ACTIVE_WALLETS
-        description: "{{ doc('rolling_30day_active_wallets')}}"
+      - name: MONTHLY_ACTIVE_CONTRACTS
+        description: "{{ doc('monthly_active_contracts')}}"
         tests:
-          - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER

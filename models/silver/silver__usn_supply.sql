@@ -10,166 +10,54 @@ WITH txs AS (
     SELECT
         *
     FROM
-        {{ ref('silver__transactions') }}
+        {{ ref('silver__receipts') }}
     WHERE
         {{ incremental_load_filter('_inserted_timestamp') }}
 ),
-usn_tx AS (
+logs AS (
     SELECT
+        block_timestamp,
         block_id,
         tx_hash,
-        block_timestamp,
-        tx_receiver,
-        tx_signer,
-        tx_status,
-        tx,
-        tx: actions[0]: FunctionCall: method_name :: STRING AS method_names,
-        _ingested_at,
-        _inserted_timestamp
+        REPLACE(
+            VALUE,
+            'EVENT_JSON:'
+        ) AS json,
+        TRY_PARSE_JSON(json) :event :: STRING AS event,
+        TRY_PARSE_JSON(json) :standard AS STANDARD,
+        TRY_PARSE_JSON(json) :data AS data_log,
+        REGEXP_SUBSTR(
+            status_value,
+            'Success'
+        ) AS reg_success
     FROM
-        txs
+        txs,
+        TABLE(FLATTEN(input => logs))
     WHERE
-        tx_receiver = 'usn'
-        OR tx_signer = 'usn'
-),
-
-transfer_call_withdraw_events AS (
-    SELECT
-        block_id,
-        tx_hash,
-        block_timestamp,
-        tx_receiver,
-        tx_signer,
-        tx_status,
-        tx,
-        method_names,
-        tx: receipt[0]: outcome: logs :: VARIANT AS events,
-        _ingested_at,
-        _inserted_timestamp
-    FROM
-        usn_tx
-    WHERE
-        method_names = 'ft_transfer_call'
-        OR method_names = 'ft_transfer'
-        OR method_names = 'withdraw'
-),
-buy_sell_events AS (
-    SELECT
-        block_id,
-        tx_hash,
-        block_timestamp,
-        tx_receiver,
-        tx_signer,
-        tx_status,
-        method_names,
-        tx,
-        tx: receipt[3]: outcome: logs :: VARIANT AS events,
-        _ingested_at,
-        _inserted_timestamp
-    FROM
-        usn_tx
-    WHERE
-        method_names = 'buy'
-        OR method_names = 'sell'
-),
-parse_buy_sell_event AS (
-    SELECT
-        block_timestamp,
-        block_id,
-        tx_hash,
-        tx_receiver,
-        tx_signer,
-        tx_status,
-        method_names,
-        flatten_events.value AS events,
-        _ingested_at,
-        _inserted_timestamp
-    FROM
-        buy_sell_events,
-        LATERAL FLATTEN(
-            input => buy_sell_events.events
-        ) AS flatten_events
-),
-parse_transfer_withdraw_event AS (
-    SELECT
-        block_timestamp,
-        block_id,
-        tx_hash,
-        tx_receiver,
-        tx_signer,
-        tx_status,
-        method_names,
-        flatten_events.value AS events,
-        _ingested_at,
-        _inserted_timestamp
-    FROM
-        transfer_call_withdraw_events,
-        LATERAL FLATTEN(
-            input => transfer_call_withdraw_events.events
-        ) AS flatten_events
-),
-combined AS (
-    SELECT
-        *
-    FROM
-        parse_buy_sell_event
-    UNION
-    SELECT
-        *
-    FROM
-        parse_transfer_withdraw_event
-),
-extract_events_logs AS (
-    SELECT
-        block_timestamp,
-        block_id,
-        tx_hash,
-        tx_receiver,
-        tx_signer,
-        tx_status,
-        method_names,
-        SUBSTR(
-            events,
-            12,
-            1000
-        ) AS event_string,
-        _ingested_at,
-        _inserted_timestamp
-    FROM
-        combined
-),
-extract_logs_data AS (
-    SELECT
-        block_timestamp,
-        block_id,
-        tx_hash,
-        tx_receiver,
-        tx_signer,
-        tx_status,
-        method_names,
-        PARSE_JSON(event_string) AS event_data,
-        _ingested_at,
-        _inserted_timestamp
-    FROM
-        extract_events_logs
+        1 = 1
+        AND reg_success IS NOT NULL
+        AND event IS NOT NULL
+        AND receiver_id = 'usn'
 ),
 FINAL AS (
     SELECT
         block_timestamp,
         block_id,
         tx_hash,
-        tx_receiver,
-        tx_signer,
-        tx_status,
-        method_names,
-        event_data: data[0]: amount :: DOUBLE / pow(
+        reg_success AS status,
+        VALUE :amount / pow(
             10,
             18
         ) AS amount,
-        _ingested_at,
-        _inserted_timestamp
+        event,
+        COALESCE(
+            VALUE :owner_id,
+            VALUE :old_owner_id
+        ) :: STRING AS from_address,
+        VALUE :new_owner_id :: STRING AS to_address
     FROM
-        extract_logs_data
+        logs,
+        TABLE(FLATTEN(input => data_log))
 )
 SELECT
     *
