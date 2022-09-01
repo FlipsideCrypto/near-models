@@ -22,6 +22,7 @@ SELECT
     tx,
     gas_used,
     transaction_fee,
-    attached_gas
+    attached_gas,
+    tx_status
 FROM
     transactions
