@@ -15,7 +15,6 @@ SELECT
     seller,
     tx_status,
     nft_project,
-    nft_id,
-    network_fee
+    nft_id
 FROM
     nft_sales

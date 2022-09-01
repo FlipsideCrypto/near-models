@@ -10,59 +10,62 @@ WITH txs AS (
     SELECT
         *
     FROM
-        {{ ref('silver__transactions') }}
+        {{ ref('silver__receipts') }}
     WHERE
         {{ incremental_load_filter('_inserted_timestamp') }}
 ),
 tx AS (
     SELECT
-        tx_receiver,
-        tx_signer,
-        transaction_fee,
-        tx_status,
-        tx: actions [0]: FunctionCall: method_name :: STRING AS method_names,
-        tx: actions [0]: FunctionCall: args :: STRING AS args,
+        REPLACE(
+            VALUE,
+            'EVENT_JSON:'
+        ) AS json,
+        TRY_PARSE_JSON(json) :event :: STRING AS event,
+        TRY_PARSE_JSON(json) :data AS data_log,
+        REGEXP_SUBSTR(
+            status_value,
+            'Success'
+        ) AS reg_success,
         _ingested_at,
         _inserted_timestamp
     FROM
-        txs
-),
-usn_tx AS (
-    SELECT
-        *,
-        COALESCE(TRY_PARSE_JSON(TRY_BASE64_DECODE_STRING(args)), TRY_BASE64_DECODE_STRING(args), args) AS args_decoded
-    FROM
-        tx
-),
-nft_transfer AS (
-    SELECT
-        PARSE_JSON(args_decoded) AS parsed_args,
-        tx_signer,
-        tx_status,
-        tx_receiver,
-        transaction_fee,
-        _ingested_at,
-        _inserted_timestamp
-    FROM
-        usn_tx
+        txs,
+        TABLE(FLATTEN(input => logs))
     WHERE
-        method_names = 'nft_transfer_call'
-    OR method_names = 'nft_transfer'
+        1 = 1
+        AND reg_success IS NOT NULL
+        AND event IS NOT NULL
 ),
-final AS (
+nft_event AS (
     SELECT
-        nvl(parsed_args: receiver_id :: STRING,'') AS buyer,
-        tx_signer AS seller,
-        tx_status,
-        tx_receiver AS nft_project,
-        nvl(parsed_args: token_id :: VARCHAR, '') AS nft_id,
-        nvl(transaction_fee,0) AS network_fee,
+        VALUE :authorized_id :: STRING AS nft_project,
+        VALUE :new_owner_id :: STRING AS buyer,
+        VALUE :old_owner_id :: STRING AS seller,
+        VALUE :token_ids [0] :: STRING AS nft_id,
+        reg_success AS tx_status,
         _ingested_at,
         _inserted_timestamp
     FROM
-        nft_transfer
+        tx,
+        LATERAL FLATTEN(
+            input => data_log
+        )
+    WHERE
+        event = 'nft_transfer'
+),
+FINAL AS (
+    SELECT
+        nft_project,
+        buyer,
+        seller,
+        nft_id,
+        tx_status,
+        _ingested_at,
+        _inserted_timestamp
+    FROM
+        nft_event
 )
 SELECT
     *
 FROM
-    final
+    FINAL

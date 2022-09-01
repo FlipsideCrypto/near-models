@@ -26,7 +26,7 @@ models:
                 - VARCHAR
 
       - name: TX_STATUS
-        description: "{{ doc('txn_status')}}"
+        description: "{{ doc('tx_status')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -37,7 +37,6 @@ models:
       - name: NFT_PROJECT
         description: "{{ doc('nft_project')}}"
         tests:
-          - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
@@ -51,12 +50,3 @@ models:
               column_type_list:
                 - STRING
                 - VARCHAR
-
-      - name: NETWORK_FEE
-        description: "{{ doc('transaction_fee')}}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - INTEGER
-                - NUMBER
