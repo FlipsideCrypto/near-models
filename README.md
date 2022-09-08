@@ -5,36 +5,50 @@ Curated SQL Views and Metrics for the Near Blockchain.
 What's Near? Learn more [here](https://near.org/)
 
 ## Setup
+### Prerequisites
+1. Complete the steps in the [Data Curator Onboarding Guide](https://docs.metricsdao.xyz/data-curation/data-curator-onboarding).
+    * Note that the Data Curator Onboarding Guide assumes that you will ask to be added as a contributor to a MetricsDAO project. Ex: https://github.com/MetricsDAO/near_dbt. 
+    * However, if you have not yet been added as a contibutor, or you'd like to take an even lower-risk approach, you can always follow the [Fork and Pull Workflow](https://reflectoring.io/github-fork-and-pull/) by forking a copy of the project to which you'd like to ontribute to a local copy of the project in your github account. Just make sure to: 
+        - Fork the MetricsDAO repository.
+        - Git clone from your forked repository. Ex: git clone https://github.com/YourAccount/near_dbt.
+        - Create a branch for the changes you'd like to make. Ex: git branch readme-update.
+        - Switch to the branch. Ex: git checkout readme-update. 
+        - Make your changes on the branch and follow the rest of the steps in [Fork and Pull Workflow]https://reflectoring.io/github-fork-and-pull/ to notify the MetricsDAO repository owners to review your changes. 
+2. Download [Docker for Desktop](https://www.docker.com/products/docker-desktop). 
+    * (Optional) You can run the Docker tutorial. 
 
-1. [PREREQUISITE] Download [Docker for Desktop](https://www.docker.com/products/docker-desktop).
-2. Create a `.env` file with the following contents (note `.env` will not be commited to source):
+### Create the Environment Variables
+1. Create a `.env` file with the following contents (note `.env` will not be commited to source) in the project_name_dbt directory (ex: near_dbt/.env):
 
-```
-SF_ACCOUNT=zsniary-metricsdao
-SF_USERNAME=<your_metrics_dao_snowflake_username>
-SF_PASSWORD=<your_metrics_dao_snowflake_password>
-SF_REGION=us-east-1
-SF_DATABASE=NEAR_DEV
-SF_WAREHOUSE=DEFAULT
-SF_ROLE=PUBLIC
-SF_SCHEMA=SILVER
-```
+    ```
+    SF_ACCOUNT=zsniary-metricsdao
+    SF_USERNAME=<your_metrics_dao_snowflake_username>
+    SF_PASSWORD=<your_metrics_dao_snowflake_password>
+    SF_REGION=us-east-1
+    SF_DATABASE=NEAR_DEV
+    SF_WAREHOUSE=DEFAULT
+    SF_ROLE=PUBLIC
+    SF_SCHEMA=SILVER
+    ```
 
-3. New to DBT? It's pretty dope. Read up on it [here](https://www.getdbt.com/docs/)
+    **Replace** the SF_USERNAME and SF_PASSWORD with the temporary Snowflake user name and password you received in the Snowflake step of the [Data Curator Onboarding Guide](https://docs.metricsdao.xyz/data-curation/data-curator-onboarding). 
+
+2. New to DBT? It's pretty dope. Read up on it [here](https://www.getdbt.com/docs/)
 
 ## Getting Started Commands
 
-Run the follow commands from inside the Near directory (**you must complete the Getting Started steps above^^**)
+Run the follow commands from inside the Near directory (**you must complete the Setup steps above^^**)
 
 ### DBT Environment
 
-`make dbt-console`
-This will mount your local near directory into a dbt console where dbt is installed.
+1. In VSCode's terminal, type `cd near_dbt`.
+2. Then run `make dbt-console`. This will mount your local near directory into a dbt console where dbt is installed.
+    - You can verify that the above command ran successfull by looking at the terminal prompt. It should have changed from your Linux bash prompt to something like root@3527b594aaf0:/near#. Alternatively, you can see in the Docker Desktop app that an instance of near_dbt is now running.
 
 ### DBT Project Docs
 
-`make dbt-docs`
-This will compile your dbt documentation and launch a web-server at http://localhost:8080
+1. In VSCode, open another terminal. 
+2. In this new terminal, run `make dbt-docs`. This will compile your dbt documentation and launch a web-server at http://localhost:8080
 
 Documentation is automatically generated and hosted using Netlify.  
 [![Netlify Status](https://api.netlify.com/api/v1/badges/12fc0079-7428-4771-9923-38ee6599db0f/deploy-status)](https://app.netlify.com/sites/mdao-near/deploys)
