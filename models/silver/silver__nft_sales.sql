@@ -16,6 +16,9 @@ WITH txs AS (
 ),
 tx AS (
     SELECT
+        block_timestamp,
+        block_id,
+        tx_hash,
         REPLACE(
             VALUE,
             'EVENT_JSON:'
@@ -38,6 +41,9 @@ tx AS (
 ),
 nft_event AS (
     SELECT
+        block_timestamp,
+        block_id,
+        tx_hash,
         VALUE :authorized_id :: STRING AS nft_project,
         VALUE :new_owner_id :: STRING AS buyer,
         VALUE :old_owner_id :: STRING AS seller,
@@ -55,6 +61,9 @@ nft_event AS (
 ),
 FINAL AS (
     SELECT
+        block_timestamp,
+        block_id,
+        tx_hash,
         nft_project,
         buyer,
         seller,

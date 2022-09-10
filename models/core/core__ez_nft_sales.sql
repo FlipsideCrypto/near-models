@@ -11,6 +11,9 @@ WITH nft_sales AS (
         {{ ref('silver__nft_sales') }}
 )
 SELECT
+    block_timestamp,
+    block_id,
+    tx_hash,
     buyer,
     seller,
     tx_status,
