@@ -6,19 +6,33 @@ What's Near? Learn more [here](https://near.org/)
 
 ## Setup
 ### Prerequisites
+
 1. Complete the steps in the [Data Curator Onboarding Guide](https://docs.metricsdao.xyz/data-curation/data-curator-onboarding).
     * Note that the Data Curator Onboarding Guide assumes that you will ask to be added as a contributor to a MetricsDAO project. Ex: https://github.com/MetricsDAO/near_dbt. 
-    * However, if you have not yet been added as a contibutor, or you'd like to take an even lower-risk approach, you can always follow the [Fork and Pull Workflow](https://reflectoring.io/github-fork-and-pull/) by forking a copy of the project to which you'd like to ontribute to a local copy of the project in your github account. Just make sure to: 
+    * However, if you have not yet been added as a contibutor, or you'd like to take an even lower-risk approach, you can always follow the [Fork and Pull Workflow](https://reflectoring.io/github-fork-and-pull/) by forking a copy of the project to which you'd like to contribute to a local copy of the project in your github account. Just make sure to: 
         - Fork the MetricsDAO repository.
-        - Git clone from your forked repository. Ex: git clone https://github.com/YourAccount/near_dbt.
-        - Create a branch for the changes you'd like to make. Ex: git branch readme-update.
-        - Switch to the branch. Ex: git checkout readme-update. 
-        - Make your changes on the branch and follow the rest of the steps in [Fork and Pull Workflow]https://reflectoring.io/github-fork-and-pull/ to notify the MetricsDAO repository owners to review your changes. 
+        - Git clone from your forked repository. Ex: `git clone https://github.com/YourAccount/near_dbt`.
+        - Create a branch for the changes you'd like to make. Ex: `git branch readme-update`.
+        - Switch to the branch. Ex: `git checkout readme-update`. 
+        - Make your changes on the branch and follow the rest of the steps in the [Fork and Pull Workflow](https://reflectoring.io/github-fork-and-pull/) to notify the MetricsDAO repository owners to review your changes. 
 2. Download [Docker for Desktop](https://www.docker.com/products/docker-desktop). 
     * (Optional) You can run the Docker tutorial. 
+3. Install [VSCode](https://code.visualstudio.com/).
+
+### Prerequisites: Additional Windows Subsystem for Linux (WSL) Setup
+
+4. For Windows users, you'll need to install WSL and connect VSCode to WSL by   
+	* Right clicking VSCode and running VSCode as admin.
+    * Installing [WSL](https://docs.microsoft.com/en-us/windows/wsl/install) by typing `wsl --install` in VScode's terminal. 
+	* Following the rest of the [VSCode WSL instruction](https://code.visualstudio.com/docs/remote/wsl) to create a new WSL user. 
+	* Installing the Remote Development extension (ms-vscode-remote.vscode-remote-extensionpack) in VSCode. 
+    * Finally, restarting VSCode in a directory in which you'd like to work. For example, 
+        - `cd ~/metricsDAO/data_curation/near_dbt` 
+        - `code .`
 
 ### Create the Environment Variables
-1. Create a `.env` file with the following contents (note `.env` will not be commited to source) in the project_name_dbt directory (ex: near_dbt/.env):
+
+1. Create a `.env` file with the following contents (note `.env` will not be commited to source) in the near_dbt directory (ex: near_dbt/.env):
 
     ```
     SF_ACCOUNT=zsniary-metricsdao
@@ -37,13 +51,13 @@ What's Near? Learn more [here](https://near.org/)
 
 ## Getting Started Commands
 
-Run the follow commands from inside the Near directory (**you must complete the Setup steps above^^**)
+Run the following commands from inside the Near directory (**you must have completed the Setup steps above^^**)
 
 ### DBT Environment
 
 1. In VSCode's terminal, type `cd near_dbt`.
 2. Then run `make dbt-console`. This will mount your local near directory into a dbt console where dbt is installed.
-    - You can verify that the above command ran successfull by looking at the terminal prompt. It should have changed from your Linux bash prompt to something like root@3527b594aaf0:/near#. Alternatively, you can see in the Docker Desktop app that an instance of near_dbt is now running.
+    - You can verify that the above command ran successfully by looking at the terminal prompt. It should have changed from your Linux bash prompt to something like root@3527b594aaf0:/near#. Alternatively, you can see in the Docker Desktop app that an instance of near_dbt is now running.
 
 ### DBT Project Docs
 
