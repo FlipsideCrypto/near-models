@@ -4,6 +4,9 @@ models:
   - name: silver__staking_actions
     description: |-
       This table records all the staking and delegation transactions occurring in NEAR. 
+
+      Be aware, however, not all transactions here necessarily actually contribute to securing the NEAR network.
+      Each epoch can have a different set of validators.
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
