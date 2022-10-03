@@ -6,6 +6,7 @@ models:
       This table records all the nft mints transfer in the near db
     columns:    
       - name: BLOCK_TIMESTAMP
+        description: "{{ doc('block_timestamp')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -13,6 +14,7 @@ models:
                 - TIMESTAMP_NTZ
 
       - name: BLOCK_ID
+        description: "{{ doc('block_id')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -20,6 +22,7 @@ models:
                 - NUMBER
                 - FLOAT
       - name: ACTION_ID
+        description: "{{ doc('action_id')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -28,6 +31,7 @@ models:
                 - VARCHAR
 
       - name: TX_HASH
+        description: "{{ doc('tx_hash')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -35,6 +39,7 @@ models:
                 - STRING
                 - VARCHAR
       - name: Signer
+        description: "{{ doc('tx_signer')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -43,6 +48,7 @@ models:
                 - VARCHAR
 
       - name: RECEIVER
+        description: "{{ doc('tx_receiver')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -51,6 +57,7 @@ models:
                 - VARCHAR
 
       - name: TX_STATUS
+        description: "{{ doc('tx_status')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -58,13 +65,13 @@ models:
                 - STRING
                 - VARCHAR
 
-      # - name: NFT_PROJECT
-      #   tests:
-      #     - not_null
-      #     - dbt_expectations.expect_column_values_to_be_in_type_list:
-      #         column_type_list:
-      #           - STRING
-      #           - VARCHAR
+       - name: NFT_PROJECT
+         tests:
+           - not_null
+           - dbt_expectations.expect_column_values_to_be_in_type_list:
+               column_type_list:
+                 - STRING
+                 - VARCHAR
 
       - name: NFT_ID
         tests:
