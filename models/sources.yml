@@ -57,3 +57,8 @@ sources:
             description: A json object containing the tx and any decoded logs
           - name: ingested_at
             description: The time this row was ingested by Chainwalkers
+  - name: gold
+    schema: gold
+    database: flipside_prod_db
+    tables:
+      - name: near_address_labels
