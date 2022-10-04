@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: silver__nft_mint
+  - name: silver__nft_mints
     description: |-
       This table records all the nft mints transfer in the near db
     columns:    
@@ -24,6 +24,7 @@ models:
       - name: ACTION_ID
         description: "{{ doc('action_id')}}"
         tests:
+          - unique
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
@@ -38,7 +39,7 @@ models:
               column_type_list:
                 - STRING
                 - VARCHAR
-      - name: Signer
+      - name: SIGNER
         description: "{{ doc('tx_signer')}}"
         tests:
           - not_null
@@ -65,17 +66,34 @@ models:
                 - STRING
                 - VARCHAR
 
-      #  - name: NFT_PROJECT
-      #    tests:
-      #      - not_null
-      #      - dbt_expectations.expect_column_values_to_be_in_type_list:
-      #          column_type_list:
-      #            - STRING
-      #            - VARCHAR
+      - name: PROJECT_NAME
+        description: "{{ doc('nft_project_name') }}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+                 
 
-      - name: NFT_ID
+      - name: NFT_ADDRESS
+        description: "{{ doc('nft_address') }}"
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: NFT_ID
+        description: "{{ doc('nft_id') }}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+      - name: TOKEN_ID
+        description: "{{ doc ('nft_token_id') }}"
+        tests:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
@@ -97,12 +115,3 @@ models:
               column_type_list:
                 - TIMESTAMP_NTZ
 
-      - name: RECEIPT_ID
-        description: "{{ doc('receipt_object_id') }}"
-        tests:
-          - not_null
-          - unique
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
