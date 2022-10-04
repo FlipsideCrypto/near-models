@@ -7,7 +7,6 @@
     )
 }}
 
-
 -- data from silver_action_event table
 with
     nft_mint as (
@@ -25,12 +24,7 @@ with
 
         where
             method_name in ('nft_mint', 'nft_mint_batch')
-            AND {{ incremental_load_filter("_inserted_timestamp") }}
-
-            -- {% if is_incremental() %}
-            -- and ingested_at >= (select max(ingested_at)::date - 2 from {{ this }})
-            -- {% endif %}
-
+            and {{ incremental_load_filter("_unserted_timestamp") }}
 
     -- Data pulled from action_events_function_call
     ),
@@ -42,9 +36,8 @@ with
             block_timestamp,
             try_parse_json(args) as args_json,
             method_name,
-            deposit/pow(10,24) AS deposit,
+            deposit / pow(10, 24) as deposit,
             attached_gas,
-
             case
                 when args_json:receiver_id is not null
                 then args_json:receiver_id::string
@@ -55,12 +48,12 @@ with
                 when args_json:token_series_id is not null
                 then try_parse_json(args_json:token_series_id)::string
                 when args_json:token_owner_id is not null
-                then try_parse_json(args_json:token_owner_id)::string
+                then try_parse_json(args_json:token_series_id)::string
             end as nft_id,
             try_parse_json(args_json:token_id)::string as token_id
 
-        from {{ ref("silver__actions_events_function_call") }}
 
+        from {{ ref("silver__actions_events_function_call") }}
         where
             method_name in ('nft_mint', 'nft_mint_batch')
             and tx_hash in (select distinct tx_hash from nft_mint)
@@ -77,10 +70,10 @@ with
             attached_gas,
             tx_status,
             tx:actions[0]:functioncall:method_name::string as method_name
-        -- try_parse_json(tx) :outcome :id :: STRING AS nft_id
-        from {{ ref("silver__transactions") }}
 
-        where method_name in ('nft_mint', 'nft_mint_batch') and tx_status = 'Success'
+        from {{ ref("silver__transactions") }}
+        where
+            tx_hash in (select distinct tx_hash from nft_mint) and tx_status = 'Success'
 
     -- Data pulled from Receipts Table
     ),
@@ -113,6 +106,7 @@ select distinct
     token_id,
     nft_id,
     receipts_data.receiver_id as nft_address,
+    network_fee,
     tx_status
 
 from nft_mint
