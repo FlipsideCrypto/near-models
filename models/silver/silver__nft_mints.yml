@@ -39,7 +39,7 @@ models:
               column_type_list:
                 - STRING
                 - VARCHAR
-      - name: SIGNER
+      - name: TX_SIGNER
         description: "{{ doc('tx_signer')}}"
         tests:
           - not_null
@@ -48,7 +48,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: RECEIVER
+      - name: TX_RECEIVER
         description: "{{ doc('tx_receiver')}}"
         tests:
           - not_null
