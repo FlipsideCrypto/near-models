@@ -66,7 +66,7 @@ with
             tx_hash,
             tx_signer,
             tx_receiver,
-            transaction_fee as network_fee,
+            transaction_fee/pow(10,24) as network_fee,
             gas_used,
             attached_gas,
             tx_status,
