@@ -24,7 +24,7 @@ with
 
         where
             method_name in ('nft_mint', 'nft_mint_batch')
-            and {{ incremental_load_filter("_unserted_timestamp") }}
+            and {{ incremental_load_filter("_inserted_timestamp") }}
 
     -- Data pulled from action_events_function_call
     ),
@@ -57,14 +57,15 @@ with
         where
             method_name in ('nft_mint', 'nft_mint_batch')
             and tx_hash in (select distinct tx_hash from nft_mint)
+            and {{ incremental_load_filter("_inserted_timestamp") }}
 
     -- Data Pulled from Transaction 
     ),
     mint_transactions as (
         select
             tx_hash,
-            tx_signer as signer,
-            tx_receiver as receiver,
+            tx_signer,
+            tx_receiver,
             transaction_fee as network_fee,
             gas_used,
             attached_gas,
@@ -74,6 +75,7 @@ with
         from {{ ref("silver__transactions") }}
         where
             tx_hash in (select distinct tx_hash from nft_mint) and tx_status = 'Success'
+            and {{ incremental_load_filter("_inserted_timestamp") }}
 
     -- Data pulled from Receipts Table
     ),
@@ -88,6 +90,7 @@ with
             gas_burnt
         from {{ ref("silver__receipts") }}
         where tx_hash in (select distinct tx_hash from nft_mint)
+        and {{ incremental_load_filter("_inserted_timestamp") }}
 
     )
 
@@ -100,8 +103,8 @@ select distinct
     nft_mint.method_name,
     nft_mint._ingested_at,
     nft_mint._inserted_timestamp,
-    signer,
-    receiver,
+    tx_signer,
+    tx_receiver,
     project_name,
     token_id,
     nft_id,
