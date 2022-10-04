@@ -4,10 +4,7 @@ models:
   - name: core__ez_nft_mints
     description: |-
       This table records all the nft mints transfer in the near db
-    tests: 
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - ACTION_ID
+    
 
     columns:    
       - name: BLOCK_TIMESTAMP
