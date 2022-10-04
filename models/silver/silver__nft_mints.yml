@@ -4,6 +4,11 @@ models:
   - name: silver__nft_mints
     description: |-
       This table records all the nft mints transfer in the near db
+    tests: 
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - ACTION_ID
+
     columns:    
       - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp')}}"
@@ -24,7 +29,6 @@ models:
       - name: ACTION_ID
         description: "{{ doc('action_id')}}"
         tests:
-          - unique
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
