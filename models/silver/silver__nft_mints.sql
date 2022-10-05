@@ -7,28 +7,9 @@
     )
 }}
 
--- data from silver_action_event table
+--Data pulled from action_events_function_call 
 with
-    nft_mint as (
-        select
-            action_id,
-            tx_hash,
-            block_id,
-            block_timestamp,
-            action_index,
-            action_name,
-            action_data:method_name::string as method_name,
-            _ingested_at,
-            _inserted_timestamp
-        from {{ ref("silver__actions_events") }}
-
-        where
-            method_name in ('nft_mint', 'nft_mint_batch')
-            and {{ incremental_load_filter("_inserted_timestamp") }}
-
-    -- Data pulled from action_events_function_call
-    ),
-    function_call_data as (
+    function_call as (
         select
             action_id,
             tx_hash,
@@ -37,7 +18,8 @@ with
             try_parse_json(args) as args_json,
             method_name,
             deposit / pow(10, 24) as deposit,
-            attached_gas,
+            _ingested_at,
+            _inserted_timestamp, 
             case
                 when args_json:receiver_id is not null
                 then args_json:receiver_id::string
@@ -56,29 +38,27 @@ with
         from {{ ref("silver__actions_events_function_call") }}
         where
             method_name in ('nft_mint', 'nft_mint_batch')
-            and tx_hash in (select distinct tx_hash from nft_mint)
             and {{ incremental_load_filter("_inserted_timestamp") }}
-
-    -- Data Pulled from Transaction 
     ),
+
+    --Data Pulled from Transaction
     mint_transactions as (
         select
             tx_hash,
             tx_signer,
             tx_receiver,
-            transaction_fee/pow(10,24) as network_fee,
-            gas_used,
-            attached_gas,
-            tx_status,
-            tx:actions[0]:functioncall:method_name::string as method_name
-
+            transaction_fee / pow(10, 24) as network_fee,
+            tx_status
+        -- tx:actions[0]:functioncall:method_name::string as method_name
         from {{ ref("silver__transactions") }}
         where
-            tx_hash in (select distinct tx_hash from nft_mint) and tx_status = 'Success'
+            tx_hash in (select distinct tx_hash from function_call)
+            and tx_status = 'Success'
             and {{ incremental_load_filter("_inserted_timestamp") }}
 
-    -- Data pulled from Receipts Table
+
     ),
+    --Data pulled from Receipts Table
     receipts_data as (
         select
 
@@ -89,20 +69,21 @@ with
             receiver_id,
             gas_burnt
         from {{ ref("silver__receipts") }}
-        where tx_hash in (select distinct tx_hash from nft_mint)
-        and {{ incremental_load_filter("_inserted_timestamp") }}
+        where
+            tx_hash in (select distinct tx_hash from function_call)
+            and {{ incremental_load_filter("_inserted_timestamp") }}
 
     )
 
 
 select distinct
-    nft_mint.action_id,
-    nft_mint.tx_hash,
-    nft_mint.block_id,
-    nft_mint.block_timestamp,
-    nft_mint.method_name,
-    nft_mint._ingested_at,
-    nft_mint._inserted_timestamp,
+    action_id,
+    function_call.tx_hash,
+    block_id,
+    block_timestamp,
+    method_name,
+    _ingested_at,
+    _inserted_timestamp,
     tx_signer,
     tx_receiver,
     project_name,
@@ -112,8 +93,8 @@ select distinct
     network_fee,
     tx_status
 
-from nft_mint
-left join function_call_data on nft_mint.tx_hash = function_call_data.tx_hash
-left join mint_transactions on nft_mint.tx_hash = mint_transactions.tx_hash
-left join receipts_data on nft_mint.tx_hash = receipts_data.tx_hash
+from function_call
+left join mint_transactions on function_call.tx_hash = mint_transactions.tx_hash
+left join receipts_data on function_call.tx_hash = receipts_data.tx_hash
 where tx_status is not null
+
