@@ -5,6 +5,9 @@ Curated SQL Views and Metrics for the Near Blockchain.
 What's Near? Learn more [here](https://near.org/)
 
 ## Setup
+
+
+
 ### Prerequisites
 
 1. Complete the steps in the [Data Curator Onboarding Guide](https://docs.metricsdao.xyz/data-curation/data-curator-onboarding).
