@@ -113,9 +113,6 @@ final_table AS (
         ON actions.tx_hash = receipts.tx_hash
         JOIN transactions
         ON actions.tx_hash = transactions.tx_hash
-    ORDER BY
-        tx_hash,
-        swap_index
 )
 SELECT
     block_id,
@@ -148,5 +145,3 @@ FROM
 WHERE
     txn_status = 'Success'
     AND log_data IS NOT NULL
-ORDER BY
-    swap_id DESC
