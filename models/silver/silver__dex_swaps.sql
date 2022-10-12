@@ -124,16 +124,10 @@ SELECT
     pool_id,
     token_in,
     token_labels_in.symbol AS token_in_symbol,
-    TRIM(REGEXP_SUBSTR(log_data, '\\W[\\d]{1,}\\W', 1, 1)) :: bigint / pow(
-        10,
-        token_labels_in.decimals
-    ) :: numeric AS amount_in,
+    regexp_substr(log_data, 'Swapped (\\d+)', 1, 1, 'e')::number / pow(10, token_labels_in.decimals) as amount_in,
     token_out,
     token_labels_out.symbol AS token_out_symbol,
-    TRIM(REGEXP_SUBSTR(log_data, '\\W[\\d]{1,}\\W', 1, 2)) :: bigint / pow(
-        10,
-        token_labels_out.decimals
-    ) :: numeric AS amount_out,
+    regexp_substr(log_data, 'Swapped \\d+ .+ for (\\d+)', 1, 1, 'e')::number / pow(10, token_labels_out.decimals) as amount_out,
     swap_index,
     _inserted_timestamp
 FROM
