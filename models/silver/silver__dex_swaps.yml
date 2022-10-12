@@ -8,6 +8,7 @@ models:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - swap_id
+      - dex_swaps_token_amounts
 
     columns:
       - name: BLOCK_ID
