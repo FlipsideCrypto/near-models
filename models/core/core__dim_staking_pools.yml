@@ -1,0 +1,63 @@
+version: 2
+
+models:
+  - name: core__dim_staking_pools
+    description: |-
+      This table contains registered staking pools with NEAR.
+
+    columns:
+      - name: tx_hash
+        description: "{{ doc('tx_hash') }}"
+        tests:
+          - not_null
+          - unique
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: block_timestamp
+        description: "{{ doc('block_timestamp')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
+
+      - name: owner
+        description: "{{ doc('staking_pool_owner')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: address
+        description: "{{ doc('staking_pool_address')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: reward_fee_fraction
+        description: "{{ doc('staking_pool_reward_fee_fraction')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - VARIANT
+                - OBJECT
+
+      - name: tx_type
+        description: "{{ doc('staking_pool_tx_type') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+          - dbt_expectations.expect_column_values_to_be_in_set:
+              value_set: ['Create', 'Update']
