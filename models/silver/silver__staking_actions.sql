@@ -54,11 +54,7 @@ deposit_and_stake_txs as (
         block_timestamp,
         tx_receiver as pool_address,
         tx_signer,
-        coalesce(
-            regexp_substr(tx:receipt[0]:outcome:logs[1], 'staking (\\d+)', 1, 1, 'e')::number,
-            regexp_substr(tx:receipt[0]:outcome:logs[2], 'staking (\\d+)', 1, 1, 'e')::number,
-            regexp_substr(tx:receipt[0]:outcome:logs[3], 'staking (\\d+)', 1, 1, 'e')::number
-        ) as stake_amount,
+        regexp_substr(array_to_string(tx:receipt[0]:outcome:logs, ','), 'staking (\\d+)', 1, 1, 'e')::number as stake_amount,
         'Stake' as action,
         _inserted_timestamp
     from pool_txs
@@ -72,11 +68,7 @@ stake_txs as (
         block_timestamp,
         tx_receiver as pool_address,
         tx_signer,
-        coalesce(
-            regexp_substr(tx:receipt[0]:outcome:logs[1], 'staking (\\d+)', 1, 1, 'e')::number,
-            regexp_substr(tx:receipt[0]:outcome:logs[2], 'staking (\\d+)', 1, 1, 'e')::number,
-            regexp_substr(tx:receipt[0]:outcome:logs[3], 'staking (\\d+)', 1, 1, 'e')::number
-        ) as stake_amount,
+        regexp_substr(array_to_string(tx:receipt[0]:outcome:logs, ','), 'staking (\\d+)', 1, 1, 'e')::number as stake_amount,
         'Stake' as action,
         _inserted_timestamp
     from pool_txs
@@ -90,11 +82,7 @@ stake_all_txs as (
         block_timestamp,
         tx_receiver as pool_address,
         tx_signer,
-        coalesce(
-            regexp_substr(tx:receipt[0]:outcome:logs[0], 'staking (\\d+)', 1, 1, 'e')::number,
-            regexp_substr(tx:receipt[0]:outcome:logs[1], 'staking (\\d+)', 1, 1, 'e')::number,
-            regexp_substr(tx:receipt[0]:outcome:logs[2], 'staking (\\d+)', 1, 1, 'e')::number
-        ) as stake_amount,
+        regexp_substr(array_to_string(tx:receipt[0]:outcome:logs, ','), 'staking (\\d+)', 1, 1, 'e')::number as stake_amount,
         'Stake' as action,
         _inserted_timestamp
     from pool_txs
@@ -108,11 +96,7 @@ unstake_txs as (
         block_timestamp,
         tx_receiver as pool_address,
         tx_signer,
-        coalesce(
-            regexp_substr(tx:receipt[0]:outcome:logs[0], 'unstaking (\\d+)', 1, 1, 'e')::number,
-            regexp_substr(tx:receipt[0]:outcome:logs[1], 'unstaking (\\d+)', 1, 1, 'e')::number,
-            regexp_substr(tx:receipt[0]:outcome:logs[2], 'unstaking (\\d+)', 1, 1, 'e')::number
-        ) as stake_amount,
+        regexp_substr(array_to_string(tx:receipt[0]:outcome:logs, ','), 'unstaking (\\d+)', 1, 1, 'e')::number as stake_amount,
         'Unstake' as action,
         _inserted_timestamp
     from pool_txs
@@ -126,11 +110,7 @@ unstake_all_txs as (
         block_timestamp,
         tx_receiver as pool_address,
         tx_signer,
-        coalesce(
-            regexp_substr(tx:receipt[0]:outcome:logs[0], 'unstaking (\\d+)', 1, 1, 'e')::number,
-            regexp_substr(tx:receipt[0]:outcome:logs[1], 'unstaking (\\d+)', 1, 1, 'e')::number,
-            regexp_substr(tx:receipt[0]:outcome:logs[2], 'unstaking (\\d+)', 1, 1, 'e')::number
-        ) as stake_amount,
+        regexp_substr(array_to_string(tx:receipt[0]:outcome:logs, ','), 'unstaking (\\d+)', 1, 1, 'e')::number as stake_amount,
         'Unstake' as action,
         _inserted_timestamp
     from pool_txs
