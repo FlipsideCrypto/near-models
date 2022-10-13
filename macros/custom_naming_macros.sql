@@ -13,5 +13,9 @@
     ) -%}
     {% set node_name = node.name %}
     {% set split_name = node_name.split('__') %}
+    {%- if node.resource_type != 'test' -%}
     {{ split_name [1] | trim }}
+    {%- else -%}
+    {{ node_name }}
+    {%- endif -%}
 {%- endmacro %}
