@@ -1,5 +1,5 @@
 {% docs staking_pool_address %}
 
-The address of the staking pool.
+The pool address delegated into.
 
 {% enddocs %}
