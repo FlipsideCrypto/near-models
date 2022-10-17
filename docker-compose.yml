@@ -7,15 +7,3 @@ services:
       - .:/near
     env_file: 
       - .env
-
-  dbt_docs:
-    build: .
-    volumes:
-      - .:/near
-    ports:
-      - 8080:8080
-    expose:
-      - 8080
-    command: "dbt_docs.sh"
-    env_file:
-      - .env
