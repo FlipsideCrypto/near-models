@@ -46,7 +46,15 @@ expected_adjusted as (
 
 test as (
     select
-        *
+        expected_adjusted.swap_id,
+        expected_adjusted.amount_in as expected_amount_in,
+        expected_adjusted.token_in as expected_token_in,
+        swaps.amount_in as actual_amount_in,
+        swaps.token_in as actual_token_in,
+        expected_adjusted.amount_out as expected_amount_out,
+        expected_adjusted.token_out as expected_token_out,
+        swaps.amount_out as actual_amount_out,
+        swaps.token_out as actual_token_out
     from expected_adjusted
     inner join swaps on expected_adjusted.swap_id = swaps.swap_id
     where expected_adjusted.amount_in != swaps.amount_in
