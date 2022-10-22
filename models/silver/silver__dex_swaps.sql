@@ -161,10 +161,10 @@ final as (
         pool_id,
         token_in,
         token_labels_in.symbol AS token_in_symbol,
-        regexp_substr(log_data, 'Swapped (\\d+)', 1, 1, 'e')::number / pow(10, token_labels_in.decimals) as amount_in,
+        regexp_substr(log_data, 'Swapped (\\d+)', 1, 1, 'e')::number / pow(10, ifnull(token_labels_in.decimals, 0)) as amount_in,
         token_out,
         token_labels_out.symbol AS token_out_symbol,
-        regexp_substr(log_data, 'Swapped \\d+ .+ for (\\d+)', 1, 1, 'e')::number / pow(10, token_labels_out.decimals) as amount_out,
+        regexp_substr(log_data, 'Swapped \\d+ .+ for (\\d+)', 1, 1, 'e')::number / pow(10, ifnull(token_labels_out.decimals, 0)) as amount_out,
         swap_index,
         _inserted_timestamp
     FROM
