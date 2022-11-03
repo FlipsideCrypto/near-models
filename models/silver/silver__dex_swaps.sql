@@ -5,18 +5,32 @@
     cluster_by = ["block_timestamp::DATE", "_inserted_timestamp::DATE"],
 ) }}
 
-WITH base_swaps as (
+WITH base_swap_calls as (
     select
         block_id,
         block_timestamp,
         tx_hash,
         action_id,
-        parse_json(args):actions as actions,
-        _inserted_timestamp
+        args,
+        _inserted_timestamp,
+        method_name
     from {{ ref('silver__actions_events_function_call') }}
-    where method_name = 'swap'
-      and args like '%actions%'
+    where method_name in ('swap', 'ft_transfer_call')
       and {{ incremental_load_filter('_inserted_timestamp') }}
+),
+
+base_swaps as (
+    select
+        block_id,
+        block_timestamp,
+        tx_hash,
+        action_id,
+        iff(method_name = 'ft_transfer_call',
+            try_parse_json(try_parse_json(args):msg),
+            try_parse_json(args)
+        ):actions as actions,
+        _inserted_timestamp
+    from base_swap_calls
 ),
 
 agg_swaps as (
