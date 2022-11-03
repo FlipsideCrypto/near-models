@@ -12,7 +12,11 @@ with swaps as (
 swap_logs as (
     select
         tx_hash,
-        tx:receipt[0]:outcome:logs as logs
+        tx:actions[0]:FunctionCall:method_name as method_name,
+        iff(method_name = 'ft_transfer_call',
+            tx:receipt[1]:outcome:logs,
+            tx:receipt[0]:outcome:logs
+        ) as logs
     from {{ ref('silver__transactions') }}
     where tx_hash in (select tx_hash from swaps)
 ),
