@@ -5,41 +5,77 @@
     cluster_by = ["block_timestamp::DATE", "_inserted_timestamp::DATE"],
 ) }}
 
-WITH actions AS (
+WITH base_swap_calls as (
+    select
+        block_id,
+        block_timestamp,
+        tx_hash,
+        action_id,
+        args,
+        _inserted_timestamp,
+        method_name
+    from {{ ref('silver__actions_events_function_call') }}
+    where method_name in ('swap', 'ft_transfer_call')
+      and {{ incremental_load_filter('_inserted_timestamp') }}
+),
+
+base_swaps as (
+    select
+        block_id,
+        block_timestamp,
+        tx_hash,
+        action_id,
+        iff(method_name = 'ft_transfer_call',
+            try_parse_json(try_parse_json(args):msg),
+            try_parse_json(args)
+        ):actions as actions,
+        _inserted_timestamp
+    from base_swap_calls
+),
+
+agg_swaps as (
+    select
+        tx_hash,
+        any_value(block_id) as block_id,
+        any_value(block_timestamp) as block_timestamp,
+        array_agg(action.value) within group (order by action_id, action.index) as action_list,
+        any_value(_inserted_timestamp) as _inserted_timestamp
+    from
+        base_swaps,
+        lateral flatten(input => actions) action
+    group by 1
+),
+
+actions AS (
 
     SELECT
         block_id,
         block_timestamp,
         tx_hash,
-        args,
-        method_name,
         NULLIF(
-            j.value :pool_id,
+            action.value :pool_id,
             NULL
         ) AS pool_id,
         NULLIF(
-            j.value :token_in,
+            action.value :token_in,
             NULL
         ) :: text AS token_in,
         NULLIF(
-            j.value :token_out,
+            action.value :token_out,
             NULL
         ) :: text AS token_out,
-        j.index AS swap_index,
+        action.index AS swap_index,
         _inserted_timestamp
     FROM
-        {{ ref("silver__actions_events_function_call") }},
-        LATERAL FLATTEN(input => PARSE_JSON(args) :actions) j
-    WHERE
-        method_name = 'swap'
-        AND args LIKE '%actions%'
-        AND NOT RLIKE(
-            pool_id,
-            '.*[a-z].*',
-            'i'
-        )
-        AND {{ incremental_load_filter("_inserted_timestamp") }}
+        agg_swaps,
+        LATERAL FLATTEN(input => action_list) action
+    where not rlike(
+        pool_id,
+        '.*[a-z].*',
+        'i'
+    )
 ),
+
 receipts AS (
     SELECT
         block_id,
@@ -55,8 +91,29 @@ receipts AS (
     FROM
         {{ ref("silver__receipts") }}
     WHERE
-        {{ incremental_load_filter("_inserted_timestamp") }}
+        tx_hash in (select tx_hash from actions)
 ),
+
+flat_receipts as (
+    select
+        tx_hash,
+        l.value,
+        l.index,
+        success_or_fail
+    from receipts,
+    lateral flatten(input => logs) l
+),
+
+swap_logs as (
+    select
+        tx_hash,
+        row_number() over (partition by tx_hash order by index asc) - 1 as swap_index,
+        value,
+        success_or_fail
+    from flat_receipts
+    where value like 'Swapped%'
+),
+
 transactions AS (
     SELECT
         block_id,
@@ -66,87 +123,73 @@ transactions AS (
         tx_receiver
     FROM
         {{ ref("silver__transactions") }}
-    WHERE
-        {{ incremental_load_filter("_inserted_timestamp") }}
+    where tx_hash in (select tx_hash from actions)
 ),
-token_in_labels AS (
+token_labels AS (
     SELECT
         *
     FROM
         {{ ref("silver__token_labels") }}
 ),
-token_out_labels AS (
-    SELECT
-        *
-    FROM
-        token_in_labels
-),
 final_table AS (
     SELECT
-        DISTINCT actions.swap_index,
+        swap_logs.swap_index,
         actions._inserted_timestamp,
         actions.block_id,
         actions.block_timestamp,
-        actions.tx_hash,
+        swap_logs.tx_hash,
         CONCAT(
-            actions.tx_hash,
+            swap_logs.tx_hash,
             '-',
-            actions.swap_index
+            swap_logs.swap_index
         ) AS swap_id,
-        logs,
-        logs [swap_index] AS log_data,
+        swap_logs.value AS log_data,
         transactions.tx_signer AS trader,
         transactions.tx_receiver AS platform,
         LAST_VALUE(
-            receipts.success_or_fail
+            swap_logs.success_or_fail
         ) over (
-            PARTITION BY receipts.tx_hash
+            PARTITION BY swap_logs.tx_hash
             ORDER BY
-                receipts.success_or_fail DESC
+                swap_logs.success_or_fail DESC
         ) AS txn_status,
         actions.pool_id :: INT AS pool_id,
         actions.token_in,
         actions.token_out
     FROM
         actions
-        JOIN receipts
-        ON actions.tx_hash = receipts.tx_hash
+        inner join swap_logs
+                on (swap_logs.tx_hash = actions.tx_hash
+                and swap_logs.swap_index = actions.swap_index)
         JOIN transactions
         ON actions.tx_hash = transactions.tx_hash
-    ORDER BY
+),
+final as (
+    SELECT
+        block_id,
+        block_timestamp,
         tx_hash,
-        swap_index
+        swap_id,
+        platform,
+        trader,
+        pool_id,
+        token_in,
+        token_labels_in.symbol AS token_in_symbol,
+        regexp_substr(log_data, 'Swapped (\\d+)', 1, 1, 'e')::number / pow(10, ifnull(token_labels_in.decimals, 0)) as amount_in,
+        token_out,
+        token_labels_out.symbol AS token_out_symbol,
+        regexp_substr(log_data, 'Swapped \\d+ .+ for (\\d+)', 1, 1, 'e')::number / pow(10, ifnull(token_labels_out.decimals, 0)) as amount_out,
+        swap_index,
+        _inserted_timestamp
+    FROM
+        final_table
+        LEFT JOIN token_labels AS token_labels_in
+        ON final_table.token_in = token_labels_in.token_contract
+        LEFT JOIN token_labels AS token_labels_out
+        ON final_table.token_out = token_labels_out.token_contract
+    WHERE
+        txn_status = 'Success'
+        AND log_data IS NOT NULL
 )
-SELECT
-    block_id,
-    block_timestamp,
-    tx_hash,
-    swap_id,
-    platform,
-    trader,
-    pool_id,
-    token_in,
-    token_labels_in.symbol AS token_in_symbol,
-    TRIM(REGEXP_SUBSTR(log_data, '\\W[\\d]{1,}\\W', 1, 1)) :: bigint / pow(
-        10,
-        token_labels_in.decimals
-    ) :: numeric AS amount_in,
-    token_out,
-    token_labels_out.symbol AS token_out_symbol,
-    TRIM(REGEXP_SUBSTR(log_data, '\\W[\\d]{1,}\\W', 1, 2)) :: bigint / pow(
-        10,
-        token_labels_out.decimals
-    ) :: numeric AS amount_out,
-    swap_index,
-    _inserted_timestamp
-FROM
-    final_table
-    LEFT JOIN token_labels AS token_labels_in
-    ON final_table.token_in = token_labels_in.token_contract
-    LEFT JOIN token_labels AS token_labels_out
-    ON final_table.token_out = token_labels_out.token_contract
-WHERE
-    txn_status = 'Success'
-    AND log_data IS NOT NULL
-ORDER BY
-    swap_id DESC
+
+select * from final
