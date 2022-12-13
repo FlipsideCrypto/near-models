@@ -2,7 +2,7 @@ version: 2
 
 models:
   - name: core__metrics_daily_transactions
-    description: "Daily number of near transactions."
+    description: Deprecating soon! Please calculate using your own query.
 
     columns:
       - name: DATE
