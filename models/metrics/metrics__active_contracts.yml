@@ -2,7 +2,7 @@ version: 2
 
 models:
   - name: metrics__active_contracts
-    description: "Daily, weekly, and monthly active contracts on NEAR."
+    description: Deprecating soon.
 
     columns:
       - name: DATE

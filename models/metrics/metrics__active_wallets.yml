@@ -2,7 +2,7 @@ version: 2
 
 models:
   - name: metrics__active_wallets
-    description: "Daily, rolling 7 day, and rolling 30 day active wallets on NEAR."
+    description: Deprecating soon.
 
     columns:
       - name: DATE
