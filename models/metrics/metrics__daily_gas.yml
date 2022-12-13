@@ -2,7 +2,7 @@ version: 2
 
 models:
   - name: metrics__daily_gas
-    description: "Daily gas metrics of near transactions."
+    description: Deprecating soon.
 
     columns:
       - name: DATE
