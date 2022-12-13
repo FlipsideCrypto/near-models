@@ -62,3 +62,10 @@ sources:
     database: flipside_prod_db
     tables:
       - name: near_address_labels
+
+  - name: streamline_dev
+    database: streamline
+    schema: near_dev
+    tables:
+      - name: blocks
+      - name: shards    
