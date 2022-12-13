@@ -3,7 +3,7 @@
     call near._internal.create_prod_clone(
         'near',
         'near_dev',
-        'dbt_cloud'
+        'dbt_cloud_near'
     );
 {% endset %}
     {% do run_query(clone_query) %}
