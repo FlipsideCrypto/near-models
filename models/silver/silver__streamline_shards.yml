@@ -1,0 +1,68 @@
+version: 2
+
+models:
+  - name: silver__streamline_shards
+    description: |-
+      Parses the shards JSON files for NEAR.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - shard_id
+
+    columns:
+      - name: BLOCK_ID
+        description: "{{ doc('block_id')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - INTEGER
+
+      - name: SHARD_ID
+        description: "{{ doc('shard_id')}}"
+        tests:
+          - not_null
+
+      - name: CHUNK
+        description: "{{ doc('chunks')}}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - VARIANT
+                - OBJECT
+
+      - name: RECEIPT_EXECUTION_OUTCOMES
+        description: "{{ doc('receipt_execution_outcomes')}}"
+
+      - name: SHARD_NUMBER
+        description: "{{ doc('shard_number')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - INTEGER
+
+      - name: STATE_CHANGES
+        description: "{{ doc('state_changes')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - ARRAY
+                - VARIANT
+
+      - name: _PARTITION_BY_BLOCK_NUMBER
+        description: "{{ doc('_partition_by_block_number')}}"
+
+      - name: _load_timestamp
+        description: "{{ doc('_load_timestamp')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
+          - dbt_expectations.expect_row_values_to_have_recent_data:
+              datepart: day
+              interval: 1
