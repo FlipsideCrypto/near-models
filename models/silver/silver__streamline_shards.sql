@@ -1,7 +1,7 @@
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'delete+insert',
-    cluster_by = ['_partition_by_block_number'],
+    cluster_by = ['_partition_by_block_number', '_load_timestamp::DATE'],
     unique_key = ['shard_id'],
     enabled = true
 ) }}
@@ -14,6 +14,11 @@ WITH shardsjson AS (
         {{ ref('silver__load_shards') }}
     WHERE
         {{ incremental_load_filter('_load_timestamp') }}
+        qualify ROW_NUMBER() over (
+            PARTITION BY shard_id
+            ORDER BY
+                _load_timestamp DESC
+        ) = 1
 ),
 shards AS (
     SELECT
