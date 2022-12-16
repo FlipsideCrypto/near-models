@@ -1,18 +1,31 @@
 version: 2
 
 models:
-  - name: silver__receipts
-    description: "Decoded and flattened transaction receipts from the tx_receipts object."
+  - name: silver__streamline_blocks
+    description: |-
+      Parses the blocks JSON files for NEAR.
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
-            - receipt_object_id
+            - block_id
 
     columns:
+      - name: BLOCK_ID
+        description: "{{ doc('block_id')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - INTEGER
+
       - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp')}}"
         tests:
           - not_null
+          - dbt_expectations.expect_row_values_to_have_recent_data:
+              datepart: day
+              interval: 1
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - TIMESTAMP_NTZ
@@ -26,8 +39,46 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: BLOCK_ID
-        description: "{{ doc('block_id')}}"
+      - name: TX_COUNT
+        description: "{{ doc('tx_count')}}"
+
+      - name: BLOCK_AUTHOR
+        description: "{{ doc('block_author')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: CHUNKS
+        description: "{{ doc('chunks')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - ARRAY
+                - VARIANT
+                - OBJECT
+
+      - name: EPOCH_ID
+        description: "{{ doc('epoch_id')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: EVENTS
+        description: "{{ doc('events')}}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - ARRAY
+
+      - name: GAS_PRICE
+        description: "{{ doc('gas_price')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -35,73 +86,44 @@ models:
                 - NUMBER
                 - FLOAT
 
-      - name: TX_HASH
-        description: "{{ doc('tx_hash')}}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
-
-      - name: RECEIPT_INDEX
-        description: "{{ doc('receipt_index')}}"
+      - name: LATEST_PROTOCOL_VERSION
+        description: "{{ doc('latest_protocol_version')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
-
-      - name: RECEIPT_OBJECT_ID
-        description: "{{ doc('receipt_object_id')}}"
-        tests:
-          - not_null
-          - unique
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
-
-      - name: RECEIPT_OUTCOME_ID
-        description: "{{ doc('receipt_outcome_id')}}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - ARRAY
-                - VARIANT
-                - OBJECT
-
-      - name: RECEIVER_ID
-        description: "{{ doc('receiver_id')}}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
-
-      - name: GAS_BURNT
-        description: "{{ doc('gas_burnt')}}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - NUMBER
-                - DOUBLE
                 - FLOAT
 
-      - name: STATUS_VALUE
-        description: "{{ doc('status_value')}}"
+      - name: NEXT_EPOCH_ID
+        description: "{{ doc('next_epoch_id')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - VARIANT
-                - OBJECT
+                - STRING
+                - VARCHAR
 
-      - name: LOGS
-        description: "{{ doc('logs')}}"
+      - name: PREV_HASH
+        description: "{{ doc('prev_hash')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: TOTAL_SUPPLY
+        description: "{{ doc('total_supply')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
+
+      - name: VALIDATOR_PROPOSALS
+        description: "{{ doc('validator_proposals')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -110,32 +132,25 @@ models:
                 - VARIANT
                 - OBJECT
 
-      - name: PROOF
-        description: "{{ doc('proof')}}"
+      - name: VALIDATOR_REWARD
+        description: "{{ doc('validator_reward')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - ARRAY
-                - VARIANT
-                - OBJECT
+                - NUMBER
+                - FLOAT
 
-      - name: METADATA
-        description: "{{ doc('metadata')}}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - VARIANT
-                - OBJECT
+      - name: _partition_by_block_number
+        description: "{{ doc('_partition_by_block_number')}}"
 
-      - name: _INGESTED_AT
-        description: "{{ doc('_ingested_at')}}"
-
-      - name: _INSERTED_TIMESTAMP
-        description: "{{ doc('_inserted_timestamp')}}"
+      - name: _load_timestamp
+        description: "{{ doc('_load_timestamp')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - TIMESTAMP_NTZ
+          - dbt_expectations.expect_row_values_to_have_recent_data:
+              datepart: day
+              interval: 1

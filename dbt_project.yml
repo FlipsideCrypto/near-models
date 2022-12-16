@@ -46,6 +46,7 @@ tests:
     +severity: warn # default to warn for all tests
     core:
       +severity: error # but error if a core view is having issues
+  +store_failures: true # all tests
 
 vars:
   "dbt_date:time_zone": GMT
