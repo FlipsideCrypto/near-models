@@ -23,9 +23,9 @@ model_name AS (
         {{ column_block }}
 )
 SELECT
-    block_base.{{ column_block }},
+    block_base.{{ column_block }} as b_block_id,
     {{ column_tx_count }},
-    model_name.{{ column_block }},
+    model_name.{{ column_block }} as t_block_id,
     model_tx_count
 FROM
     block_base
