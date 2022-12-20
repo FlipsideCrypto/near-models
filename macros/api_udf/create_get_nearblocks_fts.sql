@@ -1,9 +1,7 @@
 {% macro create_get_nearblocks_fts() %}
-
   {% set create_table %}
   CREATE schema if NOT EXISTS bronze_api;
 CREATE TABLE if NOT EXISTS bronze_api.nearblocks_fts(
-    loop_num INTEGER,
     token_name STRING,
     token_contract STRING,
     token_data variant,
@@ -13,27 +11,28 @@ CREATE TABLE if NOT EXISTS bronze_api.nearblocks_fts(
   );
 {% endset %}
   {% do run_query(create_table) %}
-
-{% set query %}
-CREATE OR REPLACE PROCEDURE {{ target.database }}.bronze_api.get_nearblocks_fts() returns variant language sql as $$
+  {% set query %}
+  {% set max_loops = 20 %}
+  CREATE
+  OR REPLACE PROCEDURE {{ target.database }}.bronze_api.get_nearblocks_fts() returns variant LANGUAGE SQL AS $$
 BEGIN
-  LET counter := 0;
-  WHILE (counter < 15) DO
-  
-  LET page := counter;
-  
-create or replace temporary table response_data as 
-  WITH api_call AS (
+  let counter:= 1;
+  let number_of_iterations:= 0;
+REPEAT 
+number_of_iterations:= number_of_iterations + 1;
+let page:= counter;
+CREATE
+  OR REPLACE temporary TABLE response_data AS WITH api_call AS (
     SELECT
-    ethereum.streamline.udf_api(
-        'GET', 
-        'https://api.nearblocks.io/v1/fts', 
-        {}, 
-        {
-            'page': :page,
-            'per_page': 50,
-            'sort': 'name',
-            'order': 'asc'
+      ethereum.streamline.udf_api(
+        'GET',
+        'https://api.nearblocks.io/v1/fts',
+        {},
+        { 
+          'page': :page,
+          'per_page': 50,
+          'sort': 'name',
+          'order': 'asc' 
         }
       ) AS res,
       ARRAY_SIZE(
@@ -64,11 +63,8 @@ SELECT
   _res_id
 FROM
   flatten_res;
-
-
-  INSERT INTO
+INSERT INTO
   bronze_api.nearblocks_fts(
-    loop_num,
     token_name,
     token_contract,
     token_data,
@@ -77,7 +73,6 @@ FROM
     _res_id
   )
 SELECT
-:page as loop_num,
   token_name,
   token_contract,
   token_data,
@@ -86,13 +81,19 @@ SELECT
   _res_id
 FROM
   response_data;
-
-    counter := counter + 1;
-  END WHILE;
-  RETURN counter;
-END;$$
-
+counter:= counter + 1;
+until (
+    counter = {{ max_loops }}
+    OR (
+      SELECT
+        COUNT(1) = 0
+      FROM
+        response_data
+    )
+  )
+END REPEAT;
+RETURN number_of_iterations;
+END;$$ 
 {% endset %}
 {% do run_query(query) %}
-
 {% endmacro %}
