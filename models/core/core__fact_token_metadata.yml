@@ -3,7 +3,7 @@ version: 2
 models:
   - name: core__fact_token_metadata
     description: |-
-      Holds data ingested from the Nearblocks Fungible Token API endpoint at: https://api.nearblocks.io/api-docs/#/FTs/get_v1_fts
+      Holds data ingested from the Nearblocks Fungible Token API endpoint at: https://api.nearblocks.io/api-docs/#/FTs/get_v1_fts. This data includes updating pieces, such as past 24h volume and transfers, thus differs from the dimensional token label table.
 
     columns:
       - name: date
