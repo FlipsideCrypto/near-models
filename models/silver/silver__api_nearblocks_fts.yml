@@ -20,6 +20,7 @@ models:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
+                - VARCHAR
                 - STRING
 
       - name: token_contract
@@ -29,6 +30,7 @@ models:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
+                - VARCHAR
 
       - name: token_data
         description: "{{ doc('token_data')}}"
@@ -54,6 +56,7 @@ models:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
+                - VARCHAR
                 - STRING
 
       - name: provider
@@ -62,6 +65,7 @@ models:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
+                - VARCHAR
                 - STRING
 
       - name: _inserted_timestamp
@@ -71,6 +75,9 @@ models:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - TIMESTAMP_NTZ
+          - dbt_expectations.expect_row_values_to_have_recent_data:
+              datepart: day
+              interval: 1
 
       - name: _res_id
         description: "{{ doc('_res_id')}}"
@@ -79,5 +86,6 @@ models:
               name: not_null_silver__api_nearblocks_fts_res_id
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
+                - VARCHAR
                 - STRING
               name: dbt_expectations_expect_column_values_to_be_in_type_list_silver__api_nearblocks_fts_res_id__STRING
