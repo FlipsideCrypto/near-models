@@ -1,7 +1,7 @@
 {% macro create_get_nearblocks_fts() %}
   {% set create_table %}
-  CREATE schema if NOT EXISTS bronze_api;
-CREATE TABLE if NOT EXISTS bronze_api.nearblocks_fts(
+  CREATE schema if NOT EXISTS {{ target.database }}.bronze_api;
+CREATE TABLE if NOT EXISTS {{ target.database }}.bronze_api.nearblocks_fts(
     token_name STRING,
     token_contract STRING,
     token_data variant,
