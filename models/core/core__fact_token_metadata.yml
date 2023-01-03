@@ -1,0 +1,69 @@
+version: 2
+
+models:
+  - name: core__fact_token_metadata
+    description: |-
+      Holds data ingested from the Nearblocks Fungible Token API endpoint at: https://api.nearblocks.io/api-docs/#/FTs/get_v1_fts. This data includes updating pieces, such as past 24h volume and transfers, thus differs from the dimensional token label table.
+
+    columns:
+      - name: date
+        description: "The date from the UTC timestamp when the API was called and the data for this token was ingested."
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - DATE
+
+      - name: token
+        description: "{{ doc('token')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - VARCHAR
+                - STRING
+
+      - name: token_contract
+        description: "{{ doc('token_contract')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: token_data
+        description: "{{ doc('token_data')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - VARIANT
+                - OBJECT
+
+      - name: decimals
+        description: "{{ doc('decimals')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - INTEGER
+
+      - name: symbol
+        description: "{{ doc('symbol')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - VARCHAR
+                - STRING
+
+      - name: provider
+        description: "{{ doc('provider')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - VARCHAR
+                - STRING
