@@ -1,0 +1,83 @@
+version: 2
+
+models:
+  - name: silver__api_nearblocks_fts
+    description: |-
+      Holds data ingested from the Nearblocks Fungible Token API endpoint at: https://api.nearblocks.io/api-docs/#/FTs/get_v1_fts
+
+    columns:
+      - name: date
+        description: "The date from the UTC timestamp when the API was called and the data for this token was ingested."
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - DATE
+
+      - name: token
+        description: "{{ doc('token')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+
+      - name: token_contract
+        description: "{{ doc('token_contract')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+
+      - name: token_data
+        description: "{{ doc('token_data')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - VARIANT
+                - OBJECT
+
+      - name: decimals
+        description: "{{ doc('decimals')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - INTEGER
+
+      - name: symbol
+        description: "{{ doc('symbol')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+
+      - name: provider
+        description: "{{ doc('provider')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+
+      - name: _inserted_timestamp
+        description: "{{ doc('_inserted_timestamp')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
+
+      - name: _res_id
+        description: "{{ doc('_res_id')}}"
+        tests:
+          - not_null:
+              name: not_null_silver__api_nearblocks_fts_res_id
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+              name: dbt_expectations_expect_column_values_to_be_in_type_list_silver__api_nearblocks_fts_res_id__STRING

@@ -26,6 +26,7 @@ clean-targets: # directories to be removed by `dbt clean`
 
 on-run-start:
   - "{{create_sps()}}"
+  - "{{create_get_nearblocks_fts()}}"
 
 # Configuring models
 # Full documentation: https://docs.getdbt.com/docs/configuring-models
@@ -39,7 +40,7 @@ models:
     relation: true
     columns: true
   +on_schema_change: "append_new_columns"
-  +post-hook: "{% if target.name == 'prod_cloud' and this.schema != 'bronze' %} grant select on {{ this }} to share near_mdao {% endif %}"
+  +post-hook: ["{% if target.name == 'prod_cloud' and this.schema != 'bronze' %} grant select on {{ this }} to share near_mdao {% endif %}"]
 
 tests:
   near:
