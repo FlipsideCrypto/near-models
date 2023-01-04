@@ -1,8 +1,8 @@
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'merge',
-    unique_key = '',
-    cluster_by = ['_load_timestamp::date']
+    unique_key = 'receipt_id',
+    cluster_by = ['_load_timestamp::date', 'block_id', 'receipt_id']
 ) }}
 
 WITH chunks AS (
