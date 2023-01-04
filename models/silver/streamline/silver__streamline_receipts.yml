@@ -1,0 +1,68 @@
+version: 2
+
+models:
+  - name: silver__streamline_receipts
+    description: |-
+      Singular receipt objects with the shard id and chunk hash from which it was included. 
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - SOURCE_OBJECT
+            - RECEIPT_ID
+
+    columns:
+      - name: BLOCK_ID
+        description: "{{ doc('block_id')}}"
+        tests:
+          - not_null
+
+      - name: SHARD_ID
+        description: "{{ doc('shard_id')}}"
+        tests:
+          - not_null
+
+      - name: SOURCE_OBJECT
+        description: "{{ doc('source_object')}}"
+        tests:
+          - not_null
+
+      - name: RECEIPT_INDEX
+        description: "{{ doc('receipt_index')}}"
+        tests:
+          - not_null
+
+      - name: _LOAD_TIMESTAMP
+        description: "{{ doc('_load_timestamp')}}"
+        tests:
+          - not_null
+
+      - name: CHUNK_HASH
+        description: "{{ doc('chunk_hash')}}"
+        tests:
+          - not_null
+
+      - name: RECEIPT
+        description: "{{ doc('receipt')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - OBJECT
+                - VARIANT
+
+      - name: RECEIPT_ID
+        description: "{{ doc('receipt_id')}}"
+        tests:
+          - not_null
+
+      - name: RECEIVER_ID
+        description: "{{ doc('receiver_id')}}"
+        tests:
+          - not_null
+
+      - name: SIGNER_ID
+        description: "{{ doc('signer_id')}}"
+        tests:
+          - not_null:
+              where: object_keys(receipt:receipt)[0] != 'Data'
+

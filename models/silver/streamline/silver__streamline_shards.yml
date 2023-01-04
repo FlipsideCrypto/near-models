@@ -4,10 +4,6 @@ models:
   - name: silver__streamline_shards
     description: |-
       Parses the shards JSON files for NEAR.
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - shard_id
 
     columns:
       - name: BLOCK_ID
@@ -23,6 +19,7 @@ models:
         description: "{{ doc('shard_id')}}"
         tests:
           - not_null
+          - unique
 
       - name: CHUNK
         description: "{{ doc('chunks')}}"

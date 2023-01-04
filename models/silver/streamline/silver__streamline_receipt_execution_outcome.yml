@@ -21,6 +21,12 @@ models:
         tests:
           - not_null
 
+      - name: RECEIPT_EXECUTION_OUTCOME_ID
+        description: "{{ doc('receipt_execution_outcome_id')}}"
+        tests:
+          - not_null
+          - unique
+
       - name: _LOAD_TIMESTAMP
         description: "{{ doc('_load_timestamp')}}"
         tests:
