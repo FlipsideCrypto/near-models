@@ -22,11 +22,17 @@ FINAL AS (
         block_id,
         shard_id,
         INDEX AS receipt_outcome_execution_index,
-        CONCAT_WS('-',shard_id,INDEX) as receipt_execution_outcome_id,
+        concat_ws(
+            '-',
+            shard_id,
+            INDEX
+        ) AS receipt_execution_outcome_id,
         _load_timestamp,
         chunk :header :chunk_hash :: STRING AS chunk_hash,
         VALUE :execution_outcome :: OBJECT AS execution_outcome,
-        VALUE :receipt :: OBJECT AS receipt
+        VALUE :receipt :: OBJECT AS receipt,
+        VALUE :receipt :receipt_id :: STRING AS receipt_id,
+        VALUE :execution_outcome :id :: STRING AS receipt_outcome_id
     FROM
         shards,
         LATERAL FLATTEN(
