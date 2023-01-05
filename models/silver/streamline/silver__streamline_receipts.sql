@@ -74,9 +74,17 @@ FINAL AS (
         receipt,
         receipt :receipt_id :: STRING AS receipt_id,
         receipt :receiver_id :: STRING AS receiver_id,
-        receipt :receipt :Action :signer_id :: STRING AS signer_id
+        receipt :receipt :Action :signer_id :: STRING AS signer_id,
+        object_keys(
+            receipt :receipt
+        ) [0] :: STRING AS receipt_type
     FROM
-        receipts
+        receipts qualify ROW_NUMBER() over (
+            PARTITION BY receipt_id
+            ORDER BY
+                source_object DESC,
+                _load_timestamp DESC
+        ) = 1
 )
 SELECT
     *
