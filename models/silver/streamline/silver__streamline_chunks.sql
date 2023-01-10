@@ -15,7 +15,7 @@ WITH shards AS (
         chunk != 'null'
         AND {{ incremental_load_filter('_load_timestamp') }}
         -- sample for dev testing TODO remove before prod merge
-        AND block_id BETWEEN 52800000 AND 53000000
+        -- AND block_id BETWEEN 52000000 AND 54000000
 ),
 FINAL AS (
     SELECT

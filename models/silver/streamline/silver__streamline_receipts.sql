@@ -31,7 +31,8 @@ chunk_receipts AS (
         INDEX AS object_receipt_index,
         _load_timestamp,
         chunk_hash,
-        VALUE AS receipt
+        VALUE AS receipt,{} AS execution_outcome,
+        [] AS outcome_receipts
     FROM
         chunks,
         LATERAL FLATTEN(
@@ -48,7 +49,9 @@ reo_receipts AS (
         receipt_outcome_execution_index AS object_receipt_index,
         _load_timestamp,
         chunk_hash,
-        receipt
+        receipt,
+        execution_outcome,
+        execution_outcome :outcome :receipt_ids :: ARRAY AS outcome_receipts
     FROM
         receipt_execution_outcomes
 ),
@@ -65,19 +68,23 @@ receipts AS (
 ),
 FINAL AS (
     SELECT
+        receipt :receipt_id :: STRING AS receipt_id,
         block_id,
         shard_id,
         source_object,
         object_receipt_index AS receipt_index,
-        _load_timestamp,
         chunk_hash,
         receipt,
-        receipt :receipt_id :: STRING AS receipt_id,
+        execution_outcome,
+        outcome_receipts,
         receipt :receiver_id :: STRING AS receiver_id,
         receipt :receipt :Action :signer_id :: STRING AS signer_id,
-        object_keys(
-            receipt :receipt
-        ) [0] :: STRING AS receipt_type
+        LOWER(
+            object_keys(
+                receipt :receipt
+            ) [0] :: STRING
+        ) AS receipt_type,
+        _load_timestamp
     FROM
         receipts qualify ROW_NUMBER() over (
             PARTITION BY receipt_id
