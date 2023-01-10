@@ -34,6 +34,11 @@ on-run-start:
 # as tables. These settings can be overridden in the individual model files
 # using the `{{ config(...) }}` macro.
 models:
+  +copy_grants: true
+  +persist_docs:
+    relation: true
+    columns: true
+  +on_schema_change: "append_new_columns"
   +post-hook: "{% if target.name == 'prod_cloud' and this.schema != 'bronze' %} grant select on {{ this }} to share near_mdao {% endif %}"
 
 tests:
