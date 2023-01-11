@@ -2,19 +2,18 @@ name: docs_update
 
 on:
   push:
-    branches:    
-      - 'main'
+    branches:
+      - "main"
 
 env:
-  ACCOUNT: '${{ secrets.ACCOUNT }}'
-  ROLE: '${{ secrets.ROLE }}'
-  USER: '${{ secrets.USER }}'
-  PASSWORD: '${{ secrets.PASSWORD }}'
-  REGION: '${{ secrets.REGION }}'
-  DATABASE_DEV: '${{ secrets.DATABASE_DEV }}'
-  DATABASE_PROD: '${{ secrets.DATABASE_PROD }}'
-  WAREHOUSE_DEV: '${{ secrets.WAREHOUSE_DEV }}'
-  WAREHOUSE_PROD: '${{ secrets.WAREHOUSE_PROD }}'
+  ACCOUNT: "${{ secrets.ACCOUNT }}"
+  ROLE: "${{ secrets.ROLE }}"
+  USER: "${{ secrets.USER }}"
+  PASSWORD: "${{ secrets.PASSWORD }}"
+  REGION: "${{ secrets.REGION }}"
+  DATABASE: "${{ secrets.DATABASE }}"
+  WAREHOUSE: "${{ secrets.WAREHOUSE }}"
+  SCHEMA: "${{ secrets.SCHEMA }}"
 
 jobs:
   scheduled_run:
@@ -39,7 +38,7 @@ jobs:
         run: |
           git checkout -b docs
           git push --set-upstream origin docs
-        
+
       - name: generate dbt docs
         run: dbt docs generate --profiles-dir ./.dbt
 
@@ -61,7 +60,7 @@ jobs:
           git config user.email "abc@xyz"
           git config user.name "github-actions"
           git commit -am "Auto-update docs"
-          
+
       - name: push changes to docs
         run: |
           git push
