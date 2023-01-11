@@ -4,15 +4,37 @@
     unique_key = 'receipt_id',
     cluster_by = ['_load_timestamp::date', 'block_id']
 ) }}
-{# TODO - replace sample with streamline #}
+
 WITH base_receipts AS (
 
     SELECT
         *
     FROM
         {{ ref('silver__streamline_receipts') }}
-        {{ partition_batch_load(500000) }}
-        AND {{ incremental_load_filter('_load_timestamp') }}
+
+{% if is_incremental() %}
+WHERE
+    _partition_by_block_number BETWEEN (
+        SELECT
+            MAX(_partition_by_block_number)
+        FROM
+            {{ this }}
+    )
+    AND (
+        (
+            SELECT
+                MAX(_partition_by_block_number)
+            FROM
+                {{ this }}
+        ) + 250000
+    )
+{%- else -%}
+{# TODO - reset this or just use the macro. Changed the block range to match dev sample size #}
+WHERE
+    _partition_by_block_number BETWEEN 79000000
+    AND 79100000
+{% endif %}
+AND {{ incremental_load_filter('_load_timestamp') }}
 ),
 append_tx_hash AS (
     SELECT
