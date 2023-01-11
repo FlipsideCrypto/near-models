@@ -4,6 +4,17 @@ on:
   schedule:
     - cron: "0 0 * * 1" # At 00:00 on Monday
 
+env:
+  ACCOUNT: "${{ secrets.ACCOUNT }}"
+  ROLE: "${{ secrets.ROLE }}"
+  USER: "${{ secrets.USER }}"
+  PASSWORD: "${{ secrets.PASSWORD }}"
+  REGION: "${{ secrets.REGION }}"
+  DATABASE_DEV: "${{ secrets.DATABASE_DEV }}"
+  DATABASE_PROD: "${{ secrets.DATABASE_PROD }}"
+  WAREHOUSE_DEV: "${{ secrets.WAREHOUSE_DEV }}"
+  WAREHOUSE_PROD: "${{ secrets.WAREHOUSE_PROD }}"
+
 jobs:
   scheduled_run:
     name: seed_labels_update
@@ -43,6 +54,6 @@ jobs:
           git config user.name "github-actions"
           git commit -am "Auto-update token labels"
 
-      - name: push changes to docs
+      - name: push changes to labels
         run: |
           git push
