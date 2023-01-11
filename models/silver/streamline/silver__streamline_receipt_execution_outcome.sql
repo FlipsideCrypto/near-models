@@ -15,7 +15,7 @@ WITH shards AS (
         ARRAY_SIZE(receipt_execution_outcomes) > 0
         AND {{ incremental_load_filter('_load_timestamp') }}
         -- sample for dev testing TODO remove before prod merge
-        -- AND block_id BETWEEN 52000000 AND 54000000
+        AND block_id BETWEEN 79000000 AND 82000000
 
 ),
 FINAL AS (
@@ -29,6 +29,7 @@ FINAL AS (
             INDEX
         ) AS receipt_execution_outcome_id,
         _load_timestamp,
+        _partition_by_block_number,
         chunk :header :chunk_hash :: STRING AS chunk_hash,
         VALUE :execution_outcome :: OBJECT AS execution_outcome,
         VALUE :receipt :: OBJECT AS receipt,

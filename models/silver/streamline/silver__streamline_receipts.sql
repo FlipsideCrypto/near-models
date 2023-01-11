@@ -2,7 +2,7 @@
     materialized = 'incremental',
     incremental_strategy = 'merge',
     unique_key = 'receipt_id',
-    cluster_by = ['_load_timestamp::date', 'block_id', 'receipt_id']
+    cluster_by = ['_load_timestamp::date', 'block_id']
 ) }}
 
 WITH chunks AS (
@@ -30,6 +30,7 @@ chunk_receipts AS (
         'chunk' AS source_object,
         INDEX AS object_receipt_index,
         _load_timestamp,
+        _partition_by_block_number,
         chunk_hash,
         VALUE AS receipt,{} AS execution_outcome,
         [] AS outcome_receipts
@@ -48,6 +49,7 @@ reo_receipts AS (
         'receipt_execution_outcomes' AS source_object,
         receipt_outcome_execution_index AS object_receipt_index,
         _load_timestamp,
+        _partition_by_block_number,
         chunk_hash,
         receipt,
         execution_outcome,
@@ -84,7 +86,8 @@ FINAL AS (
                 receipt :receipt
             ) [0] :: STRING
         ) AS receipt_type,
-        _load_timestamp
+        _load_timestamp,
+        _partition_by_block_number
     FROM
         receipts qualify ROW_NUMBER() over (
             PARTITION BY receipt_id

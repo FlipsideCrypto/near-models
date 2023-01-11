@@ -4,9 +4,9 @@
     unique_key = 'tx_hash',
     cluster_by = ['_load_timestamp::date', 'block_id', 'tx_hash']
 ) }}
-
-{# TODO - look into optimizing a full run #}
-
+{# TODO - look into optimizing a full run 
+likely partition the full chain refresh
+#}
 WITH chunks AS (
 
     SELECT
@@ -32,6 +32,7 @@ flatten_transactions AS (
         shard_id,
         INDEX AS transactions_index,
         _load_timestamp,
+        _partition_by_block_number,
         chunk :header :chunk_hash :: STRING AS chunk_hash,
         VALUE :outcome :execution_outcome :outcome :receipt_ids :: ARRAY AS outcome_receipts,
         VALUE AS tx
@@ -49,20 +50,21 @@ txs AS (
         b.block_timestamp,
         t.shard_id,
         t.transactions_index,
-        t._load_timestamp as _tx_load_timestamp,
-        b._load_timestamp as _block_load_timestamp,
+        t._load_timestamp AS _tx_load_timestamp,
+        b._load_timestamp AS _block_load_timestamp,
+        b._partition_by_block_number,
         t.chunk_hash,
         t.outcome_receipts,
         t.tx,
-        t.tx :transaction :actions :: variant as _actions,
-        t.tx :transaction :hash :: STRING as _hash,
-        t.tx:transaction:nonce::string as _nonce,
-        t.tx :outcome :execution_outcome :: variant as _outcome,
-        t.tx :transaction :public_key :: STRING as _public_key,
-        [] as _receipt,
-        t.tx :transaction :receiver_id :: STRING as _receiver_id,
-        t.tx :transaction :signature :: STRING as _signature,
-        t.tx :transaction :signer_id :: STRING as _signer_id
+        t.tx :transaction :actions :: variant AS _actions,
+        t.tx :transaction :hash :: STRING AS _hash,
+        t.tx :transaction :nonce :: STRING AS _nonce,
+        t.tx :outcome :execution_outcome :: variant AS _outcome,
+        t.tx :transaction :public_key :: STRING AS _public_key,
+        [] AS _receipt,
+        t.tx :transaction :receiver_id :: STRING AS _receiver_id,
+        t.tx :transaction :signature :: STRING AS _signature,
+        t.tx :transaction :signer_id :: STRING AS _signer_id
     FROM
         flatten_transactions t
         LEFT JOIN blocks b USING (block_id)
@@ -89,7 +91,8 @@ FINAL AS (
         _receiver_id,
         _signature,
         _signer_id,
-        _block_load_timestamp as _load_timestamp
+        _block_load_timestamp AS _load_timestamp,
+        _partition_by_block_number
     FROM
         txs
 )

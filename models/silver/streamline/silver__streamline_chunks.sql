@@ -15,13 +15,14 @@ WITH shards AS (
         chunk != 'null'
         AND {{ incremental_load_filter('_load_timestamp') }}
         -- sample for dev testing TODO remove before prod merge
-        -- AND block_id BETWEEN 52000000 AND 54000000
+        AND block_id BETWEEN 79000000 and 82000000
 ),
 FINAL AS (
     SELECT
         block_id,
         shard_id,
         _load_timestamp,
+        _partition_by_block_number,
         chunk,
         chunk :header :height_created :: NUMBER AS height_created,
         chunk :header :height_included :: NUMBER AS height_included,
