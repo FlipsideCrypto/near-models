@@ -27,13 +27,13 @@ WHERE
 
 {% if is_incremental() %}
 WHERE
-    _partition_by_block_number BETWEEN (
+    _partition_by_block_number > (
         SELECT
             MAX(_partition_by_block_number)
         FROM
             {{ this }}
     )
-    AND (
+    AND _partition_by_block_number <= (
         (
             SELECT
                 MAX(_partition_by_block_number)
@@ -44,6 +44,19 @@ WHERE
 {%- else -%}
 WHERE
     _partition_by_block_number BETWEEN 46670000
-    AND 50000000
+    AND 47000000
+{% endif %}
+{%- endmacro %}
+
+{% macro partition_batch_load_dev_temp(batch_size) %}
+
+{% if is_incremental() %}
+WHERE
+    _partition_by_block_number BETWEEN 47000000
+    AND 47250000
+{%- else -%}
+WHERE
+    _partition_by_block_number BETWEEN 46670000
+    AND 47000000
 {% endif %}
 {%- endmacro %}

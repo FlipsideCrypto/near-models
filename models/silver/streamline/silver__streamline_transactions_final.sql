@@ -3,7 +3,7 @@
   unique_key = 'tx_hash',
   incremental_strategy = 'merge',
   cluster_by = ['_load_timestamp::date', 'block_timestamp::date'],
-  tags = ['s3', 's3_third']
+  tags = ['s3', 's3_final']
 ) }}
 
 WITH int_txs AS (
@@ -12,31 +12,22 @@ WITH int_txs AS (
     *
   FROM
     {{ ref('silver__streamline_transactions') }}
-{% if is_incremental() %}
-WHERE
-  _load_timestamp > (
-    SELECT
-      MAX(_load_timestamp)
-    FROM
-      {{ ref('silver__streamline_receipts_final') }}
-  )
-{% endif %}
+  WHERE
+    {{ incremental_load_filter('_load_timestamp') }}
 ),
 int_receipts AS (
   SELECT
     *
   FROM
     {{ ref('silver__streamline_receipts_final') }}
-
-{% if is_incremental() %}
-WHERE
-  _load_timestamp > (
-    SELECT
-      MAX(_load_timestamp)
-    FROM
-      {{ ref('silver__streamline_receipts_final') }}
-  )
-{% endif %}
+  WHERE
+    {{ incremental_load_filter('_load_timestamp') }}
+),
+int_blocks AS (
+  SELECT
+    *
+  FROM
+    {{ ref('silver__streamline_blocks') }}
 ),
 receipt_array AS (
   SELECT
@@ -50,14 +41,12 @@ receipt_array AS (
 base_transactions AS (
   SELECT
     t.tx_hash,
-    block_id,
-    block_hash,
-    block_timestamp,
-    shard_id,
+    t.block_id,
+    b.block_hash,
+    b.block_timestamp,
+    t.shard_id,
     transactions_index,
-    _tx_load_timestamp,
-    _block_load_timestamp,
-    chunk_hash,
+    t.chunk_hash,
     outcome_receipts,
     OBJECT_CONSTRUCT(
       'actions',
@@ -79,11 +68,12 @@ base_transactions AS (
       'signer_id',
       _signer_id
     ) AS tx,
-    _block_load_timestamp AS _load_timestamp,
+    _load_timestamp,
     _partition_by_block_number
   FROM
     int_txs t
     LEFT JOIN receipt_array r USING (tx_hash)
+    LEFT JOIN int_blocks b USING (block_id)
 ),
 {# The following steps were copied directly from legacy tx model to replicate columns #}
 actions AS (
@@ -118,40 +108,38 @@ transactions AS (
   FROM
     base_transactions
 ),
+{# changed this from a lateral flatten to use receipts model #}
 receipts AS (
   SELECT
     tx_hash,
     IFF(
-      VALUE :outcome :status :Failure IS NOT NULL,
+      execution_outcome :outcome :status :Failure IS NOT NULL,
       'Fail',
       'Success'
     ) AS success_or_fail,
     SUM(
-      VALUE :outcome :gas_burnt :: NUMBER
+      gas_burnt
     ) over (
       PARTITION BY tx_hash
       ORDER BY
         tx_hash DESC
     ) AS receipt_gas_burnt,
     SUM(
-      VALUE :outcome :tokens_burnt :: NUMBER
+      execution_outcome :outcome :tokens_burnt :: NUMBER
     ) over (
       PARTITION BY tx_hash
       ORDER BY
         tx_hash DESC
     ) AS receipt_tokens_burnt
   FROM
-    transactions,
-    LATERAL FLATTEN(
-      input => tx :receipt
-    )
+    int_receipts
 ),
 FINAL AS (
   SELECT
     t.block_id,
     t.block_hash,
     t.tx_hash,
-    t.block_timestamp,
+    block_timestamp,
     t.nonce,
     t.signature,
     t.tx_receiver,
@@ -159,8 +147,8 @@ FINAL AS (
     t.tx,
     t.transaction_gas_burnt + r.receipt_gas_burnt AS gas_used,
     t.transaction_tokens_burnt + r.receipt_tokens_burnt AS transaction_fee,
-    t._load_timestamp,
-    t._partition_by_block_number,
+    _load_timestamp,
+    _partition_by_block_number,
     COALESCE(
       actions.attached_gas,
       gas_used
@@ -180,7 +168,7 @@ FINAL AS (
     ON t.tx_hash = actions.tx_hash
 )
 SELECT
-  DISTINCT tx_hash,
+  tx_hash,
   block_id,
   block_hash,
   block_timestamp,
@@ -196,4 +184,8 @@ SELECT
   attached_gas,
   tx_status
 FROM
-  FINAL
+  FINAL qualify ROW_NUMBER() over (
+    PARTITION BY tx_hash
+    ORDER BY
+      _load_timestamp DESC
+  ) = 1

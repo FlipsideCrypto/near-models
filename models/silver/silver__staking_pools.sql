@@ -3,7 +3,9 @@
         materialized = 'incremental',
         cluster_by = ['block_timestamp'],
         unique_key = 'tx_hash',
-        incremental_strategy = 'merge'
+        incremental_strategy = 'merge',
+    tags = ['curated']
+
     )
 }}
 with txs as (

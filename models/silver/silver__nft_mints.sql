@@ -4,6 +4,8 @@
         cluster_by=["block_timestamp::DATE", "_inserted_timestamp::DATE"],
         unique_key="action_id",
         incremental_strategy="delete+insert",
+    tags = ['curated']
+
     )
 }}
 

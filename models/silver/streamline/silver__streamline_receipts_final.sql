@@ -1,9 +1,9 @@
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'delete+insert',
-    unique_key = 'receipt_outcome_id',
+    unique_key = 'receipt_object_id',
     cluster_by = ['_load_timestamp::date', 'block_id'],
-    tags = ['s3', 's3_second']
+    tags = ['s3', 's3_final']
 ) }}
 
 WITH base_receipts AS (
@@ -12,7 +12,14 @@ WITH base_receipts AS (
         *
     FROM
         {{ ref('silver__streamline_receipts') }}
-        {{ partition_batch_load(250000) }}
+
+
+
+        {% if target.name == 'dev' %}
+            {{ partition_batch_load_dev(250000) }}
+        {% else %}
+            {{ partition_batch_load(250000) }}
+        {% endif %}
         AND {{ incremental_load_filter('_load_timestamp') }}
 ),
 append_tx_hash AS (

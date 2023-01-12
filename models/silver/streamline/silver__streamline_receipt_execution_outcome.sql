@@ -3,7 +3,7 @@
     incremental_strategy = 'merge',
     unique_key = 'receipt_execution_outcome_id',
     cluster_by = ['_load_timestamp::date','block_id','chunk_hash'],
-    tags = ['s3', 's3_first']
+    tags = ['s3']
 ) }}
 
 WITH shards AS (
@@ -12,9 +12,12 @@ WITH shards AS (
         *
     FROM
         {{ ref('silver__streamline_shards') }}
-        {# Adding partition load to control full-chain refresh on change #}
-        {# TODO change to 5m for prod #}
-        {{ partition_batch_load_dev(1000000) }}
+
+        {% if target.name == 'dev' %}
+            {{ partition_batch_load_dev(1000000) }}
+        {% else %}
+            {{ partition_batch_load(5000000) }}
+        {% endif %}
         AND ARRAY_SIZE(receipt_execution_outcomes) > 0
         AND {{ incremental_load_filter('_load_timestamp') }}
 ),

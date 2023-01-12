@@ -1,8 +1,9 @@
 {{ config(
   materialized = 'incremental',
   incremental_strategy = 'delete+insert',
-  cluster_by = ['block_timestamp::DATE', '_inserted_timestamp::DATE'],
-  unique_key = 'action_id'
+  cluster_by = ['block_timestamp::DATE', '_load_timestamp::DATE'],
+  unique_key = 'action_id',
+  tags = ['curated']
 ) }}
 
 WITH action_events AS (
@@ -12,7 +13,7 @@ WITH action_events AS (
   FROM
     {{ ref('silver__actions_events') }}
   WHERE
-    {{ incremental_load_filter('_inserted_timestamp') }}
+    {{ incremental_load_filter('_load_timestamp') }}
     AND action_name = 'FunctionCall'
 ),
 decoding AS (
@@ -36,8 +37,8 @@ decoding AS (
         args_decoded AS args,
         deposit,
         attached_gas,
-        _ingested_at,
-        _inserted_timestamp
+        _load_timestamp,
+        _partition_by_block_number
       FROM
         decoding
     )

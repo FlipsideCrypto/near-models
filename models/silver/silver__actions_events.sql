@@ -1,8 +1,9 @@
 {{ config(
   materialized = 'incremental',
   incremental_strategy = 'delete+insert',
-  cluster_by = ['block_timestamp::DATE', '_inserted_timestamp::DATE'],
+  cluster_by = ['block_timestamp::DATE', '_load_timestamp::DATE'],
   unique_key = 'action_id',
+  tags = ['curated']
 ) }}
 
 WITH txs AS (
@@ -20,12 +21,12 @@ WITH txs AS (
     gas_used,
     transaction_fee,
     attached_gas,
-    _ingested_at,
-    _inserted_timestamp
+    _load_timestamp,
+    _partition_by_block_number
   FROM
-    {{ ref('silver__transactions') }}
+    {{ ref('silver__streamline_transactions_final') }}
   WHERE
-    {{ incremental_load_filter('_inserted_timestamp') }}
+    {{ incremental_load_filter('_load_timestamp') }}
 ),
 actions AS (
   SELECT
