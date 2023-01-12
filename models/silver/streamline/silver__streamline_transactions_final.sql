@@ -2,7 +2,8 @@
   materialized = 'incremental',
   unique_key = 'tx_hash',
   incremental_strategy = 'merge',
-  cluster_by = ['_load_timestamp::date', 'block_timestamp::date']
+  cluster_by = ['_load_timestamp::date', 'block_timestamp::date'],
+  tags = ['s3', 's3_third']
 ) }}
 
 WITH int_txs AS (
@@ -11,7 +12,6 @@ WITH int_txs AS (
     *
   FROM
     {{ ref('silver__streamline_transactions') }}
-
 {% if is_incremental() %}
 WHERE
   _load_timestamp > (
@@ -85,6 +85,7 @@ base_transactions AS (
     int_txs t
     LEFT JOIN receipt_array r USING (tx_hash)
 ),
+{# The following steps were copied directly from legacy tx model to replicate columns #}
 actions AS (
   SELECT
     tx_hash,

@@ -2,7 +2,8 @@
     materialized = 'incremental',
     incremental_strategy = 'merge',
     unique_key = 'receipt_execution_outcome_id',
-    cluster_by = ['_load_timestamp::date','block_id','chunk_hash']
+    cluster_by = ['_load_timestamp::date','block_id','chunk_hash'],
+    tags = ['s3', 's3_first']
 ) }}
 
 WITH shards AS (
@@ -11,12 +12,11 @@ WITH shards AS (
         *
     FROM
         {{ ref('silver__streamline_shards') }}
-    WHERE
-        ARRAY_SIZE(receipt_execution_outcomes) > 0
+        {# Adding partition load to control full-chain refresh on change #}
+        {# TODO change to 5m for prod #}
+        {{ partition_batch_load_dev(1000000) }}
+        AND ARRAY_SIZE(receipt_execution_outcomes) > 0
         AND {{ incremental_load_filter('_load_timestamp') }}
-        -- sample for dev testing TODO remove before prod merge
-        AND block_id BETWEEN 79000000 AND 82000000
-
 ),
 FINAL AS (
     SELECT

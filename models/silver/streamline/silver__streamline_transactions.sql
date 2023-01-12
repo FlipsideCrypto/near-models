@@ -2,11 +2,10 @@
     materialized = 'incremental',
     incremental_strategy = 'merge',
     unique_key = 'tx_hash',
-    cluster_by = ['_load_timestamp::date', 'block_id', 'tx_hash']
+    cluster_by = ['_load_timestamp::date', 'block_id', 'tx_hash'],
+    tags = ['s3', 's3_first']
 ) }}
-{# TODO - look into optimizing a full run 
-likely partition the full chain refresh
-#}
+
 WITH chunks AS (
 
     SELECT

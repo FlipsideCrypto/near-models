@@ -3,7 +3,8 @@
     incremental_strategy = 'merge',
     cluster_by = ['_partition_by_block_number', '_load_timestamp::DATE'],
     unique_key = 'block_id',
-    full_refresh = False
+    full_refresh = False,
+    tags = ['load_s3']
 ) }}
 
 WITH blocksjson AS (

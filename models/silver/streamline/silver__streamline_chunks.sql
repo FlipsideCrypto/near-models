@@ -2,7 +2,8 @@
     materialized = 'incremental',
     incremental_strategy = 'merge',
     unique_key = 'chunk_hash',
-    cluster_by = ['_load_timestamp::date','height_created','height_included']
+    cluster_by = ['_load_timestamp::date','height_created','height_included'],
+    tags = ['s3', 's3_first']
 ) }}
 
 WITH shards AS (
@@ -11,11 +12,11 @@ WITH shards AS (
         *
     FROM
         {{ ref('silver__streamline_shards') }}
-    WHERE
-        chunk != 'null'
+        {# Adding partition load to control full-chain refresh on change #}
+        {# TODO change to 5mm for prod #}
+        {{ partition_batch_load_dev(1000000) }}
+        AND chunk != 'null'
         AND {{ incremental_load_filter('_load_timestamp') }}
-        -- sample for dev testing TODO remove before prod merge
-        AND block_id BETWEEN 79000000 and 82000000
 ),
 FINAL AS (
     SELECT

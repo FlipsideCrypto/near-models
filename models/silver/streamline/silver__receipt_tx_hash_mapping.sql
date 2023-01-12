@@ -1,6 +1,7 @@
 {{ config(
     materalized = 'view',
-    unique_key = 'receipt_id'
+    unique_key = 'receipt_id',
+    tags = ['s3']
 ) }}
 
 WITH recursive ancestrytree AS (

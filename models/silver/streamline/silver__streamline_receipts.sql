@@ -2,7 +2,8 @@
     materialized = 'incremental',
     incremental_strategy = 'merge',
     unique_key = 'receipt_id',
-    cluster_by = ['_load_timestamp::date', 'block_id']
+    cluster_by = ['_load_timestamp::date', 'block_id'],
+    tags = ['s3', 's3_first']
 ) }}
 
 WITH chunks AS (

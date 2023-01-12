@@ -1,8 +1,9 @@
 {{ config(
     materialized = 'incremental',
-    incremental_strategy = 'merge',
-    unique_key = 'receipt_id',
-    cluster_by = ['_load_timestamp::date', 'block_id']
+    incremental_strategy = 'delete+insert',
+    unique_key = 'receipt_outcome_id',
+    cluster_by = ['_load_timestamp::date', 'block_id'],
+    tags = ['s3', 's3_second']
 ) }}
 
 WITH base_receipts AS (
@@ -11,30 +12,8 @@ WITH base_receipts AS (
         *
     FROM
         {{ ref('silver__streamline_receipts') }}
-
-{% if is_incremental() %}
-WHERE
-    _partition_by_block_number BETWEEN (
-        SELECT
-            MAX(_partition_by_block_number)
-        FROM
-            {{ this }}
-    )
-    AND (
-        (
-            SELECT
-                MAX(_partition_by_block_number)
-            FROM
-                {{ this }}
-        ) + 250000
-    )
-{%- else -%}
-    {# TODO - reset this or just use the macro. Changed the block range to match dev sample size #}
-WHERE
-    _partition_by_block_number BETWEEN 79000000
-    AND 79100000
-{% endif %}
-AND {{ incremental_load_filter('_load_timestamp') }}
+        {{ partition_batch_load(250000) }}
+        AND {{ incremental_load_filter('_load_timestamp') }}
 ),
 append_tx_hash AS (
     SELECT
@@ -65,7 +44,7 @@ FINAL AS (
         block_id,
         receipt_index,
         chunk_hash,
-        receipt,
+        receipt AS receipt_actions,
         execution_outcome,
         outcome_receipts AS receipt_outcome_id,
         receiver_id,
