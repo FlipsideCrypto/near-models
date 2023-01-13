@@ -4,7 +4,8 @@
         cluster_by=["block_timestamp::DATE", "_inserted_timestamp::DATE"],
         unique_key="action_id",
         incremental_strategy="delete+insert",
-    tags = ['curated']
+  tags = ['curated', 'curated_rpc']
+
 
     )
 }}
@@ -20,7 +21,6 @@ with
             try_parse_json(args) as args_json,
             method_name,
             deposit / pow(10, 24) as deposit,
-            _ingested_at,
             _inserted_timestamp, 
             case
                 when args_json:receiver_id is not null
@@ -84,7 +84,6 @@ select distinct
     block_id,
     block_timestamp,
     method_name,
-    _ingested_at,
     _inserted_timestamp,
     tx_signer,
     tx_receiver,

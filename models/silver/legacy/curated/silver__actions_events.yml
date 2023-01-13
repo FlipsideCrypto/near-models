@@ -72,9 +72,6 @@ models:
                 - OBJECT
                 - VARIANT
 
-      - name: _INGESTED_AT
-        description: "{{ doc('_ingested_at')}}"
-
       - name: _INSERTED_TIMESTAMP
         description: "{{ doc('_inserted_timestamp')}}"
         tests:

@@ -3,7 +3,7 @@
     unique_key = "swap_id",
     incremental_strategy = "delete+insert",
     cluster_by = ["block_timestamp::DATE", "_load_timestamp::DATE"],
-    tags = ['curated']
+    tags = ['curated', 'curated_s3']
 ) }}
 
 WITH base_swap_calls AS (
@@ -17,7 +17,7 @@ WITH base_swap_calls AS (
         _load_timestamp,
         method_name
     FROM
-        {{ ref('silver__actions_events_function_call') }}
+        {{ ref('silver__actions_events_function_call_s3') }}
     WHERE
         method_name IN (
             'swap',
@@ -95,17 +95,17 @@ actions AS (
 receipts AS (
     SELECT
         block_id,
-        block_timestamp,
         tx_hash,
         CASE
             WHEN PARSE_JSON(
-                receipts.status_value
+                r.status_value
             ) :Failure IS NOT NULL THEN 'Fail'
             ELSE 'Success'
         END AS success_or_fail,
         logs
     FROM
         {{ ref("silver__streamline_receipts_final") }}
+        r
     WHERE
         tx_hash IN (
             SELECT

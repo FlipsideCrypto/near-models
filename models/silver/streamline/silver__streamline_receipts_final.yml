@@ -1,0 +1,137 @@
+version: 2
+
+models:
+  - name: silver__streamline_receipts_final
+    description: |-
+      Singular receipt objects with the shard id and chunk hash from which it was included. 
+
+    columns:
+      - name: TX_HASH
+        description: "{{ doc('tx_hash')}}"
+        tests:
+          - not_null:
+              where: receipt_type != 'data'
+
+      - name: BLOCK_ID
+        description: "{{ doc('block_id')}}"
+        tests:
+          - not_null
+
+      - name: RECEIPT_INDEX
+        description: "{{ doc('receipt_index')}}"
+        tests:
+          - not_null
+
+      - name: CHUNK_HASH
+        description: "{{ doc('chunk_hash')}}"
+        tests:
+          - not_null
+
+      - name: RECEIPT_ACTIONS
+        description: "{{ doc('receipt')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - OBJECT
+                - VARIANT
+
+      - name: EXECUTION_OUTCOME
+        description: "{{ doc('execution_outcome')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - OBJECT
+                - VARIANT
+
+      - name: RECEIPT_OBJECT_ID
+        description: "{{ doc('receipt_object_id')}}"
+        tests:
+          - not_null
+          - unique
+
+      - name: RECEIPT_OUTCOME_ID
+        description: "{{ doc('receipt_outcome_id')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - VARIANT
+                - ARRAY
+
+      - name: RECEIVER_ID
+        description: "{{ doc('receiver_id')}}"
+        tests:
+          - not_null
+
+      - name: SIGNER_ID
+        description: "{{ doc('signer_id')}}"
+        tests:
+          - not_null:
+              where: receipt_type != 'data'
+
+      - name: RECEIPT_TYPE
+        description: "{{ doc('receipt_type')}}"
+        tests:
+          - not_null
+
+
+      - name: GAS_BURNT
+        description: "{{ doc('gas_burnt')}}"
+        tests:
+          - not_null:
+              where: receipt_type != 'data'
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - DOUBLE
+                - FLOAT
+
+      - name: STATUS_VALUE
+        description: "{{ doc('status_value')}}"
+        tests:
+          - not_null:
+              where: receipt_type != 'data'
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - VARIANT
+                - OBJECT
+
+      - name: LOGS
+        description: "{{ doc('logs')}}"
+        tests:
+          - not_null:
+              where: receipt_type != 'data'
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - ARRAY
+                - VARIANT
+
+      - name: PROOF
+        description: "{{ doc('proof')}}"
+        tests:
+          - not_null:
+              where: receipt_type != 'data'
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - ARRAY
+                - VARIANT
+
+      - name: METADATA
+        description: "{{ doc('metadata')}}"
+        tests:
+          - not_null:
+              where: receipt_type != 'data'
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - VARIANT
+                - OBJECT
+
+      - name: _LOAD_TIMESTAMP
+        description: "{{ doc('_load_timestamp')}}"
+        tests:
+          - not_null
+
+      - name: _PARTITION_BY_BLOCK_NUMBER
+        description: "{{ doc('_partition_by_block_number')}}"

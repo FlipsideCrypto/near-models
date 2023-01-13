@@ -3,7 +3,8 @@
   cluster_by = ['block_timestamp::DATE', '_inserted_timestamp::DATE'],
   unique_key = 'action_id',
   incremental_strategy = 'delete+insert',
-    tags = ['curated']
+  tags = ['curated', 'curated_rpc']
+
 
 ) }}
 
@@ -33,7 +34,6 @@ txs AS (
       WHEN tx :receipt [0] :outcome :status :: STRING = '{"SuccessValue":""}' THEN TRUE
       ELSE FALSE
     END AS status,
-    _ingested_at,
     _inserted_timestamp
   FROM
     {{ ref('silver__transactions') }}
@@ -67,7 +67,6 @@ actions AS (
     t.transaction_fee,
     t.gas_used,
     t.status,
-    t._ingested_at,
     t._inserted_timestamp
   FROM
     txs AS t
@@ -89,7 +88,6 @@ FINAL AS (
     transaction_fee,
     gas_used,
     status,
-    _ingested_at,
     _inserted_timestamp
   FROM
     actions

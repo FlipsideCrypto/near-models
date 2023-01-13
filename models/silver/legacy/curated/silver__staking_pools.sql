@@ -4,7 +4,8 @@
         cluster_by = ['block_timestamp'],
         unique_key = 'tx_hash',
         incremental_strategy = 'merge',
-    tags = ['curated']
+  tags = ['curated', 'curated_rpc']
+
 
     )
 }}

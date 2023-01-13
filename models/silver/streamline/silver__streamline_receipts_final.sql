@@ -22,6 +22,13 @@ WITH base_receipts AS (
         {% endif %}
         AND {{ incremental_load_filter('_load_timestamp') }}
 ),
+blocks as (
+    SELECT
+        block_id,
+        block_timestamp
+    FROM
+        {{ ref('silver__streamline_blocks') }}
+),
 append_tx_hash AS (
     SELECT
         m.tx_hash,
@@ -48,7 +55,8 @@ FINAL AS (
     SELECT
         tx_hash,
         receipt_id AS receipt_object_id,
-        block_id,
+        r.block_id,
+        b.block_timestamp,
         receipt_index,
         chunk_hash,
         receipt AS receipt_actions,
@@ -65,7 +73,8 @@ FINAL AS (
         _load_timestamp,
         _partition_by_block_number
     FROM
-        append_tx_hash
+        append_tx_hash r
+    left join blocks b using (block_id)
 )
 SELECT
     *

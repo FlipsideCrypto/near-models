@@ -3,7 +3,7 @@
   incremental_strategy = 'delete+insert',
   unique_key = 'action_id',
   cluster_by = ['block_timestamp::DATE', '_load_timestamp::DATE'],
-  tags = ['curated']
+  tags = ['curated', 'curated_s3']
 ) }}
 
 WITH action_events AS (
@@ -11,7 +11,7 @@ WITH action_events AS (
   SELECT
     *
   FROM
-    {{ ref('silver__actions_events') }}
+    {{ ref('silver__actions_events_s3') }}
   WHERE
     action_name = 'AddKey'
     AND {{ incremental_load_filter('_load_timestamp') }}

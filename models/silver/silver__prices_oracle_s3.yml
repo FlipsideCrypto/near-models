@@ -1,0 +1,97 @@
+version: 2
+
+models:
+  - name: silver__prices_oracle_s3
+    description: |-
+      This table parses messages from the contract `priceoracle.near` and extracts the available price data.
+
+    columns:
+      - name: BLOCK_ID
+        description: "{{ doc('block_id')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
+
+      - name: BLOCK_TIMESTAMP
+        description: "{{ doc('block_timestamp')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_row_values_to_have_recent_data:
+              datepart: day
+              interval: 1
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
+
+      - name: TX_HASH
+        description: "{{ doc('tx_hash')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: INDEX
+        description: "{{ doc('index')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+
+      - name: TOKEN
+        description: "{{ doc('token')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: SYMBOL
+        description: "{{ doc('symbol')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: TOKEN_CONTRACT
+        description: "{{ doc('token_contract')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: PRICE_USD
+        description: "{{ doc('price_usd')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - FLOAT
+                - DOUBLE
+
+      - name: SOURCE
+        description: "{{ doc('source')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: _INSERTED_TIMESTAMP
+        description: "{{ doc('_inserted_timestamp')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ

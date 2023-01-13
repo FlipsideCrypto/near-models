@@ -2,8 +2,9 @@
     materialized = 'incremental',
     unique_key = 'block_id',
     incremental_strategy = 'delete+insert',
-    cluster_by = ['block_timestamp::DATE', '_inserted_timestamp::DATE'],
-    tags = ['curated']
+    cluster_by = ['block_timestamp::DATE', '_load_timestamp::DATE'],
+  tags = ['curated', 'curated_s3']
+
 
 ) }}
 
@@ -12,9 +13,9 @@ WITH txs AS (
     SELECT
         *
     FROM
-        {{ ref('silver__transactions') }}
+        {{ ref('silver__streamline_transactions_final') }}
     WHERE
-        {{ incremental_load_filter('_inserted_timestamp') }}
+        {{ incremental_load_filter('_load_timestamp') }}
 ),
 token_labels AS (
     SELECT
@@ -38,7 +39,7 @@ oracle_msgs AS (
             )
         ) AS response,
         tx,
-        _inserted_timestamp
+        _load_timestamp
     FROM
         txs
     WHERE
@@ -64,7 +65,7 @@ prices AS (
                 4
             )
         END AS price_usd,
-        _inserted_timestamp
+        _load_timestamp
     FROM
         oracle_msgs,
         LATERAL FLATTEN(
@@ -83,7 +84,7 @@ add_labels AS (
         p.token_contract,
         p.price_usd,
         p.tx_receiver AS source,
-        p._inserted_timestamp
+        p._load_timestamp
     FROM
         prices p
         LEFT JOIN token_labels l USING (token_contract)

@@ -3,7 +3,8 @@
     unique_key = 'tx_hash',
     incremental_strategy = 'delete+insert',
     cluster_by = ['block_timestamp::DATE', '_inserted_timestamp::DATE'],
-    tags = ['curated']
+  tags = ['curated', 'curated_rpc']
+
 
 ) }}
 
@@ -32,7 +33,6 @@ logs AS (
             status_value,
             'Success'
         ) AS reg_success,
-        _ingested_at,
         _inserted_timestamp
     FROM
         txs,
@@ -59,7 +59,6 @@ FINAL AS (
             VALUE :old_owner_id
         ) :: STRING AS from_address,
         VALUE :new_owner_id :: STRING AS to_address,
-        _ingested_at,
         _inserted_timestamp
     FROM
         logs,

@@ -37,7 +37,7 @@ blocks AS (
         VALUE :header :epoch_id :: STRING AS epoch_id,
         VALUE :header :next_epoch_id :: STRING AS next_epoch_id,
         NULL AS tx_count,
-        -- TODO tx_count not included in the data
+        -- TODO tx_count not included in the data, may count manually and append in view
         [] AS events,
         -- events does not exist, Figment created this
         VALUE :chunks :: ARRAY AS chunks,
@@ -64,6 +64,7 @@ FINAL AS (
         tx_count,
         events,
         chunks,
+        {# the core view contains a number of columns that are found in the header #}
         header,
         _partition_by_block_number,
         _load_timestamp
