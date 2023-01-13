@@ -2,7 +2,8 @@
     materialized = 'incremental',
     unique_key = '_res_id',
     incremental_strategy = 'merge',
-    cluster_by = ['_inserted_timestamp::date', 'token_contract']
+    cluster_by = ['_inserted_timestamp::date', 'token_contract'],
+    tags = ['curated']
 ) }}
 
 WITH nearblocks_token_api AS (
@@ -13,7 +14,6 @@ WITH nearblocks_token_api AS (
         {{ target.database }}.bronze_api.nearblocks_fts
     WHERE
         {{ incremental_load_filter('_inserted_timestamp') }}
-        
         qualify ROW_NUMBER() over (
             PARTITION BY concat_ws(
                 '-',
@@ -26,8 +26,8 @@ WITH nearblocks_token_api AS (
 ),
 FINAL AS (
     SELECT
-        _inserted_timestamp :: DATE AS date,
-        token_name as token,
+        _inserted_timestamp :: DATE AS DATE,
+        token_name AS token,
         token_contract,
         token_data,
         token_data :decimals :: NUMBER AS decimals,

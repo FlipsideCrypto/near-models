@@ -1,5 +1,5 @@
 {% docs header %}
 
-A json column containing the blocks header information.
+A json column containing header information from the object: block or chunk.
 
 {% enddocs %}

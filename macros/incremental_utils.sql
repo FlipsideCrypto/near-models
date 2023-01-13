@@ -26,3 +26,22 @@
   TRUE
 {% endif %}
 {%- endmacro %}
+
+{% macro incremental_pad_x_minutes(
+    time_col,
+    time_in_minutes
+  ) -%}
+
+{% if is_incremental() %}
+{{ time_col }} >= (
+  SELECT
+    MAX(
+      {{ time_col }}
+    )
+  FROM
+    {{ this }}
+) - INTERVAL '{{ time_in_minutes }} minutes'
+{% else %}
+  TRUE
+{% endif %}
+{%- endmacro %}
