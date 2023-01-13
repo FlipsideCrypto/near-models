@@ -32,7 +32,10 @@ int_blocks AS (
 receipt_array AS (
   SELECT
     tx_hash,
-    ARRAY_AGG(execution_outcome) AS receipt
+    ARRAY_AGG(execution_outcome) within GROUP (
+      ORDER BY
+        block_timestamp
+    ) AS receipt
   FROM
     int_receipts
   GROUP BY
