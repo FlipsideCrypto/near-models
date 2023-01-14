@@ -18,6 +18,13 @@ WITH receipts AS (
             outer => TRUE
         ) b
     WHERE
+            _partition_by_block_number >= (
+            SELECT
+                MAX(_partition_by_block_number)
+            FROM
+                silver.streamline_receipts_final
+        )
+        AND
         _partition_by_block_number <= (
             SELECT
                 MAX(_partition_by_block_number)

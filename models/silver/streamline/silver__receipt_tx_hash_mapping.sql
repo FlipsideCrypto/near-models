@@ -29,7 +29,13 @@ txs AS (
     FROM
         {{ ref('silver__streamline_transactions') }}
     WHERE
-        _partition_by_block_number <= (
+        _partition_by_block_number >= (
+            SELECT
+                MAX(_partition_by_block_number)
+            FROM
+                silver.streamline_receipts_final
+        )
+        AND _partition_by_block_number <= (
             SELECT
                 MAX(_partition_by_block_number)
             FROM
