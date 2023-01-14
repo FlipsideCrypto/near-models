@@ -12,8 +12,8 @@ WITH int_txs AS (
     *
   FROM
     {{ ref('silver__streamline_transactions') }}
-  WHERE
-    {{ incremental_load_filter('_load_timestamp') }}
+    {{ partition_batch_load(250000) }}
+    AND {{ incremental_load_filter('_load_timestamp') }}
 ),
 int_receipts AS (
   SELECT
