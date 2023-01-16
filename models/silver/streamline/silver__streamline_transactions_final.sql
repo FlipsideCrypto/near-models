@@ -12,7 +12,7 @@ WITH int_txs AS (
     *
   FROM
     {{ ref('silver__streamline_transactions') }}
-    {{ partition_batch_load(250000) }}
+    {{ partition_batch_load(200000) }}
     AND {{ incremental_load_filter('_load_timestamp') }}
 ),
 int_receipts AS (

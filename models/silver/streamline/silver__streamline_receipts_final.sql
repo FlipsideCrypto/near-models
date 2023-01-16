@@ -18,7 +18,7 @@ WITH base_receipts AS (
         {% if target.name == 'dev' %}
             {{ partition_batch_load_dev(250000) }}
         {% else %}
-            {{ partition_batch_load(250000) }}
+            {{ partition_batch_load(200000) }}
         {% endif %}
         AND {{ incremental_load_filter('_load_timestamp') }}
 ),

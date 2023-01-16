@@ -29,7 +29,7 @@ WITH receipts AS (
                 MAX(_partition_by_block_number)
             FROM
                 silver.streamline_receipts_final
-        ) + 1000000
+        ) + 210000
 )
 SELECT
     *
