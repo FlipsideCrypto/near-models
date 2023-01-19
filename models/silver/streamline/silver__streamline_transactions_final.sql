@@ -165,7 +165,7 @@ FINAL AS (
     ) AS tx_status
   FROM
     transactions AS t
-    JOIN receipts AS r
+    LEFT JOIN receipts AS r
     ON t.tx_hash = r.tx_hash
     JOIN actions
     ON t.tx_hash = actions.tx_hash
