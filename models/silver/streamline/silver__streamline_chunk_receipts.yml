@@ -1,10 +1,11 @@
 version: 2
 
 models:
-  - name: silver__streamline_receipts
+  - name: silver__streamline_chunk_receipts
     description: |-
       Singular receipt objects with the shard id and chunk hash from which it was included. 
-      These receipts are only action receipts from the execution outcome of the shard.
+      Action receipts from the chunk do not include the outcome. 
+      Data receipts are only included in the chunk
 
     columns:
       - name: BLOCK_ID
@@ -33,8 +34,7 @@ models:
       - name: CHUNK_HASH
         description: "{{ doc('chunk_hash')}}"
         tests:
-          - not_null:
-              where: "block_id not in (34691244, 34691277)"
+          - not_null
 
       - name: RECEIPT
         description: "{{ doc('receipt')}}"
@@ -44,16 +44,6 @@ models:
               column_type_list:
                 - OBJECT
                 - VARIANT
-
-      - name: EXECUTION_OUTCOME
-        description: "{{ doc('execution_outcome')}}"
-        tests:
-          - not_null
-
-      - name: OUTCOME_RECEIPTS
-        description: "{{ doc('receipt_outcome_id')}}"
-        tests:
-          - not_null
 
       - name: RECEIPT_ID
         description: "{{ doc('receipt_id')}}"
@@ -68,9 +58,11 @@ models:
       - name: SIGNER_ID
         description: "{{ doc('signer_id')}}"
         tests:
-          - not_null
+          - not_null:
+              where: receipt_type != 'data'
 
       - name: RECEIPT_TYPE
         description: "{{ doc('receipt_type')}}"
         tests:
           - not_null
+
