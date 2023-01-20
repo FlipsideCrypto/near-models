@@ -2,7 +2,8 @@
     materialized = 'incremental',
     incremental_strategy = 'delete+insert',
     cluster_by = ['_partition_by_block_number', '_load_timestamp::DATE'],
-    unique_key = 'block_id'
+    unique_key = 'block_id',
+    tags = ['s3_load']
 ) }}
 
 WITH blocksjson AS (

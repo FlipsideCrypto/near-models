@@ -3,7 +3,7 @@
   cluster_by = ['block_timestamp::DATE', '_load_timestamp::DATE'],
   unique_key = 'action_id',
   incremental_strategy = 'delete+insert',
-  tags = ['curated', 'curated_s3']
+  tags = ['curated', 's3_curated']
 ) }}
 
 WITH action_events AS(

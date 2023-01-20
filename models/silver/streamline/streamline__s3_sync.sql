@@ -2,7 +2,8 @@
     materialized = 'view',
     tags = ['streamline'],
     post_hook = "select * from {{this.schema}}.{{this.identifier}}",
-    comment = "incrementally sync Streamline.near_dev.blocks and Streamline.near_dev.shards"
+    comment = "incrementally sync Streamline.near_dev.blocks and Streamline.near_dev.shards",
+    tags = ['s3_copy']
 ) }}
 
 WITH latest_block AS (
