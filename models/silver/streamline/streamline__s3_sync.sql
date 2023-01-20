@@ -30,15 +30,24 @@ WITH latest_block AS (
             FROM
                 TABLE(GENERATOR(rowcount => 4000)),
                 latest_block b
+        ),
+        list_files AS (
+            SELECT
+                streamline.udf_s3_list_objects(
+                    's3://near-lake-data-mainnet/' || b.prefix || '/*'
+                ) AS files
+            FROM
+                blocks b
         )
     SELECT
-        b.prefix,
         streamline.udf_s3_copy_objects(
-            streamline.udf_s3_list_objects(
-                's3://near-lake-data-mainnet/' || b.prefix || '/*'
-            ),
+            files,
             's3://near-lake-data-mainnet/',
             's3://stg-us-east-1-serverless-near-lake-mainnet-fsc/'
-        )
+        ) AS synced
     FROM
-        blocks b
+        list_files l
+    WHERE
+        ARRAY_SIZE(
+            l.files
+        ) > 0
