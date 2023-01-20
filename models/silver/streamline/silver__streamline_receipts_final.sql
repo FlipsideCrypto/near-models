@@ -12,7 +12,7 @@ WITH base_receipts AS (
         *
     FROM
         {{ ref('silver__streamline_receipts') }}
-        {{ partition_batch_load(200000) }}
+        {{ partition_batch_load(30000) }}
         AND {{ incremental_load_filter('_load_timestamp') }}
 ),
 blocks AS (
