@@ -8,7 +8,7 @@ WITH receipts AS (
     SELECT
         *
     FROM
-        {{ ref('silver__receipts') }}
+        {{ ref('silver__streamline_receipts_final') }}
 )
 SELECT
     block_timestamp,
