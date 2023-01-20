@@ -17,7 +17,7 @@ WITH blocksjson AS (
         _partition_by_block_number
     FROM
         {{ ref('bronze__streamline_blocks') }}
-        {{ partition_batch_load(30000) }}
+        {{ partition_batch_load(150000) }}
 )
 SELECT
     *

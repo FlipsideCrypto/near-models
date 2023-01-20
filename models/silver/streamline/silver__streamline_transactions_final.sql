@@ -13,17 +13,11 @@ WITH int_txs AS (
   FROM
     {{ ref('silver__streamline_transactions') }}
     {{ partition_incremental_load(
-      30000,
+      150000,
       10000,
       0
     ) }}
-    AND {{ incremental_pad_x_minutes(
-      '_load_timestamp',
-      1440
-    ) }}
-    OR ARRAY_SIZE(
-      tx :receipt
-    ) IS NULL
+
 ),
 int_receipts AS (
   SELECT
@@ -31,14 +25,11 @@ int_receipts AS (
   FROM
     {{ ref('silver__streamline_receipts_final') }}
     {{ partition_incremental_load(
-      30000,
+      150000,
       10000,
       0
     ) }}
-    AND {{ incremental_pad_x_minutes(
-      '_load_timestamp',
-      1440
-    ) }}
+
 ),
 int_blocks AS (
   SELECT
