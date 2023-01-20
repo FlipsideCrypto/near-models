@@ -8,7 +8,7 @@ WITH actions_events_function_call AS (
     SELECT
         *
     FROM
-        {{ ref('silver__actions_events_function_call_s3') }}
+        {{ ref('silver__actions_events_function_call') }}
 )
 SELECT
     action_id,

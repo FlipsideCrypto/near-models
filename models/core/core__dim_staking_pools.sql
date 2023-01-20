@@ -8,7 +8,7 @@ WITH staking_pools AS (
     SELECT
         *
     FROM
-        {{ ref('silver__staking_pools_s3') }}
+        {{ ref('silver__staking_pools') }}
 )
 SELECT
     tx_hash,

@@ -8,7 +8,7 @@ WITH transactions AS (
     SELECT
         *
     FROM
-        {{ ref('silver__usn_supply_s3') }}
+        {{ ref('silver__usn_supply') }}
 )
 SELECT
     block_timestamp,

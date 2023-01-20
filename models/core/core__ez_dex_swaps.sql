@@ -8,14 +8,14 @@ WITH dex_swaps AS (
     SELECT
         *
     FROM
-        {{ ref('silver__dex_swaps_s3') }}
+        {{ ref('silver__dex_swaps') }}
 ),
 unique_swap_ids AS (
     SELECT
         swap_id,
         COUNT(1) AS swaps
     FROM
-        {{ ref('silver__dex_swaps_s3') }}
+        {{ ref('silver__dex_swaps') }}
     GROUP BY
         1
     HAVING

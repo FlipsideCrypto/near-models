@@ -13,7 +13,7 @@ WITH oracle_prices AS (
         price_usd,
         source
     FROM
-        {{ ref('silver__prices_oracle_s3') }}
+        {{ ref('silver__prices_oracle') }}
 ),
 FINAL AS (
     SELECT

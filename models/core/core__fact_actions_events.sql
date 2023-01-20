@@ -8,7 +8,7 @@ WITH actions_events AS (
     SELECT
         *
     FROM
-        {{ ref('silver__actions_events_s3') }}
+        {{ ref('silver__actions_events') }}
 )
 SELECT
     action_id,

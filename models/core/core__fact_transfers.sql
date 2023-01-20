@@ -8,7 +8,7 @@ WITH transfers AS (
     SELECT
         *
     FROM
-        {{ ref('silver__transfers_s3') }}
+        {{ ref('silver__transfers') }}
 )
 SELECT
     tx_hash,
