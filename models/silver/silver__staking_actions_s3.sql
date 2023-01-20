@@ -3,7 +3,7 @@
     incremental = 'merge',
     cluster_by = ['block_timestamp'],
     unique_key = 'tx_hash',
-    tags = ['curated', 'curated_s3']
+    tags = ['curated', 's3_curated']
 ) }}
 
 WITH actions_events_function_call AS (

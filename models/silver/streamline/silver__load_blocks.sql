@@ -4,7 +4,7 @@
     cluster_by = ['_partition_by_block_number', '_load_timestamp::DATE'],
     unique_key = 'block_id',
     full_refresh = False,
-    tags = ['load_s3']
+    tags = ['s3_load']
 ) }}
 
 WITH blocksjson AS (
@@ -17,7 +17,7 @@ WITH blocksjson AS (
         _partition_by_block_number
     FROM
         {{ ref('bronze__streamline_blocks') }}
-        {{ partition_batch_load(500000) }}
+        {{ partition_batch_load(30000) }}
 )
 SELECT
     *

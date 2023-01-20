@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'view',
-    tags = ['streamline'],
+    tags = ['streamline', 's3_copy'],
     post_hook = "select * from {{this.schema}}.{{this.identifier}}",
     comment = "incrementally sync Streamline.near_dev.blocks and Streamline.near_dev.shards"
 ) }}
