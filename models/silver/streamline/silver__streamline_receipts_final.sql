@@ -12,17 +12,10 @@ WITH base_receipts AS (
         *
     FROM
         {{ ref('silver__streamline_receipts') }}
-
-
-
-        {% if target.name == 'dev' %}
-            {{ partition_batch_load_dev(250000) }}
-        {% else %}
-            {{ partition_batch_load(200000) }}
-        {% endif %}
+        {{ partition_batch_load(30000) }}
         AND {{ incremental_load_filter('_load_timestamp') }}
 ),
-blocks as (
+blocks AS (
     SELECT
         block_id,
         block_timestamp
@@ -35,7 +28,6 @@ append_tx_hash AS (
         r.receipt_id,
         r.block_id,
         r.shard_id,
-        r.source_object,
         r.receipt_index,
         r.chunk_hash,
         r.receipt,
@@ -74,7 +66,7 @@ FINAL AS (
         _partition_by_block_number
     FROM
         append_tx_hash r
-    left join blocks b using (block_id)
+        LEFT JOIN blocks b USING (block_id)
 )
 SELECT
     *

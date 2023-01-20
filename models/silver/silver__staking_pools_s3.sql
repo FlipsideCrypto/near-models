@@ -3,7 +3,7 @@
     cluster_by = ['block_timestamp'],
     unique_key = 'tx_hash',
     incremental_strategy = 'merge',
-    tags = ['curated', 'curated_s3']
+    tags = ['curated', 's3_curated']
 ) }}
 
 WITH txs AS (

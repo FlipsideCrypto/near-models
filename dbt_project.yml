@@ -25,6 +25,7 @@ clean-targets: # directories to be removed by `dbt clean`
   - "dbt_packages"
 
 on-run-start:
+  - "{{ create_udfs() }}"
   - "{{create_sps()}}"
   - "{{create_get_nearblocks_fts()}}"
 
@@ -51,3 +52,6 @@ tests:
 
 vars:
   "dbt_date:time_zone": GMT
+  STREAMLINE_INVOKE_STREAMS: False
+  STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES: False
+  UPDATE_UDFS_AND_SPS: False

@@ -6,25 +6,41 @@
     tags = ['s3', 'receipts']
 ) }}
 
-WITH receipt_execution_outcomes AS (
+WITH chunks AS (
 
     SELECT
         *
     FROM
-        {{ ref('silver__streamline_receipt_execution_outcome') }}
+        {{ ref('silver__streamline_chunks') }}
     WHERE
-        {{ incremental_load_filter('_load_timestamp') }}
+        ARRAY_SIZE(receipts) > 0
+        AND {{ incremental_load_filter('_load_timestamp') }}
+),
+chunk_receipts AS (
+    SELECT
+        block_id,
+        shard_id,
+        INDEX AS object_receipt_index,
+        _load_timestamp,
+        _partition_by_block_number,
+        chunk_hash,
+        VALUE AS receipt
+    FROM
+        chunks,
+        LATERAL FLATTEN(
+            input => receipts
+        )
+    WHERE
+        ARRAY_SIZE(receipts) > 0
 ),
 FINAL AS (
     SELECT
         receipt :receipt_id :: STRING AS receipt_id,
         block_id,
         shard_id,
-        receipt_outcome_execution_index AS receipt_index,
+        object_receipt_index AS receipt_index,
         chunk_hash,
         receipt,
-        execution_outcome,
-        execution_outcome :outcome :receipt_ids :: ARRAY AS outcome_receipts,
         receipt :receiver_id :: STRING AS receiver_id,
         receipt :receipt :Action :signer_id :: STRING AS signer_id,
         LOWER(
@@ -35,7 +51,7 @@ FINAL AS (
         _load_timestamp,
         _partition_by_block_number
     FROM
-        receipt_execution_outcomes
+        chunk_receipts
 )
 SELECT
     *
