@@ -9,8 +9,6 @@ select
     block_id,
     block_timestamp,
     method_name,
-    _ingested_at,
-    _inserted_timestamp,
     tx_signer,
     tx_receiver,
     project_name,

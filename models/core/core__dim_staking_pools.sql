@@ -3,10 +3,19 @@
     secure = true
 ) }}
 
-with staking_pools as (
-    select
-        *
-    from {{ ref('silver__staking_pools') }}
-)
+WITH staking_pools AS (
 
-select * from staking_pools
+    SELECT
+        *
+    FROM
+        {{ ref('silver__staking_pools') }}
+)
+SELECT
+    tx_hash,
+    block_timestamp,
+    owner,
+    address,
+    reward_fee_fraction,
+    tx_type
+FROM
+    staking_pools
