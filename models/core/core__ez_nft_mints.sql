@@ -1,6 +1,6 @@
 with mints as (
     select * 
-    from {{ ref('silver__nft_mints') }}
+    from {{ ref('silver__nft_mints_s3') }}
 )
 
 select

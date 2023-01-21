@@ -8,7 +8,7 @@ WITH actions_events_addkey AS (
     SELECT
         *
     FROM
-        {{ ref('silver__actions_events_addkey') }}
+        {{ ref('silver__actions_events_addkey_s3') }}
 )
 SELECT
     action_id,

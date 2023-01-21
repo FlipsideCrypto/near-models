@@ -8,7 +8,7 @@ WITH transactions AS (
     SELECT
         *
     FROM
-        {{ ref('silver__transactions') }}
+        {{ ref('silver__streamline_transactions_final') }}
 )
 SELECT
     tx_hash,
