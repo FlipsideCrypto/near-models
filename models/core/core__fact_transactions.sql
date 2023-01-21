@@ -26,5 +26,3 @@ SELECT
     tx_status
 FROM
     transactions
-WHERE
-    tx_status IS NOT NULL
