@@ -22,22 +22,10 @@ concurrency:
   group: ${{ github.workflow }}
 
 jobs:
-  run_dbt_jobs:
-    runs-on: ubuntu-latest
-    environment: 
-      name: workflow_prod
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - uses: actions/setup-python@v1
-        with:
-          python-version: "3.7.x"
-
-      - name: install dependencies
-        run: |
-          pip3 install dbt-snowflake==1.3.0 cli_passthrough requests click
-          dbt deps
-      - name: Run DBT Jobs
-        run: |
-          dbt test
+  called_workflow_template:
+    uses: FlipsideCrypto/analytics-workflow-templates/.github/workflows/dbt_run_template.yml@main
+    with:
+      dbt_command: ["dbt test"]
+      environment: workflow_prod
+      warehouse: ${{ secrets.WAREHOUSE }}
+    secrets: inherit 
