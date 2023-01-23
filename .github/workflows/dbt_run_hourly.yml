@@ -8,8 +8,8 @@ on:
     - cron: '0 */1 * * *'
 
 env:
-  DBT_PROFILES_DIR: ./.github/workflows/.dbt/
-
+  DBT_PROFILES_DIR: "${{ secrets.DBT_PROFILES_DIR }}"
+  DBT_VERSION: "${{ secrets.DBT_VERSION }}"
   ACCOUNT: "${{ secrets.ACCOUNT }}"
   ROLE: "${{ secrets.ROLE }}"
   USER: "${{ secrets.USER }}"
