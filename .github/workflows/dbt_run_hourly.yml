@@ -26,7 +26,7 @@ jobs:
   called_workflow_template:
     uses: FlipsideCrypto/analytics-workflow-templates/.github/workflows/dbt_run_template.yml@main
     with:
-      dbt_command: "[\"dbt seed\", \"dbt run -s tag:s3_load+ tag:api\"]"
+      dbt_command: "[\"dbt seed\", \"dbt run -s tag:s3_load+ tag:api --exclude streamline__s3_sync\"]"
       environment: workflow_prod
       warehouse: ${{ vars.WAREHOUSE }}
     secrets: inherit 
