@@ -1,6 +1,13 @@
 {{ config(
     materialized = 'view',
-    secure = true
+    secure = true,
+    meta={
+    'database_tags':{
+        'table': {
+            'PURPOSE': 'STAKING'
+            }
+        }
+    }
 ) }}
 
 with staking_actions as (
