@@ -26,7 +26,7 @@ jobs:
   called_workflow_template:
     uses: FlipsideCrypto/analytics-workflow-templates/.github/workflows/dbt_run_template.yml@main
     with:
-      dbt_command: "[\"dbt run --vars '{\"S3_LOOKBACK_HOURS\":-6}' -m models/silver/streamline/streamline__s3_sync.sql\"]"
+      dbt_command: "[\"dbt run --vars '{\\\"S3_LOOKBACK_HOURS\\\":-6}' -m models/silver/streamline/streamline__s3_sync.sql\"]"
       environment: workflow_prod
       warehouse: ${{ vars.WAREHOUSE }}
     secrets: inherit 
