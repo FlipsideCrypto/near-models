@@ -1,4 +1,4 @@
-near:
+flow:
   target: dev
   outputs:
     dev:
@@ -8,12 +8,11 @@ near:
       user: "{{ env_var('USER') }}"
       password: "{{ env_var('PASSWORD') }}"
       region: "{{ env_var('REGION') }}"
-      database: "{{ env_var('DATABASE_DEV') }}"
-      warehouse: "{{ env_var('WAREHOUSE_DEV') }}"
+      database: "{{ env_var('DATABASE') }}"
+      warehouse: "{{ env_var('WAREHOUSE') }}"
       schema: SILVER
       threads: 4
       client_session_keep_alive: False
-      query_tag: gh_actions
     prod:
       type: snowflake
       account: "{{ env_var('ACCOUNT') }}"
@@ -21,9 +20,8 @@ near:
       user: "{{ env_var('USER') }}"
       password: "{{ env_var('PASSWORD') }}"
       region: "{{ env_var('REGION') }}"
-      database: "{{ env_var('DATABASE_PROD') }}"
-      warehouse: "{{ env_var('WAREHOUSE_PROD') }}"
-      schema: SILVER
+      database: "{{ env_var('DATABASE') }}"
+      warehouse: "{{ env_var('WAREHOUSE') }}"
+      schema: silver
       threads: 4
       client_session_keep_alive: False
-      query_tag: gh_actions
