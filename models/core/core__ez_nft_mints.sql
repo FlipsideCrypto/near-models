@@ -1,3 +1,15 @@
+{{ config(
+    materialized = 'view',
+    secure = true,
+    meta={
+    'database_tags':{
+        'table': {
+            'PURPOSE': 'NFT'
+            }
+        }
+    }
+) }}
+
 with mints as (
     select * 
     from {{ ref('silver__nft_mints_s3') }}

@@ -1,6 +1,13 @@
 {{ config(
     materialized = 'view',
-    secure = true
+    secure = true,
+    meta={
+    'database_tags':{
+        'table': {
+            'PURPOSE': 'PRICES'
+            }
+        }
+    }
 ) }}
 
 WITH oracle_prices AS (

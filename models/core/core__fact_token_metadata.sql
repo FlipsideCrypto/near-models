@@ -1,5 +1,12 @@
 {{ config(
-    materialized = 'view'
+    materialized = 'view',
+    meta={
+    'database_tags':{
+        'table': {
+            'PURPOSE': 'DEFI, TOKENS'
+            }
+        }
+    }
 ) }}
 
 WITH nearblocks_ft_api AS (
