@@ -21,6 +21,45 @@ concurrency:
   group: ${{ github.workflow }}
 
 jobs:
-  called_workflow_template:
-    uses: FlipsideCrypto/analytics-workflow-templates/.github/workflows/dbt_docs_updates.yml@fix/doc-template-env-vars
-    secrets: inherit 
+  scheduled_run:
+    name: docs_update
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-python@v1
+        with:
+          python-version: "3.7.x"
+
+      - name: install dependencies
+        run: |
+          pip install dbt-snowflake==${{ secrets.DBT_VERSION }}
+          dbt deps
+      - name: checkout docs branch
+        run: |
+          git checkout -B docs origin/main
+      - name: generate dbt docs
+        run: dbt docs generate
+
+      - name: move files to docs directory
+        run: |
+          mkdir -p ./docs
+          cp target/{catalog.json,manifest.json,index.html} docs/
+      - name: clean up target directory
+        run: dbt clean
+
+      - name: check for changes
+        run: git status
+
+      - name: stage changed files
+        run: git add .
+
+      - name: commit changed files
+        run: |
+          git config user.email "abc@xyz"
+          git config user.name "github-actions"
+          git commit -am "Auto-update docs"
+      - name: push changes to docs
+        run: |
+          git push -f --set-upstream origin docs
