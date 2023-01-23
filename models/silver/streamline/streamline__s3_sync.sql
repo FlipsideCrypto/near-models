@@ -8,7 +8,11 @@
 WITH latest_block AS (
 
     SELECT
-        MAX(SPLIT_PART(file_name, '/', 1)) AS block_id
+        COALESCE(MAX(SPLIT_PART(file_name, '/', 1)), (
+    SELECT
+        LPAD(MAX(block_id) :: STRING, 12, '0')
+    FROM
+        {{ ref("silver__load_blocks") }})) AS block_id
     FROM
         TABLE(
             information_schema.external_table_file_registration_history(
