@@ -24,6 +24,8 @@ jobs:
   scheduled_run:
     name: docs_update
     runs-on: ubuntu-latest
+    environment: 
+      name: workflow_prod
 
     steps:
       - uses: actions/checkout@v3
