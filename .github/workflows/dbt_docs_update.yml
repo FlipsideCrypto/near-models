@@ -22,5 +22,5 @@ concurrency:
 
 jobs:
   called_workflow_template:
-    uses: FlipsideCrypto/analytics-workflow-templates/.github/workflows/dbt_docs_updates.yml@main
+    uses: FlipsideCrypto/analytics-workflow-templates/.github/workflows/dbt_docs_updates.yml@fix/doc-template-env-vars
     secrets: inherit 
