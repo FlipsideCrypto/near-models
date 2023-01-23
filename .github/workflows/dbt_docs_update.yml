@@ -1,0 +1,26 @@
+name: dbt_docs_update
+
+on:
+  push:
+    branches:
+      - "main"
+
+env:
+  DBT_PROFILES_DIR: "${{ secrets.DBT_PROFILES_DIR }}"
+  DBT_VERSION: "${{ secrets.DBT_VERSION }}"
+  ACCOUNT: "${{ secrets.ACCOUNT }}"
+  ROLE: "${{ secrets.ROLE }}"
+  USER: "${{ secrets.USER }}"
+  PASSWORD: "${{ secrets.PASSWORD }}"
+  REGION: "${{ secrets.REGION }}"
+  DATABASE: "${{ secrets.DATABASE }}"
+  WAREHOUSE: "${{ secrets.WAREHOUSE }}"
+  SCHEMA: "${{ secrets.SCHEMA }}"
+
+concurrency:
+  group: ${{ github.workflow }}
+
+jobs:
+  called_workflow_template:
+    uses: FlipsideCrypto/analytics-workflow-templates/.github/workflows/dbt_docs_updates.yml@fix/doc-template-env-vars
+    secrets: inherit 
