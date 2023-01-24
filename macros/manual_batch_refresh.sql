@@ -12,11 +12,11 @@
     ) %}
     {% set front_buffer = var(
         'front_buffer',
-        0
+        1
     ) %}
     {% set end_buffer = var(
         'end_buffer',
-        0
+        1
     ) %}
     {% if scope == 'front' %}
         _partition_by_block_number BETWEEN {{ range_start }} - (
