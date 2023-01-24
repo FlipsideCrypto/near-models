@@ -1,9 +1,9 @@
 {{ config(
   materialized = 'incremental',
   unique_key = 'tx_hash',
-  incremental_strategy = 'merge',
+  incremental_strategy = 'delete+insert',
   cluster_by = ['_load_timestamp::date', 'block_timestamp::date'],
-  tags = ['s3', 's3_final']
+  tags = ['s3', 's3_final', 's3_manual']
 ) }}
 
 WITH int_txs AS (
@@ -12,24 +12,34 @@ WITH int_txs AS (
     *
   FROM
     {{ ref('silver__streamline_transactions') }}
-    {{ partition_incremental_load(
-      150000,
-      10000,
-      0
-    ) }}
 
+    {% if target.name == 'manual_fix' %}
+    WHERE
+      {{ partition_load_manual('no_buffer') }}
+    {% else %}
+      {{ partition_incremental_load(
+        150000,
+        10000,
+        0
+      ) }}
+    {% endif %}
 ),
 int_receipts AS (
   SELECT
     *
   FROM
     {{ ref('silver__streamline_receipts_final') }}
-    {{ partition_incremental_load(
-      150000,
-      10000,
-      0
-    ) }}
 
+    {% if target.name == 'manual_fix' %}
+    WHERE
+      {{ partition_load_manual('end') }}
+    {% else %}
+      {{ partition_incremental_load(
+        150000,
+        10000,
+        0
+      ) }}
+    {% endif %}
 ),
 int_blocks AS (
   SELECT

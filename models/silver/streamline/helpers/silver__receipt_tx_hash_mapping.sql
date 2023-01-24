@@ -1,7 +1,7 @@
 {{ config(
     materalized = 'view',
     unique_key = 'receipt_id',
-    tags = ['s3', 's3_helper']
+    tags = ['s3', 's3_helper', 's3_manual']
 ) }}
 
 WITH recursive ancestrytree AS (
@@ -28,19 +28,25 @@ txs AS (
         *
     FROM
         {{ ref('silver__streamline_transactions') }}
-    WHERE
-        _partition_by_block_number >= (
-            SELECT
-                MAX(_partition_by_block_number)
-            FROM
-                silver.streamline_receipts_final
-        ) - 20000
-        AND _partition_by_block_number <= (
-            SELECT
-                MAX(_partition_by_block_number)
-            FROM
-                silver.streamline_receipts_final
-        ) + 220000
+
+        {% if target.name == 'manual_fix' %}
+        WHERE
+            {{ partition_load_manual('front') }}
+        {% else %}
+        WHERE
+            _partition_by_block_number >= (
+                SELECT
+                    MAX(_partition_by_block_number)
+                FROM
+                    silver.streamline_receipts_final
+            ) - 20000
+            AND _partition_by_block_number <= (
+                SELECT
+                    MAX(_partition_by_block_number)
+                FROM
+                    silver.streamline_receipts_final
+            ) + 220000
+        {% endif %}
 ),
 FINAL AS (
     SELECT
