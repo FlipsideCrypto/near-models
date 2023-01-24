@@ -13,7 +13,7 @@ WITH base_receipts AS (
     FROM
         {{ ref('silver__streamline_receipts') }}
 
-        {% if target.name == 'manual_fix' %}
+        {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
         WHERE
             {{ partition_load_manual('no_buffer') }}
         {% else %}
