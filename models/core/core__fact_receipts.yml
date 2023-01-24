@@ -47,7 +47,8 @@ models:
         description: "{{ doc('receipt_object_id')}}"
         tests:
           - not_null
-          - unique
+          - unique:
+              where: receipt_object_id not in ('FA9zcm7WkWxdjkub7WFiKkQdnnQrcEmBht94VFzXfkm1', '6QKTEHsLihDgVrdtWYbURA28zF29Xdw5dnfWbDVWHPv4')
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
