@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'view',
-    tags = ['s3', 's3_helper']
+    tags = ['s3', 's3_helper', 's3_manual']
 ) }}
 
 WITH receipts AS (
@@ -17,6 +17,11 @@ WITH receipts AS (
             A.outcome_receipts,
             outer => TRUE
         ) b
+
+        {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
+    WHERE
+        {{ partition_load_manual('front') }}
+    {% else %}
     WHERE
         _partition_by_block_number >= (
             SELECT
@@ -30,6 +35,7 @@ WITH receipts AS (
             FROM
                 silver.streamline_receipts_final
         ) + 220000
+    {% endif %}
 )
 SELECT
     *
