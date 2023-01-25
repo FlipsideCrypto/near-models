@@ -22,8 +22,12 @@ WITH base_swap_calls AS (
         method_name IN (
             'swap',
             'ft_transfer_call'
-        )
-        AND {{ incremental_load_filter('_load_timestamp') }}
+        ) 
+        {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
+            AND {{ partition_load_manual('no_buffer') }}
+        {% else %}
+            AND {{ incremental_load_filter('_load_timestamp') }}
+        {% endif %}
 ),
 base_swaps AS (
     SELECT

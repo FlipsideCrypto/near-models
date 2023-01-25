@@ -3,9 +3,7 @@
     unique_key = 'block_id',
     incremental_strategy = 'delete+insert',
     cluster_by = ['block_timestamp::DATE', '_load_timestamp::DATE'],
-  tags = ['curated', 's3_curated']
-
-
+    tags = ['curated', 's3_curated']
 ) }}
 
 WITH txs AS (
@@ -14,8 +12,14 @@ WITH txs AS (
         *
     FROM
         {{ ref('silver__streamline_transactions_final') }}
-    WHERE
-        {{ incremental_load_filter('_load_timestamp') }}
+
+        {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
+        WHERE
+            {{ partition_load_manual('no_buffer') }}
+        {% else %}
+        WHERE
+            {{ incremental_load_filter('_load_timestamp') }}
+        {% endif %}
 ),
 token_labels AS (
     SELECT

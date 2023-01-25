@@ -17,8 +17,14 @@ WITH txs AS (
         _load_timestamp
     FROM
         {{ ref('silver__streamline_transactions_final') }}
-    WHERE
-        {{ incremental_load_filter('_load_timestamp') }}
+
+        {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
+        WHERE
+            {{ partition_load_manual('no_buffer') }}
+        {% else %}
+        WHERE
+            {{ incremental_load_filter('_load_timestamp') }}
+        {% endif %}
 ),
 function_calls AS (
     SELECT
@@ -32,8 +38,12 @@ function_calls AS (
         method_name IN (
             'create_staking_pool',
             'update_reward_fee_fraction'
-        )
-        AND {{ incremental_load_filter('_load_timestamp') }}
+        ) 
+        {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
+            AND {{ partition_load_manual('no_buffer') }}
+        {% else %}
+            AND {{ incremental_load_filter('_load_timestamp') }}
+        {% endif %}
 ),
 pool_txs AS (
     SELECT

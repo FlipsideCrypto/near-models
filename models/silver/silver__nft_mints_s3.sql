@@ -41,8 +41,11 @@ WITH function_call AS (
         method_name IN (
             'nft_mint',
             'nft_mint_batch'
-        )
-        AND {{ incremental_load_filter("_load_timestamp") }}
+        ) {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
+            AND {{ partition_load_manual('no_buffer') }}
+        {% else %}
+            AND {{ incremental_load_filter("_load_timestamp") }}
+        {% endif %}
 ),
 --Data Pulled from Transaction
 mint_transactions AS (
@@ -64,8 +67,11 @@ mint_transactions AS (
             FROM
                 function_call
         )
-        AND tx_status = 'Success'
-        AND {{ incremental_load_filter("_load_timestamp") }}
+        AND tx_status = 'Success' {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
+            AND {{ partition_load_manual('no_buffer') }}
+        {% else %}
+            AND {{ incremental_load_filter("_load_timestamp") }}
+        {% endif %}
 ),
 --Data pulled from Receipts Table
 receipts_data AS (
@@ -84,8 +90,12 @@ receipts_data AS (
                 DISTINCT tx_hash
             FROM
                 function_call
-        )
-        AND {{ incremental_load_filter("_load_timestamp") }}
+        ) 
+        {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
+            AND {{ partition_load_manual('no_buffer') }}
+        {% else %}
+            AND {{ incremental_load_filter("_load_timestamp") }}
+        {% endif %}
 )
 SELECT
     DISTINCT action_id,

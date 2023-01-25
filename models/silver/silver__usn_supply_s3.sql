@@ -12,8 +12,14 @@ WITH txs AS (
         *
     FROM
         {{ ref('silver__streamline_receipts_final') }}
-    WHERE
-        {{ incremental_load_filter('_load_timestamp') }}
+
+        {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
+        WHERE
+            {{ partition_load_manual('no_buffer') }}
+        {% else %}
+        WHERE
+            {{ incremental_load_filter('_load_timestamp') }}
+        {% endif %}
 ),
 logs AS (
     SELECT

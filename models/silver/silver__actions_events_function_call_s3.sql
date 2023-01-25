@@ -13,8 +13,12 @@ WITH action_events AS (
   FROM
     {{ ref('silver__actions_events_s3') }}
   WHERE
-    {{ incremental_load_filter('_load_timestamp') }}
-    AND action_name = 'FunctionCall'
+    action_name = 'FunctionCall' 
+    {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
+      AND {{ partition_load_manual('no_buffer') }}
+    {% else %}
+      AND {{ incremental_load_filter('_load_timestamp') }}
+    {% endif %}
 ),
 decoding AS (
   SELECT

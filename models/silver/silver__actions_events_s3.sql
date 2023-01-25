@@ -25,8 +25,14 @@ WITH txs AS (
     _partition_by_block_number
   FROM
     {{ ref('silver__streamline_transactions_final') }}
-  WHERE
-    {{ incremental_load_filter('_load_timestamp') }}
+
+    {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
+    WHERE
+      {{ partition_load_manual('no_buffer') }}
+    {% else %}
+    WHERE
+      {{ incremental_load_filter('_load_timestamp') }}
+    {% endif %}
 ),
 actions AS (
   SELECT
