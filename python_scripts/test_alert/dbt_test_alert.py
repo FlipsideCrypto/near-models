@@ -72,7 +72,7 @@ def create_message(**kwargs):
                     },
                     {
                         "title": "Failed Tests:",
-                        "value": "\n".join(kwargs["messages"]["fail"]),
+                        "value": "\n".join(kwargs["messages"]["fail"]) if len(kwargs["messages"]["fail"]) > 0 else "None :)",
                         "short": False
                     }
                 ],
@@ -122,6 +122,9 @@ def send_alert(webhook_url):
 
 
 if __name__ == '__main__':
+
+    os.environ['SLACK_WEBHOOK_URL'] = "https://hooks.slack.com/services/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"
+    os.environ['DATABASE'] = "NEAR_DEV"
 
     webhook_url = os.environ.get("SLACK_WEBHOOK_URL")
     send_alert(webhook_url)
