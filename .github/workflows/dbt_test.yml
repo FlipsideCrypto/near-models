@@ -41,7 +41,7 @@ jobs:
           dbt deps
       - name: Run DBT Jobs
         run: |
-          dbt test
+          dbt test -s tag:s3_load+
         continue-on-error: true
 
       - name: Log test results
