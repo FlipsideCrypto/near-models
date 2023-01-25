@@ -15,21 +15,31 @@ WITH actions_events_function_call AS (
     FROM
         {{ ref('silver__actions_events_function_call_s3') }}
     WHERE
-        {{ incremental_load_filter('_load_timestamp') }}
-        AND method_name IN (
+        method_name IN (
             'deposit_and_stake',
             'stake',
             'unstake',
             'unstake_all'
-        )
+        ) 
+        {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
+            AND {{ partition_load_manual('no_buffer') }}
+        {% else %}
+            AND {{ incremental_load_filter('_load_timestamp') }}
+        {% endif %}
 ),
 base_txs AS (
     SELECT
         *
     FROM
         {{ ref('silver__streamline_transactions_final') }}
-    WHERE
-        {{ incremental_load_filter('_load_timestamp') }}
+
+        {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
+        WHERE
+            {{ partition_load_manual('no_buffer') }}
+        {% else %}
+        WHERE
+            {{ incremental_load_filter('_load_timestamp') }}
+        {% endif %}
 ),
 txs AS (
     SELECT
@@ -62,7 +72,16 @@ deposit_and_stake_txs AS (
         block_timestamp,
         tx_receiver AS pool_address,
         tx_signer,
-        REGEXP_SUBSTR(ARRAY_TO_STRING(tx :receipt [0] :outcome :logs, ','), 'staking (\\d+)', 1, 1, 'e') :: NUMBER AS stake_amount,
+        REGEXP_SUBSTR(
+            ARRAY_TO_STRING(
+                tx :receipt [0] :outcome :logs,
+                ','
+            ),
+            'staking (\\d+)',
+            1,
+            1,
+            'e'
+        ) :: NUMBER AS stake_amount,
         'Stake' AS action,
         _load_timestamp
     FROM
@@ -77,7 +96,16 @@ stake_txs AS (
         block_timestamp,
         tx_receiver AS pool_address,
         tx_signer,
-        REGEXP_SUBSTR(ARRAY_TO_STRING(tx :receipt [0] :outcome :logs, ','), 'staking (\\d+)', 1, 1, 'e') :: NUMBER AS stake_amount,
+        REGEXP_SUBSTR(
+            ARRAY_TO_STRING(
+                tx :receipt [0] :outcome :logs,
+                ','
+            ),
+            'staking (\\d+)',
+            1,
+            1,
+            'e'
+        ) :: NUMBER AS stake_amount,
         'Stake' AS action,
         _load_timestamp
     FROM
@@ -92,7 +120,16 @@ stake_all_txs AS (
         block_timestamp,
         tx_receiver AS pool_address,
         tx_signer,
-        REGEXP_SUBSTR(ARRAY_TO_STRING(tx :receipt [0] :outcome :logs, ','), 'staking (\\d+)', 1, 1, 'e') :: NUMBER AS stake_amount,
+        REGEXP_SUBSTR(
+            ARRAY_TO_STRING(
+                tx :receipt [0] :outcome :logs,
+                ','
+            ),
+            'staking (\\d+)',
+            1,
+            1,
+            'e'
+        ) :: NUMBER AS stake_amount,
         'Stake' AS action,
         _load_timestamp
     FROM
@@ -107,7 +144,16 @@ unstake_txs AS (
         block_timestamp,
         tx_receiver AS pool_address,
         tx_signer,
-        REGEXP_SUBSTR(ARRAY_TO_STRING(tx :receipt [0] :outcome :logs, ','), 'unstaking (\\d+)', 1, 1, 'e') :: NUMBER AS stake_amount,
+        REGEXP_SUBSTR(
+            ARRAY_TO_STRING(
+                tx :receipt [0] :outcome :logs,
+                ','
+            ),
+            'unstaking (\\d+)',
+            1,
+            1,
+            'e'
+        ) :: NUMBER AS stake_amount,
         'Unstake' AS action,
         _load_timestamp
     FROM
@@ -122,7 +168,16 @@ unstake_all_txs AS (
         block_timestamp,
         tx_receiver AS pool_address,
         tx_signer,
-        REGEXP_SUBSTR(ARRAY_TO_STRING(tx :receipt [0] :outcome :logs, ','), 'unstaking (\\d+)', 1, 1, 'e') :: NUMBER AS stake_amount,
+        REGEXP_SUBSTR(
+            ARRAY_TO_STRING(
+                tx :receipt [0] :outcome :logs,
+                ','
+            ),
+            'unstaking (\\d+)',
+            1,
+            1,
+            'e'
+        ) :: NUMBER AS stake_amount,
         'Unstake' AS action,
         _load_timestamp
     FROM

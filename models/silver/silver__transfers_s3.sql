@@ -15,8 +15,12 @@ WITH action_events AS(
   FROM
     {{ ref('silver__actions_events_s3') }}
   WHERE
-    action_name = 'Transfer'
-    AND {{ incremental_load_filter("_load_timestamp") }}
+    action_name = 'Transfer' 
+    {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
+      AND {{ partition_load_manual('no_buffer') }}
+    {% else %}
+      AND {{ incremental_load_filter("_load_timestamp") }}
+    {% endif %}
 ),
 txs AS (
   SELECT
@@ -35,8 +39,14 @@ txs AS (
     _load_timestamp
   FROM
     {{ ref('silver__streamline_transactions_final') }}
-  WHERE
-    {{ incremental_load_filter("_load_timestamp") }}
+
+    {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
+    WHERE
+      {{ partition_load_manual('no_buffer') }}
+    {% else %}
+    WHERE
+      {{ incremental_load_filter("_load_timestamp") }}
+    {% endif %}
 ),
 receipts AS (
   SELECT
