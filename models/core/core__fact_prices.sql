@@ -17,6 +17,7 @@ WITH oracle_prices AS (
         token,
         symbol,
         token_contract,
+        raw_price,
         price_usd,
         source
     FROM

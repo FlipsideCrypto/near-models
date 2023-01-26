@@ -1,5 +1,6 @@
 token_contract,token,symbol,decimals
 0316eb71485b0ab14103307bf65a021042c6d380.factory.bridge.near,Huobi BTC,HBTC,18
+059a1f1dea1020297588c316ffc30a58a1a0d4a2.factory.bridge.near,Bastion,BSTN,18
 06a00715e6f92210af9d7680b584931faf71a833.factory.bridge.near,Chronicle,XNL,18
 0d8775f648430679a709e98d2b0cb6250d2887ef.factory.bridge.near,Basic Attention Token,BAT,18
 111111111117dc0aa78b770fa6a738034120c302.factory.bridge.near,1INCH Token,1INCH,18
@@ -15,16 +16,18 @@ token_contract,token,symbol,decimals
 52a047ee205701895ee06a375492490ec9c597ce.factory.bridge.near,Pulse,PULSE,18
 6b175474e89094c44da98b954eedeac495271d0f.factory.bridge.near,Dai Stablecoin,DAI,18
 6f259637dcd74c767781e37bc6133cd6a68aa161.factory.bridge.near,HuobiToken,HT,18
+8.contract.portalbridge.near,impactMarket,PACT,8
 9aeb50f542050172359a0e1a25a9933bc8c01259.factory.bridge.near,oinfinance,OIN,8
-a0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.factory.bridge.near,USD Coin,USDC,6
+a0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.factory.bridge.near,USD Coin,USDC.e,6
 a4ef4b0b23c1fc81d3f9ecf93510e64f58a4a016.factory.bridge.near,1MILNFT,1MIL,18
 aaaaaa20d9e0e2461697782ef11675f668207961.factory.bridge.near,Aurora,AURORA,18
 abr.a11bd.near,ABR,ABR,24
 adtoken.near,$AD: 🧀 Checkout Cheddar at https://cheddar.farm/,AD,18
+akaia.tkn.near,Akaia,AKAIA,24
 apys.token.a11bd.near,APYSwap,APYS,24
 asc.tkn.near,Art Stars Club,ASC,10
 atocha-token.near,Atocha Coin,ATO,18
-aurora,Ether,ETH,18
+aurora,Aurora,AURORA,18
 avb.tkn.near,AVB,AVB,18
 avrit.near,Avrit fungible token,AVRIT,18
 azerotha.near,Flora,FLA,8
@@ -47,6 +50,8 @@ celo.token.a11bd.near,Celo,CELO,24
 cheems.tkn.near,cheems,cheems,18
 chf.tkn.near,Helvetia,CHF,18
 coin.asac.near,Antisocial Ape Coin,$ASAC,24
+cointiva.tamada.near,Cointiva,CTNEAR,6
+craftorium.tamada.near,Сraftorium,CRFT,6
 csat.tkn.near,CSAT Token,CSAT,18
 ctrl.tkn.near,CTRL,CTRL,18
 ctzn.tkn.near,Citizen Token,CTZN,18
@@ -54,9 +59,10 @@ cusd.token.a11bd.near,Celo Dollar,cUSD,24
 czdog.tkn.near,Crazy Dog,CZDOG,18
 d3g3n.tkn.near,DEGENERATE PONZI SCAM SECOND DOG COIN,D3G3N,18
 d9c2d319cd7e6177336b0a9c93c21cb48d84fb54.factory.bridge.near,HAPI,HAPI,18
-dac17f958d2ee523a2206206994597c13d831ec7.factory.bridge.near,Tether USD,USDT,6
+dac17f958d2ee523a2206206994597c13d831ec7.factory.bridge.near,Tether USD,USDT.e,6
 damn.tkn.near,DAMN,DAMN,18
 dan.tkn.near,Danny Token,dan,18
+data.tkn.near,DATA,DATA,18
 dbio.near,Debio,DBIO,18
 dcity.tkn.near,Decentricity Social Token,DCITY,18
 de30da39c46104798bb5aa3fe8b9e0e1f348163f.factory.bridge.near,Gitcoin,GTC,18
@@ -65,10 +71,12 @@ discovol-token.near,DISCOVOL TOKEN,DISC,14
 dogsheng.tkn.near,spittor,dogsheng,18
 dojos.near,DOJO,DOJO,18
 duck.tkn.near,DUCK,DUCK,18
+duello.near,Duello,DUO,8
 elixir.l2e.near,LandtoEmpire.com game ELIXIR!,ELIXIR,0
 elt.tkn.near,Extemporaneous Life,ELT,18
 f5cfbc74057c610c8ef151a439252680ac68c6dc.factory.bridge.near,Octopus Network Token,OCT,18
 far.tkn.near,FAR,FAR,8
+far.tokens.fewandfar.near,Few and Far,FAR,8
 farm.berryclub.ek.near,Cucumber,CUCUMBER,18
 feral.tkn.near,Feral,FERAL,18
 finarix.near,Finarix,FNRIX,8
@@ -93,6 +101,7 @@ gold.tkn.near,Gold,GOLD,10
 groove.tkn.near,Groove,GROOVE,18
 gza.tkn.near,Gazua,GZA,18
 hak.tkn.near,Hakuna Matata,HAK,18
+hbsc.tkn.near,HIBISCUS COIN,HBSC,18
 hodl.tkn.near,HODL,HODL,1
 hongdou.tkn.near,hongdou,hongdou,18
 hooba.tkn.near,HOOBA,HOOBA,18
@@ -102,6 +111,7 @@ illiapolosukhin.tkn.near,Illia Polosukhin,IlliaPolosukhin,18
 indulgency.tkn.near,Forgive Yourself,Indulgency,18
 infinity.tkn.near,🔴INFINITY,INFINITY,10
 jbouw.tkn.near,The Original Joshua J. Bouw Cred Points,JBOUW,0
+jumptoken.jumpfinance.near,JUMP,JUMP,18
 kkd.tkn.near,KalakendraDAO,KKD,18
 kongztoken.near,KONGZ,KONGZ,8
 koro.tkn.near,Korosenai Coin,KORO,18
@@ -110,6 +120,7 @@ lfg.tkn.near,L.F.G.!,LFG,18
 lgbt.tkn.near,Hey👏hey👏Ho👏ho👏Homophobia's👏got👏to👏go👏,LGBT,18
 linear-protocol.near,LiNEAR,LINEAR,24
 lpbot.near,LiquidityProviderBot,LPB,6
+lts_token.near,Lights,LTS,8
 lucky_nft.near,Luck Token,LUCK,2
 magic.tkn.near,Magic Token,MAGIC,18
 marmaj.tkn.near,marma j token,marmaj,18
@@ -158,6 +169,7 @@ ralfusha.tkn.near,Ralfusha token,Ralfusha,18
 rekt.tkn.near,Rekt Token,REKT,18
 rimjob.tkn.near,Simps 4 Rim,RIMJOB,18
 ruct.tkn.near,RUCT,RUCT,18
+runaid.near,Literal Scam Token,LST,9
 shit.tkn.near,Pile of Shit (rare),SHIT,18
 shmeks.tkn.near,Schmeckels,SHMEKS,18
 skyward-pixeltoken.near,Skyward Wrapped Pixeltoken,sPXT,6
@@ -167,11 +179,15 @@ sol.token.a11bd.near,Solana,SOL,24
 soultoken.near,SOUL,SOUL,6
 stake.tkn.near,Stake University,Stake,18
 stke.tkn.near,sticky,STKE,18
+strw.burritobattle.near,Straw Token,STRW,24
+swear.tkn.near,SWEAR,SWEAR,18
+syn.tkn.near,WebSyndicate,SYN,18
 taliban.tkn.near,Taliban Token,TALIBAN,18
 tamil.tkn.near,TAMIL CRYPTO,TAMIL,18
 tckt.tkn.near,Mintickt,TCKT,18
 ter.tkn.near,SkyNet,TER,10
 test-token.staderlabs-test.near,NearX,NearX,24
+testing-stuff.staderlabs-test.near,NearX,NearX,24
 testing-token.staderlabs-test.near,testing,testing,24
 theburningrealm.near,The Burning Realm,TBR,2
 themunkymonkey.near,PISANG Coin,PSNG,8
@@ -191,15 +207,23 @@ token.skyward.near,Skyward Finance Token,SKYWARD,18
 token.stlb.near,SeatlabNFT,SEAT,5
 token.sweat,SWEAT,SWEAT,18
 token.v2.ref-finance.near,Ref Finance Token,REF,18
+uniqueone-appchain-token.near,Unique One Network,UNET,18
+usdc.mocks.near,Mock USD Coin,MOCK-USDC,6
+usdt.mocks.near,Mock Tether USD,MOCK-USDT.e,6
+usdt.tether-token.near,Tether USD,USDt,6
 usn,USN,USN,18
 ust.token.a11bd.near,TerraUSD,UST,24
 utopia.secretskelliessociety.near,Utopia,UTO,8
 v1.dacha-finance.near,Potato 🥔,POTATO,18
+v2-nearx.stader-labs.near,NearX,NearX,24
 v3.oin_finance.near,nUSDO,nUSDO,8
+vhealios.tkn.near,vHEALIOS,vHEALIOS,6
 wafi.tkn.near,Water & Fire Token,WAFI,10
 whales.tkn.near,NEAR WHALES,WHALES,4
+wnear.mocks.near,Wrapped NEAR fungible token,wNEAR,24
 wrap.near,Wrapped NEAR fungible token,wNEAR,24
 wst.tkn.near,Wolves Token,WST,18
+xcorn.v1.corn-staging.near,Staked CORN,xCORN,18
 xtoken.ref-finance.near,xRef Finance Token,xREF,18
 ynp.tkn.near,Yashannapolis,YNP,18
 zod.near,Zod Fungible Token,ZOD,24

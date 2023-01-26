@@ -44,6 +44,12 @@ models:
       - name: TOKEN_CONTRACT
         description: "{{ doc('token_contract')}}"
 
+      - name: RAW_PRICE
+        description: "{{ doc('raw_price')}}"
+
+      - name: DECIMALS
+        description: "{{ doc('decimals')}}"
+
       - name: PRICE_USD
         description: "{{ doc('price_usd')}}"
 

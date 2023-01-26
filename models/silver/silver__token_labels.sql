@@ -1,8 +1,7 @@
 {{ config(
-    materialized = 'table',
+    materialized = 'view',
     unique_key = 'token_contract',
     tags = ['curated']
-
 ) }}
 
 WITH labels_seed AS (
