@@ -68,4 +68,10 @@ sources:
     schema: near_dev
     tables:
       - name: blocks
-      - name: shards    
+      - name: shards
+
+  - name: crosschain
+    schema: core
+    database: crosschain
+    tables:
+      - name: address_labels

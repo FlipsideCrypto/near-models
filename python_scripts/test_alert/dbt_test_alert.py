@@ -123,8 +123,5 @@ def send_alert(webhook_url):
 
 if __name__ == '__main__':
 
-    os.environ['SLACK_WEBHOOK_URL'] = "https://hooks.slack.com/services/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"
-    os.environ['DATABASE'] = "NEAR_DEV"
-
     webhook_url = os.environ.get("SLACK_WEBHOOK_URL")
     send_alert(webhook_url)
