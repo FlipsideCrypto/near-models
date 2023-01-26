@@ -1,4 +1,9 @@
+{{ config(
+  severity = 'error'
+) }}
+
 WITH silver_blocks AS (
+
   SELECT
     block_id,
     block_timestamp,

@@ -12,7 +12,7 @@ models:
             - symbol
 
     columns:
-      - name: token
+      - name: TOKEN
         description: "{{ doc('token')}}"
         tests:
           - not_null
@@ -21,7 +21,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: symbol
+      - name: SYMBOL
         description: "{{ doc('symbol')}}"
         tests:
           - not_null
@@ -30,7 +30,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: token_contract
+      - name: TOKEN_CONTRACT
         description: "{{ doc('token_contract')}}"
         tests:
           - not_null
@@ -39,7 +39,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: decimals
+      - name: DECIMALS
         description: "{{ doc('decimals')}}"
         tests:
           - not_null

@@ -6,7 +6,7 @@ models:
       Holds data ingested from the Nearblocks Fungible Token API endpoint at: https://api.nearblocks.io/api-docs/#/FTs/get_v1_fts. This data includes updating pieces, such as past 24h volume and transfers, thus differs from the dimensional token label table.
 
     columns:
-      - name: date
+      - name: DATE
         description: "The date from the UTC timestamp when the API was called and the data for this token was ingested."
         tests:
           - not_null
@@ -14,7 +14,7 @@ models:
               column_type_list:
                 - DATE
 
-      - name: token
+      - name: TOKEN
         description: "{{ doc('token')}}"
         tests:
           - not_null
@@ -23,7 +23,7 @@ models:
                 - VARCHAR
                 - STRING
 
-      - name: token_contract
+      - name: TOKEN_CONTRACT
         description: "{{ doc('token_contract')}}"
         tests:
           - not_null
@@ -32,7 +32,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: token_data
+      - name: TOKEN_DATA
         description: "{{ doc('token_data')}}"
         tests:
           - not_null
@@ -41,7 +41,7 @@ models:
                 - VARIANT
                 - OBJECT
 
-      - name: decimals
+      - name: DECIMALS
         description: "{{ doc('decimals')}}"
         tests:
           - not_null
@@ -50,7 +50,7 @@ models:
                 - NUMBER
                 - INTEGER
 
-      - name: symbol
+      - name: SYMBOL
         description: "{{ doc('symbol')}}"
         tests:
           - not_null
@@ -59,7 +59,7 @@ models:
                 - VARCHAR
                 - STRING
 
-      - name: provider
+      - name: PROVIDER
         description: "{{ doc('provider')}}"
         tests:
           - not_null

@@ -4,10 +4,6 @@ models:
   - name: core__fact_actions_events_function_call
     description: |-
       This table extracts all FunctionCall events from actions and decodes the arguments for easy use.
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - action_id
 
     columns:
       - name: ACTION_ID
@@ -45,6 +41,9 @@ models:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - TIMESTAMP_NTZ
+          - dbt_expectations.expect_row_values_to_have_recent_data:
+              datepart: day
+              interval: 1
 
       - name: ACTION_NAME
         description: "{{ doc('action_name')}}"

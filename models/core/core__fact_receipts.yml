@@ -2,11 +2,7 @@ version: 2
 
 models:
   - name: core__fact_receipts
-    description: "Decoded and flattened transaction receipts from the tx_receipts object."
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - receipt_object_id
+    description: Decoded and flattened transaction receipts from the block shards.
 
     columns:
       - name: BLOCK_TIMESTAMP

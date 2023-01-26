@@ -8,48 +8,291 @@ models:
     columns:
       - name: BLOCK_ID
         description: "{{ doc('block_id')}}"
+        tests:
+          - not_null
+          - unique
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
 
       - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_row_values_to_have_recent_data:
+              datepart: day
+              interval: 1
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
 
       - name: BLOCK_HASH
         description: "{{ doc('block_hash')}}"
+        tests:
+          - not_null
+          - unique
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
 
       - name: TX_COUNT
         description: "{{ doc('tx_count')}}"
 
       - name: BLOCK_AUTHOR
         description: "{{ doc('block_author')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: HEADER
+        description: "{{ doc('header')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - VARIANT
+                - OBJECT
+
+      - name: BLOCK_CHALLENGES_RESULT
+        description: "{{ doc('block_challenges_result')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - ARRAY
+                - VARIANT
+                - OBJECT
+
+      - name: BLOCK_CHALLENGES_ROOT
+        description: "{{ doc('block_challenges_root')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: CHUNK_HEADERS_ROOT
+        description: "{{ doc('chunk_headers_root')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: CHUNK_TX_ROOT
+        description: "{{ doc('chunk_tx_root')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: CHUNK_MASK
+        description: "{{ doc('chunk_mask')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - ARRAY
+                - VARIANT
+                - OBJECT
+
+      - name: CHUNK_RECEIPTS_ROOT
+        description: "{{ doc('chunk_receipts_root')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
 
       - name: CHUNKS
         description: "{{ doc('chunks')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - ARRAY
+                - VARIANT
+                - OBJECT
+
+      - name: CHUNKS_INCLUDED
+        description: "{{ doc('chunks_included')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
 
       - name: EPOCH_ID
         description: "{{ doc('epoch_id')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: EPOCH_SYNC_DATA_HASH
+        description: "{{ doc('epoch_sync_data_hash')}}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+                - NULL
 
       - name: EVENTS
         description: "{{ doc('events')}}"
 
+
       - name: GAS_PRICE
         description: "{{ doc('gas_price')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
+
+      - name: LAST_DS_FINAL_BLOCK
+        description: "{{ doc('last_ds_final_block')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: LAST_FINAL_BLOCK
+        description: "{{ doc('last_final_block')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
 
       - name: LATEST_PROTOCOL_VERSION
         description: "{{ doc('latest_protocol_version')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
+
+      - name: NEXT_BP_HASH
+        description: "{{ doc('next_bp_hash')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
 
       - name: NEXT_EPOCH_ID
         description: "{{ doc('next_epoch_id')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: OUTCOME_ROOT
+        description: "{{ doc('outcome_root')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
 
       - name: PREV_HASH
         description: "{{ doc('prev_hash')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: PREV_HEIGHT
+        description: "{{ doc('prev_height')}}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
+
+      - name: PREV_STATE_ROOT
+        description: "{{ doc('prev_state_root')}}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: RANDOM_VALUE
+        description: "{{ doc('random_value')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: RENT_PAID
+        description: "{{ doc('rent_paid')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
+
+      - name: SIGNATURE
+        description: "{{ doc('signature')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
 
       - name: TOTAL_SUPPLY
         description: "{{ doc('total_supply')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
 
       - name: VALIDATOR_PROPOSALS
         description: "{{ doc('validator_proposals')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - ARRAY
+                - VARIANT
+                - OBJECT
 
       - name: VALIDATOR_REWARD
         description: "{{ doc('validator_reward')}}"
-
-      - name: HEADER
-        description: "{{ doc('header')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT

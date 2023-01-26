@@ -3,7 +3,7 @@ version: 2
 models:
   - name: core__ez_usn_supply
     description: |-
-      This table records all the usn transaction in the near db
+      Deprecating soon! 
 
     columns:    
       - name: BLOCK_TIMESTAMP
