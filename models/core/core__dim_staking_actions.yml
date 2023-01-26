@@ -9,7 +9,7 @@ models:
       Each epoch can have a different set of validators.
 
     columns:
-      - name: tx_hash
+      - name: TX_HASH
         description: "{{ doc('tx_hash') }}"
         tests:
           - unique
@@ -19,7 +19,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: block_timestamp
+      - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp') }}"
         tests:
           - not_null
@@ -27,7 +27,7 @@ models:
               column_type_list:
                 - TIMESTAMP_NTZ
 
-      - name: pool_address
+      - name: POOL_ADDRESS
         description: "{{ doc('staking_pool_address') }}"
         tests:
           - not_null
@@ -36,7 +36,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: tx_signer
+      - name: TX_SIGNER
         description: "{{ doc('tx_signer') }}"
         tests:
           - not_null
@@ -45,7 +45,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: stake_amount
+      - name: STAKE_AMOUNT
         description: "{{ doc('staking_stake_amount') }}"
         tests:
           - not_null
@@ -53,7 +53,7 @@ models:
               column_type_list:
                 - NUMBER
 
-      - name: action
+      - name: ACTION
         description: "{{ doc('staking_action') }}"
         tests:
           - not_null
@@ -63,11 +63,3 @@ models:
                 - VARCHAR
           - dbt_expectations.expect_column_values_to_be_in_set:
               value_set: ['Stake', 'Unstake']
-
-      - name: _inserted_timestamp
-        description: "{{ doc('_inserted_timestamp') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - TIMESTAMP_NTZ

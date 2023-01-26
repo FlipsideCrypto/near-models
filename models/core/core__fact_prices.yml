@@ -20,6 +20,7 @@ models:
       - name: TOKEN
         description: "{{ doc('token')}}"
         tests:
+          - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
@@ -28,6 +29,7 @@ models:
       - name: SYMBOL
         description: "{{ doc('symbol')}}"
         tests:
+          - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
@@ -41,6 +43,15 @@ models:
               column_type_list:
                 - STRING
                 - VARCHAR
+
+      - name: RAW_PRICE
+        description: "{{ doc('price_usd')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - FLOAT
+                - DOUBLE
 
       - name: PRICE_USD
         description: "{{ doc('price_usd')}}"

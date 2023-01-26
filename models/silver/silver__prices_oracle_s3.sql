@@ -59,16 +59,21 @@ prices AS (
         actions_len,
         INDEX,
         VALUE :asset_id :: STRING AS token_contract,
+        VALUE :price :multiplier :: DOUBLE AS raw_price,
         CASE
-            WHEN token_contract = 'aurora' THEN VALUE :price :multiplier :: DOUBLE / pow (
-                10,
-                7
-            )
-            ELSE VALUE :price :multiplier :: DOUBLE / pow (
-                10,
-                4
-            )
-        END AS price_usd,
+            WHEN token_contract IN ('4691937a7508860f876c9c0a2a617e7d9e945d4b.factory.bridge.near') THEN 6
+            WHEN token_contract IN (
+                'aaaaaa20d9e0e2461697782ef11675f668207961.factory.bridge.near'
+            ) THEN 5
+            WHEN token_contract IN (
+                '2260fac5e5542a773aa44fbcfedf7c193bc2c599.factory.bridge.near'
+            ) THEN 2
+            ELSE 4
+        END AS decimals,
+        raw_price / pow(
+            10,
+            decimals
+        ) AS price_usd,
         _load_timestamp
     FROM
         oracle_msgs,
@@ -86,6 +91,7 @@ add_labels AS (
         l.token,
         l.symbol,
         p.token_contract,
+        p.raw_price,
         p.price_usd,
         p.tx_receiver AS source,
         p._load_timestamp
@@ -97,3 +103,5 @@ SELECT
     *
 FROM
     add_labels
+WHERE
+    token_contract != 'aurora'

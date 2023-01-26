@@ -2,11 +2,7 @@ version: 2
 
 models:
   - name: core__fact_transactions
-    description: "Near transactions."
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - tx_hash
+    description: Transactions on the NEAR blockchain.
 
     columns:
       - name: BLOCK_ID

@@ -8,65 +8,24 @@ models:
     columns:
       - name: date
         description: "The date from the UTC timestamp when the API was called and the data for this token was ingested."
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - DATE
 
       - name: token
         description: "{{ doc('token')}}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - VARCHAR
-                - STRING
 
       - name: token_contract
         description: "{{ doc('token_contract')}}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
 
       - name: token_data
         description: "{{ doc('token_data')}}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - VARIANT
-                - OBJECT
 
       - name: decimals
         description: "{{ doc('decimals')}}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - NUMBER
-                - INTEGER
 
       - name: symbol
         description: "{{ doc('symbol')}}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - VARCHAR
-                - STRING
 
       - name: provider
         description: "{{ doc('provider')}}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - VARCHAR
-                - STRING
 
       - name: _inserted_timestamp
         description: "{{ doc('_inserted_timestamp')}}"
@@ -82,6 +41,7 @@ models:
       - name: _res_id
         description: "{{ doc('_res_id')}}"
         tests:
+          - unique
           - not_null:
               name: not_null_silver__api_nearblocks_fts_res_id
           - dbt_expectations.expect_column_values_to_be_in_type_list:

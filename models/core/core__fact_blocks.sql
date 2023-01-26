@@ -16,6 +16,7 @@ SELECT
     block_hash,
     tx_count,
     block_author,
+    header,
     header :challenges_result :: ARRAY AS block_challenges_result,
     header :challenges_root :: STRING AS block_challenges_root,
     header :chunk_headers_root :: STRING AS chunk_headers_root,

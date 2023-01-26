@@ -9,6 +9,7 @@ on:
 env:
   DBT_PROFILES_DIR: "${{ secrets.DBT_PROFILES_DIR }}"
   DBT_VERSION: "${{ secrets.DBT_VERSION }}"
+  SLACK_WEBHOOK_URL: "${{ secrets.SLACK_WEBHOOK_URL }}"
   ACCOUNT: "${{ secrets.ACCOUNT }}"
   ROLE: "${{ secrets.ROLE }}"
   USER: "${{ secrets.USER }}"
@@ -22,10 +23,27 @@ concurrency:
   group: ${{ github.workflow }}
 
 jobs:
-  called_workflow_template:
-    uses: FlipsideCrypto/analytics-workflow-templates/.github/workflows/dbt_run_template.yml@main
-    with:
-      dbt_command: "[\"dbt test -s tag:s3_load+\"]"
-      environment: workflow_prod
-      warehouse: ${{ vars.WAREHOUSE }}
-    secrets: inherit 
+  run_dbt_jobs:
+    runs-on: ubuntu-latest
+    environment: 
+      name: workflow_prod
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-python@v1
+        with:
+          python-version: "3.7.x"
+
+      - name: install dependencies
+        run: |
+          pip3 install dbt-snowflake==${{ secrets.DBT_VERSION }} cli_passthrough requests click
+          dbt deps
+      - name: Run DBT Jobs
+        run: |
+          dbt test -s tag:s3_load+
+        continue-on-error: true
+
+      - name: Log test results
+        run: |
+          python python_scripts/test_alert/dbt_test_alert.py

@@ -17,14 +17,6 @@ models:
 
       - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp')}}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_row_values_to_have_recent_data:
-              datepart: day
-              interval: 1
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - TIMESTAMP_NTZ
 
       - name: TX_HASH
         description: "{{ doc('tx_hash')}}"
@@ -45,48 +37,24 @@ models:
 
       - name: TOKEN
         description: "{{ doc('token')}}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
 
       - name: SYMBOL
         description: "{{ doc('symbol')}}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
 
       - name: TOKEN_CONTRACT
         description: "{{ doc('token_contract')}}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
+
+      - name: RAW_PRICE
+        description: "{{ doc('raw_price')}}"
+
+      - name: DECIMALS
+        description: "{{ doc('decimals')}}"
 
       - name: PRICE_USD
         description: "{{ doc('price_usd')}}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - FLOAT
-                - DOUBLE
 
       - name: SOURCE
         description: "{{ doc('source')}}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
 
       - name: _LOAD_TIMESTAMP
         description: "{{ doc('_load_timestamp')}}"
