@@ -18,6 +18,8 @@ SELECT
     receipt_object_id,
     receipt_outcome_id,
     receiver_id,
+    receipt_actions AS actions,
+    execution_outcome AS outcome,
     gas_burnt,
     status_value,
     logs,

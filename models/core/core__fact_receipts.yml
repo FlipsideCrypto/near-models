@@ -44,7 +44,7 @@ models:
         tests:
           - not_null
           - unique:
-              where: receipt_object_id not in ('FA9zcm7WkWxdjkub7WFiKkQdnnQrcEmBht94VFzXfkm1', '6QKTEHsLihDgVrdtWYbURA28zF29Xdw5dnfWbDVWHPv4')
+              where: tx_hash != 'J4CZZQrZK6kYPVLkrdbTEpcqhUNZiRxktbMzHviqeGgf'
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
@@ -58,7 +58,6 @@ models:
               column_type_list:
                 - ARRAY
                 - VARIANT
-                - OBJECT
 
       - name: RECEIVER_ID
         description: "{{ doc('receiver_id')}}"
@@ -68,6 +67,24 @@ models:
               column_type_list:
                 - STRING
                 - VARCHAR
+
+      - name: ACTIONS
+        description: "{{ doc('actions')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - OBJECT
+                - VARIANT
+
+      - name: OUTCOME
+        description: "{{ doc('outcome')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - OBJECT
+                - VARIANT
 
       - name: GAS_BURNT
         description: "{{ doc('gas_burnt')}}"

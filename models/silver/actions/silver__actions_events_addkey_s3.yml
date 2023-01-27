@@ -3,7 +3,7 @@ version: 2
 models:
   - name: silver__actions_events_addkey_s3
     description: |-
-      This table extracts all AddKey events from actions and stores the argument data under action_data.
+      Deprecting soon - no longer updating.
 
     columns:
       - name: ACTION_ID

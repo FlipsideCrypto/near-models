@@ -7,7 +7,8 @@
             'PURPOSE': 'PRICES'
             }
         }
-    }
+    },
+    tags = ['s3_curated']
 ) }}
 
 WITH oracle_prices AS (

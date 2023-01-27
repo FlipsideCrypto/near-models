@@ -7,7 +7,8 @@
             'PURPOSE': 'STAKING'
             }
         }
-    }
+    },
+    tags = ['s3_curated']
 ) }}
 
 WITH staking_pools AS (

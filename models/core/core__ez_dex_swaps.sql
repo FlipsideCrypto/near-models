@@ -7,7 +7,8 @@
             'PURPOSE': 'DEFI, SWAPS'
             }
         }
-    }
+    },
+    tags = ['s3_curated']
 ) }}
 
 WITH dex_swaps AS (
