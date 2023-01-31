@@ -10,7 +10,7 @@ models:
         description: "{{ doc('action_id')}}"
         tests:
           - unique:
-              where: tx_hash != 'J4CZZQrZK6kYPVLkrdbTEpcqhUNZiRxktbMzHviqeGgf' and block_timestamp::date = '2020-11-15'
+              where: tx_hash != 'J4CZZQrZK6kYPVLkrdbTEpcqhUNZiRxktbMzHviqeGgf'
           - not_null
 
       - name: CHUNK_HASH
