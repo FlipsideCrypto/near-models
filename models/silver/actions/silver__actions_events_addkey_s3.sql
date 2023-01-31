@@ -3,7 +3,7 @@
   incremental_strategy = 'delete+insert',
   unique_key = 'action_id',
   cluster_by = ['block_timestamp::DATE', '_load_timestamp::DATE'],
-  tags = ['actions_s3'],
+  tags = ['s3_actions'],
   enabled = False
 ) }}
 

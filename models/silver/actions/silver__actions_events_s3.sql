@@ -3,7 +3,7 @@
     incremental_strategy = 'delete+insert',
     cluster_by = ['block_timestamp::DATE', '_load_timestamp::DATE'],
     unique_key = 'action_id',
-    tags = ['actions_s3']
+    tags = ['s3_actions']
 ) }}
 
 WITH receipts AS (
