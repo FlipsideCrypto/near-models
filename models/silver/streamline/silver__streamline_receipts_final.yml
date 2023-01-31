@@ -17,6 +17,9 @@ models:
 
       - name: CHUNK_HASH
         description: "{{ doc('chunk_hash')}}"
+        tests:
+          - not_null:
+              where: "block_id not in (34691244, 34691277)"
 
       - name: RECEIPT_ACTIONS
         description: "{{ doc('receipt')}}"

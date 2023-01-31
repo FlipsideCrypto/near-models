@@ -7,7 +7,8 @@
             'PURPOSE': 'NFT'
             }
         }
-    }
+    },
+    tags = ['s3_curated']
 ) }}
 
 with mints as (

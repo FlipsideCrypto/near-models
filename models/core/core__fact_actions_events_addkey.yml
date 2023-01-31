@@ -3,7 +3,7 @@ version: 2
 models:
   - name: core__fact_actions_events_addkey
     description: |-
-      This table extracts all AddKey events from actions and stores the argument data under action_data.
+      Deprecating soon! Data is no longer updating. Please use the actions events table for AddKey type events
 
     columns:
       - name: ACTION_ID
