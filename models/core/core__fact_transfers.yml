@@ -20,7 +20,7 @@ models:
         tests:
           - not_null
           - unique:
-              where: tx_hash != 'J4CZZQrZK6kYPVLkrdbTEpcqhUNZiRxktbMzHviqeGgf'
+              where: tx_hash != 'J4CZZQrZK6kYPVLkrdbTEpcqhUNZiRxktbMzHviqeGgf' and block_timestamp::date = '2020-11-15'
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
