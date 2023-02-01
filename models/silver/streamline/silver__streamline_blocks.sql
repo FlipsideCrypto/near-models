@@ -3,7 +3,7 @@
     incremental_strategy = 'delete+insert',
     cluster_by = ['_partition_by_block_number', '_load_timestamp::DATE'],
     unique_key = 'block_id',
-    tags = ['s3_load']
+    tags = ['s3_load', 's3']
 ) }}
 
 WITH blocksjson AS (

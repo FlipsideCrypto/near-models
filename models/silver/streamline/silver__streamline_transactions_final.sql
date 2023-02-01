@@ -17,6 +17,7 @@ WITH int_txs AS (
     WHERE
       {{ partition_load_manual('no_buffer') }}
     {% else %}
+    WHERE
       {{ partition_incremental_load(
         150000,
         10000,
@@ -34,6 +35,7 @@ int_receipts AS (
     WHERE
       {{ partition_load_manual('end') }}
     {% else %}
+    WHERE
       {{ partition_incremental_load(
         150000,
         10000,

@@ -24,7 +24,7 @@ decoding AS (
   SELECT
     *,
     action_data :args AS args,
-    COALESCE(TRY_PARSE_JSON(TRY_BASE64_DECODE_STRING(args)), TRY_BASE64_DECODE_STRING(args), args) AS args_decoded,
+    COALESCE(TRY_PARSE_JSON(TRY_BASE64_DECODE_STRING(args)), args) AS args_decoded,
     action_data :deposit :: NUMBER AS deposit,
     action_data :gas :: NUMBER AS attached_gas,
     action_data :method_name :: STRING AS method_name

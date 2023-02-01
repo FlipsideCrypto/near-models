@@ -8,7 +8,10 @@
 ) }}
 
 {% set target_partition = 82200000 %}
+-- 82200000
+-- 82680000
 
+-- split into like 50k at a time
 
 {% set target_partition_low = 82240000 %}
 {% set target_partition_high = 82680000 %}

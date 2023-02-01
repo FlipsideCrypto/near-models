@@ -17,8 +17,9 @@ WITH base_receipts AS (
         WHERE
             {{ partition_load_manual('no_buffer') }}
         {% else %}
+        WHERE
             {{ partition_batch_load(150000) }}
-            AND {{ incremental_load_filter('_load_timestamp') }}
+            OR {{ incremental_load_filter('_load_timestamp') }}
         {% endif %}
 ),
 blocks AS (

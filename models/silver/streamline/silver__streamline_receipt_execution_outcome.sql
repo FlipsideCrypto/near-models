@@ -12,11 +12,14 @@ WITH shards AS (
         *
     FROM
         {{ ref('silver__streamline_shards') }}
-
-        {{ partition_batch_load(150000) }}
-
-        AND ARRAY_SIZE(receipt_execution_outcomes) > 0
-        AND {{ incremental_load_filter('_load_timestamp') }}
+    WHERE 
+        ARRAY_SIZE(receipt_execution_outcomes) > 0
+        AND 
+            ( 
+                {{ partition_batch_load(150000) }}
+                OR 
+                {{ incremental_load_filter('_load_timestamp') }} 
+            )
 ),
 FINAL AS (
     SELECT
