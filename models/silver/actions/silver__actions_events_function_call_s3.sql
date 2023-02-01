@@ -3,7 +3,7 @@
   incremental_strategy = 'delete+insert',
   cluster_by = ['block_timestamp::DATE', '_load_timestamp::DATE'],
   unique_key = 'action_id',
-  tags = ['curated', 's3_curated']
+  tags = ['s3_actions']
 ) }}
 
 WITH action_events AS (
@@ -14,6 +14,7 @@ WITH action_events AS (
     {{ ref('silver__actions_events_s3') }}
   WHERE
     action_name = 'FunctionCall' 
+    
     {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
       AND {{ partition_load_manual('no_buffer') }}
     {% else %}
@@ -22,31 +23,38 @@ WITH action_events AS (
 ),
 decoding AS (
   SELECT
-    *,
+    action_id,
+    tx_hash,
+    block_id,
+    block_timestamp,
+    action_name,
     action_data :args AS args,
     COALESCE(TRY_PARSE_JSON(TRY_BASE64_DECODE_STRING(args)), args) AS args_decoded,
     action_data :deposit :: NUMBER AS deposit,
     action_data :gas :: NUMBER AS attached_gas,
-    action_data :method_name :: STRING AS method_name
+    action_data :method_name :: STRING AS method_name,
+    _load_timestamp,
+    _partition_by_block_number
   FROM
-    action_events),
-    function_calls AS (
-      SELECT
-        action_id,
-        tx_hash,
-        block_id,
-        block_timestamp,
-        action_name,
-        method_name,
-        args_decoded AS args,
-        deposit,
-        attached_gas,
-        _load_timestamp,
-        _partition_by_block_number
-      FROM
-        decoding
-    )
+    action_events
+),
+function_calls AS (
   SELECT
-    *
+    action_id,
+    tx_hash,
+    block_id,
+    block_timestamp,
+    action_name,
+    method_name,
+    args_decoded AS args,
+    deposit,
+    attached_gas,
+    _load_timestamp,
+    _partition_by_block_number
   FROM
-    function_calls
+    decoding
+)
+SELECT
+  *
+FROM
+  function_calls

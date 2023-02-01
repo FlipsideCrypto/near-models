@@ -3,7 +3,8 @@
   incremental_strategy = 'delete+insert',
   unique_key = 'action_id',
   cluster_by = ['block_timestamp::DATE', '_load_timestamp::DATE'],
-  tags = ['curated', 's3_curated']
+  tags = ['s3_actions'],
+  enabled = False
 ) }}
 
 WITH action_events AS (

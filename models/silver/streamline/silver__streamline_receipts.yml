@@ -35,6 +35,7 @@ models:
         tests:
           - not_null:
               where: "block_id not in (34691244, 34691277)"
+              # these blocks have no chunks. Per explorer, no txs. Block includes chunks
 
       - name: RECEIPT
         description: "{{ doc('receipt')}}"

@@ -1,6 +1,7 @@
 {{ config(
     materialized = 'view',
-    secure = true
+    secure = true,
+    enabled = False
 ) }}
 
 WITH actions_events_addkey AS (

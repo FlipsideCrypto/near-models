@@ -3,7 +3,7 @@
     secure = true
 ) }}
 
-WITH actions_events AS (
+WITH actions AS (
 
     SELECT
         *
@@ -13,10 +13,11 @@ WITH actions_events AS (
 SELECT
     action_id,
     tx_hash,
+    receipt_object_id,
     block_id,
     block_timestamp,
     action_index,
     action_name,
     action_data
 FROM
-    actions_events
+    actions
