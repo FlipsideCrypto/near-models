@@ -48,9 +48,10 @@ models:
 
 tests:
   near:
-    +severity: warn # default to warn for all tests
+    silver:
+      +severity: warn # default to warn for int tests
     core:
-      +severity: error # but error if a core view is having issues
+      +error_if: ">25" # but error if a core view is having issues, adding a buffer due to receipt processing lag
   +store_failures: true # all tests
 
 vars:
