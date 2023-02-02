@@ -1,4 +1,9 @@
+{{ config(
+    severity = 'error'
+) }}
+
 WITH block_chunks_included AS (
+
     SELECT
         block_id,
         VALUE :header :chunks_included AS chunks_included,

@@ -13,11 +13,7 @@ WITH shards AS (
     FROM
         {{ ref('silver__streamline_shards') }}
     WHERE
-        (
-                {{ partition_batch_load(150000) }} 
-            OR
-                {{ incremental_load_filter('_load_timestamp') }}
-        )
+        {{ incremental_load_filter('_load_timestamp') }}
         AND chunk != 'null'
 ),
 FINAL AS (

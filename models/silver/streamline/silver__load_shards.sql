@@ -7,17 +7,7 @@
     tags = ['s3_load']
 ) }}
 
-{% set target_partition = 82200000 %}
--- 82200000
--- 82680000
-
--- split into like 50k at a time
-
-{% set target_partition_low = 82240000 %}
-{% set target_partition_high = 82680000 %}
-
-
-WITH shardsjson AS (
+WITH shards_json AS (
 
     SELECT
         block_id,
@@ -33,13 +23,10 @@ WITH shardsjson AS (
         _partition_by_block_number
     FROM
         {{ ref('bronze__streamline_shards') }}
-        where _partition_by_block_number between {{ target_partition_low }} and {{ target_partition_high }}
-        and block_id in (
-            select value from NEAR_DEV.tests.chunk_gaps, lateral flatten (blocks_to_walk)
-            where _partition_by_block_number between {{ target_partition_low }} and {{ target_partition_high }}
-        )
+    WHERE
+        {{ partition_batch_load(150000) }}
 )
 SELECT
     *
 FROM
-    shardsjson
+    shards_json

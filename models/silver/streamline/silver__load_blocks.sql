@@ -7,7 +7,7 @@
     tags = ['s3_load']
 ) }}
 
-WITH blocksjson AS (
+WITH blocks_json AS (
 
     SELECT
         block_id,
@@ -23,4 +23,4 @@ WITH blocksjson AS (
 SELECT
     *
 FROM
-    blocksjson
+    blocks_json
