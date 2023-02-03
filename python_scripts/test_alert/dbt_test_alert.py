@@ -50,7 +50,7 @@ def log_test_result():
 
 def create_message(**kwargs):
     messageBody = {
-        "text": f"Hey <@U037AH6DS8P>, new DBT test results for :{os.environ.get('DATABASE').split('_DEV')[0]}: {os.environ.get('DATABASE')}",
+        "text": f"Hey{' <@U037AH6DS8P>' if len(kwargs['messages']['fail']) > 0 else ''}, new DBT test results for :{os.environ.get('DATABASE').split('_DEV')[0]}: {os.environ.get('DATABASE')}",
         "attachments": [
             {
                 "color": kwargs["color"],

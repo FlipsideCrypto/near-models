@@ -159,3 +159,32 @@ When creating a PR please include the following details in the PR description:
 * Learn more about dbt [in the docs](https://docs.getdbt.com/docs/introduction)
 * Check out [Discourse](https://discourse.getdbt.com/) for commonly asked questions and answers
 * Check out [the blog](https://blog.getdbt.com/) for the latest news on dbt's development and best practices
+
+## Fixing Data Issues
+
+### Manual Batch Refresh
+
+If data needs to be re-run for some reason, partitions of data can be re-reun through the models by utilizing the column `_partition_by_block_number` and the dbt profile name.
+
+Any data refresh will need to be done in a batch due to the nature of the receipt x tx hash mapping. The view `silver__receipt_tx_hash_mapping` is a recursive AncestryTree that follows linked receipt outcome ids to map all receipts generated in a transaction back to the primary hash. Receipts can be generated many blocks after the transaction occurs, so a generous buffer is required to ensure all receipts are captured.
+
+Models in the `streamline` folder can be run with standard incremental logic up until the 2 final receipt and transaction tables. The next step, mapping receipts to tx hash over a range, can be run with the following command:
+
+```
+dbt run -s tag:s3_manual --vars '{"range_start": 82700000, "range_end": 82750000, "front_buffer": 1, "end_buffer": 1}' -t manual_fix_dev
+```
+
+The target name will determine how the model operates, calling a macro `partition_load_manual()` which takes the variables input in the command to set the range.
+
+`front_buffer` and `end_buffer` are set to 1 by default and indicate how many partitions (10k blocks) should be added on to the front or end of the range.
+ - Flatten receipts is set to look back 1 partition to grab receipts that may have occurred prior to the start of the range.
+ - Receipt tx hash mapping is set to look back 1 partition to grab receipts that may have occurred prior to the start of the range.
+ - Receipts final does not buffer the range to only map receipts that occurred within the range to a tx hash (but the lookback is necessary in case the tree is truncated by the partition break).
+ - Transactions final does not add a buffer when grabbing transactions from the int txs model, but does add an end buffer when selecting from receipts final to include mapped receipts that may have occurred after the end of the range.
+
+ A range is necessary for the mapping view as it consumes a significant amount of memory and will otherwise run out.
+
+ Actions and curated models include the conditional based on target name so the tags `s3_actions` and `s3_curated` can be included to re-run the fixed data in downstream silver models.
+  - if missing data is loaded in new, this is not necessary as `_load_timestamp` will be set to when the data hits snowflake and will flow through the standard incremental logic in the curated models.
+
+Note: certain views, like `core__fact_blocks` are not tagged, so running all views in with `-s models/core/` is recommended after changes are made.

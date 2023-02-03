@@ -7,7 +7,7 @@
     tags = ['s3_load']
 ) }}
 
-WITH shardsjson AS (
+WITH shards_json AS (
 
     SELECT
         block_id,
@@ -23,9 +23,10 @@ WITH shardsjson AS (
         _partition_by_block_number
     FROM
         {{ ref('bronze__streamline_shards') }}
+    WHERE
         {{ partition_batch_load(150000) }}
 )
 SELECT
     *
 FROM
-    shardsjson
+    shards_json

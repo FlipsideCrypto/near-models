@@ -3,7 +3,7 @@
     incremental_strategy = 'delete+insert',
     unique_key = 'receipt_object_id',
     cluster_by = ['_load_timestamp::date', 'block_id'],
-    tags = ['s3', 's3_final', 's3_manual']
+    tags = ['s3_final', 's3_manual']
 ) }}
 
 WITH base_receipts AS (
@@ -17,8 +17,9 @@ WITH base_receipts AS (
         WHERE
             {{ partition_load_manual('no_buffer') }}
         {% else %}
+        WHERE
             {{ partition_batch_load(150000) }}
-            AND {{ incremental_load_filter('_load_timestamp') }}
+            OR {{ incremental_load_filter('_load_timestamp') }}
         {% endif %}
 ),
 blocks AS (

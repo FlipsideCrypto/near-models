@@ -3,7 +3,7 @@
   unique_key = 'tx_hash',
   incremental_strategy = 'delete+insert',
   cluster_by = ['_load_timestamp::date', 'block_timestamp::date'],
-  tags = ['s3', 's3_final', 's3_manual']
+  tags = ['s3_final', 's3_manual']
 ) }}
 
 WITH int_txs AS (
@@ -17,6 +17,7 @@ WITH int_txs AS (
     WHERE
       {{ partition_load_manual('no_buffer') }}
     {% else %}
+    WHERE
       {{ partition_incremental_load(
         150000,
         10000,
@@ -34,6 +35,7 @@ int_receipts AS (
     WHERE
       {{ partition_load_manual('end') }}
     {% else %}
+    WHERE
       {{ partition_incremental_load(
         150000,
         10000,
