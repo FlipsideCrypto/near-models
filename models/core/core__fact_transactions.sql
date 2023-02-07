@@ -26,3 +26,10 @@ SELECT
     tx_status
 FROM
     transactions
+WHERE
+    block_id <= (
+        SELECT
+            MAX(block_id)
+        FROM
+            transactions
+    ) - 50

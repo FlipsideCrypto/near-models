@@ -21,3 +21,10 @@ SELECT
     action_data
 FROM
     actions
+WHERE
+    block_id <= (
+        SELECT
+            MAX(block_id)
+        FROM
+            actions
+    ) - 50

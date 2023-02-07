@@ -25,3 +25,10 @@ SELECT
     status
 FROM
     transfers
+WHERE
+    block_id <= (
+        SELECT
+            MAX(block_id)
+        FROM
+            transfers
+    ) - 50

@@ -27,3 +27,10 @@ SELECT
     metadata
 FROM
     receipts
+WHERE
+    block_id <= (
+        SELECT
+            MAX(block_id)
+        FROM
+            receipts
+    ) - 50

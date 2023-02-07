@@ -22,3 +22,10 @@ SELECT
     attached_gas
 FROM
     actions_events_function_call
+WHERE
+    block_id <= (
+        SELECT
+            MAX(block_id)
+        FROM
+            actions_events_function_call
+    ) - 50

@@ -31,3 +31,10 @@ select
     network_fee,
     tx_status
 from mints
+WHERE
+    block_id <= (
+        SELECT
+            MAX(block_id)
+        FROM
+            mints
+    ) - 50

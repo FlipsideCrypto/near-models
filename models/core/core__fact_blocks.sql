@@ -46,3 +46,10 @@ SELECT
     validator_reward
 FROM
     blocks
+WHERE
+    block_id <= (
+        SELECT
+            MAX(block_id)
+        FROM
+            blocks
+    ) - 50

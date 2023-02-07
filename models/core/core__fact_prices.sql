@@ -34,3 +34,10 @@ SELECT
     *
 FROM
     FINAL
+WHERE
+    block_id <= (
+        SELECT
+            MAX(block_id)
+        FROM
+            oracle_prices
+    ) - 50
