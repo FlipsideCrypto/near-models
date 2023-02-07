@@ -35,9 +35,9 @@ SELECT
 FROM
     FINAL
 WHERE
-    block_id <= (
+    TIMESTAMP <= (
         SELECT
-            MAX(block_id)
+            MAX(TIMESTAMP)
         FROM
             oracle_prices
-    ) - 50
+    ) - interval '3 minutes'
