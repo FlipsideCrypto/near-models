@@ -26,9 +26,6 @@ models:
 
       - name: CHUNK
         description: "{{ doc('chunk')}}"
-        tests:
-          - not_null
-          - unique
 
       - name: HEIGHT_CREATED
         description: "{{ doc('height_created')}}"

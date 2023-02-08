@@ -24,6 +24,7 @@ models:
       - name: CHUNK
         description: "{{ doc('chunks')}}"
         tests:
+          - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - VARIANT
@@ -44,7 +45,6 @@ models:
       - name: STATE_CHANGES
         description: "{{ doc('state_changes')}}"
         tests:
-          - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - ARRAY

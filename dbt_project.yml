@@ -50,8 +50,9 @@ tests:
   near:
     silver:
       +severity: warn # default to warn for int tests
+      +error_if: ">25"
     core:
-      +error_if: ">25" # but error if a core view is having issues, adding a buffer due to receipt processing lag
+      +severity: error # default to warn for int tests
   +store_failures: true # all tests
 
 vars:
