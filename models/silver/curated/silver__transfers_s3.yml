@@ -32,12 +32,21 @@ models:
 
       - name: TRANSACTION_FEE
         description: "{{ doc('transaction_fee')}}"
+        tests:
+          - not_null:
+              where: _load_timestamp <= current_timestamp - interval '2 hours'
 
       - name: GAS_USED
         description: "{{ doc('gas_used')}}"
+        tests:
+          - not_null:
+              where: _load_timestamp <= current_timestamp - interval '2 hours'
 
       - name: STATUS
         description: "{{ doc('status')}}"
+        tests:
+          - not_null:
+              where: _load_timestamp <= current_timestamp - interval '2 hours'
 
       - name: _LOAD_TIMESTAMP
         description: "{{ doc('_load_timestamp')}}"

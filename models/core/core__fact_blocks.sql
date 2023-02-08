@@ -46,3 +46,4 @@ SELECT
     validator_reward
 FROM
     blocks
+

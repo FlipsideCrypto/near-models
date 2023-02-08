@@ -25,3 +25,4 @@ SELECT
     status
 FROM
     transfers
+

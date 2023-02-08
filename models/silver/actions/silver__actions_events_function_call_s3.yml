@@ -11,6 +11,9 @@ models:
 
       - name: TX_HASH
         description: "{{ doc('tx_hash')}}"
+        tests:
+          - not_null:
+              where: _load_timestamp <= current_timestamp - interval '2 hours'
 
       - name: BLOCK_ID
         description: "{{ doc('block_id')}}"

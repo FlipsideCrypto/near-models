@@ -12,7 +12,6 @@
 ) }}
 
 WITH dex_swaps AS (
-
     SELECT
         *
     FROM
