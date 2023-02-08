@@ -71,10 +71,3 @@ SELECT
     amount_out
 FROM
     FINAL
-WHERE
-    block_id <= (
-        SELECT
-            MAX(block_id)
-        FROM
-            dex_swaps
-    ) - 50

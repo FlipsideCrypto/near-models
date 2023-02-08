@@ -34,10 +34,3 @@ SELECT
     *
 FROM
     FINAL
-WHERE
-    TIMESTAMP <= (
-        SELECT
-            MAX(TIMESTAMP)
-        FROM
-            oracle_prices
-    ) - interval '3 minutes'
