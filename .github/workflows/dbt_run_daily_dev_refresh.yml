@@ -26,7 +26,8 @@ jobs:
   called_workflow_template:
     uses: FlipsideCrypto/analytics-workflow-templates/.github/workflows/dbt_run_template.yml@main
     with:
-      dbt_command: "[\"dbt run-operation run_sp_create_prod_clone\"]"
+      dbt_command: >
+        dbt run-operation run_sp_create_prod_clone
       environment: workflow_prod
       warehouse: ${{ vars.WAREHOUSE }}
     secrets: inherit 
