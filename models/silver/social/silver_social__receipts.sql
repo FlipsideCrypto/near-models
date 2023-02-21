@@ -5,7 +5,7 @@
     tags = ['s3_curated']
 ) }}
 
-WITH receipts AS (
+WITH all_social_receipts AS (
 
     SELECT
         *
@@ -17,13 +17,10 @@ WITH receipts AS (
         {% else %}
             {{ incremental_load_filter('_load_timestamp') }}
         {% endif %}
-
-        AND (
-            LOWER(signer_id) = 'social.near'
-            OR LOWER(receiver_id) = 'social.near'
-            )
+        AND (LOWER(signer_id) = 'social.near'
+        OR LOWER(receiver_id) = 'social.near')
 )
 SELECT
     *
 FROM
-    receipts
+    all_social_receipts
