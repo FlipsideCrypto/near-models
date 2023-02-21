@@ -18,7 +18,8 @@ WITH receipts AS (
             {{ incremental_load_filter('_load_timestamp') }}
         {% endif %}
         AND _partition_by_block_number >= 59670000
-) from_addkey_event AS (
+),
+from_addkey_event AS (
     SELECT
         action_id,
         tx_hash,
