@@ -2,7 +2,7 @@
     materialized = 'incremental',
     unique_key = 'action_id_social',
     cluster_by = ['_load_timestamp::date', '_partition_by_block_number'],
-    tags = ['s3_curated']
+    tags = ['s3_curated', 'social']
 ) }}
 
 WITH all_social_receipts AS (
@@ -98,7 +98,7 @@ flattened_actions AS (
         block_timestamp,
         signer_id,
         key AS node,
-        VALUE AS node_value,
+        VALUE AS node_data,
         _load_timestamp,
         _partition_by_block_number
     FROM

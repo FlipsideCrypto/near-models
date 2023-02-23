@@ -1,0 +1,62 @@
+
+version: 2
+
+models:
+  - name: silver_social__receipts
+    description: |-
+      Filtered receipts where the signer or receiver is the contract social.near.
+
+    columns:
+      - name: tx_hash
+        description: "{{ doc('tx_hash')}}"
+
+      - name: block_id
+        description: "{{ doc('block_id')}}"
+
+      - name: receipt_index
+        description: "{{ doc('receipt_index')}}"
+
+      - name: chunk_hash
+        description: "{{ doc('chunk_hash')}}"
+
+      - name: receipt_actions
+        description: "{{ doc('receipt')}}"
+
+      - name: execution_outcome
+        description: "{{ doc('execution_outcome')}}"
+
+      - name: receipt_object_id
+        description: "{{ doc('receipt_object_id')}}"
+
+      - name: receipt_outcome_id
+        description: "{{ doc('receipt_outcome_id')}}"
+
+      - name: receiver_id
+        description: "{{ doc('receiver_id')}}"
+
+      - name: signer_id
+        description: "{{ doc('signer_id')}}"
+
+      - name: receipt_type
+        description: "{{ doc('receipt_type')}}"
+
+      - name: gas_burnt
+        description: "{{ doc('gas_burnt')}}"
+
+      - name: status_value
+        description: "{{ doc('status_value')}}"
+
+      - name: logs
+        description: "{{ doc('logs')}}"
+
+      - name: proof
+        description: "{{ doc('proof')}}"
+
+      - name: metadata
+        description: "{{ doc('metadata')}}"
+
+      - name: _load_timestamp
+        description: "{{ doc('_load_timestamp')}}"
+
+      - name: _partition_by_block_number
+        description: "{{ doc('_partition_by_block_number')}}"

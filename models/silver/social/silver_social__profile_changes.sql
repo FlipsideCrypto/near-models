@@ -2,7 +2,7 @@
     materialized = 'incremental',
     unique_key = 'action_id_profile',
     cluster_by = ['block_timestamp::date', 'signer_id'],
-    tags = ['s3_curated']
+    tags = ['s3_curated', 'social']
 ) }}
 
 WITH decoded_actions AS (
@@ -38,7 +38,7 @@ flatten_profile_json AS (
         _partition_by_block_number
     FROM
         decoded_actions,
-        LATERAL FLATTEN(node_value)
+        LATERAL FLATTEN(node_data)
 )
 SELECT
     action_id_profile,

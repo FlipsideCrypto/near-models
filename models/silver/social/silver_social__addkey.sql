@@ -2,7 +2,7 @@
     materialized = 'incremental',
     unique_key = 'action_id',
     cluster_by = ['block_timestamp::date'],
-    tags = ['s3_curated']
+    tags = ['s3_curated', 'social']
 ) }}
 
 WITH receipts AS (

@@ -1,0 +1,26 @@
+
+version: 2
+
+models:
+  - name: social__fact_addkey_events
+    description: |-
+      All AddKey events for the contract social.near, which indicate a wallet or user authorizing use of the contract as a high-level proxy for interest in the platform.
+
+    columns:
+      - name: ACTION_ID
+        description: "{{ doc('block_id')}}"
+
+      - name: TX_HASH
+        description: "{{ doc('tx_hash')}}"
+
+      - name: BLOCK_ID
+        description: "{{ doc('block_id')}}"
+
+      - name: BLOCK_TIMESTAMP
+        description: "{{ doc('block_timestamp')}}"
+
+      - name: ALLOWANCE
+        description: "{{ doc('allowance')}}"
+
+      - name: SIGNER_ID
+        description: "{{ doc('signer_id')}}"
