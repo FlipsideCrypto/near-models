@@ -1,9 +1,10 @@
 {{ config(
     materialized = 'incremental',
-    unique_key = 'social_action_id',
+    unique_key = 'action_id_social',
     cluster_by = ['_load_timestamp::date', '_partition_by_block_number'],
     tags = ['s3_curated']
 ) }}
+
 WITH all_social_receipts AS (
 
     SELECT
@@ -11,13 +12,14 @@ WITH all_social_receipts AS (
     FROM
         {{ ref('silver_social__receipts') }}
     WHERE
-        {# NOTE - 5 "maintenance" receipts prior to 75mm that create/add/revoke keys, etc. Largely irrelevant to the platform. #}
-        _partition_by_block_number >= 75000000 
         {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
-            AND {{ partition_load_manual('no_buffer') }}
+            {{ partition_load_manual('no_buffer') }}
         {% else %}
-            AND {{ incremental_load_filter('_load_timestamp') }}
+            {{ incremental_load_filter('_load_timestamp') }}
         {% endif %}
+
+        {# NOTE - 5 "maintenance" receipts prior to 75mm that create/add/revoke keys, etc. Largely irrelevant to the platform. #}
+        AND _partition_by_block_number >= 75000000
 ),
 decoded_function_calls AS (
     SELECT
@@ -29,12 +31,12 @@ decoded_function_calls AS (
     FROM
         {{ ref('silver__actions_events_function_call_s3') }}
     WHERE
-        _partition_by_block_number >= 75000000 
         {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
-            AND {{ partition_load_manual('no_buffer') }}
+            {{ partition_load_manual('no_buffer') }}
         {% else %}
-            AND {{ incremental_load_filter('_load_timestamp') }}
+            {{ incremental_load_filter('_load_timestamp') }}
         {% endif %}
+        AND _partition_by_block_number >= 75000000
         AND SPLIT(
             action_id,
             '-'
@@ -90,13 +92,13 @@ flattened_actions AS (
             '-',
             action_id,
             key
-        ) AS social_action_id,
+        ) AS action_id_social,
         tx_hash,
         block_id,
         block_timestamp,
         signer_id,
         key AS node,
-        VALUE as node_value,
+        VALUE AS node_value,
         _load_timestamp,
         _partition_by_block_number
     FROM

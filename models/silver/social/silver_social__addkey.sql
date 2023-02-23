@@ -1,7 +1,7 @@
 {{ config(
     materialized = 'incremental',
     unique_key = 'action_id',
-    cluster_by = ['_load_timestamp::date', '_partition_by_block_number'],
+    cluster_by = ['block_timestamp::date'],
     tags = ['s3_curated']
 ) }}
 
