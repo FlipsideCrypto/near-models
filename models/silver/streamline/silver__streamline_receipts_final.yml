@@ -15,6 +15,12 @@ models:
       - name: BLOCK_ID
         description: "{{ doc('block_id')}}"
 
+      - name: BLOCK_TIMESTAMP
+        description: "{{ doc('block_timestamp')}}"
+        tests:
+          - not_null:
+              where: _load_timestamp <= current_timestamp - interval '2 hours'
+
       - name: RECEIPT_INDEX
         description: "{{ doc('receipt_index')}}"
 
