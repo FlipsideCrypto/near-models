@@ -68,17 +68,40 @@ nested_in_functioncall AS (
 ),
 combine AS (
     SELECT
-        *
+        SPLIT(
+            action_id,
+            '-'
+        ) [0] :: STRING AS receipt_id_from_action,
+        action_id,
+        tx_hash,
+        block_id,
+        block_timestamp,
+        allowance,
+        _source,
+        _partition_by_block_number,
+        _load_timestamp
     FROM
         from_addkey_event
     UNION
     SELECT
-        *
+        SPLIT(
+            action_id,
+            '-'
+        ) [0] :: STRING AS receipt_id_from_action,
+        action_id,
+        tx_hash,
+        block_id,
+        block_timestamp,
+        allowance,
+        _source,
+        _partition_by_block_number,
+        _load_timestamp
     FROM
         nested_in_functioncall
 ),
 FINAL AS (
     SELECT
+        A.receipt_id_from_action,
         A.action_id,
         A.tx_hash,
         A.block_id,
@@ -91,10 +114,7 @@ FINAL AS (
     FROM
         combine A
         LEFT JOIN receipts r
-        ON SPLIT(
-            A.action_id,
-            '-'
-        ) [0] :: STRING = r.receipt_object_id
+        ON receipt_id_from_action = r.receipt_object_id
 )
 SELECT
     *

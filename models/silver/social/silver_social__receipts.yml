@@ -27,6 +27,8 @@ models:
 
       - name: receipt_object_id
         description: "{{ doc('receipt_object_id')}}"
+        tests: 
+          - unique
 
       - name: receipt_outcome_id
         description: "{{ doc('receipt_outcome_id')}}"

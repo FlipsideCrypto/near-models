@@ -7,8 +7,13 @@ models:
       All AddKey events for the contract social.near, which indicate a wallet or user authorizing use of the contract as a high-level proxy for interest in the platform.
 
     columns:
+      - name: receipt_id_from_action
+        description: "{{ doc('receipt_object_id')}}"
+
       - name: action_id
         description: "{{ doc('block_id')}}"
+        tests:
+          - unique
 
       - name: tx_hash
         description: "{{ doc('tx_hash')}}"
@@ -24,6 +29,8 @@ models:
 
       - name: signer_id
         description: "{{ doc('signer_id')}}"
+        tests:
+          - not_null
 
       - name: _source
         description: "{{ doc('_source')}}"

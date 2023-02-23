@@ -9,6 +9,8 @@ models:
     columns:
       - name: action_id_profile
         description: "{{ doc('block_id')}}"
+        tests:
+          - unique
 
       - name: tx_hash
         description: "{{ doc('tx_hash')}}"
