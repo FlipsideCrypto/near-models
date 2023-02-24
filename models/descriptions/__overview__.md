@@ -41,6 +41,11 @@ There is more information on how to use dbt docs in the last section of this doc
 - [ez_nft_mints](#!/model/model.near.core__ez_nft_mints)
 - [ez_usn_supply](#!/model/model.near.core__ez_usn_supply)
 
+### Social Tables (`NEAR`.`SOCIAL`.`<table_name>`)
+- [fact_addkey_events](#!/model/model.near.social__fact_addkey_events)
+- [fact_decoded_actions](#!/model/model.near.social__fact_decoded_actions)
+- [fact_profile_changes](#!/model/model.near.social__fact_profile_changes)
+
 
 ### Beta Tables (`NEAR`.`BETA`.`<table_name>`)
 - [github_activity](https://github.com/forgxyz/developer_report_near)
