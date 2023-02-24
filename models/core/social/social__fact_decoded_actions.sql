@@ -8,6 +8,7 @@ SELECT
     tx_hash,
     block_id,
     block_timestamp,
+    signer_id,
     node,
     node_data
 FROM
