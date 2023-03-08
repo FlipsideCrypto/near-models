@@ -32,7 +32,7 @@ WITH latest_block AS (
                 b.block_id :: INTEGER - 1000 + series AS new_block_id,
                 RIGHT(REPEAT('0', 12) || new_block_id :: STRING, 12) AS prefix
             FROM
-                TABLE(GENERATOR(rowcount => 4000)),
+                TABLE(GENERATOR(rowcount => 10000)),
                 latest_block b
         ),
         list_files AS (
