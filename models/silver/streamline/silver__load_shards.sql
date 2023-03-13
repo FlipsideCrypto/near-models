@@ -24,7 +24,7 @@ WITH shards_json AS (
     FROM
         {{ ref('bronze__streamline_shards') }}
     WHERE
-        {{ partition_batch_load(150000) }}
+true
 )
 SELECT
     *
