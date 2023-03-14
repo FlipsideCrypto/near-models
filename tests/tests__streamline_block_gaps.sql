@@ -14,7 +14,8 @@ WITH silver_blocks AS (
         block_timestamp ASC,
         block_id ASC
     ) AS prior_hash,
-    _partition_by_block_number
+    _partition_by_block_number,
+    current_timestamp as _test_timestamp
   FROM
     {{ ref('silver__streamline_blocks') }}
   WHERE

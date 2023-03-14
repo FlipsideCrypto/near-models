@@ -24,7 +24,25 @@ WITH shards_json AS (
     FROM
         {{ ref('bronze__streamline_shards') }}
     WHERE
-true
+        {# {{ partition_batch_load(150000) }}
+        OR  #}
+        (
+            _partition_by_block_number IN (
+                SELECT
+                    DISTINCT _partition_by_block_number
+                FROM
+                    {{ target.database }}.tests.chunk_gaps
+            )
+            AND block_id IN (
+                SELECT
+                    VALUE
+                FROM
+                    {{ target.database }}.tests.chunk_gaps,
+                    LATERAL FLATTEN(
+                        input => blocks_to_walk
+                    )
+            )
+        )
 )
 SELECT
     *
