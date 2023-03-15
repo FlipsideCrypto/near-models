@@ -8,7 +8,7 @@
             }
         }
     },
-    tags = ['s3_curated']
+    tags = ['core']
 ) }}
 
 WITH dex_swaps AS (

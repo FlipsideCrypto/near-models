@@ -3,7 +3,7 @@
     incremental_strategy = 'merge',
     unique_key = 'receipt_id',
     cluster_by = ['_load_timestamp::date', 'block_id'],
-    tags = ['s3', 'receipts']
+    tags = ['load']
 ) }}
 
 WITH receipt_execution_outcomes AS (

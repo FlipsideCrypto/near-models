@@ -3,142 +3,157 @@
     incremental = 'merge',
     cluster_by = ['block_timestamp'],
     unique_key = 'tx_hash',
-  tags = ['curated', 'curated_rpc']
-
-
+    tags = ['curated_rpc'],
+    enabled = False
 ) }}
 
-with actions_events_function_call as (
-    select
+WITH actions_events_function_call AS (
+
+    SELECT
         tx_hash,
         method_name,
         _inserted_timestamp
-    from {{ ref('silver__actions_events_function_call') }}
-    where {{ incremental_load_filter('_inserted_timestamp') }}
-      and method_name in (
-        'deposit_and_stake',
-        'stake',
-        'unstake',
-        'unstake_all'
-      )
+    FROM
+        {{ ref('silver__actions_events_function_call') }}
+    WHERE
+        {{ incremental_load_filter('_inserted_timestamp') }}
+        AND method_name IN (
+            'deposit_and_stake',
+            'stake',
+            'unstake',
+            'unstake_all'
+        )
 ),
-
-base_txs as (
-    select
+base_txs AS (
+    SELECT
         *
-    from {{ ref('silver__transactions') }}
-    where {{ incremental_load_filter('_inserted_timestamp') }}
+    FROM
+        {{ ref('silver__transactions') }}
+    WHERE
+        {{ incremental_load_filter('_inserted_timestamp') }}
 ),
-
-txs as (
-    select
+txs AS (
+    SELECT
         *
-    from base_txs
-    where (tx_receiver like '%.pool.near' or tx_receiver like '%.poolv1.near')
+    FROM
+        base_txs
+    WHERE
+        (
+            tx_receiver LIKE '%.pool.near'
+            OR tx_receiver LIKE '%.poolv1.near'
+        )
 ),
-
-pool_txs as (
-    select
-        txs.tx_hash as tx_hash,
+pool_txs AS (
+    SELECT
+        txs.tx_hash AS tx_hash,
         block_timestamp,
         tx_receiver,
         tx_signer,
         tx,
         method_name,
-        txs._inserted_timestamp as _inserted_timestamp
-    from txs
-    inner join actions_events_function_call
-            on txs.tx_hash = actions_events_function_call.tx_hash
+        txs._inserted_timestamp AS _inserted_timestamp
+    FROM
+        txs
+        INNER JOIN actions_events_function_call
+        ON txs.tx_hash = actions_events_function_call.tx_hash
 ),
-
-deposit_and_stake_txs as (
-    select
+deposit_and_stake_txs AS (
+    SELECT
         tx_hash,
         block_timestamp,
-        tx_receiver as pool_address,
+        tx_receiver AS pool_address,
         tx_signer,
-        regexp_substr(array_to_string(tx:receipt[0]:outcome:logs, ','), 'staking (\\d+)', 1, 1, 'e')::number as stake_amount,
-        'Stake' as action,
+        REGEXP_SUBSTR(ARRAY_TO_STRING(tx :receipt [0] :outcome :logs, ','), 'staking (\\d+)', 1, 1, 'e') :: NUMBER AS stake_amount,
+        'Stake' AS action,
         _inserted_timestamp
-    from pool_txs
-    where method_name = 'deposit_and_stake'
-      and tx:receipt[0]:outcome:status:SuccessValue is not null
+    FROM
+        pool_txs
+    WHERE
+        method_name = 'deposit_and_stake'
+        AND tx :receipt [0] :outcome :status :SuccessValue IS NOT NULL
 ),
-
-stake_txs as (
-    select
+stake_txs AS (
+    SELECT
         tx_hash,
         block_timestamp,
-        tx_receiver as pool_address,
+        tx_receiver AS pool_address,
         tx_signer,
-        regexp_substr(array_to_string(tx:receipt[0]:outcome:logs, ','), 'staking (\\d+)', 1, 1, 'e')::number as stake_amount,
-        'Stake' as action,
+        REGEXP_SUBSTR(ARRAY_TO_STRING(tx :receipt [0] :outcome :logs, ','), 'staking (\\d+)', 1, 1, 'e') :: NUMBER AS stake_amount,
+        'Stake' AS action,
         _inserted_timestamp
-    from pool_txs
-    where method_name = 'stake'
-      and tx:receipt[0]:outcome:status:SuccessValue is not null
+    FROM
+        pool_txs
+    WHERE
+        method_name = 'stake'
+        AND tx :receipt [0] :outcome :status :SuccessValue IS NOT NULL
 ),
-
-stake_all_txs as (
-    select
+stake_all_txs AS (
+    SELECT
         tx_hash,
         block_timestamp,
-        tx_receiver as pool_address,
+        tx_receiver AS pool_address,
         tx_signer,
-        regexp_substr(array_to_string(tx:receipt[0]:outcome:logs, ','), 'staking (\\d+)', 1, 1, 'e')::number as stake_amount,
-        'Stake' as action,
+        REGEXP_SUBSTR(ARRAY_TO_STRING(tx :receipt [0] :outcome :logs, ','), 'staking (\\d+)', 1, 1, 'e') :: NUMBER AS stake_amount,
+        'Stake' AS action,
         _inserted_timestamp
-    from pool_txs
-    where method_name = 'stake_all'
-      and tx:receipt[0]:outcome:status:SuccessValue is not null
+    FROM
+        pool_txs
+    WHERE
+        method_name = 'stake_all'
+        AND tx :receipt [0] :outcome :status :SuccessValue IS NOT NULL
 ),
-
-unstake_txs as (
-    select
+unstake_txs AS (
+    SELECT
         tx_hash,
         block_timestamp,
-        tx_receiver as pool_address,
+        tx_receiver AS pool_address,
         tx_signer,
-        regexp_substr(array_to_string(tx:receipt[0]:outcome:logs, ','), 'unstaking (\\d+)', 1, 1, 'e')::number as stake_amount,
-        'Unstake' as action,
+        REGEXP_SUBSTR(ARRAY_TO_STRING(tx :receipt [0] :outcome :logs, ','), 'unstaking (\\d+)', 1, 1, 'e') :: NUMBER AS stake_amount,
+        'Unstake' AS action,
         _inserted_timestamp
-    from pool_txs
-    where method_name = 'unstake'
-      and tx:receipt[0]:outcome:status:SuccessValue is not null
+    FROM
+        pool_txs
+    WHERE
+        method_name = 'unstake'
+        AND tx :receipt [0] :outcome :status :SuccessValue IS NOT NULL
 ),
-
-unstake_all_txs as (
-    select
+unstake_all_txs AS (
+    SELECT
         tx_hash,
         block_timestamp,
-        tx_receiver as pool_address,
+        tx_receiver AS pool_address,
         tx_signer,
-        regexp_substr(array_to_string(tx:receipt[0]:outcome:logs, ','), 'unstaking (\\d+)', 1, 1, 'e')::number as stake_amount,
-        'Unstake' as action,
+        REGEXP_SUBSTR(ARRAY_TO_STRING(tx :receipt [0] :outcome :logs, ','), 'unstaking (\\d+)', 1, 1, 'e') :: NUMBER AS stake_amount,
+        'Unstake' AS action,
         _inserted_timestamp
-    from pool_txs
-    where method_name = 'unstake_all'
-      and tx:receipt[0]:outcome:status:SuccessValue is not null
+    FROM
+        pool_txs
+    WHERE
+        method_name = 'unstake_all'
+        AND tx :receipt [0] :outcome :status :SuccessValue IS NOT NULL
 ),
-
-final as (
-    select
+FINAL AS (
+    SELECT
         *
-    from deposit_and_stake_txs
-    union
-    select
+    FROM
+        deposit_and_stake_txs
+    UNION
+    SELECT
         *
-    from stake_all_txs
-    union
-    select
+    FROM
+        stake_all_txs
+    UNION
+    SELECT
         *
-    from unstake_txs
-    union
-    select
+    FROM
+        unstake_txs
+    UNION
+    SELECT
         *
-    from unstake_all_txs
+    FROM
+        unstake_all_txs
 )
-
-select
-*
-from final
+SELECT
+    *
+FROM
+    FINAL

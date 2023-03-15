@@ -6,10 +6,10 @@ WITH block_chunks_included AS (
 
     SELECT
         block_id,
-        VALUE :header :chunks_included AS chunks_included,
+        header :chunks_included AS chunks_included,
         _partition_by_block_number
     FROM
-        {{ ref('silver__load_blocks') }}
+        {{ ref('silver__streamline_blocks') }}
 ),
 chunks_per_block AS (
     SELECT

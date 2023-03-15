@@ -168,10 +168,10 @@ If data needs to be re-run for some reason, partitions of data can be re-reun th
 
 Any data refresh will need to be done in a batch due to the nature of the receipt x tx hash mapping. The view `silver__receipt_tx_hash_mapping` is a recursive AncestryTree that follows linked receipt outcome ids to map all receipts generated in a transaction back to the primary hash. Receipts can be generated many blocks after the transaction occurs, so a generous buffer is required to ensure all receipts are captured.
 
-Models in the `streamline` folder can be run with standard incremental logic up until the 2 final receipt and transaction tables. The next step, mapping receipts to tx hash over a range, can be run with the following command:
+Models in the `streamline` folder can be run with standard incremental logic up until the 2 final receipt and transaction tables (tagged as such, see below). The next step, mapping receipts to tx hash over a range, can be run with the following command:
 
 ```
-dbt run -s tag:s3_manual --vars '{"range_start": 82700000, "range_end": 82750000, "front_buffer": 1, "end_buffer": 1}' -t manual_fix_dev
+dbt run -s tag:receipt_map tag:curated --vars '{"range_start": X, "range_end": Y, "front_buffer": 1, "end_buffer": 1}' -t manual_fix_dev
 ```
 
 The target name will determine how the model operates, calling a macro `partition_load_manual()` which takes the variables input in the command to set the range.
@@ -187,4 +187,29 @@ The target name will determine how the model operates, calling a macro `partitio
  Actions and curated models include the conditional based on target name so the tags `s3_actions` and `s3_curated` can be included to re-run the fixed data in downstream silver models.
   - if missing data is loaded in new, this is not necessary as `_load_timestamp` will be set to when the data hits snowflake and will flow through the standard incremental logic in the curated models.
 
+#### Model Tags
+
+To help with targeted refreshes, a number of tags have been applied to the models. These are defined below:
+
+| Tag | Description |
+| --- | --- |
+| load | Runs models that load data into Snowflake from S3. The 2 `load_X` models are staging tables for data, which is then parsed and transformed up until the final txs/receipts models. |
+| receipt_map | Runs the receipt-mapping models that must use a partition. This set of models cannot simply run with incremental logic due to the recursive tree used to map receipt IDs to Tx Hashes. |
+| actions | Just the 3 action events models, an important set of intermediary models before curated activity. Note: These are also tagged with `s3_curated`. |
+| curated | Models that are used to generate the curated tables |
+
 Note: certain views, like `core__fact_blocks` are not tagged, so running all views in with `-s models/core/` is recommended after changes are made.
+
+### Incremental Load Strategy
+
+ - TODO - comment this section
+
+
+Include the following conditional, as targeted runs of block partitions may be required:
+```
+        {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
+            {{ partition_load_manual('no_buffer') }}
+        {% else %}
+            {{ incremental_load_filter('_load_timestamp') }}
+        {% endif %}
+```

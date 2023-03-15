@@ -2,7 +2,7 @@
     materialized = 'incremental',
     unique_key = 'action_id_profile',
     cluster_by = ['block_timestamp::date', 'signer_id'],
-    tags = ['s3_curated', 'social']
+    tags = ['curated', 'social']
 ) }}
 
 WITH decoded_actions AS (

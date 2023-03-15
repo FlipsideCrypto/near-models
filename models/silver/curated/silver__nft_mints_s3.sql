@@ -3,7 +3,7 @@
     cluster_by = ["block_timestamp::DATE", "_load_timestamp::DATE"],
     unique_key = "CONCAT_WS('-', action_id, nft_address)",
     incremental_strategy = "delete+insert",
-    tags = ['curated', 's3_curated']
+    tags = ['curated']
 ) }}
 --Data pulled from action_events_function_call
 WITH function_call AS (
