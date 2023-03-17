@@ -32,7 +32,9 @@ posts AS (
         -- TODO consider these column names
         parsed_node_data :type :: STRING AS post_type,
         parsed_node_data :text :: STRING AS post_text,
-        parsed_node_data :image :: STRING AS post_image
+        parsed_node_data :image :: STRING AS post_image,
+        _partition_by_block_number,
+        _load_timestamp
     FROM
         decoded_actions
     WHERE
@@ -41,6 +43,15 @@ posts AS (
         ) IS NOT NULL
 )
 SELECT
-    posts
+    tx_hash,
+    action_id_social,
+    block_id,
+    block_timestamp,
+    signer_id,
+    post_type,
+    post_text,
+    post_image,
+    _partition_by_block_number,
+    _load_timestamp
 FROM
-    abc
+    posts

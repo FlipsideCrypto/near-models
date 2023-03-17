@@ -34,7 +34,9 @@ widgets AS (
             signer_id,
             '/widget/',
             widget_name
-        ) AS widget_url
+        ) AS widget_url,
+        _partition_by_block_number,
+        _load_timestamp
     FROM
         decoded_actions
 )
@@ -46,6 +48,8 @@ SELECT
     signer_id,
     widget_name,
     js_code,
-    widget_url
+    widget_url,
+    _partition_by_block_number,
+    _load_timestamp
 FROM
     widgets
