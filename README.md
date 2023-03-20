@@ -4,57 +4,6 @@ Curated SQL Views and Metrics for the Near Blockchain.
 
 What's Near? Learn more [here](https://near.org/)
 
-## Setup
-
-### Prerequisites
-
-1. Complete the steps in the [Data Curator Onboarding Guide](https://docs.metricsdao.xyz/data-curation/data-curator-onboarding).
-    - Note that the Data Curator Onboarding Guide assumes that you will ask to be added as a contributor to a MetricsDAO project. Ex: https://github.com/MetricsDAO/near_dbt.
-    - However, if you have not yet been added as a contributor, or you'd like to take an even lower-risk approach, you can always follow the [Fork and Pull Workflow](https://reflectoring.io/github-fork-and-pull/) by forking a copy of the project to which you'd like to contribute to a local copy of the project in your github account. Just make sure to:
-        - Fork the MetricsDAO repository.
-        - Git clone from your forked repository. Ex: `git clone https://github.com/YourAccount/near_dbt`.
-        - Create a branch for the changes you'd like to make. Ex: `git branch readme-update`.
-        - Switch to the branch. Ex: `git checkout readme-update`.
-        - Make your changes on the branch and follow the rest of the steps in the [Fork and Pull Workflow](https://reflectoring.io/github-fork-and-pull/) to notify the MetricsDAO repository owners to review your changes.
-2. Download [Docker for Desktop](https://www.docker.com/products/docker-desktop).
-    - (Optional) You can run the Docker tutorial.
-3. Install [VSCode](https://code.visualstudio.com/).
-
-### Prerequisites: Additional Windows Subsystem for Linux (WSL) Setup
-
-4. For Windows users, you'll need to install WSL and connect VSCode to WSL by
-     + Right clicking VSCode and running VSCode as admin.
-       - Installing [WSL](https://docs.microsoft.com/en-us/windows/wsl/install) by typing `wsl --install` in VScode's terminal.
-     + Following the rest of the [VSCode WSL instruction](https://code.visualstudio.com/docs/remote/wsl) to create a new WSL user.
-     + Installing the Remote Development extension (ms-vscode-remote.vscode-remote-extensionpack) in VSCode.
-       - Finally, restarting VSCode in a directory in which you'd like to work. For example,
-           - `cd ~/metricsDAO/data_curation/near_dbt`
-
-           - `code .`
-
-### Create the Environment Variables
-
-1. Create a `.env` file with the following contents (note `.env` will not be committed to source) in the near_dbt directory (ex: near_dbt/.env):
-
-```
-    SF_ACCOUNT=zsniary-metricsdao
-    SF_USERNAME=<your_metrics_dao_snowflake_username>
-    SF_PASSWORD=<your_metrics_dao_snowflake_password>
-    SF_REGION=us-east-1
-    SF_DATABASE=NEAR_DEV
-    SF_WAREHOUSE=DEFAULT
-    SF_ROLE=PUBLIC
-    SF_SCHEMA=SILVER
-```
-
-**Replace** the SF_USERNAME and SF_PASSWORD with the temporary Snowflake user name and password you received in the Snowflake step of the [Data Curator Onboarding Guide](https://docs.metricsdao.xyz/data-curation/data-curator-onboarding).
-
-2. New to DBT? It's pretty dope. Read up on it [here](https://www.getdbt.com/docs/)
-
-## Getting Started Commands
-
-Run the following commands from inside the Near directory (**you must have completed the Setup steps above^^**)
-
 ## Variables
 
 To control which external table environment a model references, as well as, whether a Stream is invoked at runtime using control variables:
@@ -79,28 +28,6 @@ Default values are False
 
 * Usage:
  `dbt run --var '{"UPDATE_UDFS_AND_SPS": True}'  -m ...`
-
-### DBT Environment
-
-1. In VSCode's terminal, type `cd near_dbt`.
-2. Then run `make dbt-console`. This will mount your local near directory into a dbt console where dbt is installed.
-    - You can verify that the above command ran successfully by looking at the terminal prompt. It should have changed from your Linux bash prompt to something like root@3527b594aaf0:/near#. Alternatively, you can see in the Docker Desktop app that an instance of near_dbt is now running.
-
-### DBT Project Docs
-
-1. In VSCode, open another terminal.
-2. In this new terminal, run `make dbt-docs`. This will compile your dbt documentation and launch a web-server at http://localhost:8080
-
-Documentation is automatically generated and hosted using Netlify.
-[![Netlify Status](https://api.netlify.com/api/v1/badges/12fc0079-7428-4771-9923-38ee6599db0f/deploy-status)](https://app.netlify.com/sites/mdao-near/deploys)
-
-## Project Overview
-
-`/models` - this directory contains SQL files as Jinja templates. DBT will compile these templates and wrap them into create table statements. This means all you have to do is define SQL select statements, while DBT handles the rest. The snowflake table name will match the name of the sql model file.
-
-`/macros` - these are helper functions defined as Jinja that can be injected into your SQL models.
-
-`/tests` - custom SQL tests that can be attached to tables.
 
 ## Applying Model Tags
 
@@ -154,12 +81,6 @@ When creating a PR please include the following details in the PR description:
 2. Description of changes.
 3. Implication of changes (if any).
 
-## More DBT Resources:
-
-* Learn more about dbt [in the docs](https://docs.getdbt.com/docs/introduction)
-* Check out [Discourse](https://discourse.getdbt.com/) for commonly asked questions and answers
-* Check out [the blog](https://blog.getdbt.com/) for the latest news on dbt's development and best practices
-
 ## Fixing Data Issues
 
 ### Manual Batch Refresh
@@ -187,7 +108,7 @@ The target name will determine how the model operates, calling a macro `partitio
  Actions and curated models include the conditional based on target name so the tags `s3_actions` and `s3_curated` can be included to re-run the fixed data in downstream silver models.
   - if missing data is loaded in new, this is not necessary as `_load_timestamp` will be set to when the data hits snowflake and will flow through the standard incremental logic in the curated models.
 
-#### Model Tags
+#### dbt Model Tags
 
 To help with targeted refreshes, a number of tags have been applied to the models. These are defined below:
 
@@ -197,13 +118,13 @@ To help with targeted refreshes, a number of tags have been applied to the model
 | receipt_map | Runs the receipt-mapping models that must use a partition. This set of models cannot simply run with incremental logic due to the recursive tree used to map receipt IDs to Tx Hashes. |
 | actions | Just the 3 action events models, an important set of intermediary models before curated activity. Note: These are also tagged with `s3_curated`. |
 | curated | Models that are used to generate the curated tables |
+| core | All public views are tagged with core, regardless of schema. At this time, that includes `core` and `social`. |
 
-Note: certain views, like `core__fact_blocks` are not tagged, so running all views in with `-s models/core/` is recommended after changes are made.
+Note: there are other tags that are currently not used. All legacy models are tagged with something that includes `rpc`, but all are presently disabled to avoid an accidental run.
 
 ### Incremental Load Strategy
-
- - TODO - comment this section
-
+Because data must be run in batches to properly map receipts to a transaction hash, a conditional is added to curated models using jinja. This should be present on everything after the mapping process.
+Most data will have no issue running with a standard incremental load. This filter is required for the above commands in the **Manual Batch Refresh** section.
 
 Include the following conditional, as targeted runs of block partitions may be required:
 ```
@@ -213,3 +134,8 @@ Include the following conditional, as targeted runs of block partitions may be r
             {{ incremental_load_filter('_load_timestamp') }}
         {% endif %}
 ```
+## More DBT Resources:
+
+* Learn more about dbt [in the docs](https://docs.getdbt.com/docs/introduction)
+* Check out [Discourse](https://discourse.getdbt.com/) for commonly asked questions and answers
+* Check out [the blog](https://blog.getdbt.com/) for the latest news on dbt's development and best practices
