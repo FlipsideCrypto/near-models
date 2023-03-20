@@ -18,8 +18,8 @@ WITH blocks_json AS (
     FROM
         {{ ref('bronze__streamline_blocks') }}
     WHERE
-        {# {{ partition_batch_load(150000) }}
-        OR  #}
+        {{ partition_batch_load(150000) }}
+        OR 
         (
             _partition_by_block_number IN (
                 SELECT
@@ -34,10 +34,10 @@ WITH blocks_json AS (
                     {{ target.database }}.tests.streamline_block_gaps
             )
         )
-        OR (
+        {# OR (
             _partition_by_block_number BETWEEN 86640000
             AND 86690000
-        )
+        ) #}
 )
 SELECT
     *

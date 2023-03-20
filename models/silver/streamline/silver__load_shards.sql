@@ -24,8 +24,8 @@ WITH shards_json AS (
     FROM
         {{ ref('bronze__streamline_shards') }}
     WHERE
-        {# {{ partition_batch_load(150000) }}
-        OR  #}
+        {{ partition_batch_load(150000) }}
+        OR 
         (
             _partition_by_block_number IN (
                 SELECT
