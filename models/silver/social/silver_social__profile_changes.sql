@@ -27,6 +27,7 @@ flatten_profile_json AS (
             action_id_social,
             key
         ) AS action_id_profile,
+        action_id_social,
         tx_hash,
         block_id,
         block_timestamp,
@@ -41,6 +42,7 @@ flatten_profile_json AS (
         LATERAL FLATTEN(node_data)
 )
 SELECT
+    action_id_social,
     action_id_profile,
     tx_hash,
     block_id,

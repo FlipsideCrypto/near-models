@@ -8,7 +8,7 @@ models:
 
     columns:
       - name: ACTION_ID_PROFILE
-        description: "{{ doc('block_id')}}"
+        description: "{{ doc('action_id_profile')}}"
 
       - name: TX_HASH
         description: "{{ doc('tx_hash')}}"
