@@ -2,32 +2,33 @@
 version: 2
 
 models:
-  - name: silver_social__profile_changes
+  - name: silver_social__posts
     description: |-
-      Events from the node `profile` that indicate a change to a user's profile.
+      Cleaned and curated post data on Near Social.
 
     columns:
-      - name: action_id_profile
-        description: "{{ doc('action_id_profile')}}"
+      - name: action_id_social
+        description: "{{ doc('block_id')}}"
         tests:
           - unique
 
-      - name: action_id_social
-        description: "{{ doc('action_id_social')}}"
-
       - name: tx_hash
         description: "{{ doc('tx_hash')}}"
+        tests:
+          - not_null
 
       - name: block_id
         description: "{{ doc('block_id')}}"
 
       - name: block_timestamp
         description: "{{ doc('block_timestamp')}}"
+        tests:
+          - not_null
 
       - name: signer_id
         description: "{{ doc('signer_id')}}"
 
-      - name: profile_section
+      - name: post_type
         description: "{{ doc('profile_section')}}"
         tests:
           - not_null
@@ -35,10 +36,16 @@ models:
               column_type_list:
                 - varchar
 
-      - name: profile_data
+      - name: post_text
         description: "{{ doc('profile_data')}}"
         tests:
-          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - varchar
+
+      - name: post_image
+        description: "{{ doc('profile_data')}}"
+        tests:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - varchar
