@@ -19,20 +19,6 @@ WITH blocks_json AS (
         {{ ref('bronze__streamline_blocks') }}
     WHERE
         {{ partition_batch_load(150000) }}
-        OR (
-            _partition_by_block_number IN (
-                SELECT
-                    DISTINCT _partition_by_block_number
-                FROM
-                    {{ target.database }}.tests.streamline_block_gaps
-            )
-            AND block_id IN (
-                SELECT
-                    block_id - 1
-                FROM
-                    {{ target.database }}.tests.streamline_block_gaps
-            )
-        )
 )
 SELECT
     *
