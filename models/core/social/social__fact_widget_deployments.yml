@@ -1,0 +1,41 @@
+
+version: 2
+
+models:
+  - name: social__fact_widget_deployments
+    description: |-
+      Cleaned and curated widget deployments on Near Social.
+
+    columns:
+      - name: action_id_social
+        description: "{{ doc('block_id')}}"
+
+      - name: tx_hash
+        description: "{{ doc('tx_hash')}}"
+
+      - name: block_id
+        description: "{{ doc('block_id')}}"
+
+      - name: block_timestamp
+        description: "{{ doc('block_timestamp')}}"
+
+      - name: signer_id
+        description: "{{ doc('signer_id')}}"
+
+      - name: widget_name
+        description: "{{ doc('widget_name')}}"
+
+      - name: source_code
+        description: "{{ doc('source_code')}}"
+
+      - name: metadata
+        description: "{{ doc('metadata')}}"
+
+      - name: branch
+        description: "{{ doc('branch')}}"
+
+      - name: widget_modules_used
+        description: "{{ doc('widget_modules_used')}}"
+
+      - name: widget_url
+        description: "{{ doc('widget_url')}}"

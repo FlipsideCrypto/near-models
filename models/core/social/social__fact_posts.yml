@@ -1,0 +1,32 @@
+
+version: 2
+
+models:
+  - name: social__fact_posts
+    description: |-
+      Cleaned and curated post data on Near Social.
+
+    columns:
+      - name: ACTION_ID_SOCIAL
+        description: "{{ doc('block_id')}}"
+
+      - name: TX_HASH
+        description: "{{ doc('tx_hash')}}"
+
+      - name: BLOCK_ID
+        description: "{{ doc('block_id')}}"
+
+      - name: BLOCK_TIMESTAMP
+        description: "{{ doc('block_timestamp')}}"
+
+      - name: SIGNER_ID
+        description: "{{ doc('signer_id')}}"
+
+      - name: POST_TYPE
+        description: "{{ doc('profile_section')}}"
+
+      - name: POST_TEXT
+        description: "{{ doc('profile_data')}}"
+
+      - name: POST_IMAGE
+        description: "{{ doc('profile_data')}}"

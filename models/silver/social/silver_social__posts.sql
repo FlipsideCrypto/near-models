@@ -29,7 +29,6 @@ posts AS (
         TRY_PARSE_JSON(
             node_data :main
         ) AS parsed_node_data,
-        -- TODO consider these column names
         parsed_node_data :type :: STRING AS post_type,
         parsed_node_data :text :: STRING AS post_text,
         parsed_node_data :image :: STRING AS post_image,

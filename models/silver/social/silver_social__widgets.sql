@@ -28,7 +28,7 @@ widgets AS (
         signer_id,
         node_data,
         object_keys(TRY_PARSE_JSON(node_data)) [0] :: STRING AS widget_name,
-        node_data [widget_name] AS js_code,
+        try_parse_json(node_data [widget_name]) AS source_data,
         CONCAT(
             'https://near.social/#/',
             signer_id,
@@ -47,8 +47,19 @@ SELECT
     block_timestamp,
     signer_id,
     widget_name,
-    js_code,
+    source_data :"" :: STRING AS source_code,
+    TRY_PARSE_JSON(
+        source_data :metadata
+    ) AS metadata,
+    TRY_PARSE_JSON(
+        source_data :branch
+    ) AS branch,
+    TRY_PARSE_JSON(
+        source_data :widgetModulesUsed
+    ) AS widget_modules_used,
     widget_url,
+    source_data as _source_data,
+    node_data as _node_data,
     _partition_by_block_number,
     _load_timestamp
 FROM

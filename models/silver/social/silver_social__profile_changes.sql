@@ -33,7 +33,7 @@ flatten_profile_json AS (
         signer_id,
         key AS profile_section,
         VALUE :: STRING AS profile_data,
-        -- must store as string due to various possible inputs, TODO add hint to docs for try_parse_json
+        -- must store as string due to various possible inputs
         _load_timestamp,
         _partition_by_block_number
     FROM
