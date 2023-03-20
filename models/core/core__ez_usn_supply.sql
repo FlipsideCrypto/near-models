@@ -1,7 +1,7 @@
 {{ config(
     materialized = 'view',
     secure = true,
-    tags = ['s3_curated']
+    tags = ['core']
 ) }}
 
 WITH transactions AS (

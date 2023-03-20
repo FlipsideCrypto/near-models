@@ -8,7 +8,7 @@
             }
         }
     },
-    tags = ['s3_curated']
+    tags = ['core']
 ) }}
 
 with mints as (

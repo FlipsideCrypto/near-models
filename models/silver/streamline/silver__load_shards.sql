@@ -4,7 +4,7 @@
     cluster_by = ['_partition_by_block_number', '_load_timestamp::DATE'],
     unique_key = 'shard_id',
     full_refresh = False,
-    tags = ['s3_load']
+    tags = ['load']
 ) }}
 
 WITH shards_json AS (
@@ -25,8 +25,7 @@ WITH shards_json AS (
         {{ ref('bronze__streamline_shards') }}
     WHERE
         {{ partition_batch_load(150000) }}
-        OR 
-        (
+        OR (
             _partition_by_block_number IN (
                 SELECT
                     DISTINCT _partition_by_block_number

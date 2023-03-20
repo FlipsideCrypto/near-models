@@ -3,7 +3,7 @@
     incremental_strategy = 'delete+insert',
     cluster_by = ['_partition_by_block_number', '_load_timestamp::DATE'],
     unique_key = ['shard_id'],
-    tags = ['s3_load']
+    tags = ['load']
 ) }}
 
 WITH shardsjson AS (

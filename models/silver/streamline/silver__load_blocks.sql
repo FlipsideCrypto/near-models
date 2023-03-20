@@ -4,7 +4,7 @@
     cluster_by = ['_partition_by_block_number', '_load_timestamp::DATE'],
     unique_key = 'block_id',
     full_refresh = False,
-    tags = ['s3_load']
+    tags = ['load']
 ) }}
 
 WITH blocks_json AS (
@@ -19,8 +19,7 @@ WITH blocks_json AS (
         {{ ref('bronze__streamline_blocks') }}
     WHERE
         {{ partition_batch_load(150000) }}
-        OR 
-        (
+        OR (
             _partition_by_block_number IN (
                 SELECT
                     DISTINCT _partition_by_block_number
@@ -34,10 +33,6 @@ WITH blocks_json AS (
                     {{ target.database }}.tests.streamline_block_gaps
             )
         )
-        {# OR (
-            _partition_by_block_number BETWEEN 86640000
-            AND 86690000
-        ) #}
 )
 SELECT
     *

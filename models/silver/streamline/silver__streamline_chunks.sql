@@ -3,7 +3,7 @@
     incremental_strategy = 'merge',
     unique_key = 'chunk_hash',
     cluster_by = ['_load_timestamp::date','height_created','height_included'],
-    tags = ['s3']
+    tags = ['load']
 ) }}
 
 WITH shards AS (

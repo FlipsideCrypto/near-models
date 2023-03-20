@@ -3,7 +3,7 @@
   unique_key = 'tx_hash',
   incremental_strategy = 'delete+insert',
   cluster_by = ['_load_timestamp::date', 'block_timestamp::date'],
-  tags = ['s3_final', 's3_manual']
+  tags = ['receipt_map']
 ) }}
 
 WITH int_txs AS (

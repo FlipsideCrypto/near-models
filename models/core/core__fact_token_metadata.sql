@@ -6,7 +6,8 @@
             'PURPOSE': 'DEFI, TOKENS'
             }
         }
-    }
+    },
+    tags = ['core']
 ) }}
 
 WITH nearblocks_ft_api AS (
