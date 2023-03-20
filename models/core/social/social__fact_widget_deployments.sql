@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'view',
-    tags = ['s3_curated', 'social']
+    tags = ['core', 'social']
 ) }}
 
 SELECT
