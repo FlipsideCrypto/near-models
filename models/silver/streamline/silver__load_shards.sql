@@ -4,7 +4,7 @@
     cluster_by = ['_partition_by_block_number', '_load_timestamp::DATE'],
     unique_key = 'shard_id',
     full_refresh = False,
-    tags = ['s3_load']
+    tags = ['load']
 ) }}
 
 WITH shards_json AS (

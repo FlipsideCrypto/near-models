@@ -3,8 +3,8 @@
   incremental_strategy = 'delete+insert',
   unique_key = 'action_id',
   cluster_by = ['block_timestamp::DATE', '_inserted_timestamp::DATE'],
-  tags = ['curated', 'curated_rpc']
-
+  tags = ['curated_rpc'],
+  enabled = False
 ) }}
 
 WITH action_events AS (

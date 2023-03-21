@@ -13,11 +13,13 @@ WITH silver_blocks AS (
       ORDER BY
         block_timestamp ASC,
         block_id ASC
-    ) AS prior_hash
+    ) AS prior_hash,
+    _partition_by_block_number,
+    current_timestamp as _test_timestamp
   FROM
     {{ ref('silver__streamline_blocks') }}
   WHERE
-    block_timestamp < CURRENT_DATE - 1
+    block_timestamp::date < CURRENT_DATE
 )
 SELECT
   *
