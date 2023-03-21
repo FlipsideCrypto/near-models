@@ -18,3 +18,14 @@ does not need to be run very frequently, things are not missed often
 
 
 #}
+
+{# 
+
+    that part is mostly done, the macro will handle ingesting file names as the bucket is synced
+    then the test will check for gaps in blocks / shards
+        - change that test to compare files in silver vs files in s3 ?
+        - if exists in s3 but not in silver, send it to a sql model here to ingest
+
+    TODO - LOOK @ COPY INTO 
+ 
+ #}
