@@ -2,7 +2,7 @@
     materialized = 'incremental',
     unique_key = 'action_id_social',
     cluster_by = ['_load_timestamp::date', '_partition_by_block_number'],
-    tags = ['s3_curated', 'social']
+    tags = ['curated', 'social']
 ) }}
 
 WITH all_social_receipts AS (

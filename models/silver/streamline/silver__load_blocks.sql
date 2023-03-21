@@ -4,7 +4,7 @@
     cluster_by = ['_partition_by_block_number', '_load_timestamp::DATE'],
     unique_key = 'block_id',
     full_refresh = False,
-    tags = ['s3_load']
+    tags = ['load']
 ) }}
 
 WITH blocks_json AS (

@@ -6,10 +6,10 @@ WITH block_chunks_included AS (
 
     SELECT
         block_id,
-        VALUE :header :chunks_included AS chunks_included,
+        header :chunks_included AS chunks_included,
         _partition_by_block_number
     FROM
-        {{ ref('silver__load_blocks') }}
+        {{ ref('silver__streamline_blocks') }}
 ),
 chunks_per_block AS (
     SELECT
@@ -47,14 +47,23 @@ missing AS (
         )
     ORDER BY
         1
+),
+FINAL AS (
+    SELECT
+        _partition_by_block_number,
+        ARRAY_AGG(bblock_id) AS blocks_to_walk,
+        ARRAY_SIZE(blocks_to_walk) AS impacted_block_ct
+    FROM
+        missing
+    GROUP BY
+        1
+    ORDER BY
+        1
 )
 SELECT
     _partition_by_block_number,
-    ARRAY_AGG(bblock_id) AS blocks_to_walk,
-    ARRAY_SIZE(blocks_to_walk) AS impacted_block_ct
+    blocks_to_walk,
+    impacted_block_ct,
+    CURRENT_TIMESTAMP AS _test_timestamp
 FROM
-    missing
-GROUP BY
-    1
-ORDER BY
-    1
+    FINAL

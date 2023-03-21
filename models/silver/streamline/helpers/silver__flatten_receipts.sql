@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'view',
-    tags = ['s3', 's3_helper', 's3_manual']
+    tags = ['helper', 'receipt_map']
 ) }}
 
 WITH receipts AS (

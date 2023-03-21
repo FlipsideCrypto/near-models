@@ -3,8 +3,8 @@
     unique_key = "swap_id",
     incremental_strategy = "delete+insert",
     cluster_by = ["block_timestamp::DATE", "_inserted_timestamp::DATE"],
-  tags = ['curated', 'curated_rpc']
-
+    tags = ['curated_rpc'],
+    enabled = False
 ) }}
 
 WITH base_swap_calls AS (

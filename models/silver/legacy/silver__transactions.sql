@@ -3,7 +3,8 @@
   unique_key = 'tx_hash',
   incremental_strategy = 'delete+insert',
   cluster_by = ['block_timestamp::DATE', '_inserted_timestamp::DATE'],
-  tags = ['rpc']
+  tags = ['rpc'],
+  enabled = False
 ) }}
 
 WITH base_transactions AS (

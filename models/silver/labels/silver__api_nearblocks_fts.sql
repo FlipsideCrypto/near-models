@@ -3,7 +3,7 @@
     unique_key = '_res_id',
     incremental_strategy = 'merge',
     cluster_by = ['_inserted_timestamp::date', 'token_contract'],
-    tags = ['curated', 'api']
+    tags = ['api']
 ) }}
 
 WITH nearblocks_token_api AS (

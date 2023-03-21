@@ -1,6 +1,7 @@
 {{ config(
     materialized = 'view',
-    secure = true
+    secure = true,
+    tags = ['core']
 ) }}
 
 WITH receipts AS (

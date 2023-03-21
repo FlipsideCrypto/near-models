@@ -1,85 +1,95 @@
-{{
-    config(
-        materialized="incremental",
-        cluster_by=["block_timestamp::DATE", "_inserted_timestamp::DATE"],
-        unique_key="action_id",
-        incremental_strategy="delete+insert",
-  tags = ['curated', 'curated_rpc']
+{{ config(
+    materialized = "incremental",
+    cluster_by = ["block_timestamp::DATE", "_inserted_timestamp::DATE"],
+    unique_key = "action_id",
+    incremental_strategy = "delete+insert",
+    tags = ['curated_rpc'],
+    enabled = False
+) }}
+--Data pulled from action_events_function_call
+WITH function_call AS (
 
-
-    )
-}}
-
---Data pulled from action_events_function_call 
-with
-    function_call as (
-        select
-            action_id,
-            tx_hash,
-            block_id,
-            block_timestamp,
-            try_parse_json(args) as args_json,
-            method_name,
-            deposit / pow(10, 24) as deposit,
-            _inserted_timestamp, 
-            case
-                when args_json:receiver_id is not null
-                then args_json:receiver_id::string
-                when args_json:receiver_ids is not null
-                then args_json:receiver_ids::string
-            end as project_name,
-            case
-                when args_json:token_series_id is not null
-                then try_parse_json(args_json:token_series_id)::string
-                when args_json:token_owner_id is not null
-                then try_parse_json(args_json:token_series_id)::string
-            end as nft_id,
-            try_parse_json(args_json:token_id)::string as token_id
-
-
-        from {{ ref("silver__actions_events_function_call") }}
-        where
-            method_name in ('nft_mint', 'nft_mint_batch')
-            and {{ incremental_load_filter("_inserted_timestamp") }}
-    ),
-
-    --Data Pulled from Transaction
-    mint_transactions as (
-        select
-            tx_hash,
-            tx_signer,
-            tx_receiver,
-            transaction_fee / pow(10, 24) as network_fee,
-            tx_status
-        -- tx:actions[0]:functioncall:method_name::string as method_name
-        from {{ ref("silver__transactions") }}
-        where
-            tx_hash in (select distinct tx_hash from function_call)
-            and tx_status = 'Success'
-            and {{ incremental_load_filter("_inserted_timestamp") }}
-
-
-    ),
-    --Data pulled from Receipts Table
-    receipts_data as (
-        select
-
-            tx_hash,
-            receipt_index,
-            receipt_object_id as receipt_id,
-            receipt_outcome_id::string as receipt_outcome_id,
-            receiver_id,
-            gas_burnt
-        from {{ ref("silver__receipts") }}
-        where
-            tx_hash in (select distinct tx_hash from function_call)
-            and {{ incremental_load_filter("_inserted_timestamp") }}
-
-    )
-
-
-select distinct
-    action_id,
+    SELECT
+        action_id,
+        tx_hash,
+        block_id,
+        block_timestamp,
+        TRY_PARSE_JSON(args) AS args_json,
+        method_name,
+        deposit / pow(
+            10,
+            24
+        ) AS deposit,
+        _inserted_timestamp,
+        CASE
+            WHEN args_json :receiver_id IS NOT NULL THEN args_json :receiver_id :: STRING
+            WHEN args_json :receiver_ids IS NOT NULL THEN args_json :receiver_ids :: STRING
+        END AS project_name,
+        CASE
+            WHEN args_json :token_series_id IS NOT NULL THEN TRY_PARSE_JSON(
+                args_json :token_series_id
+            ) :: STRING
+            WHEN args_json :token_owner_id IS NOT NULL THEN TRY_PARSE_JSON(
+                args_json :token_series_id
+            ) :: STRING
+        END AS nft_id,
+        TRY_PARSE_JSON(
+            args_json :token_id
+        ) :: STRING AS token_id
+    FROM
+        {{ ref("silver__actions_events_function_call") }}
+    WHERE
+        method_name IN (
+            'nft_mint',
+            'nft_mint_batch'
+        )
+        AND {{ incremental_load_filter("_inserted_timestamp") }}
+),
+--Data Pulled from Transaction
+mint_transactions AS (
+    SELECT
+        tx_hash,
+        tx_signer,
+        tx_receiver,
+        transaction_fee / pow(
+            10,
+            24
+        ) AS network_fee,
+        tx_status -- tx:actions[0]:functioncall:method_name::string as method_name
+    FROM
+        {{ ref("silver__transactions") }}
+    WHERE
+        tx_hash IN (
+            SELECT
+                DISTINCT tx_hash
+            FROM
+                function_call
+        )
+        AND tx_status = 'Success'
+        AND {{ incremental_load_filter("_inserted_timestamp") }}
+),
+--Data pulled from Receipts Table
+receipts_data AS (
+    SELECT
+        tx_hash,
+        receipt_index,
+        receipt_object_id AS receipt_id,
+        receipt_outcome_id :: STRING AS receipt_outcome_id,
+        receiver_id,
+        gas_burnt
+    FROM
+        {{ ref("silver__receipts") }}
+    WHERE
+        tx_hash IN (
+            SELECT
+                DISTINCT tx_hash
+            FROM
+                function_call
+        )
+        AND {{ incremental_load_filter("_inserted_timestamp") }}
+)
+SELECT
+    DISTINCT action_id,
     function_call.tx_hash,
     block_id,
     block_timestamp,
@@ -90,12 +100,14 @@ select distinct
     project_name,
     token_id,
     nft_id,
-    receipts_data.receiver_id as nft_address,
+    receipts_data.receiver_id AS nft_address,
     network_fee,
     tx_status
-
-from function_call
-left join mint_transactions on function_call.tx_hash = mint_transactions.tx_hash
-left join receipts_data on function_call.tx_hash = receipts_data.tx_hash
-where tx_status is not null
-
+FROM
+    function_call
+    LEFT JOIN mint_transactions
+    ON function_call.tx_hash = mint_transactions.tx_hash
+    LEFT JOIN receipts_data
+    ON function_call.tx_hash = receipts_data.tx_hash
+WHERE
+    tx_status IS NOT NULL
