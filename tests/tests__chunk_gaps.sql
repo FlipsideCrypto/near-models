@@ -10,6 +10,13 @@ WITH block_chunks_included AS (
         _partition_by_block_number
     FROM
         {{ ref('silver__streamline_blocks') }}
+    WHERE
+        _load_timestamp <= (
+            SELECT
+                MAX(_load_timestamp)
+            FROM
+                {{ ref('silver__streamline_blocks') }}
+        ) - INTERVAL '2 hours'
 ),
 chunks_per_block AS (
     SELECT
@@ -19,6 +26,13 @@ chunks_per_block AS (
         ) AS chunk_ct
     FROM
         {{ ref('silver__streamline_chunks') }}
+    WHERE
+        _load_timestamp <= (
+            SELECT
+                MAX(_load_timestamp)
+            FROM
+                {{ ref('silver__streamline_chunks') }}
+        ) - INTERVAL '2 hours'
     GROUP BY
         1
 ),
