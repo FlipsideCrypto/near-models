@@ -27,9 +27,9 @@ FROM
     {% set max_block_id_indexed = run_query(get_block).columns [0].values() [0] %}
   {% endif %}
 
-  {% set block_range_start_prefix = max_block_id_indexed %}
+  {% set block_range_start_prefix = max_block_id_indexed [:-5] %}
   {% set load_filenames %}
-  list @STREAMLINE.BRONZE.STG_US_EAST_1_SERVERLESS_NEAR_LAKE_MAINNET_FSC/{{ block_range_start_prefix [:-5] }};
+  list @STREAMLINE.BRONZE.STG_US_EAST_1_SERVERLESS_NEAR_LAKE_MAINNET_FSC/{{ block_range_start_prefix }};
 MERGE INTO {{ target.database }}.bronze.s3_filenames tgt USING (
     SELECT
       *
