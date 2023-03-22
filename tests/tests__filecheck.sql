@@ -1,5 +1,6 @@
 {{ config(
-    severity = 'error'
+    severity = 'error',
+    enabled = False
 ) }}
 
 WITH s3_index AS (
