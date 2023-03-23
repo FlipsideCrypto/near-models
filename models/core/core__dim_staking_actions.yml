@@ -3,10 +3,7 @@ version: 2
 models:
   - name: core__dim_staking_actions
     description: |-
-      This table records all the staking and delegation transactions occurring in NEAR. 
-
-      Be aware, however, not all transactions here necessarily actually contribute to securing the NEAR network.
-      Each epoch can have a different set of validators.
+      Deprecating soon! The staking table is being rebuilt due to inaccuracies and will be re-released as as fact_ table. It is not advised you use this table anymore.
 
     columns:
       - name: TX_HASH
