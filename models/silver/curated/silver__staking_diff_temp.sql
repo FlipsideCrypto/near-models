@@ -31,4 +31,4 @@ diff as (
 select * from near.silver.streamline_receipts_final
 where tx_hash in (select tx_hash from diff)
 order by block_timestamp desc, tx_hash 
-limit 100
+limit 500;

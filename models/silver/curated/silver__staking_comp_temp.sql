@@ -31,3 +31,21 @@ from staked_v1 v1
 full join staked_v2 v2
 on v1.date = v2.date and v1.action = v2.action
 order by 1,2;
+
+with staked as
+(select
+  block_timestamp::date as date,
+  iff(log_action = 'staking','Stake','Unstake') as action, 
+  sum(log_amount_near) as amount
+from near_dev.silver.staking_actions_v2
+where log_action in ('staking', 'unstaking')
+group by 1, 2
+)
+
+select
+  date,
+  action,
+  amount,
+  sum(amount) over (partition by action order by date asc rows between unbounded preceding and current row) as staking_balance
+from staked
+order by 1,2;
