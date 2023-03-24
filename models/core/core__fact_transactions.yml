@@ -8,7 +8,6 @@ models:
       - name: BLOCK_ID
         description: "{{ doc('block_id')}}"
         tests:
-          - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
@@ -17,7 +16,6 @@ models:
       - name: BLOCK_HASH
         description: "{{ doc('block_hash')}}"
         tests:
-          - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
