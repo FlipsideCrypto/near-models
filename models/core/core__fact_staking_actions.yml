@@ -1,0 +1,33 @@
+version: 2
+
+models:
+  - name: core__fact_staking_actions
+    description: |-
+      An updated version of the staking actions table which looks at all logs, instead of just the first receipt.
+      There are four actions taken when staking: staking->deposit->unstaking->withdraw.
+      Note - in this core view the amount is decimal adjusted by 10^24.
+
+    columns:
+      - name: TX_HASH
+        description: "{{ doc('tx_hash') }}"
+
+      - name: BLOCK_ID
+        description: "{{ doc('block_id') }}"
+
+      - name: BLOCK_TIMESTAMP
+        description: "{{ doc('block_timestamp') }}"
+
+      - name: RECEIPT_OBJECT_ID
+        description: "{{ doc('receipt_object_id') }}"
+
+      - name: POOL_ADDRESS
+        description: "{{ doc('pool_address') }}"
+
+      - name: SIGNER_ID
+        description: "{{ doc('signer_id') }}"
+
+      - name: ACTION
+        description: "{{ doc('staking_action') }}"
+
+      - name: AMOUNT
+        description: "{{ doc('amount') }}"
