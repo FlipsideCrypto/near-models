@@ -18,7 +18,7 @@ WITH balance_changes AS (
         block_id,
         block_timestamp,
         receipt_object_id,
-        receiver_id AS pool_address,
+        receiver_id AS address,
         amount_adj AS balance
     FROM
         {{ ref('silver__pool_balances') }}

@@ -20,7 +20,7 @@ models:
       - name: receipt_object_id
         description: "{{ doc('receipt_object_id') }}"
 
-      - name: pool_address
+      - name: address
         description: "{{ doc('pool_address') }}"
 
       - name: balance
