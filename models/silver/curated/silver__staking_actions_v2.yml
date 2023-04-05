@@ -1,0 +1,96 @@
+version: 2
+
+models:
+  - name: silver__staking_actions_v2
+    description: |-
+      An updated version of the staking actions table which looks at all logs, instead of just the first receipt.
+      There are four actions taken when staking: staking->deposit->unstaking->withdraw.
+
+    columns:
+      - name: tx_hash
+        description: "{{ doc('tx_hash') }}"
+
+      - name: block_id
+        description: "{{ doc('block_id') }}"
+
+      - name: block_timestamp
+        description: "{{ doc('block_timestamp') }}"
+
+      - name: receipt_object_id
+        description: "{{ doc('receipt_object_id') }}"
+
+      - name: receiver_id
+        description: "{{ doc('receiver_id') }}"
+
+      - name: signer_id
+        description: "{{ doc('signer_id') }}"
+
+      - name: status_value
+        description: "{{ doc('status_value') }}"
+
+      - name: logs
+        description: "{{ doc('logs') }}"
+
+      - name: LOG
+        description: "{{ doc('log') }}"
+
+      - name: log_signer_id
+        description: "{{ doc('log_signer_id') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - VARCHAR
+
+      - name: action
+        description: "{{ doc('staking_action') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - VARCHAR
+          - accepted_values:
+              values:
+                - deposited
+                - withdrawing
+                - staking
+                - unstaking
+
+      - name: amount_raw
+        description: "{{ doc('amount_raw') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+
+      - name: amount_adj
+        description: "{{ doc('amount_adj') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - FLOAT
+                - DOUBLE
+
+      - name: decimals
+        description: "{{ doc('decimals') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+
+      - name: _log_signer_id_match
+        description: "{{ doc('_log_signer_id_match') }}"
+
+      - name: _LOAD_TIMESTAMP
+        description: "{{ doc('_load_timestamp')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
+
+      - name: _partition_by_block_number
+        description: "{{ doc('_partition_by_block_number') }}"

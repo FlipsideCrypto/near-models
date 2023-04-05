@@ -1,5 +1,5 @@
 {% docs logs %}
 
-Logs (array) for this transaction.
+Logs (array) for this receipt.
 
 {% enddocs %}

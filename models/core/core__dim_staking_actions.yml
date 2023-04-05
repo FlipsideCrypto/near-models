@@ -3,60 +3,23 @@ version: 2
 models:
   - name: core__dim_staking_actions
     description: |-
-      Deprecating soon! The staking table is being rebuilt due to inaccuracies and will be re-released as as fact_ table. It is not advised you use this table anymore.
+      Deprecating soon! This table is being deprecated due to inaccuracies. The underlying model has been disabled and will not produce new data past early April 2023. Please use the new fact staking table(s).
 
     columns:
       - name: TX_HASH
         description: "{{ doc('tx_hash') }}"
-        tests:
-          - unique
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
 
       - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - TIMESTAMP_NTZ
 
       - name: POOL_ADDRESS
         description: "{{ doc('staking_pool_address') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
 
       - name: TX_SIGNER
         description: "{{ doc('tx_signer') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
 
       - name: STAKE_AMOUNT
         description: "{{ doc('staking_stake_amount') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - NUMBER
 
       - name: ACTION
         description: "{{ doc('staking_action') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
-          - dbt_expectations.expect_column_values_to_be_in_set:
-              value_set: ['Stake', 'Unstake']

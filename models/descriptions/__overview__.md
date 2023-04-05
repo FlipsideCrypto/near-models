@@ -21,7 +21,6 @@ There is more information on how to use dbt docs in the last section of this doc
 
 **Dimension Tables:**
 - [dim_address_labels](#!/model/model.near.core__dim_address_labels)
-- [dim_staking_actions](#!/model/model.near.core__dim_staking_actions)
 - [dim_staking_pools](#!/model/model.near.core__dim_staking_pools)
 - [dim_token_labels](#!/model/model.near.core__dim_token_labels)
 
@@ -34,6 +33,8 @@ There is more information on how to use dbt docs in the last section of this doc
 - [fact_token_metadata](#!/model/model.near.core__fact_token_metadata)
 - [fact_transactions](#!/model/model.near.core__fact_transactions)
 - [fact_transfers](#!/model/model.near.core__fact_transfers)
+- [fact_staking_actions](#!/model/model.near.core__fact_staking_actions)
+- [fact_staking_pool_balances](#!/model/model.near.core__fact_staking_pool_balances)
 
 
 **Convenience Tables:**
@@ -45,6 +46,8 @@ There is more information on how to use dbt docs in the last section of this doc
 - [fact_addkey_events](#!/model/model.near.social__fact_addkey_events)
 - [fact_decoded_actions](#!/model/model.near.social__fact_decoded_actions)
 - [fact_profile_changes](#!/model/model.near.social__fact_profile_changes)
+- [fact_posts](#!/model/model.near.social__fact_posts)
+- [fact_widget_deployments](#!/model/model.near.social__fact_widget_deployments)
 
 
 ### Beta Tables (`NEAR`.`BETA`.`<table_name>`)
