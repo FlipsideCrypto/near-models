@@ -20,7 +20,7 @@ models:
       - name: RECEIPT_OBJECT_ID
         description: "{{ doc('receipt_object_id') }}"
 
-      - name: POOL_ADDRESS
+      - name: ADDRESS
         description: "{{ doc('pool_address') }}"
 
       - name: SIGNER_ID

@@ -8,20 +8,20 @@ models:
       Note - the amount in balance is decimal adjusted by 10^24.
 
     columns:
-      - name: tx_hash
+      - name: TX_HASH
         description: "{{ doc('tx_hash') }}"
 
-      - name: block_id
+      - name: BLOCK_ID
         description: "{{ doc('block_id') }}"
 
-      - name: block_timestamp
+      - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp') }}"
 
-      - name: receipt_object_id
+      - name: RECEIPT_OBJECT_ID
         description: "{{ doc('receipt_object_id') }}"
 
-      - name: address
+      - name: ADDRESS
         description: "{{ doc('pool_address') }}"
 
-      - name: balance
+      - name: BALANCE
         description: "{{ doc('balance') }}"

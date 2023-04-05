@@ -18,7 +18,7 @@ WITH staking_actions AS (
         block_id,
         block_timestamp,
         receipt_object_id,
-        receiver_id AS pool_address,
+        receiver_id AS address,
         signer_id,
         action,
         amount_adj AS amount
