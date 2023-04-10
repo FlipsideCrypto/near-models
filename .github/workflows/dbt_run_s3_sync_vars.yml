@@ -1,0 +1,17 @@
+name: dbt_run_s3_sync_vars
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Runs "every hour" (see https://crontab.guru)
+    - cron: '0 */1 * * *'
+
+jobs:
+  called_workflow_template:
+    uses: FlipsideCrypto/analytics-workflow-templates/.github/workflows/dbt_run_template_vars.yml@main
+    with:
+      dbt_command: >
+        dbt run --vars {"S3_LOOKBACK_HOURS":-6} -m models/silver/streamline/streamline__s3_sync.sql
+      environment: workflow_prod
+      warehouse: ${{ vars.WAREHOUSE }}
+    secrets: inherit
