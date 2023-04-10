@@ -8,16 +8,17 @@ on:
     - cron: '0 8 * * *'
 
 env:
-  DBT_PROFILES_DIR: "${{ secrets.DBT_PROFILES_DIR }}"
-  DBT_VERSION: "${{ secrets.DBT_VERSION }}"
-  ACCOUNT: "${{ secrets.ACCOUNT }}"
-  ROLE: "${{ secrets.ROLE }}"
-  USER: "${{ secrets.USER }}"
+  USE_VARS: "${{ vars.USE_VARS }}"
+  DBT_PROFILES_DIR: "${{ vars.DBT_PROFILES_DIR }}"
+  DBT_VERSION: "${{ vars.DBT_VERSION }}"
+  ACCOUNT: "${{ vars.ACCOUNT }}"
+  ROLE: "${{ vars.ROLE }}"
+  USER: "${{ vars.USER }}"
   PASSWORD: "${{ secrets.PASSWORD }}"
-  REGION: "${{ secrets.REGION }}"
-  DATABASE: "${{ secrets.DATABASE }}"
-  WAREHOUSE: "${{ secrets.WAREHOUSE }}"
-  SCHEMA: "${{ secrets.SCHEMA }}"
+  REGION: "${{ vars.REGION }}"
+  DATABASE: "${{ vars.DATABASE }}"
+  WAREHOUSE: "${{ vars.WAREHOUSE }}"
+  SCHEMA: "${{ vars.SCHEMA }}"
 
 concurrency:
   group: ${{ github.workflow }}
