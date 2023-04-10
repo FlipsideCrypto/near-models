@@ -37,7 +37,7 @@ posts AS (
     FROM
         decoded_actions
     WHERE
-        PARSE_JSON(
+        TRY_PARSE_JSON(
             node_data :main
         ) IS NOT NULL
 )
