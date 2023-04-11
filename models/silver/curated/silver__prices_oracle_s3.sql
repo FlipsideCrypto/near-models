@@ -67,7 +67,10 @@ prices AS (
             ) THEN 5
             WHEN token_contract IN (
                 '2260fac5e5542a773aa44fbcfedf7c193bc2c599.factory.bridge.near'
-            ) THEN 2
+            ) and block_id > 77644611 THEN 2
+            WHEN token_contract IN (
+                '2260fac5e5542a773aa44fbcfedf7c193bc2c599.factory.bridge.near'
+            ) and len(raw_price) < 9 THEN 2
             ELSE 4
         END AS decimals,
         raw_price / pow(
