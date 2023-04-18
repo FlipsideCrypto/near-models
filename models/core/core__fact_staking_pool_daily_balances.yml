@@ -8,15 +8,9 @@ models:
     columns:
       - name: DATE
         description: "{{ doc('date') }}"
-        tests:
-          - not_null
 
       - name: ADDRESS
         description: "{{ doc('address') }}"
-        tests:
-          - not_null
 
       - name: BALANCE
         description: "{{ doc('balance') }}"
-        tests:
-          - not_null

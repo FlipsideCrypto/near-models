@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'table',
-    cluster_by = ['_date'],
+    cluster_by = ['date_day'],
     unique_key = '_id',
     tags = ['curated']
 ) }}
@@ -74,7 +74,7 @@ imputed_balance AS (
         )
 )
 SELECT
-    _date,
+    _date as date_day,
     address,
     daily_balance as balance,
     CONCAT_WS('-', _date, address) AS _id

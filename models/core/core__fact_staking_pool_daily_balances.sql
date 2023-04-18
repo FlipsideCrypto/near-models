@@ -14,7 +14,7 @@
 WITH daily_balance AS (
 
     SELECT
-        _date as date,
+        date_day as date,
         address,
         balance
     FROM

@@ -6,7 +6,7 @@ models:
       Aggregates the balances of each pool for each day, taking the last balance reported for each pool. This excludes the present date, as it is not yet complete.
 
     columns:
-      - name: _date
+      - name: date_day
         description: "{{ doc('date') }}"
         tests:
           - not_null
@@ -23,3 +23,6 @@ models:
 
       - name: _id
         description: "A unique key column for this silver model."
+        tests:
+          - not_null
+          - unique
