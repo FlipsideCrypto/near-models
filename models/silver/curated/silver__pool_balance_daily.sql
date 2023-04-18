@@ -20,7 +20,7 @@ all_staking_pools AS (
 ),
 dates AS (
     SELECT
-        date_day AS _date
+        date_day
     FROM
         {{ source(
             'crosschain',
@@ -33,14 +33,14 @@ dates AS (
 boilerplate AS (
     SELECT
         ap.address,
-        d._date
+        d.date_day
     FROM
         all_staking_pools ap
         CROSS JOIN dates d
 ),
 daily_balance AS (
     SELECT
-        block_timestamp :: DATE AS _date,
+        block_timestamp :: DATE AS date_day,
         receiver_id as address,
         amount_adj as balance
     FROM
@@ -54,13 +54,13 @@ daily_balance AS (
 ),
 imputed_balance AS (
     SELECT
-        b._date,
+        b.date_day,
         b.address,
         daily.balance,
         LAG(balance) ignore nulls over (
             PARTITION BY address
             ORDER BY
-                daily._date
+                daily.date_day
         ) AS imputed_bal_lag,
         COALESCE(
             balance,
@@ -69,14 +69,14 @@ imputed_balance AS (
     FROM
         boilerplate b
         LEFT JOIN daily_balance daily USING (
-            _date,
+            date_day,
             address
         )
 )
 SELECT
-    _date as date_day,
+    date_day,
     address,
     daily_balance as balance,
-    CONCAT_WS('-', _date, address) AS _id
+    CONCAT_WS('-', date_day, address) AS _id
 FROM
     imputed_balance
