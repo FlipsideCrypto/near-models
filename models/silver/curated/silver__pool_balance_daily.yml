@@ -23,3 +23,6 @@ models:
 
       - name: _load_timestamp
         description: "{{ doc('_load_timestamp') }}"
+
+      - name: _id
+        description: "A unique key column for this silver model."

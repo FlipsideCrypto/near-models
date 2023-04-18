@@ -1,0 +1,22 @@
+version: 2
+
+models:
+  - name: core__fact_staking_pool_daily_balances
+    description: |-
+      Aggregates the balances of each pool for each day, taking the last balance reported for each pool. This always excludes the present date.
+
+    columns:
+      - name: DATE
+        description: "{{ doc('date') }}"
+        tests:
+          - not_null
+
+      - name: ADDRESS
+        description: "{{ doc('address') }}"
+        tests:
+          - not_null
+
+      - name: BALANCE
+        description: "{{ doc('balance') }}"
+        tests:
+          - not_null

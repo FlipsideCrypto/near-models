@@ -1,7 +1,7 @@
 {{ config(
     materialized = 'incremental',
     cluster_by = ['_date'],
-    unique_key = "CONCAT_WS('-', _date, address)",
+    unique_key = '_id',
     tags = ['curated']
 ) }}
 
@@ -85,6 +85,7 @@ SELECT
     _date,
     address,
     daily_balance as balance,
-    _load_timestamp
+    _load_timestamp,
+    CONCAT_WS('-', _date, address) AS _id
 FROM
     imputed_balance
