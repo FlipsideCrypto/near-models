@@ -35,6 +35,7 @@ There is more information on how to use dbt docs in the last section of this doc
 - [fact_transfers](#!/model/model.near.core__fact_transfers)
 - [fact_staking_actions](#!/model/model.near.core__fact_staking_actions)
 - [fact_staking_pool_balances](#!/model/model.near.core__fact_staking_pool_balances)
+- [fact_staking_pool_daily_balances](#!/model/model.near.core__fact_staking_pool_daily_balances)
 
 
 **Convenience Tables:**

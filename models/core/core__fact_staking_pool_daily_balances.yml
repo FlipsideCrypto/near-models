@@ -10,7 +10,7 @@ models:
         description: "{{ doc('date') }}"
 
       - name: ADDRESS
-        description: "{{ doc('address') }}"
+        description: "{{ doc('pool_address') }}"
 
       - name: BALANCE
         description: "{{ doc('balance') }}"
