@@ -18,6 +18,13 @@ all_staking_pools AS (
     FROM
         {{ ref('silver__pool_balances') }}
 ),
+-- TODO use the creation date to build the boilerplate accurately. We shouldn't have pools listed on dates before creation
+-- what i can do is use this as the "all staking pools" source, instead
+-- and still cross join where date_day >= creation_date
+pool_metadata as (
+    select * from {{ ref('silver__Staking_pools_s3') }}
+    where tx_type = 'Create'
+)
 dates AS (
     SELECT
         date_day
@@ -60,12 +67,13 @@ imputed_balance AS (
         LAG(balance) ignore nulls over (
             PARTITION BY address
             ORDER BY
-                daily.date_day
+                b.date_day
         ) AS imputed_bal_lag,
         COALESCE(
             balance,
             imputed_bal_lag
-        ) AS daily_balance
+        ) AS daily_balance,
+        LAST_VALUE( balance ignore nulls ) over( PARTITION BY address ORDER BY daily.date_day rows unbounded preceding ) AS daily_balance_2
     FROM
         boilerplate b
         LEFT JOIN daily_balance daily USING (

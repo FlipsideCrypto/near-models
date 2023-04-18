@@ -14,6 +14,7 @@ WITH txs AS (
         tx_signer,
         tx_receiver,
         tx,
+        tx_status,
         _load_timestamp
     FROM
         {{ ref('silver__streamline_transactions_final') }}
@@ -29,6 +30,7 @@ WITH txs AS (
 function_calls AS (
     SELECT
         tx_hash,
+        split(action_id, '-')[0]::string as receipt_object_id,
         args,
         method_name,
         _load_timestamp
@@ -45,6 +47,25 @@ function_calls AS (
             AND {{ incremental_load_filter('_load_timestamp') }}
         {% endif %}
 ),
+receipts as (
+    select
+        tx_hash,
+        receipt_object_id,
+        receiver_id,
+        receipt,
+        execution_outcome,
+        _load_timestamp
+    from
+        {{ ref('silver__streamline_receipts_final') }}
+    where
+        tx_hash in (select distinct tx_hash from function_calls)
+    and
+            {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
+            AND {{ partition_load_manual('no_buffer') }}
+        {% else %}
+            AND {{ incremental_load_filter('_load_timestamp') }}
+        {% endif %}
+),
 pool_txs AS (
     SELECT
         txs.tx_hash AS tx_hash,
@@ -53,6 +74,7 @@ pool_txs AS (
         tx_receiver,
         args,
         method_name,
+        txs.tx_status,
         tx,
         txs._load_timestamp AS _load_timestamp
     FROM
@@ -60,12 +82,7 @@ pool_txs AS (
         INNER JOIN function_calls
         ON txs.tx_hash = function_calls.tx_hash
     WHERE
-        tx :receipt [0] :outcome :status :SuccessValue IS NOT NULL
-        OR (
-            method_name = 'create_staking_pool'
-            AND tx :receipt [0] :outcome :status :SuccessReceiptId IS NOT NULL
-            AND tx :receipt [1] :outcome :status :SuccessValue IS NOT NULL
-        )
+        method_name = 'create_staking_pool'
 ),
 FINAL AS (
     SELECT
@@ -80,7 +97,7 @@ FINAL AS (
             method_name = 'create_staking_pool',
             tx :receipt [1] :outcome :executor_id :: text,
             tx_receiver
-        ) AS address,
+        ) AS address, -- TODO need to remove reference to the receipt order as index is bad
         args :: variant :: OBJECT :reward_fee_fraction AS reward_fee_fraction,
         IFF(
             method_name = 'create_staking_pool',
