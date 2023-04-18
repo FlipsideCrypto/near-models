@@ -1,5 +1,5 @@
 {{ config(
-    materialized = 'incremental',
+    materialized = 'table',
     cluster_by = ['_date'],
     unique_key = '_id',
     tags = ['curated']
@@ -11,12 +11,6 @@ WITH pool_balances AS (
         *
     FROM
         {{ ref('silver__pool_balances') }}
-    WHERE
-        {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
-            {{ partition_load_manual('no_buffer') }}
-        {% else %}
-            {{ incremental_last_x_days('_load_timestamp', '1 day') }}
-        {% endif %}
 ),
 all_staking_pools AS (
     SELECT
@@ -48,8 +42,7 @@ daily_balance AS (
     SELECT
         block_timestamp :: DATE AS _date,
         receiver_id as address,
-        amount_adj as balance,
-        _load_timestamp
+        amount_adj as balance
     FROM
         pool_balances 
         qualify ROW_NUMBER() over (
@@ -72,8 +65,7 @@ imputed_balance AS (
         COALESCE(
             balance,
             imputed_bal_lag
-        ) AS daily_balance,
-        _load_timestamp
+        ) AS daily_balance
     FROM
         boilerplate b
         LEFT JOIN daily_balance daily USING (
@@ -85,7 +77,6 @@ SELECT
     _date,
     address,
     daily_balance as balance,
-    _load_timestamp,
     CONCAT_WS('-', _date, address) AS _id
 FROM
     imputed_balance
