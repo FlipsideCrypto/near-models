@@ -14,6 +14,8 @@ WITH actions_events_function_call AS (
 SELECT
     action_id,
     tx_hash,
+    receiver_id,
+    signer_id,
     block_id,
     block_timestamp,
     action_name,

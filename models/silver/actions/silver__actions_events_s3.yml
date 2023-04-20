@@ -13,6 +13,12 @@ models:
               where: tx_hash != 'J4CZZQrZK6kYPVLkrdbTEpcqhUNZiRxktbMzHviqeGgf'
           - not_null
 
+      - name: RECEIVER_ID
+        description: "{{ doc('receiver_id')}}"
+
+      - name: SIGNER_ID
+        description: "{{ doc('signer_id')}}"
+
       - name: CHUNK_HASH
         description: "{{ doc('chunk_hash')}}"
         tests:

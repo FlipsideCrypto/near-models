@@ -11,9 +11,11 @@ WITH txs AS (
     SELECT
         tx_hash,
         block_timestamp,
+        block_id,
         tx_signer,
         tx_receiver,
         tx,
+        tx_status,
         _load_timestamp
     FROM
         {{ ref('silver__streamline_transactions_final') }}
@@ -29,69 +31,105 @@ WITH txs AS (
 function_calls AS (
     SELECT
         tx_hash,
-        args,
+        block_timestamp,
+        block_id,
+        SPLIT(
+            action_id,
+            '-'
+        ) [0] :: STRING AS receipt_object_id,
+        receiver_id,
+        signer_id,
         method_name,
+        args,
         _load_timestamp
     FROM
         {{ ref('silver__actions_events_function_call_s3') }}
     WHERE
         method_name IN (
             'create_staking_pool',
-            'update_reward_fee_fraction'
-        ) 
-        {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
+            'update_reward_fee_fraction',
+            'new'
+        ) {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
             AND {{ partition_load_manual('no_buffer') }}
         {% else %}
             AND {{ incremental_load_filter('_load_timestamp') }}
         {% endif %}
 ),
-pool_txs AS (
+add_addresses_from_tx AS (
     SELECT
-        txs.tx_hash AS tx_hash,
-        block_timestamp,
-        tx_signer,
+        fc.tx_hash,
+        fc.block_timestamp,
+        fc.block_id,
+        receipt_object_id,
         tx_receiver,
-        args,
+        tx_signer,
+        receiver_id,
+        signer_id,
         method_name,
-        tx,
-        txs._load_timestamp AS _load_timestamp
+        args,
+        tx_status,
+        _load_timestamp
     FROM
-        txs
-        INNER JOIN function_calls
-        ON txs.tx_hash = function_calls.tx_hash
+        function_calls fc
+        LEFT JOIN txs USING (tx_hash)
+),
+new_pools AS (
+    SELECT
+        tx_hash,
+        block_timestamp,
+        block_id,
+        args :owner_id :: STRING AS owner,
+        receiver_id AS address,
+        TRY_PARSE_JSON(
+            args :reward_fee_fraction
+        ) AS reward_fee_fraction,
+        'Create' AS tx_type,
+        _load_timestamp
+    FROM
+        add_addresses_from_tx
     WHERE
-        tx :receipt [0] :outcome :status :SuccessValue IS NOT NULL
-        OR (
-            method_name = 'create_staking_pool'
-            AND tx :receipt [0] :outcome :status :SuccessReceiptId IS NOT NULL
-            AND tx :receipt [1] :outcome :status :SuccessValue IS NOT NULL
+        tx_hash IN (
+            SELECT
+                DISTINCT tx_hash
+            FROM
+                add_addresses_from_tx
+            WHERE
+                method_name = 'create_staking_pool'
         )
+        AND method_name = 'new'
+),
+updated_pools AS (
+    SELECT
+        tx_hash,
+        block_timestamp,
+        block_id,
+        tx_signer AS owner,
+        tx_receiver AS address,
+        TRY_PARSE_JSON(
+            args :reward_fee_fraction
+        ) AS reward_fee_fraction,
+        'Update' AS tx_type,
+        _load_timestamp
+    FROM
+        add_addresses_from_tx
+    WHERE
+        method_name = 'update_reward_fee_fraction'
+        AND reward_fee_fraction IS NOT NULL
 ),
 FINAL AS (
     SELECT
-        pool_txs.tx_hash AS tx_hash,
-        block_timestamp,
-        IFF(
-            method_name = 'create_staking_pool',
-            args :: variant :: OBJECT :owner_id,
-            tx_signer
-        ) AS owner,
-        IFF(
-            method_name = 'create_staking_pool',
-            tx :receipt [1] :outcome :executor_id :: text,
-            tx_receiver
-        ) AS address,
-        args :: variant :: OBJECT :reward_fee_fraction AS reward_fee_fraction,
-        IFF(
-            method_name = 'create_staking_pool',
-            'Create',
-            'Update'
-        ) AS tx_type,
-        _load_timestamp
+        *
     FROM
-        pool_txs
+        new_pools
+    UNION ALL 
+    SELECT
+        *
+    FROM
+        updated_pools
 )
 SELECT
     *
 FROM
     FINAL
+WHERE
+    address LIKE '%pool%'

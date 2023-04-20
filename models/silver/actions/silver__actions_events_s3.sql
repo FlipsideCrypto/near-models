@@ -25,6 +25,8 @@ flatten_actions AS (
     SELECT
         tx_hash,
         receipt_object_id,
+        receiver_id,
+        signer_id,
         block_id,
         block_timestamp,
         chunk_hash,
@@ -44,6 +46,8 @@ FINAL AS (
     SELECT
         tx_hash,
         receipt_object_id,
+        receiver_id,
+        signer_id,
         block_id,
         block_timestamp,
         chunk_hash,
@@ -65,6 +69,8 @@ SELECT
         receipt_object_id,
         action_index
     ) AS action_id,
+    receiver_id,
+    signer_id,
     chunk_hash,
     tx_hash,
     receipt_object_id,

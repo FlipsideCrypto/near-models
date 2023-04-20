@@ -75,3 +75,4 @@ sources:
     database: crosschain
     tables:
       - name: address_labels
+      - name: dim_dates

@@ -24,6 +24,24 @@ models:
                 - STRING
                 - VARCHAR
 
+      - name: RECEIVER_ID
+        description: "{{ doc('receiver_id')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: SIGNER_ID
+        description: "{{ doc('signer_id')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
       - name: BLOCK_ID
         description: "{{ doc('block_id')}}"
         tests:
