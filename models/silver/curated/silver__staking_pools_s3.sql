@@ -121,7 +121,7 @@ FINAL AS (
         *
     FROM
         new_pools
-    UNION
+    UNION ALL
     SELECT
         *
     FROM
