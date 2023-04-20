@@ -14,17 +14,12 @@ WITH pool_balances AS (
 ),
 all_staking_pools AS (
     SELECT
-        DISTINCT receiver_id as address
+        receiver_id as address,
+        min(block_timestamp::date) as min_date
     FROM
         {{ ref('silver__pool_balances') }}
+    GROUP BY 1
 ),
--- TODO use the creation date to build the boilerplate accurately. We shouldn't have pools listed on dates before creation
--- what i can do is use this as the "all staking pools" source, instead
--- and still cross join where date_day >= creation_date
-pool_metadata as (
-    select * from {{ ref('silver__Staking_pools_s3') }}
-    where tx_type = 'Create'
-)
 dates AS (
     SELECT
         date_day
@@ -44,6 +39,8 @@ boilerplate AS (
     FROM
         all_staking_pools ap
         CROSS JOIN dates d
+    WHERE 
+        d.date_day >= ap.min_date
 ),
 daily_balance AS (
     SELECT
