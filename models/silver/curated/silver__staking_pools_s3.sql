@@ -80,7 +80,9 @@ new_pools AS (
         block_id,
         args :owner_id :: STRING AS owner,
         receiver_id AS address,
-        try_parse_json(args :reward_fee_fraction) AS reward_fee_fraction,
+        TRY_PARSE_JSON(
+            args :reward_fee_fraction
+        ) AS reward_fee_fraction,
         'Create' AS tx_type,
         _load_timestamp
     FROM
@@ -103,13 +105,16 @@ updated_pools AS (
         block_id,
         tx_signer AS owner,
         tx_receiver AS address,
-        try_parse_json(args :reward_fee_fraction) AS reward_fee_fraction,
+        TRY_PARSE_JSON(
+            args :reward_fee_fraction
+        ) AS reward_fee_fraction,
         'Update' AS tx_type,
         _load_timestamp
     FROM
         add_addresses_from_tx
     WHERE
         method_name = 'update_reward_fee_fraction'
+        AND reward_fee_fraction IS NOT NULL
 ),
 FINAL AS (
     SELECT
@@ -126,3 +131,5 @@ SELECT
     *
 FROM
     FINAL
+WHERE
+    address LIKE '%pool%'

@@ -14,11 +14,14 @@ WITH pool_balances AS (
 ),
 all_staking_pools AS (
     SELECT
-        receiver_id as address,
-        min(block_timestamp::date) as min_date
+        receiver_id AS address,
+        MIN(
+            block_timestamp :: DATE
+        ) AS min_date
     FROM
         {{ ref('silver__pool_balances') }}
-    GROUP BY 1
+    GROUP BY
+        1
 ),
 dates AS (
     SELECT
@@ -39,17 +42,16 @@ boilerplate AS (
     FROM
         all_staking_pools ap
         CROSS JOIN dates d
-    WHERE 
+    WHERE
         d.date_day >= ap.min_date
 ),
 daily_balance AS (
     SELECT
         block_timestamp :: DATE AS date_day,
-        receiver_id as address,
-        amount_adj as balance
+        receiver_id AS address,
+        amount_adj AS balance
     FROM
-        pool_balances 
-        qualify ROW_NUMBER() over (
+        pool_balances qualify ROW_NUMBER() over (
             PARTITION BY address,
             block_timestamp :: DATE
             ORDER BY
@@ -61,16 +63,13 @@ imputed_balance AS (
         b.date_day,
         b.address,
         daily.balance,
-        LAG(balance) ignore nulls over (
+        LAST_VALUE(
+            balance ignore nulls
+        ) over(
             PARTITION BY address
             ORDER BY
-                b.date_day
-        ) AS imputed_bal_lag,
-        COALESCE(
-            balance,
-            imputed_bal_lag
-        ) AS daily_balance,
-        LAST_VALUE( balance ignore nulls ) over( PARTITION BY address ORDER BY daily.date_day rows unbounded preceding ) AS daily_balance_2
+                b.date_day rows unbounded preceding
+        ) AS daily_balance
     FROM
         boilerplate b
         LEFT JOIN daily_balance daily USING (
@@ -81,7 +80,11 @@ imputed_balance AS (
 SELECT
     date_day,
     address,
-    daily_balance as balance,
-    CONCAT_WS('-', date_day, address) AS _id
+    daily_balance AS balance,
+    concat_ws(
+        '-',
+        date_day,
+        address
+    ) AS _id
 FROM
     imputed_balance
