@@ -3,7 +3,7 @@
     incremental_strategy = 'merge',
     unique_key = 'tx_hash',
     cluster_by = ['_load_timestamp::date', 'block_id', 'tx_hash'],
-    tags = ['load']
+    tags = ['load', 'load_shards']
 ) }}
 
 WITH chunks AS (

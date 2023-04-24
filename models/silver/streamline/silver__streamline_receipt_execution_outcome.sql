@@ -3,7 +3,7 @@
     incremental_strategy = 'merge',
     unique_key = 'receipt_execution_outcome_id',
     cluster_by = ['_load_timestamp::date','block_id','chunk_hash'],
-    tags = ['load']
+    tags = ['load', 'load_shards']
 ) }}
 
 WITH shards AS (
