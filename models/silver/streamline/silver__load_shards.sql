@@ -4,7 +4,7 @@
     cluster_by = ['_partition_by_block_number', '_load_timestamp::DATE'],
     unique_key = 'shard_id',
     full_refresh = False,
-    tags = ['load']
+    tags = ['load', 'load_shards']
 ) }}
 
 WITH shards_json AS (
@@ -23,8 +23,23 @@ WITH shards_json AS (
         _partition_by_block_number
     FROM
         {{ ref('bronze__streamline_shards') }}
-    WHERE
-        {{ partition_batch_load(150000) }}
+
+        {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
+        WHERE
+            {{ partition_load_manual('no_buffer') }}
+            AND block_id IN (
+                SELECT
+                    VALUE
+                FROM
+                    {{ target.database }}.tests.chunk_gaps,
+                    LATERAL FLATTEN(
+                        input => blocks_to_walk
+                    )
+            )
+        {% else %}
+        WHERE
+            {{ partition_batch_load(150000) }}
+        {% endif %}
 )
 SELECT
     *

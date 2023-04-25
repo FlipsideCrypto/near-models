@@ -4,7 +4,7 @@
     cluster_by = ['_partition_by_block_number', '_load_timestamp::DATE'],
     unique_key = 'block_id',
     full_refresh = False,
-    tags = ['load']
+    tags = ['load', 'load_blocks']
 ) }}
 
 WITH blocks_json AS (
@@ -17,8 +17,15 @@ WITH blocks_json AS (
         _partition_by_block_number
     FROM
         {{ ref('bronze__streamline_blocks') }}
+
+    {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
+    WHERE
+        {{ partition_load_manual('no_buffer') }}
+    {% else %}
     WHERE
         {{ partition_batch_load(150000) }}
+    {% endif %}
+
 )
 SELECT
     *
