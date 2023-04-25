@@ -24,14 +24,22 @@ WITH shards_json AS (
     FROM
         {{ ref('bronze__streamline_shards') }}
 
-    {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
-    WHERE
-        {{ partition_load_manual('no_buffer') }}
-    {% else %}
-    WHERE
-        {{ partition_batch_load(150000) }}
-    {% endif %}
-
+        {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
+        WHERE
+            {{ partition_load_manual('no_buffer') }}
+            AND block_id IN (
+                SELECT
+                    VALUE
+                FROM
+                    {{ target.database }}.tests.chunk_gaps,
+                    LATERAL FLATTEN(
+                        input => blocks_to_walk
+                    )
+            )
+        {% else %}
+        WHERE
+            {{ partition_batch_load(150000) }}
+        {% endif %}
 )
 SELECT
     *
