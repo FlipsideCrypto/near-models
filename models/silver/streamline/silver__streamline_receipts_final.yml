@@ -69,6 +69,21 @@ models:
       - name: METADATA
         description: "{{ doc('metadata')}}"
 
+      - name: RECEIPT_SUCCEEDED
+        description: "{{ doc('receipt_succeeded')}}"
+
+      - name: ERROR_TYPE_0
+        description: "{{ doc('error_type_0')}}"
+    
+      - name: ERROR_TYPE_1
+        description: "{{ doc('error_type_1')}}"
+
+      - name: ERROR_TYPE_2
+        description: "{{ doc('error_type_2')}}"
+      
+      - name: ERROR_MESSAGE
+        description: "{{ doc('error_message')}}"
+
       - name: _LOAD_TIMESTAMP
         description: "{{ doc('_load_timestamp')}}"
         tests:

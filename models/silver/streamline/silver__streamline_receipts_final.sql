@@ -43,6 +43,11 @@ append_tx_hash AS (
         r.receiver_id,
         r.signer_id,
         r.receipt_type,
+        r.receipt_succeeded,
+        r.error_type_0,
+        r.error_type_1,
+        r.error_type_2,
+        r.error_message,
         r._load_timestamp,
         r._partition_by_block_number
     FROM
@@ -69,6 +74,11 @@ FINAL AS (
         execution_outcome :outcome :logs :: ARRAY AS logs,
         execution_outcome :proof :: ARRAY AS proof,
         execution_outcome :outcome :metadata :: variant AS metadata,
+        receipt_succeeded,
+        error_type_0,
+        error_type_1,
+        error_type_2,
+        error_message,
         _load_timestamp,
         _partition_by_block_number
     FROM
