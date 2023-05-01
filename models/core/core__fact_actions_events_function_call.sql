@@ -1,6 +1,7 @@
 {{ config(
     materialized = 'view',
-    secure = true
+    secure = true,
+    tags = ['core']
 ) }}
 
 WITH actions_events_function_call AS (
@@ -8,11 +9,13 @@ WITH actions_events_function_call AS (
     SELECT
         *
     FROM
-        {{ ref('silver__actions_events_function_call') }}
+        {{ ref('silver__actions_events_function_call_s3') }}
 )
 SELECT
     action_id,
     tx_hash,
+    receiver_id,
+    signer_id,
     block_id,
     block_timestamp,
     action_name,

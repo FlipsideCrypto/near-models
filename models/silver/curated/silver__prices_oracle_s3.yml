@@ -1,0 +1,68 @@
+version: 2
+
+models:
+  - name: silver__prices_oracle_s3
+    description: |-
+      This table parses messages from the contract `priceoracle.near` and extracts the available price data.
+
+    columns:
+      - name: BLOCK_ID
+        description: "{{ doc('block_id')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
+
+      - name: BLOCK_TIMESTAMP
+        description: "{{ doc('block_timestamp')}}"
+        tests:
+          - not_null:
+              where: _load_timestamp <= current_timestamp - interval '2 hours'
+
+      - name: TX_HASH
+        description: "{{ doc('tx_hash')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: INDEX
+        description: "{{ doc('index')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+
+      - name: TOKEN
+        description: "{{ doc('token')}}"
+
+      - name: SYMBOL
+        description: "{{ doc('symbol')}}"
+
+      - name: TOKEN_CONTRACT
+        description: "{{ doc('token_contract')}}"
+
+      - name: RAW_PRICE
+        description: "{{ doc('raw_price')}}"
+
+      - name: DECIMALS
+        description: "{{ doc('decimals')}}"
+
+      - name: PRICE_USD
+        description: "{{ doc('price_usd')}}"
+
+      - name: SOURCE
+        description: "{{ doc('source')}}"
+
+      - name: _LOAD_TIMESTAMP
+        description: "{{ doc('_load_timestamp')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ

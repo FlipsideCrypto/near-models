@@ -1,0 +1,51 @@
+version: 2
+
+models:
+  - name: silver__dex_swaps_s3
+    description: |-
+      This table records all the swap transactions occurring in NEAR.
+
+    columns:
+      - name: BLOCK_ID
+        description: "{{ doc('block_id')}}"
+
+      - name: BLOCK_TIMESTAMP
+        description: "{{ doc('block_timestamp')}}"
+
+      - name: TX_HASH
+        description: "{{ doc('tx_hash')}}"
+
+      - name: SWAP_ID
+        description: "{{ doc('swap_id')}}"
+
+      - name: PLATFORM
+        description: "{{ doc('platform')}}"
+
+      - name: TRADER
+        description: "{{ doc('trader')}}"
+
+      - name: POOL_ID
+        description: "{{ doc('pool_id')}}"
+
+      - name: TOKEN_IN
+        description: "{{ doc('token_in')}}"
+
+      - name: AMOUNT_IN
+        description: "{{ doc('amount_in')}}"
+
+      - name: TOKEN_OUT
+        description: "{{ doc('token_out')}}"
+
+      - name: AMOUNT_OUT
+        description: "{{ doc('amount_out')}}"
+
+      - name: SWAP_INDEX
+        description: "{{ doc('swap_index')}}"
+
+      - name: _LOAD_TIMESTAMP
+        description: "{{ doc('_load_timestamp')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ

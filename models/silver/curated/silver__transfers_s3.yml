@@ -1,0 +1,60 @@
+version: 2
+
+models:
+  - name: silver__transfers_s3
+    description: |-
+      This table records all the Transfer actions of the Near blockchain.
+
+    columns:
+      - name: TX_HASH
+        description: "{{ doc('tx_hash')}}"
+
+      - name: ACTION_ID
+        description: "{{ doc('action_id')}}"
+
+      - name: BLOCK_ID
+        description: "{{ doc('block_id')}}"
+
+      - name: BLOCK_TIMESTAMP
+        description: "{{ doc('block_timestamp')}}"
+        tests:
+          - not_null:
+              where: _load_timestamp <= current_timestamp - interval '2 hours'
+
+      - name: TX_SIGNER
+        description: "{{ doc('tx_signer')}}"
+
+      - name: TX_RECEIVER
+        description: "{{ doc('tx_receiver')}}"
+
+      - name: DEPOSIT
+        description: "{{ doc('deposit')}}"
+
+      - name: RECEIPT_OBJECT_ID
+        description: "{{ doc('receipt_object_id')}}"
+
+      - name: TRANSACTION_FEE
+        description: "{{ doc('transaction_fee')}}"
+        tests:
+          - not_null:
+              where: _load_timestamp <= current_timestamp - interval '2 hours'
+
+      - name: GAS_USED
+        description: "{{ doc('gas_used')}}"
+        tests:
+          - not_null:
+              where: _load_timestamp <= current_timestamp - interval '2 hours'
+
+      - name: STATUS
+        description: "{{ doc('status')}}"
+        tests:
+          - not_null:
+              where: _load_timestamp <= current_timestamp - interval '2 hours'
+
+      - name: _LOAD_TIMESTAMP
+        description: "{{ doc('_load_timestamp')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ

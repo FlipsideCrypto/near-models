@@ -1,0 +1,57 @@
+version: 2
+
+models:
+  - name: silver__pool_balances
+    description: |-
+      Staking pool balances as extracted from receipt logs when an individual makes a staking action.
+      To calculate balance at a point in time, isolate a single record for each pool. This table is transactional-based, so balances are updated with every staking event by users.
+
+    columns:
+      - name: tx_hash
+        description: "{{ doc('tx_hash') }}"
+
+      - name: block_id
+        description: "{{ doc('block_id') }}"
+
+      - name: block_timestamp
+        description: "{{ doc('block_timestamp') }}"
+
+      - name: receipt_object_id
+        description: "{{ doc('receipt_object_id') }}"
+
+      - name: receiver_id
+        description: "{{ doc('receiver_id') }}"
+
+      - name: signer_id
+        description: "{{ doc('signer_id') }}"
+
+      - name: LOG
+        description: "{{ doc('log') }}"
+
+      - name: amount_raw
+        description: "{{ doc('amount_raw') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+
+      - name: amount_adj
+        description: "{{ doc('amount_adj') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - FLOAT
+                - DOUBLE
+
+      - name: _LOAD_TIMESTAMP
+        description: "{{ doc('_load_timestamp')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
+
+      - name: _partition_by_block_number
+        description: "{{ doc('_partition_by_block_number') }}"

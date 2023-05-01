@@ -25,7 +25,12 @@ clean-targets: # directories to be removed by `dbt clean`
   - "dbt_packages"
 
 on-run-start:
+  - "{{ create_udfs() }}"
   - "{{create_sps()}}"
+  - "{{create_get_nearblocks_fts()}}"
+
+on-run-end:
+  - '{{ apply_meta_as_tags(results) }}'
 
 # Configuring models
 # Full documentation: https://docs.getdbt.com/docs/configuring-models
@@ -39,13 +44,20 @@ models:
     relation: true
     columns: true
   +on_schema_change: "append_new_columns"
-  +post-hook: "{% if target.name == 'prod_cloud' and this.schema != 'bronze' %} grant select on {{ this }} to share near_mdao {% endif %}"
+  +post-hook: ["{% if target.name == 'prod_cloud' and this.schema != 'bronze' %} grant select on {{ this }} to share near_mdao {% endif %}"]
 
 tests:
   near:
-    +severity: warn # default to warn for all tests
+    silver:
+      +severity: warn # default to warn for int tests
+      +error_if: ">25"
     core:
-      +severity: error # but error if a core view is having issues
+      +severity: error # default to warn for int tests
+  +store_failures: true # all tests
 
 vars:
   "dbt_date:time_zone": GMT
+  STREAMLINE_INVOKE_STREAMS: False
+  STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES: False
+  UPDATE_UDFS_AND_SPS: False
+  UPDATE_SNOWFLAKE_TAGS: True

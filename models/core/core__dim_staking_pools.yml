@@ -6,7 +6,7 @@ models:
       This table contains registered staking pools with NEAR.
 
     columns:
-      - name: tx_hash
+      - name: TX_HASH
         description: "{{ doc('tx_hash') }}"
         tests:
           - not_null
@@ -16,7 +16,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: block_timestamp
+      - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp')}}"
         tests:
           - not_null
@@ -24,7 +24,7 @@ models:
               column_type_list:
                 - TIMESTAMP_NTZ
 
-      - name: owner
+      - name: OWNER
         description: "{{ doc('staking_pool_owner')}}"
         tests:
           - not_null
@@ -33,7 +33,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: address
+      - name: ADDRESS
         description: "{{ doc('staking_pool_address')}}"
         tests:
           - not_null
@@ -42,7 +42,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: reward_fee_fraction
+      - name: REWARD_FEE_FRACTION
         description: "{{ doc('staking_pool_reward_fee_fraction')}}"
         tests:
           - not_null
@@ -51,7 +51,7 @@ models:
                 - VARIANT
                 - OBJECT
 
-      - name: tx_type
+      - name: TX_TYPE
         description: "{{ doc('staking_pool_tx_type') }}"
         tests:
           - not_null

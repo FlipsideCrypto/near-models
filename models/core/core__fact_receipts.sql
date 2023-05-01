@@ -1,6 +1,7 @@
 {{ config(
     materialized = 'view',
-    secure = true
+    secure = true,
+    tags = ['core']
 ) }}
 
 WITH receipts AS (
@@ -8,7 +9,7 @@ WITH receipts AS (
     SELECT
         *
     FROM
-        {{ ref('silver__receipts') }}
+        {{ ref('silver__streamline_receipts_final') }}
 )
 SELECT
     block_timestamp,
@@ -18,6 +19,8 @@ SELECT
     receipt_object_id,
     receipt_outcome_id,
     receiver_id,
+    receipt_actions AS actions,
+    execution_outcome AS outcome,
     gas_burnt,
     status_value,
     logs,

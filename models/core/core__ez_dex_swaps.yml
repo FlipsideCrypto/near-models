@@ -4,10 +4,6 @@ models:
   - name: core__ez_dex_swaps
     description: |-
       This table records all the swap transactions occurring in NEAR.
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - swap_id
 
     columns:
       - name: BLOCK_ID

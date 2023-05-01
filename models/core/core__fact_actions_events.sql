@@ -1,22 +1,26 @@
 {{ config(
     materialized = 'view',
-    secure = true
+    secure = true,
+    tags = ['core']
 ) }}
 
-WITH actions_events AS (
+WITH actions AS (
 
     SELECT
         *
     FROM
-        {{ ref('silver__actions_events') }}
+        {{ ref('silver__actions_events_s3') }}
 )
 SELECT
     action_id,
     tx_hash,
+    receipt_object_id,
+    receiver_id,
+    signer_id,
     block_id,
     block_timestamp,
     action_index,
     action_name,
     action_data
 FROM
-    actions_events
+    actions

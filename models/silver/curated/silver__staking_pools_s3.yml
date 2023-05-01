@@ -1,0 +1,33 @@
+version: 2
+
+models:
+  - name: silver__staking_pools_s3
+    description: |-
+      This table extracts all staking pools registered with NEAR.
+
+    columns:
+      - name: tx_hash
+        description: "{{ doc('tx_hash')}}"
+
+      - name: block_timestamp
+        description: "{{ doc('block_timestamp')}}"
+
+      - name: owner
+        description: "{{ doc('staking_pool_owner')}}"
+
+      - name: address
+        description: "{{ doc('staking_pool_address')}}"
+
+      - name: reward_fee_fraction
+        description: "{{ doc('staking_pool_reward_fee_fraction')}}"
+
+      - name: tx_type
+        description: "{{ doc('staking_pool_tx_type') }}"
+
+      - name: _LOAD_TIMESTAMP
+        description: "{{ doc('_load_timestamp')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ

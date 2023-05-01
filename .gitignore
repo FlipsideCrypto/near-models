@@ -17,3 +17,6 @@ dbt_docs.sh
 .vscode/ 
 
 .dbt/.user.yml
+.github/workflows/.dbt/.user.yml
+
+local*

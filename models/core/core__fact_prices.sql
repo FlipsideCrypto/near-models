@@ -1,6 +1,14 @@
 {{ config(
     materialized = 'view',
-    secure = true
+    secure = true,
+    meta={
+    'database_tags':{
+        'table': {
+            'PURPOSE': 'PRICES'
+            }
+        }
+    },
+    tags = ['core']
 ) }}
 
 WITH oracle_prices AS (
@@ -10,10 +18,11 @@ WITH oracle_prices AS (
         token,
         symbol,
         token_contract,
+        raw_price,
         price_usd,
         source
     FROM
-        {{ ref('silver__prices_oracle') }}
+        {{ ref('silver__prices_oracle_s3') }}
 ),
 FINAL AS (
     SELECT

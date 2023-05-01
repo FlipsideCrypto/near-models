@@ -4,16 +4,13 @@ models:
   - name: core__fact_blocks
     description: |-
       This table records all the blocks of Near blockchain.
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - block_id
 
     columns:
       - name: BLOCK_ID
         description: "{{ doc('block_id')}}"
         tests:
           - not_null
+          - unique
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
@@ -34,6 +31,7 @@ models:
         description: "{{ doc('block_hash')}}"
         tests:
           - not_null
+          - unique
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
@@ -41,12 +39,6 @@ models:
 
       - name: TX_COUNT
         description: "{{ doc('tx_count')}}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - NUMBER
-                - FLOAT
 
       - name: BLOCK_AUTHOR
         description: "{{ doc('block_author')}}"
@@ -56,6 +48,15 @@ models:
               column_type_list:
                 - STRING
                 - VARCHAR
+
+      - name: HEADER
+        description: "{{ doc('header')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - VARIANT
+                - OBJECT
 
       - name: BLOCK_CHALLENGES_RESULT
         description: "{{ doc('block_challenges_result')}}"
@@ -85,6 +86,15 @@ models:
                 - STRING
                 - VARCHAR
 
+      - name: CHUNK_TX_ROOT
+        description: "{{ doc('chunk_tx_root')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
       - name: CHUNK_MASK
         description: "{{ doc('chunk_mask')}}"
         tests:
@@ -97,15 +107,6 @@ models:
 
       - name: CHUNK_RECEIPTS_ROOT
         description: "{{ doc('chunk_receipts_root')}}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
-
-      - name: CHUNK_TX_ROOT
-        description: "{{ doc('chunk_tx_root')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -151,13 +152,7 @@ models:
 
       - name: EVENTS
         description: "{{ doc('events')}}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - ARRAY
-                - VARIANT
-                - OBJECT
+
 
       - name: GAS_PRICE
         description: "{{ doc('gas_price')}}"

@@ -1,0 +1,96 @@
+version: 2
+
+models:
+  - name: silver__streamline_receipts_final
+    description: |-
+      Singular receipt objects with the shard id and chunk hash from which it was included. 
+
+    columns:
+      - name: TX_HASH
+        description: "{{ doc('tx_hash')}}"
+        tests:
+          - not_null:
+              where: _load_timestamp <= current_timestamp - interval '2 hours'
+
+      - name: BLOCK_ID
+        description: "{{ doc('block_id')}}"
+        tests:
+          - not_null:
+              where: _load_timestamp <= current_timestamp - interval '2 hours'
+
+      - name: BLOCK_TIMESTAMP
+        description: "{{ doc('block_timestamp')}}"
+        tests:
+          - not_null:
+              where: _load_timestamp <= current_timestamp - interval '2 hours'
+
+      - name: RECEIPT_INDEX
+        description: "{{ doc('receipt_index')}}"
+
+      - name: CHUNK_HASH
+        description: "{{ doc('chunk_hash')}}"
+        tests:
+          - not_null:
+              where: "block_id not in (34691244, 34691277)"
+
+      - name: RECEIPT_ACTIONS
+        description: "{{ doc('receipt')}}"
+
+      - name: EXECUTION_OUTCOME
+        description: "{{ doc('execution_outcome')}}"
+
+      - name: RECEIPT_OBJECT_ID
+        description: "{{ doc('receipt_object_id')}}"
+
+      - name: RECEIPT_OUTCOME_ID
+        description: "{{ doc('receipt_outcome_id')}}"
+
+      - name: RECEIVER_ID
+        description: "{{ doc('receiver_id')}}"
+
+      - name: SIGNER_ID
+        description: "{{ doc('signer_id')}}"
+
+      - name: RECEIPT_TYPE
+        description: "{{ doc('receipt_type')}}"
+
+      - name: GAS_BURNT
+        description: "{{ doc('gas_burnt')}}"
+
+      - name: STATUS_VALUE
+        description: "{{ doc('status_value')}}"
+
+      - name: LOGS
+        description: "{{ doc('logs')}}"
+
+      - name: PROOF
+        description: "{{ doc('proof')}}"
+
+      - name: METADATA
+        description: "{{ doc('metadata')}}"
+
+      - name: RECEIPT_SUCCEEDED
+        description: "{{ doc('receipt_succeeded')}}"
+
+      - name: ERROR_TYPE_0
+        description: "{{ doc('error_type_0')}}"
+    
+      - name: ERROR_TYPE_1
+        description: "{{ doc('error_type_1')}}"
+
+      - name: ERROR_TYPE_2
+        description: "{{ doc('error_type_2')}}"
+      
+      - name: ERROR_MESSAGE
+        description: "{{ doc('error_message')}}"
+
+      - name: _LOAD_TIMESTAMP
+        description: "{{ doc('_load_timestamp')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_row_values_to_have_recent_data:
+              datepart: day
+              interval: 1
+
+      - name: _PARTITION_BY_BLOCK_NUMBER
+        description: "{{ doc('_partition_by_block_number')}}"

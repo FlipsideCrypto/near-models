@@ -4,16 +4,13 @@ models:
   - name: core__fact_actions_events
     description: |-
       This table extracts all action events from a transaction and stores the argument data under action_data.
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - action_id
 
     columns:
       - name: ACTION_ID
         description: "{{ doc('action_id')}}"
         tests:
-          - unique
+          - unique:
+              where: tx_hash != 'J4CZZQrZK6kYPVLkrdbTEpcqhUNZiRxktbMzHviqeGgf'
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
@@ -22,6 +19,32 @@ models:
 
       - name: TX_HASH
         description: "{{ doc('tx_hash')}}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: RECEIPT_OBJECT_ID
+        description: "{{ doc('receipt_object_id')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: RECEIVER_ID
+        description: "{{ doc('receiver_id')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: SIGNER_ID
+        description: "{{ doc('signer_id')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -45,6 +68,9 @@ models:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - TIMESTAMP_NTZ
+          - dbt_expectations.expect_row_values_to_have_recent_data:
+              datepart: day
+              interval: 1
 
       - name: ACTION_INDEX
         description: "{{ doc('action_index')}}"

@@ -1,0 +1,36 @@
+version: 2
+
+models:
+  - name: silver__staking_actions_s3
+    description: |-
+      This table records all the staking and delegation transactions occurring in NEAR. 
+
+      Be aware, however, not all transactions here necessarily actually contribute to securing the NEAR network.
+      Each epoch can have a different set of validators.
+
+    columns:
+      - name: tx_hash
+        description: "{{ doc('tx_hash') }}"
+
+      - name: block_timestamp
+        description: "{{ doc('block_timestamp') }}"
+
+      - name: pool_address
+        description: "{{ doc('staking_pool_address') }}"
+
+      - name: tx_signer
+        description: "{{ doc('tx_signer') }}"
+
+      - name: stake_amount
+        description: "{{ doc('staking_stake_amount') }}"
+
+      - name: action
+        description: "{{ doc('staking_action') }}"
+
+      - name: _LOAD_TIMESTAMP
+        description: "{{ doc('_load_timestamp')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ

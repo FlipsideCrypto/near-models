@@ -1,6 +1,7 @@
 {{ config(
     materialized = 'view',
-    secure = true
+    secure = true,
+    tags = ['core']
 ) }}
 
 WITH transfers AS (
@@ -8,7 +9,7 @@ WITH transfers AS (
     SELECT
         *
     FROM
-        {{ ref('silver__transfers') }}
+        {{ ref('silver__transfers_s3') }}
 )
 SELECT
     tx_hash,
@@ -24,3 +25,4 @@ SELECT
     status
 FROM
     transfers
+

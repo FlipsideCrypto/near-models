@@ -1,0 +1,34 @@
+version: 2
+
+models:
+  - name: core__dim_address_labels
+    description: |-
+      This table contains address labels as compiled by the Flipside team.
+
+    columns:
+      - name: SYSTEM_CREATED_AT
+        description: "{{ doc('system_created_at')}}"
+
+      - name: BLOCKCHAIN
+        description: "{{ doc('symbol')}}"
+
+      - name: ADDRESS
+        description: "{{ doc('address')}}"
+
+      - name: ADDRESS_NAME
+        description: "{{ doc('address_name')}}"
+
+      - name: PROJECT_NAME
+        description: "{{ doc('project_name')}}"
+
+      - name: LABEL_TYPE
+        description: "{{ doc('label_type')}}"
+
+      - name: LABEL_SUBTYPE
+        description: "{{ doc('label_subtype')}}"
+
+      - name: L1_LABEL
+        description: "{{ doc('l1_label')}}"
+
+      - name: L2_LABEL
+        description: "{{ doc('l2_label')}}"

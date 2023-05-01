@@ -1,21 +1,28 @@
 {{ config(
     materialized = 'view',
-    secure = true
+    secure = true,
+    meta={
+    'database_tags':{
+        'table': {
+            'PURPOSE': 'DEFI, SWAPS'
+            }
+        }
+    },
+    tags = ['core']
 ) }}
 
 WITH dex_swaps AS (
-
     SELECT
         *
     FROM
-        {{ ref('silver__dex_swaps') }}
+        {{ ref('silver__dex_swaps_s3') }}
 ),
 unique_swap_ids AS (
     SELECT
         swap_id,
         COUNT(1) AS swaps
     FROM
-        {{ ref('silver__dex_swaps') }}
+        {{ ref('silver__dex_swaps_s3') }}
     GROUP BY
         1
     HAVING

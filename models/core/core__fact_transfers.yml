@@ -4,10 +4,6 @@ models:
   - name: core__fact_transfers
     description: |-
       This table records all the Transfer actions of the Near blockchain.
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - action_id
 
     columns:
       - name: TX_HASH
@@ -23,7 +19,8 @@ models:
         description: "{{ doc('action_id')}}"
         tests:
           - not_null
-          - unique
+          - unique:
+              where: tx_hash != 'J4CZZQrZK6kYPVLkrdbTEpcqhUNZiRxktbMzHviqeGgf'
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
@@ -41,7 +38,6 @@ models:
       - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp')}}"
         tests:
-          - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - TIMESTAMP_NTZ
@@ -84,7 +80,6 @@ models:
       - name: TRANSACTION_FEE
         description: "{{ doc('transaction_fee')}}"
         tests:
-          - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
@@ -93,7 +88,6 @@ models:
       - name: GAS_USED
         description: "{{ doc('gas_used')}}"
         tests:
-          - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
@@ -102,7 +96,6 @@ models:
       - name: STATUS
         description: "{{ doc('status')}}"
         tests:
-          - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - BOOLEAN

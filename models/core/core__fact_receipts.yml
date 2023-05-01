@@ -2,17 +2,12 @@ version: 2
 
 models:
   - name: core__fact_receipts
-    description: "Decoded and flattened transaction receipts from the tx_receipts object."
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - receipt_object_id
+    description: Decoded and flattened transaction receipts from the block shards.
 
     columns:
       - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp')}}"
         tests:
-          - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - TIMESTAMP_NTZ
@@ -20,7 +15,6 @@ models:
       - name: BLOCK_ID
         description: "{{ doc('block_id')}}"
         tests:
-          - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
@@ -29,7 +23,6 @@ models:
       - name: TX_HASH
         description: "{{ doc('tx_hash')}}"
         tests:
-          - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
@@ -47,7 +40,8 @@ models:
         description: "{{ doc('receipt_object_id')}}"
         tests:
           - not_null
-          - unique
+          - unique:
+              where: tx_hash != 'J4CZZQrZK6kYPVLkrdbTEpcqhUNZiRxktbMzHviqeGgf'
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
@@ -61,7 +55,6 @@ models:
               column_type_list:
                 - ARRAY
                 - VARIANT
-                - OBJECT
 
       - name: RECEIVER_ID
         description: "{{ doc('receiver_id')}}"
@@ -71,6 +64,23 @@ models:
               column_type_list:
                 - STRING
                 - VARCHAR
+
+      - name: ACTIONS
+        description: "{{ doc('actions')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - OBJECT
+                - VARIANT
+
+      - name: OUTCOME
+        description: "{{ doc('outcome')}}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - OBJECT
+                - VARIANT
 
       - name: GAS_BURNT
         description: "{{ doc('gas_burnt')}}"

@@ -14,6 +14,6 @@ near:
       warehouse: "{{ env_var('SF_WAREHOUSE') }}"
       threads: 4
       client_session_keep_alive: False
-      query_tag: near
+      query_tag: near_curator
   config:
     send_anonymous_usage_stats: False

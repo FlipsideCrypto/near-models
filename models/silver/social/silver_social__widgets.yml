@@ -1,0 +1,91 @@
+
+version: 2
+
+models:
+  - name: silver_social__widgets
+    description: |-
+      Cleaned and curated widget data on Near Social.
+
+    columns:
+      - name: action_id_social
+        description: "{{ doc('block_id')}}"
+        tests:
+          - unique
+
+      - name: tx_hash
+        description: "{{ doc('tx_hash')}}"
+        tests:
+          - not_null
+
+      - name: block_id
+        description: "{{ doc('block_id')}}"
+
+      - name: block_timestamp
+        description: "{{ doc('block_timestamp')}}"
+        tests:
+          - not_null
+
+      - name: signer_id
+        description: "{{ doc('signer_id')}}"
+
+      - name: _node_data
+        description: "{{ doc('node_data')}}"
+
+      - name: widget_name
+        description: "{{ doc('widget_name')}}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - varchar
+
+      - name: _source_data
+        description: "{{ doc('_source_data')}}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - variant
+                - object
+
+      - name: source_code
+        description: "{{ doc('source_code')}}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - varchar
+
+      - name: metadata
+        description: "{{ doc('metadata')}}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - variant
+                - object
+
+      - name: branch
+        description: "{{ doc('branch')}}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - variant
+                - object
+
+      - name: widget_modules_used
+        description: "{{ doc('widget_modules_used')}}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - variant
+                - object
+
+      - name: widget_url
+        description: "{{ doc('widget_url')}}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - varchar
+
+      - name: _partition_by_block_number
+        description: "{{ doc('_partition_by_block_number')}}"
+
+      - name: _load_timestamp
+        description: "{{ doc('_load_timestamp')}}"

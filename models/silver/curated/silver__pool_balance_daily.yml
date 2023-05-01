@@ -1,0 +1,28 @@
+version: 2
+
+models:
+  - name: silver__pool_balance_daily
+    description: |-
+      Aggregates the balances of each pool for each day, taking the last balance reported for each pool. This excludes the present date, as it is not yet complete.
+
+    columns:
+      - name: date_day
+        description: "{{ doc('date') }}"
+        tests:
+          - not_null
+
+      - name: address
+        description: "{{ doc('address') }}"
+        tests:
+          - not_null
+
+      - name: balance
+        description: "{{ doc('balance') }}"
+        tests:
+          - not_null
+
+      - name: _id
+        description: "A unique key column for this silver model."
+        tests:
+          - not_null
+          - unique

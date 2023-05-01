@@ -1,0 +1,48 @@
+version: 2
+
+models:
+  - name: silver__streamline_transactions
+    description: |-
+      Singular transaction objects with the shard id and chunk hash from which it was included. 
+
+    columns:
+      - name: TX_HASH
+        description: "{{ doc('tx_hash')}}"
+        tests:
+          - not_null
+          - unique
+
+      - name: BLOCK_ID
+        description: "{{ doc('block_id')}}"
+        tests:
+          - not_null
+
+      - name: SHARD_ID
+        description: "{{ doc('shard_id')}}"
+        tests:
+          - not_null
+
+      - name: TRANSACTIONS_INDEX
+        description: "{{ doc('receipt_index')}}"
+        tests:
+          - not_null
+
+      - name: _LOAD_TIMESTAMP
+        description: "{{ doc('_load_timestamp')}}"
+        tests:
+          - not_null
+
+      - name: CHUNK_HASH
+        description: "{{ doc('chunk_hash')}}"
+        tests:
+          - not_null
+
+      - name: TX
+        description: "{{ doc('tx')}}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - OBJECT
+                - VARIANT
+
+

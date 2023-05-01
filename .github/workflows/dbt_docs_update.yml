@@ -1,0 +1,68 @@
+name: dbt_docs_update
+
+on:
+  push:
+    branches:
+      - "main"
+
+env:
+  USE_VARS: "${{ vars.USE_VARS }}"
+  DBT_PROFILES_DIR: "${{ vars.DBT_PROFILES_DIR }}"
+  DBT_VERSION: "${{ vars.DBT_VERSION }}"
+  ACCOUNT: "${{ vars.ACCOUNT }}"
+  ROLE: "${{ vars.ROLE }}"
+  USER: "${{ vars.USER }}"
+  PASSWORD: "${{ secrets.PASSWORD }}"
+  REGION: "${{ vars.REGION }}"
+  DATABASE: "${{ vars.DATABASE }}"
+  WAREHOUSE: "${{ vars.WAREHOUSE }}"
+  SCHEMA: "${{ vars.SCHEMA }}"
+
+concurrency:
+  group: ${{ github.workflow }}
+
+jobs:
+  scheduled_run:
+    name: docs_update
+    runs-on: ubuntu-latest
+    environment: 
+      name: workflow_prod
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-python@v1
+        with:
+          python-version: "3.7.x"
+
+      - name: install dependencies
+        run: |
+          pip install dbt-snowflake==${{ env.DBT_VERSION }}
+          dbt deps
+      - name: checkout docs branch
+        run: |
+          git checkout -B docs origin/main
+      - name: generate dbt docs
+        run: dbt docs generate
+
+      - name: move files to docs directory
+        run: |
+          mkdir -p ./docs
+          cp target/{catalog.json,manifest.json,index.html} docs/
+      - name: clean up target directory
+        run: dbt clean
+
+      - name: check for changes
+        run: git status
+
+      - name: stage changed files
+        run: git add .
+
+      - name: commit changed files
+        run: |
+          git config user.email "abc@xyz"
+          git config user.name "github-actions"
+          git commit -am "Auto-update docs"
+      - name: push changes to docs
+        run: |
+          git push -f --set-upstream origin docs

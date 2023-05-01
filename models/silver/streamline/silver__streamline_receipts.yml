@@ -1,0 +1,72 @@
+version: 2
+
+models:
+  - name: silver__streamline_receipts
+    description: |-
+      Singular receipt objects with the shard id and chunk hash from which it was included. 
+      These receipts are only action receipts from the execution outcome of the shard.
+
+    columns:
+      - name: BLOCK_ID
+        description: "{{ doc('block_id')}}"
+
+      - name: SHARD_ID
+        description: "{{ doc('shard_id')}}"
+
+      - name: RECEIPT_INDEX
+        description: "{{ doc('receipt_index')}}"
+
+      - name: CHUNK_HASH
+        description: "{{ doc('chunk_hash')}}"
+
+      - name: RECEIPT
+        description: "{{ doc('receipt')}}"
+
+      - name: EXECUTION_OUTCOME
+        description: "{{ doc('execution_outcome')}}"
+
+      - name: RECEIPT_SUCCEEDED
+        description: "{{ doc('receipt_succeeded')}}"
+
+      - name: ERROR_TYPE_0
+        description: "{{ doc('error_type_0')}}"
+    
+      - name: ERROR_TYPE_1
+        description: "{{ doc('error_type_1')}}"
+
+      - name: ERROR_TYPE_2
+        description: "{{ doc('error_type_2')}}"
+      
+      - name: ERROR_MESSAGE
+        description: "{{ doc('error_message')}}"
+
+      - name: OUTCOME_RECEIPTS
+        description: "{{ doc('receipt_outcome_id')}}"
+        tests:
+          - not_null
+
+      - name: RECEIPT_ID
+        description: "{{ doc('receipt_id')}}"
+        tests:
+          - not_null
+
+      - name: RECEIVER_ID
+        description: "{{ doc('receiver_id')}}"
+        tests:
+          - not_null
+
+      - name: SIGNER_ID
+        description: "{{ doc('signer_id')}}"
+        tests:
+          - not_null
+
+      - name: RECEIPT_TYPE
+        description: "{{ doc('receipt_type')}}"
+        tests:
+          - not_null
+
+      - name: _LOAD_TIMESTAMP
+        description: "{{ doc('_load_timestamp')}}"
+
+      - name: _PARTITION_BY_BLOCK_NUMBER
+        description: "{{ doc('_partition_by_block_number')}}"

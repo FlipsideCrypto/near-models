@@ -1,0 +1,19 @@
+version: 2
+
+models:
+  - name: silver__token_labels
+    description: |-
+      This table contains symbol, contract address and decimal information about tokens on NEAR. Have some token information to add? Open a PR on the MetricsDAO GitHub.
+
+    columns:
+      - name: token
+        description: "{{ doc('token')}}"
+
+      - name: symbol
+        description: "{{ doc('symbol')}}"
+
+      - name: token_contract
+        description: "{{ doc('token_contract')}}"
+
+      - name: decimals
+        description: "{{ doc('decimals')}}"
