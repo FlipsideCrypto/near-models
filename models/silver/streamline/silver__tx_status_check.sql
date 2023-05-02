@@ -4,17 +4,35 @@
     cluster_by = ['_load_timestamp::date', 'tx_hash']
 ) }}
 
+{# TODO - if I have to partition the calls, then a standard incr load will not work #}
+
+
 WITH epoch_window AS (
-    -- transactions greater than 5 epochs old must use an archival node
+    -- transactions greater than 5 epochs old must use an archival node. Using 4 for buffer
     -- see UNKNOWN_TRANSACTION error message https://docs.near.org/api/rpc/transactions#what-could-go-wrong-2
 
     SELECT
         MAX(block_id) AS curr_max_block,
         curr_max_block - (
-            43200 * 5
-        ) AS min_epoch_window
+            43200 * 1 -- TODO change back to 4 for prod
+        ) AS est_epoch_start
     FROM
         {{ ref('silver__streamline_blocks') }}
+),
+failed_receipts AS (
+    SELECT
+        tx_hash
+    FROM
+        {{ ref('silver__streamline_receipts_final') }}
+    WHERE
+        NOT receipt_succeeded
+        AND block_id >= (
+            SELECT
+                est_epoch_start
+            FROM
+                epoch_window
+        )
+
 ),
 txs AS (
     SELECT
@@ -27,30 +45,22 @@ txs AS (
     WHERE
         block_id >= (
             SELECT
-                min_epoch_window
+                est_epoch_start
             FROM
                 epoch_window
         )
+        AND tx_hash IN (
+            SELECT
+                DISTINCT tx_hash
+            FROM
+                failed_receipts
+        )
 
-{% if is_incremental() %}
-AND (
-    _load_timestamp >= (
-        SELECT
-            MAX(_load_timestamp)
-        FROM
-            {{ this }}
-    )
-    OR block_id >= (
-        SELECT
-            MAX(block_id)
-        FROM
-            {{ this }}
-    )
-)
-{% endif %}
-ORDER BY 
+
+ORDER BY
     block_id
-LIMIT 10000
+LIMIT
+    1000
 ),
 stored_key AS (
     SELECT
@@ -96,7 +106,7 @@ FINAL AS (
             res :data :result :status
         ) AS status,
         object_keys(status) [0] :: STRING != 'Failure' AS tx_succeeded,
-        res,
+        res, -- do we care about storing the rest of the response? prob no, we have it
         _load_timestamp
     FROM
         udf_call
@@ -105,15 +115,10 @@ SELECT
     *
 FROM
     FINAL
-WHERE
-    api_call_succeeded
 
-
-
--- Erroring out, not sure if this is a rate limit issue, or what.
-{# 
-19:19:04  Completed with 1 error and 0 warnings:
-19:19:04  
-19:19:04  Database Error in model silver__tx_status (models/silver/streamline/silver__tx_status.sql)
-19:19:04    100287 (22P02): Error parsing JSON response for external function UDF_API with request batch id: 01ac003c-0403-52da-3d4f-83011ae60c97:2:9:0:6881:0. Error: top-level JSON object must contain "data" JSON array element
-19:19:04    compiled Code at target/run/near/models/silver/streamline/silver__tx_status.sql #}
+    -- Erroring out, not sure if this is a rate limit issue, or what.
+    {#
+    19 :19 :04 completed WITH 1 error
+    AND 0 warnings: 19 :19 :04 19 :19 :04 database error IN model silver__tx_status (
+        models / silver / streamline / silver__tx_status.sql
+    ) 19 :19 :04 100287 (22P02): error parsing json response for EXTERNAL FUNCTION udf_api WITH request batch id: 01ac003c -0403 - 52da - 3d4f - 83011ae60c97 :2 :9 :0 :6881 :0. error: top - LEVEL json OBJECT must contain "data" json ARRAY ELEMENT 19 :19 :04 COMPILED code AT target / run / near / models / silver / streamline / silver__tx_status.sql #}
