@@ -1,0 +1,1779 @@
+Project Name,Category,Wallet Address,Enabled
+AssetDash,analytics,assetdash.near,TRUE
+Defy Trends,analytics,defytrends.near,TRUE
+NearBlocks,analytics,anthromachine.near,TRUE
+Nearscope,analytics,blockscope.near,TRUE
+NFData,analytics,nfdata.near,TRUE
+Pikespeak,analytics,sodaki.near,TRUE
+Plex,analytics,chumbley.near,TRUE
+The Unit,analytics,theunit.near,TRUE
+Token Terminal,analytics,cmpb.near,TRUE
+1Inch Network  (1INCH),ecosystem,111111111117dc0aa78b770fa6a738034120c302.factory.bridge.near,TRUE
+3six9,ecosystem,berynteoh.near,TRUE
+Allbridge  (ABR),ecosystem,abr.a11bd.near,TRUE
+Apollo42,ecosystem,apollo42.near,TRUE
+Aramid Finance,ecosystem,eliastz.near,TRUE
+Around Finance,ecosystem,arcusfinance.near,TRUE
+Aurigami  (PLY),ecosystem,1ab43204a195a0fd37edec621482afd3792ef90b.factory.bridge.near,TRUE
+Aurora  (AURORA),ecosystem,aurora.pool.near,TRUE
+Aurora DAO Dashboard,ecosystem,aurora,TRUE
+Aurora Faucet,ecosystem,aurora,TRUE
+Bastion  (BSTN),ecosystem,059a1f1dea1020297588c316ffc30a58a1a0d4a2.factory.bridge.near,TRUE
+Black IDE,ecosystem,blackfreelancer.near,TRUE
+Bonuz Market  (BONUZ),ecosystem,bonuz.near,TRUE
+Chai.xyz,ecosystem,chaixyz.near,TRUE
+Chronicle  (XNL),ecosystem,06a00715e6f92210af9d7680b584931faf71a833.factory.bridge.near,TRUE
+Circle  (USDC),ecosystem,a0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.factory.bridge.near,TRUE
+CryptoBlades,ecosystem,cryptobabes.near,TRUE
+DEIP  (DEIP),ecosystem,deip-token.near,TRUE
+Dev3,ecosystem,dev3is.near,TRUE
+DODO  (DODO),ecosystem,43dfc4159d86f3a37a5a4b3d4580b888ad7d4ddd.factory.bridge.near,TRUE
+Farm Me,ecosystem,51d0ed85eab09cbbca27e430f169f98d1404f45cd159930bed8156db1f0a3386,TRUE
+Greenhouse  (GREEN),ecosystem,sankore2.near,TRUE
+ManuFactory  (MNFT),ecosystem,jeancurcio.near,TRUE
+MIND Games  (CELL),ecosystem,jcosta.near,TRUE
+Multichain  (MULTI),ecosystem,multichainorg.near,TRUE
+Myriad Social  (MYRIA),ecosystem,myriadcore.near,TRUE
+Odo Ecosystem  (ODO),ecosystem,awesome.near,TRUE
+OpenBiSea  (OBS),ecosystem,4cb3fd6ea575327dedfe4ccb5ac32d95c26bdbe8145942c22ebf8277d2b1a4ae,TRUE
+PAPR Ecosystem  (PAPR),ecosystem,awesome.near,TRUE
+Portal,ecosystem,indiastudents.near,TRUE
+PureFi Protocol  (UFI),ecosystem,e57705ca88d5d8dca6ebbc5da0774a7645e768f1dd5fa28e883e3767b30f50cd,TRUE
+Rabby Wallet,ecosystem,fprat.near,TRUE
+Rainbow Bridge,ecosystem,adb098304d446a7fdf3760a3678fefbe95301d85c952c111c9439fcd26e7c939,TRUE
+Ref Finance,ecosystem,token.v2.ref-finance.near,TRUE
+Ref Finance,ecosystem,xtoken.ref-finance.near,TRUE
+Ref Finance,ecosystem,ref-finance.sputnik-dao.near,TRUE
+Skytale,ecosystem,skytale.near,TRUE
+Squid,ecosystem,richtobacco.near,TRUE
+Stader  (NEARX),ecosystem,v2-nearx.stader-labs.near,TRUE
+SushiSwap  (SUSHI),ecosystem,6b3595068778dd592e39a122f4f5a5cf09c90fe2.factory.bridge.near,TRUE
+Swing,ecosystem,tigere.near,TRUE
+Tether  (USDT),ecosystem,usdt.tether-token.near,TRUE
+The Auction,ecosystem,v1.the-auction.near,TRUE
+The Graph  (GRT),ecosystem,c944e90c64b2c07662a292be6244bdf05cda44a7.factory.bridge.near,TRUE
+Tonana,ecosystem,aed776ccbd33ad227a73996db3304b153bdb3fe914b8ec2bb1bef41e29daca43,TRUE
+Tribe Wallet,ecosystem,fprat.near,TRUE
+Trust Wallet,ecosystem,fprat.near,TRUE
+XP.Network,ecosystem,xpnetwork.near,TRUE
+Zen Launch  (ZENL),ecosystem,zbpursuit.near,TRUE
+Owl Games,betting,owlgames.near,TRUE
+Project Name,Category,Wallet Address,Enabled
+Andy Warlords,fungible_token,pyjama.near,TRUE
+CycloClan,fungible_token,cycloclan.near,TRUE
+EngiNeart,fungible_token,engineart.near,TRUE
+Glory Games: Worlds,fungible_token,sixpacklai.near,TRUE
+Gorilla Squad,fungible_token,thegorillasquad.sputnik-dao.near,TRUE
+Haven,fungible_token,haven.sputnik-dao.near,TRUE
+Holistic Pilgrim,fungible_token,holistic-pilgrim.sputnik-dao.near,TRUE
+J0YRID3RZ,fungible_token,j0yrid3rz.near,TRUE
+Kaizo Fighters,fungible_token,kaizo-fighters.sputnik-dao.near,TRUE
+Lacrove,fungible_token,lacrove.near,TRUE
+Meta Foxonry,fungible_token,metafoxonry.near,TRUE
+MonkeGodz,fungible_token,deitydao.sputnik-dao.near,TRUE
+MonkeONear,fungible_token,monkeonear.neartopia.near,TRUE
+Murder Mystery Collective,fungible_token,scribblelabs.near,TRUE
+NAGMI,fungible_token,nagmi.oldmantrader.near,TRUE
+Naksh,fungible_token,naksh.sputnik-dao.near,TRUE
+NEAR Dragon Nation,fungible_token,dragonnation.near,TRUE
+NEAR Misfits,fungible_token,misfits.tenk.near,TRUE
+NEARNauts,fungible_token,donny.near,TRUE
+nft.hiphop,fungible_token,5racestreetnfthh.near,TRUE
+Papu Superstars,fungible_token,chavo.near,TRUE
+PIONEARS,fungible_token,agglomerate.near,TRUE
+RealBirds,fungible_token,realbirds.near,TRUE
+RocketBois,fungible_token,rocketbois-staking.near,TRUE
+Secret Skellies Society  (UTO),fungible_token,utopia.secretskelliessociety.near,TRUE
+Shinto Society,fungible_token,shinto-society-dao.sputnik-dao.near,TRUE
+Shit Happens,fungible_token,shit-happens.near,TRUE
+Starry Night,fungible_token,markoeth.near,TRUE
+The Arrogant Youth Circle,fungible_token,tayc-nft.near,TRUE
+TORA,fungible_token,tora-tenk-near.sputnik-dao.near,TRUE
+Ugly Apes Society,fungible_token,ugly-apes-society-main.sputnik-dao.near,TRUE
+XRAVERS,fungible_token,xravers.near,TRUE
+ZomboDucks,fungible_token,gameplace.near,TRUE
+,dao,auroradao.sputnik-dao.near,
+,dao,auroralabs.sputnik-dao.near,
+,dao,aurora-dao-bvi.sputnik-dao.near,
+,dao,auroraliquid.sputnik-dao.near,
+,dao,burrow.sputnik-dao.near,
+,dao,aurorafinance.sputnik-dao.near,
+,dao,hakdao.sputnik-dao.near,
+,dao,human.sputnik-dao.near,
+,dao,mvci.sputnik-dao.near,
+,dao,collabs.sputnik-dao.near,
+,dao,boo-monstersnear.sputnik-dao.near,
+,dao,wagner-hermanos.sputnik-dao.near,
+,dao,aurora-foundation.sputnik-dao.near,
+,dao,near-p2p.sputnik-dao.near,
+,dao,ecosystem.sputnik-dao.near,
+,dao,daocubator.sputnik-dao.near,
+,dao,tamatoken.sputnik-dao.near,
+,dao,wiki.sputnik-dao.near,
+,dao,metaverse-dao.sputnik-dao.near,
+,dao,tokodao.sputnik-dao.near,
+,dao,ref-community-board.sputnik-dao.near,
+,dao,aurora.sputnik-dao.near,
+,dao,xclaim-club.sputnik-dao.near,
+,dao,incubadora.sputnik-dao.near,
+,dao,muti.sputnik-dao.near,
+,dao,growth-guild.sputnik-dao.near,
+,dao,tan.sputnik-dao.near,
+,dao,forests.sputnik-dao.near,
+,dao,move.sputnik-dao.near,
+,dao,marketing.sputnik-dao.near,
+,dao,cheddar.sputnik-dao.near,
+,dao,fradao.sputnik-dao.near,
+,dao,meekdao.sputnik-dao.near,
+,dao,ddm.sputnik-dao.near,
+,dao,dragon.sputnik-dao.near,
+,dao,creatives.sputnik-dao.near,
+,dao,gcrdao.sputnik-dao.near,
+,dao,lens.sputnik-dao.near,
+,dao,asac-dao.sputnik-dao.near,
+,dao,cudo.sputnik-dao.near,
+,dao,browndao.sputnik-dao.near,
+,dao,svara.sputnik-dao.near,
+,dao,aufacicenta.sputnik-dao.near,
+,dao,linear.sputnik-dao.near,
+,dao,the-philosophers-dao.sputnik-dao.near,
+,dao,garden-collective.sputnik-dao.near,
+,dao,onboarding-dao.sputnik-dao.near,
+,dao,lowkeygiant.sputnik-dao.near,
+,dao,beat-dao.sputnik-dao.near,
+,dao,decentralbank.sputnik-dao.near,
+,dao,sankore-2.sputnik-dao.near,
+,dao,vr-dao.sputnik-dao.near,
+,dao,presence.sputnik-dao.near,
+,dao,cosmia.sputnik-dao.near,
+,dao,tenk.sputnik-dao.near,
+,dao,inav2.sputnik-dao.near,
+,dao,im-question-mark.sputnik-dao.near,
+,dao,bullishbullsdao.sputnik-dao.near,
+,dao,black-cat-cinema.sputnik-dao.near,
+,dao,nearweek-content.sputnik-dao.near,
+,dao,nta.sputnik-dao.near,
+,dao,tibira.sputnik-dao.near,
+,dao,near-venezuela.sputnik-dao.near,
+,dao,efam.sputnik-dao.near,
+,dao,3xr.sputnik-dao.near,
+,dao,plantingair.sputnik-dao.near,
+,dao,startuped.sputnik-dao.near,
+,dao,enrollmint-v1.sputnik-dao.near,
+,dao,publishing-house.sputnik-dao.near,
+,dao,near-writers-collective.sputnik-dao.near,
+,dao,pixeltoken.sputnik-dao.near,
+,dao,55sp.sputnik-dao.near,
+,dao,data.sputnik-dao.near,
+,dao,cariometer.sputnik-dao.near,
+,dao,afrostar.sputnik-dao.near,
+,dao,krisullis.sputnik-dao.near,
+,dao,propertydealer.sputnik-dao.near,
+,dao,demonstra.sputnik-dao.near,
+,dao,raging-vandal.sputnik-dao.near,
+,dao,w3f.sputnik-dao.near,
+,dao,graffiti.sputnik-dao.near,
+,dao,designguild.sputnik-dao.near,
+,dao,liberation-wellness.sputnik-dao.near,
+,dao,hak.sputnik-dao.near,
+,dao,syzygy-guild.sputnik-dao.near,
+,dao,vandao.sputnik-dao.near,
+,dao,ofpnft.sputnik-dao.near,
+,dao,nomadelabel.sputnik-dao.near,
+,dao,gruta.sputnik-dao.near,
+,dao,collectiblesdao.sputnik-dao.near,
+,dao,near-cn-nft-club.sputnik-dao.near,
+,dao,meme-daily-services.sputnik-dao.near,
+,dao,near-china-community.sputnik-dao.near,
+,dao,gambiarra-dao.sputnik-dao.near,
+,dao,sputnik-dao.near,
+,dao,ctc-dao.sputnik-dao.near,
+,dao,mochi.sputnik-dao.near,
+,dao,swine-dao.sputnik-dao.near,
+,dao,business-on-near.sputnik-dao.near,
+,dao,alienbearcrew.sputnik-dao.near,
+,dao,ina.sputnik-dao.near,
+,dao,loam.sputnik-dao.near,
+,dao,arrozcriativo.sputnik-dao.near,
+,dao,realitychain.sputnik-dao.near,
+,dao,blaqkstereo.sputnik-dao.near,
+,dao,nxm.sputnik-dao.near,
+,dao,curators.sputnik-dao.near,
+,dao,eliza-doez.sputnik-dao.near,
+,dao,primordia.sputnik-dao.near,
+,dao,kalakendradao.sputnik-dao.near,
+,dao,near-ig.sputnik-dao.near,
+,dao,power-cricket.sputnik-dao.near,
+,dao,fanstroke-dao.sputnik-dao.near,
+,dao,news.sputnik-dao.near,
+,dao,usn.sputnik-dao.near,
+,dao,famjam.sputnik-dao.near,
+,dao,nearprotocolkoreadao.sputnik-dao.near,
+,dao,wizar.sputnik-dao.near,
+,dao,the-regime-dao.sputnik-dao.near,
+,dao,neh.sputnik-dao.near,
+,dao,i-o-t.sputnik-dao.near,
+,dao,sacred-waters.sputnik-dao.near,
+,dao,daolex.sputnik-dao.near,
+,dao,near-italia.sputnik-dao.near,
+,dao,risengrind.sputnik-dao.near,
+,dao,genesis.sputnik-dao.near,
+,dao,flying-rhino.sputnik-dao.near,
+,dao,goldenblue.sputnik-dao.near,
+,dao,filipino-artist-guild.sputnik-dao.near,
+,dao,amber.sputnik-dao.near,
+,dao,community.sputnik-dao.near,
+,dao,tulumcoin.sputnik-dao.near,
+,dao,sankore-bounty-ecosystem.sputnik-dao.near,
+,dao,mountainsea.sputnik-dao.near,
+,dao,peaceinc.sputnik-dao.near,
+,dao,peter.sputnik-dao.near,
+,dao,changarecords.sputnik-dao.near,
+,dao,octopode-dao.sputnik-dao.near,
+,dao,tamadao.sputnik-dao.near,
+,dao,icgnu.sputnik-dao.near,
+,dao,magic-powered.sputnik-dao.near,
+,dao,seven-vision.sputnik-dao.near,
+,dao,nearweek.sputnik-dao.near,
+,dao,silicon-testers.sputnik-dao.near,
+,dao,shrm.sputnik-dao.near,
+,dao,graate.sputnik-dao.near,
+,dao,motiondao.sputnik-dao.near,
+,dao,near-nft-dao.sputnik-dao.near,
+,dao,metapool.sputnik-dao.near,
+,dao,turkey.sputnik-dao.near,
+,dao,dadao.sputnik-dao.near,
+,dao,thekindao.sputnik-dao.near,
+,dao,coineasydao.sputnik-dao.near,
+,dao,feminu-dao.sputnik-dao.near,
+,dao,crypto-beer.sputnik-dao.near,
+,dao,cpgtest.sputnik-dao.near,
+,dao,dev-guild.sputnik-dao.near,
+,dao,applesandoranges.sputnik-dao.near,
+,dao,priceoracle.sputnik-dao.near,
+,dao,cannabis-genome.sputnik-dao.near,
+,dao,onenone.sputnik-dao.near,
+,dao,adam-dao.sputnik-dao.near,
+,dao,the-clan.sputnik-dao.near,
+,dao,familydao.sputnik-dao.near,
+,dao,spiritual-dao.sputnik-dao.near,
+,dao,beetogether.sputnik-dao.near,
+,dao,haute-gang.sputnik-dao.near,
+,dao,organize-agile-dao.sputnik-dao.near,
+,dao,arc.sputnik-dao.near,
+,dao,argentinaguild.sputnik-dao.near,
+,dao,dev.sputnik-dao.near,
+,dao,dandelions-and-honeybees.sputnik-dao.near,
+,dao,nearapps.sputnik-dao.near,
+,dao,sports-health-and-fitness-dao.sputnik-dao.near,
+,dao,legalguild.sputnik-dao.near,
+,dao,goa-dao.sputnik-dao.near,
+,dao,nature-and-tourism.sputnik-dao.near,
+,dao,atelier-techne-studio-guild.sputnik-dao.near,
+,dao,rebel-wise.sputnik-dao.near,
+,dao,decentricity.sputnik-dao.near,
+,dao,young-fresh-creatives.sputnik-dao.near,
+,dao,children-of-the-dao.sputnik-dao.near,
+,dao,test-dao-2-0-3-rc1.sputnik-dao.near,
+,dao,scout.sputnik-dao.near,
+,dao,radioevrazia.sputnik-dao.near,
+,dao,playfulenvironments.sputnik-dao.near,
+,dao,rekt.sputnik-dao.near,
+,dao,galaxyfans.sputnik-dao.near,
+,dao,reggae-is-bigga-than-music.sputnik-dao.near,
+,dao,9ines.sputnik-dao.near,
+,dao,fundjinn.sputnik-dao.near,
+,dao,release-3-0-5.sputnik-dao.near,
+,dao,sageandcedar.sputnik-dao.near,
+,dao,xpdao.sputnik-dao.near,
+,dao,pulse.sputnik-dao.near,
+,dao,defix3.sputnik-dao.near,
+,dao,bcuganda.sputnik-dao.near,
+,dao,city-nodes.sputnik-dao.near,
+,dao,stardust.sputnik-dao.near,
+,dao,dance-dao.sputnik-dao.near,
+,dao,maesolteirarecs.sputnik-dao.near,
+,dao,xchc.sputnik-dao.near,
+,dao,simplegames.sputnik-dao.near,
+,dao,hack.sputnik-dao.near,
+,dao,comics.sputnik-dao.near,
+,dao,kfcdao.sputnik-dao.near,
+,dao,auctionhouse.sputnik-dao.near,
+,dao,metabuild.sputnik-dao.near,
+,dao,nearverse-dao.sputnik-dao.near,
+,dao,jascha.sputnik-dao.near,
+,dao,numbleg.sputnik-dao.near,
+,dao,user-research-dao.sputnik-dao.near,
+,dao,culinary-dao.sputnik-dao.near,
+,dao,loto.sputnik-dao.near,
+,dao,artivist.sputnik-dao.near,
+,dao,prod_dev.sputnik-dao.near,
+,dao,blah.sputnik-dao.near,
+,dao,sisu.sputnik-dao.near,
+,dao,theworkship.sputnik-dao.near,
+,dao,kings-of-empire.sputnik-dao.near,
+,dao,dadaoclub.sputnik-dao.near,
+,dao,palmeros-de-chacao.sputnik-dao.near,
+,dao,near-reddit-ops.sputnik-dao.near,
+,dao,club-magic-power.sputnik-dao.near,
+,dao,swarming.sputnik-dao.near,
+,dao,the-studio.sputnik-dao.near,
+,dao,philippinehurricanefund.sputnik-dao.near,
+,dao,cura.sputnik-dao.near,
+,dao,evie.sputnik-dao.near,
+,dao,cfcsmintbase.sputnik-dao.near,
+,dao,grindery.sputnik-dao.near,
+,dao,testing-magic.sputnik-dao.near,
+,dao,pacha-dao.sputnik-dao.near,
+,dao,c1foundation.sputnik-dao.near,
+,dao,the-future-is-near.sputnik-dao.near,
+,dao,reggaedaoout.sputnik-dao.near,
+,dao,near-health.sputnik-dao.near,
+,dao,test-dao-2-0-2-rc.sputnik-dao.near,
+,dao,nearopia.sputnik-dao.near,
+,dao,degens.sputnik-dao.near,
+,dao,gov.sputnik-dao.near,
+,dao,the-auction.sputnik-dao.near,
+,dao,near-intelligence-collective.sputnik-dao.near,
+,dao,antimetodo.sputnik-dao.near,
+,dao,near-nigeria.sputnik-dao.near,
+,dao,maximum-viable-potential.sputnik-dao.near,
+,dao,friendlyseacreatures.sputnik-dao.near,
+,dao,millionaire-raccoons-dao.sputnik-dao.near,
+,dao,information.sputnik-dao.near,
+,dao,mindful.sputnik-dao.near,
+,dao,zon-verse.sputnik-dao.near,
+,dao,spaceranch.sputnik-dao.near,
+,dao,wyosky.sputnik-dao.near,
+,dao,rarity.sputnik-dao.near,
+,dao,bastion-protocol.sputnik-dao.near,
+,dao,mintickt.sputnik-dao.near,
+,dao,divedao.sputnik-dao.near,
+,dao,flymoon.sputnik-dao.near,
+,dao,sky-harbour.sputnik-dao.near,
+,dao,dj-dao.sputnik-dao.near,
+,dao,tele.sputnik-dao.near,
+,dao,rvcj.sputnik-dao.near,
+,dao,the-house-of-zul-nft-auctions.sputnik-dao.near,
+,dao,easy.sputnik-dao.near,
+,dao,merchants-of-near.sputnik-dao.near,
+,dao,mineria-virtual-guild.sputnik-dao.near,
+,dao,ukraine.sputnik-dao.near,
+,dao,near-la.sputnik-dao.near,
+,dao,hedges-stake-pool.sputnik-dao.near,
+,dao,corporate-magic.sputnik-dao.near,
+,dao,nfa-dao.sputnik-dao.near,
+,dao,meet-vote-fund.sputnik-dao.near,
+,dao,afronomads.sputnik-dao.near,
+,dao,foragers.sputnik-dao.near,
+,dao,test-dao-bro.sputnik-dao.near,
+,dao,telesto.sputnik-dao.near,
+,dao,test-dao-2-0-1-rc1.sputnik-dao.near,
+,dao,betranchorses.sputnik-dao.near,
+,dao,near-hispano.sputnik-dao.near,
+,dao,minorityprogrammers.sputnik-dao.near,
+,dao,questdao.sputnik-dao.near,
+,dao,developer-docs-translation.sputnik-dao.near,
+,dao,fomenkodao.sputnik-dao.near,
+,dao,esquosi-dao.sputnik-dao.near,
+,dao,hype.sputnik-dao.near,
+,dao,4myfutureapp.sputnik-dao.near,
+,dao,emerging-technology-solutions.sputnik-dao.near,
+,dao,lisboa-node.sputnik-dao.near,
+,dao,vrdao.sputnik-dao.near,
+,dao,octopus-investor.sputnik-dao.near,
+,dao,treattheworld.sputnik-dao.near,
+,dao,deip-creator-economy-accelerator-grants.sputnik-dao.near,
+,dao,wegetpaid.sputnik-dao.near,
+,dao,baf.sputnik-dao.near,
+,dao,transform.sputnik-dao.near,
+,dao,near-turkiye.sputnik-dao.near,
+,dao,kitchenguildastro.sputnik-dao.near,
+,dao,misfits-beard-club.sputnik-dao.near,
+,dao,blacklove-dao.sputnik-dao.near,
+,dao,flux.sputnik-dao.near,
+,dao,nyc.sputnik-dao.near,
+,dao,meet.sputnik-dao.near,
+,dao,nearbits.sputnik-dao.near,
+,dao,sporeverse.sputnik-dao.near,
+,dao,africa-blockchain-developers-dao.sputnik-dao.near,
+,dao,learningdao.sputnik-dao.near,
+,dao,simplydefi.sputnik-dao.near,
+,dao,near-philippines.sputnik-dao.near,
+,dao,subcult.sputnik-dao.near,
+,dao,nearnut.sputnik-dao.near,
+,dao,raritydao.sputnik-dao.near,
+,dao,ca2079.sputnik-dao.near,
+,dao,learnwith.sputnik-dao.near,
+,dao,bsc.sputnik-dao.near,
+,dao,brazildao.sputnik-dao.near,
+,dao,cryptonativedao.sputnik-dao.near,
+,dao,portland.sputnik-dao.near,
+,dao,nearmun.sputnik-dao.near,
+,dao,inna-dominus.sputnik-dao.near,
+,dao,rez-gauche.sputnik-dao.near,
+,dao,eda-dao.sputnik-dao.near,
+,dao,creatress.sputnik-dao.near,
+,dao,nft.sputnik-dao.near,
+,dao,afrikaburn.sputnik-dao.near,
+,dao,nearprotocoltamil.sputnik-dao.near,
+,dao,research.sputnik-dao.near,
+,dao,dramadao.sputnik-dao.near,
+,dao,dec-ventures.sputnik-dao.near,
+,dao,near-my-city.sputnik-dao.near,
+,dao,tokomint.sputnik-dao.near,
+,dao,rim-simps.sputnik-dao.near,
+,dao,temachtiloyan-learning-institute.sputnik-dao.near,
+,dao,board.sputnik-dao.near,
+,dao,meme.sputnik-dao.near,
+,dao,merchant-guild-ttrg09.sputnik-dao.near,
+,dao,founders-to-founders.sputnik-dao.near,
+,dao,near-peru.sputnik-dao.near,
+,dao,pcp.sputnik-dao.near,
+,dao,events.sputnik-dao.near,
+,dao,katest.sputnik-dao.near,
+,dao,abuela-dao.sputnik-dao.near,
+,dao,kubot.sputnik-dao.near,
+,dao,real-estate.sputnik-dao.near,
+,dao,it-for-everyone-foundation.sputnik-dao.near,
+,dao,fake-marketing.sputnik-dao.near,
+,dao,luckydao.sputnik-dao.near,
+,dao,near.sputnik-dao.near,
+,dao,zendao.sputnik-dao.near,
+,dao,astro.sputnik-dao.near,
+,dao,whalehat.sputnik-dao.near,
+,dao,reddao.sputnik-dao.near,
+,dao,daonation.sputnik-dao.near,
+,dao,kapusta.sputnik-dao.near,
+,dao,art.sputnik-dao.near,
+,dao,terrans.sputnik-dao.near,
+,dao,thefanstogether.sputnik-dao.near,
+,dao,seven-vision-studios.sputnik-dao.near,
+,dao,bbullsdao.sputnik-dao.near,
+,dao,earthchange.sputnik-dao.near,
+,dao,tabsera.sputnik-dao.near,
+,dao,continent-dao.sputnik-dao.near,
+,dao,pecuniafinance.sputnik-dao.near,
+,dao,mag-pow-dao.sputnik-dao.near,
+,dao,penrosedao.sputnik-dao.near,
+,dao,guilds-platform-advisory-group.sputnik-dao.near,
+,dao,dotdot.sputnik-dao.near,
+,dao,qualdao.sputnik-dao.near,
+,dao,edu.sputnik-dao.near,
+,dao,samya.sputnik-dao.near,
+,dao,nearpunk.sputnik-dao.near,
+,dao,rezgauche.sputnik-dao.near,
+,dao,korii-dao.sputnik-dao.near,
+,dao,tamaisland.sputnik-dao.near,
+,dao,near-canada.sputnik-dao.near,
+,dao,change-gamer.sputnik-dao.near,
+,dao,nearmisfits.sputnik-dao.near,
+,dao,photographer-dao.sputnik-dao.near,
+,dao,the-gatherings.sputnik-dao.near,
+,dao,localmakermart.sputnik-dao.near,
+,dao,mafia.sputnik-dao.near,
+,dao,stars-guild.sputnik-dao.near,
+,dao,magic.sputnik-dao.near,
+,dao,exe-dao.sputnik-dao.near,
+,dao,weeb.sputnik-dao.near,
+,dao,nftbuzz.sputnik-dao.near,
+,dao,flux-oracle.sputnik-dao.near,
+,dao,visionarydao.sputnik-dao.near,
+,dao,indic-dao.sputnik-dao.near,
+,dao,radio-ophelia.sputnik-dao.near,
+,dao,nearswarm.sputnik-dao.near,
+,dao,paralect-grants.sputnik-dao.near,
+,dao,rucommunity.sputnik-dao.near,
+,dao,allanondao.sputnik-dao.near,
+,dao,grandeur.sputnik-dao.near,
+,dao,big-family-dao.sputnik-dao.near,
+,dao,lostpebble.sputnik-dao.near,
+,dao,penndao.sputnik-dao.near,
+,dao,elcorral.sputnik-dao.near,
+,dao,owc.sputnik-dao.near,
+,dao,agency.sputnik-dao.near,
+,dao,near-zoo.sputnik-dao.near,
+,dao,tigeracademy.sputnik-dao.near,
+,dao,multidaomo.sputnik-dao.near,
+,dao,vuk.sputnik-dao.near,
+,dao,near-nigeria-npk.sputnik-dao.near,
+,dao,near-nature.sputnik-dao.near,
+,dao,chance-to-save-the-planet.sputnik-dao.near,
+,dao,ancestralalchemyacademy.sputnik-dao.near,
+,dao,cascasdia.sputnik-dao.near,
+,dao,test-dao.sputnik-dao.near,
+,dao,nearkat.sputnik-dao.near,
+,dao,guilds.sputnik-dao.near,
+,dao,launchpad.sputnik-dao.near,
+,dao,gov-dao.sputnik-dao.near,
+,dao,near-spain.sputnik-dao.near,
+,dao,caps-secret-burner-dao.sputnik-dao.near,
+,dao,pollit.sputnik-dao.near,
+,dao,ape-near-club.sputnik-dao.near,
+,dao,artdao.sputnik-dao.near,
+,dao,nyc-sports.sputnik-dao.near,
+,dao,tokenomics.sputnik-dao.near,
+,dao,near-education-dao.sputnik-dao.near,
+,dao,vetocrats.sputnik-dao.near,
+,dao,kokumokongz.sputnik-dao.near,
+,dao,test-empty-dao.sputnik-dao.near,
+,dao,the-nannerz.sputnik-dao.near,
+,dao,electricneon.sputnik-dao.near,
+,dao,deip.sputnik-dao.near,
+,dao,dcdresearch.sputnik-dao.near,
+,dao,web3-community-support-dao.sputnik-dao.near,
+,dao,rare.sputnik-dao.near,
+,dao,cavenwell.sputnik-dao.near,
+,dao,nrj.sputnik-dao.near,
+,dao,curator-cn.sputnik-dao.near,
+,dao,mpo.sputnik-dao.near,
+,dao,kkbenclub.sputnik-dao.near,
+,dao,kupchanko-stanislav.sputnik-dao.near,
+,dao,near-protocol-lgbt-community.sputnik-dao.near,
+Aidonic,dao,aidonic.near,TRUE
+Banyan Collective,dao,banyanco.near,TRUE
+BeeTogether,dao,beetogether.mintbase1.near,TRUE
+Capsule Social,dao,pitchdao.near,TRUE
+DAOHQ,dao,daohq.near,TRUE
+DAOrecords,dao,daorecords.sputnik-dao.near,TRUE
+Decentral Bank  (USN),dao,usn,TRUE
+DoDAO,dao,dodao.sputnik-dao.near,TRUE
+EV Initiative  (EVI),dao,evinitiative.near,TRUE
+GuildX,dao,a0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.factory.bridge.near,TRUE
+Incubadora DAO,dao,jmm.near,TRUE
+Kapital DAO,dao,kapitaldao.near,TRUE
+Kin DAO,dao,adrianseneca.near,TRUE
+KINO,dao,997b4784475985da6769c047614be0d5371875a7aab5c197abe5b49c92223698,TRUE
+Marma J Foundation  (MARMAJ),dao,marmaj.sputnik-dao.near,TRUE
+Mute DAO,dao,mutedaowallet.near,TRUE
+NEAR Austin,dao,nearaustin.near,TRUE
+NEAR Hacker House,dao,hackerhome.near,TRUE
+NEAR NYC,dao,nearnyc.near,TRUE
+Near-multicall,dao,multicall.sputnik-dao.near,TRUE
+NEARFans,dao,nearfans.poolv1.near,TRUE
+Network,dao,yvesmessy.near,TRUE
+NextHollywood,dao,711b90d3ba6e7c7aea8c8adb7404176bee13c7aff0a94225c6caf5bb354f8411,TRUE
+Niche,dao,zavn.near,TRUE
+Open DeFi,dao,medusajs.near,TRUE
+Raiz Vertical Farms,dao,raizverticalfarm.near,TRUE
+SpaceRanch DAO,dao,spaceranch.near,TRUE
+SputnikDAO,dao,misfits.sputnikdao.near,TRUE
+Truts,dao,5d2912b7b2d718a85f77033fc4345f80376bf84293818150c259ffd6376452cd,TRUE
+Unchain Fund,dao,unchain-fund.sputnik-dao.near,TRUE
+VN Artists DAO,dao,vn-artists-dao.sputnik-dao.near,TRUE
+1XRUN.Limited,dapps,naismithlabs.near,TRUE
+Aerx,dapps,4c9e85d11efb4b60bd52119caf086439bea647cb93ccf3c3e0902afd1e674518,TRUE
+ALIEN ESPORTS INDUSTRY,dapps,flander2h.near,TRUE
+Ample,dapps,ampleplatform.near,TRUE
+Arcnes,dapps,arcnes.near,TRUE
+Arhead,dapps,arhead.near,TRUE
+AstroDAO,dapps,hoodpablo.near,TRUE
+AstroMarket,dapps,astromarket.near,TRUE
+Backstage  (BKS),dapps,35d4bea02ee61e80fee389c7d08b3a5607b68355ee95221b33acfb175140aa49,TRUE
+Bancambios,dapps,bancambios.near,TRUE
+Bearverse,dapps,kitkin.near,TRUE
+BEE  (BEE),dapps,beexperience.near,TRUE
+Blockperks,dapps,1061b56456c76ccc3838628260a3b12253f2f6477ad6a2a9869c23ab2fe48f12,TRUE
+Burrito Battle,dapps,burrito-battle.sputnik-dao.near,TRUE
+Bwitter,dapps,ac2c402741635a15671b5d213413ca9ced608ef9cf0a2c1e4cf9a021aae66590,TRUE
+Cadera,dapps,cadera.near,TRUE
+Carv  (ARC),dapps,nftarc.near,TRUE
+Certy Network,dapps,muxkiller.near,TRUE
+ChatMe,dapps,chatme.near,TRUE
+ClimaFi,dapps,5bdef356028483a29e445618ee4752ecb3c7041cca32d6f11d7f78f85d790533,TRUE
+Coin Pirates,dapps,coinpirates1.near,TRUE
+Connect3,dapps,connect3world.near,TRUE
+Convicted,dapps,convictednft.near,TRUE
+Coreto  (COR),dapps,coreto.near,TRUE
+Crossword Puzzle,dapps,crossword.puzzle.near,TRUE
+Crystals of Naramunz  (NARZ),dapps,naramunz.near,TRUE
+Datality,dapps,offers.datality.near,TRUE
+De3Verse,dapps,metahooman.near,TRUE
+eFuse,dapps,efuseofficial.near,TRUE
+Endlesss,dapps,nft.endlesss.near,TRUE
+Enleap,dapps,tinkerunion_nft.enleap.near,TRUE
+Enter The Sphere,dapps,card.nft.enter-the-sphere.near,TRUE
+Everyone Eats Entertainment,dapps,ccc.sputnikdao.near,TRUE
+Evie Marketplace,dapps,nearcanada.near,TRUE
+EXVERSE,dapps,exverse.near,TRUE
+Exxaverse  (EXXA),dapps,exxaverse.near,TRUE
+Fayyr,dapps,fayyr.near,TRUE
+Fluxus Finance,dapps,fluxusfi.near,TRUE
+GeeGee,dapps,289875cf923a10ba2f249cd140fa096a9f58ecdbe0f018c2a57a4a7e63c7e2bf,TRUE
+GeekPay,dapps,v0.geekpay.near,TRUE
+Geo Fight,dapps,andoni.near,TRUE
+GRVTY,dapps,grvty.near,TRUE
+Gyde,dapps,gydedao.near,TRUE
+Haus Passport,dapps,hauspass.near,TRUE
+Higgs Field,dapps,wildon.near,TRUE
+HOOH,dapps,hooh_official.near,TRUE
+iiNDYVERSE,dapps,iindyverse.near,TRUE
+Inhyped,dapps,inhyped.near,TRUE
+KyotoProtocol.io,dapps,kyotoprotocol_io.near,TRUE
+LazyFi,dapps,lazyfi-learning.near,TRUE
+Lifetise  (LIFE),dapps,lifetise.near,TRUE
+Lightency,dapps,Lightency.near,TRUE
+Loozr  (LZR),dapps,loozr.near,TRUE
+Meta Lordz,dapps,0e6773d5c50d494ea9f96a53799d9135b5b3e94ac82569f086f9c2490bc51833,TRUE
+MetaPlan,dapps,metaplan.near,TRUE
+Multiverse Fighters,dapps,nalogovik.near,TRUE
+MyConstant,dapps,myconstant-mascot.near,TRUE
+Nativo NFT,dapps,grex.near,TRUE
+NepBot,dapps,nft.nepbot.near,TRUE
+Nomen Market,dapps,swedishcryptohanna.near,TRUE
+Paras  (PARAS),dapps,anniversary.paras.near,TRUE
+Perk,dapps,dev-perk-conliq2.near,TRUE
+Pixudi  (XUDI),dapps,pixudi.near,TRUE
+Playible,dapps,game.nfl.playible.near,TRUE
+Reality Near,dapps,javierbambaren.near,TRUE
+Relayz,dapps,d9a94cd035ad1f07c50aa3a4c4f347a9e51017e477e102e500abb069cc28f4b6.near,TRUE
+RushAway  (RWAY),dapps,fernvaille.near,TRUE
+Scorefam  (SFT),dapps,1b5ce22d8e5587c3e4324c0dc8f0237eedd5b80b0bb41f6bad3779eab7533577,TRUE
+SociaPol,dapps,sociapol.near,TRUE
+Space Launcher,dapps,spacelauncher.near,TRUE
+Surge Finance,dapps,0xtm.near,TRUE
+Swappland,dapps,createdreamtech.near,TRUE
+Sweat Еconomy,dapps,sweat.collections.fewandfar.near,TRUE
+SwissBorg,dapps,sborgsa.near,TRUE
+Tamago,dapps,orbitalonline.near,TRUE
+TENAMINT,dapps,cards.tenamint.near,TRUE
+Theia,dapps,433769902816e993f7ac3f24d2199a48594295fba29f96426e0222429b63b667,TRUE
+ThriveIN,dapps,d1ec49dcef02c9adf33def6d3df836bd51e604dfcdecd60b2e4aafdaab6d0eef,TRUE
+Tonic DEX  (TONIC),dapps,hariseldon.near,TRUE
+Tracer,dapps,tracerisfarbut.near,TRUE
+UnicusOne,dapps,81534cb261e254888988447148f9fc1ad7908046768148a438024483a954b390,TRUE
+VerdeX,dapps,verdex.near,TRUE
+Vest Protocol,dapps,vestlabs.near,TRUE
+VINCI,dapps,luuk.near,TRUE
+Web3Mon,dapps,web3mon.near,TRUE
+WeFund,dapps,6ada4f0a551c35b40d1be5d2cc9d37dcd8a68b712767e4304475e76806fa3c03,TRUE
+Zod.TV,dapps,docpeace.near,TRUE
+Gateway.fm,data,Mygatewayapp.near,TRUE
+GetBlock,data,getblock.near,TRUE
+Pocket Network  (POKT),data,poktnetwork.near,TRUE
+Burrow,defi,contract.beta.burrow.near,TRUE
+Burrow,defi,contract.main.burrow.near,TRUE
+Cell Protocol,defi,v1.cellfi-prod.near,TRUE
+Cheddar,defi,farm-draw.cheddar.near,TRUE
+Cheddar,defi,p2-pulse.cheddar.near,TRUE
+Decentral Bank,defi,usn,TRUE
+DOJO Finance,defi,bd286c2c61fc6633b4866f8ddc31a838cfea24042a6c281f1180cc21ed7fbfae,TRUE
+Fusotao,defi,fusotao.octopus-registry.near,TRUE
+Fusotao Protocol  (TAO),defi,fusotao-token.near,TRUE
+Gator,defi,gator-fi.near,TRUE
+HAPI  (HAPI),defi,hapi-protocol.sputnik-dao.near,TRUE
+Jumbo,defi,v1.jumbo_exchange.near,TRUE
+Jump DEFI,defi,launchpad.jumpfinance.near,TRUE
+Jump DEFI,defi,nftstaking.jumpfinance.near,TRUE
+Jump DEFI,defi,jumpfinance.near,TRUE
+Meta Bonds,defi,v1.bond-market.near,TRUE
+Meta Yield,defi,v1.metayield.near,TRUE
+Moni Crypto Tracker,defi,garri_g.near,TRUE
+Multichain,defi,mpc-multichain.near,TRUE
+NEAR Wrapper,defi,wrap.near,TRUE
+Odyssey,defi,96e7252eef999416a1a1664335213397286d6c82f9fcb7d2d773e6ebc7689bfd,TRUE
+Orderly,defi,asset-manager.orderly-network.near,TRUE
+Orderly,defi,ledgerprimeorderly.near,TRUE
+Orderly,defi,operator.orderly-network.near,TRUE
+Orderly,defi,orderly-network.near,TRUE
+Pembrock,defi,v1.pembrock.near,TRUE
+Phoenix Bonds,defi,phoenix-bonds.near,TRUE
+Rainbow Bridge,defi,client.bridge.near,TRUE
+Ref Finance,defi,v2.ref-finance.near,TRUE
+Ref Finance,defi,v2.ref-farming.near,TRUE
+Ref Finance,defi,boostfarm.ref-labs.near,TRUE
+Ref Finance,defi,dcl.ref-labs.near,TRUE
+Ref Finance,defi,dclv1.ref-labs.near,TRUE
+Ref Finance,defi,ref-ve.ref-labs.near,TRUE
+Ref Finance,defi,xtoken.ref-finance.near,TRUE
+Ref Finance,defi,dclv2.ref-labs.near,TRUE
+Roketo,defi,streaming.r-v2.near,TRUE
+Roketo,defi,finance.r-v2.near,TRUE
+Skyward,defi,skyward.near,TRUE
+Spin,defi,v2_0_2.perp.spin-fi.near,TRUE
+Spin,defi,spot.spin-fi.near,TRUE
+Spin,defi,v2.perp.spin-fi.near,TRUE
+Tonic,defi,v1.orderbook.near,TRUE
+Tonic,defi,v1.tonic-perps.near,TRUE
+UPFI Network  (UPS),defi,upfi.near,TRUE
+WeldMoney  (WELD),defi,weldmoney.near,TRUE
+Zebec,defi,stream.zebec.near,TRUE
+,defi,priceoracle.near,TRUE
+AIverse,devtooling,abhishek08.near,TRUE
+Chainlink  (LINK),devtooling,514910771af9ca656af840dff83e8264ecf986ca.factory.bridge.near,TRUE
+CRONCAT,devtooling,croncat.sputnik-dao.near,TRUE
+Dapplets Project,devtooling,129bd3abcca04cc3c96496921746123b6c8b17ac73156afd7e804668c25e4b13,TRUE
+Grain,devtooling,grain-lang.sputnik-dao.near,TRUE
+kuutamo,devtooling,de77b42ef97362c04a9ec8a9991253baee09d0fec10d76964f848474293.near,TRUE
+NEAR Testnet Faucet,devtooling,flmel.near,TRUE
+NEARamp,devtooling,indiastudents.near,TRUE
+Notifi,devtooling,notifi.near,TRUE
+Octopus Network  (OCT),devtooling,f5cfbc74057c610c8ef151a439252680ac68c6dc.factory.bridge.near,TRUE
+Onramper,devtooling,ramper.near,TRUE
+OP Games,devtooling,bitverse.near,TRUE
+ORAO Network,devtooling,orao.near,TRUE
+Pagoda,devtooling,pagoda-milestones.snft.near,TRUE
+PlayEmber,devtooling,playemberfz.near,TRUE
+PlayEmber,devtooling,embr.playember_reserve.near,TRUE
+PlayNFT,devtooling,8f47b03c5bce1a31fcb9806702bcbac8715743687cbba2b3bb506602066f536b,TRUE
+Ramper,devtooling,ramper.near,TRUE
+Switchboard,devtooling,switchboard-v2.near,TRUE
+Three0,devtooling,sreegrandhe.near,TRUE
+Anza Academy,ecosystem,anzaacademy.near,TRUE
+Arroz Criativo,ecosystem,24hackathon2022.near,TRUE
+Aurora Insider,ecosystem,aurora,TRUE
+AwesomeNEAR,ecosystem,awesome.near,TRUE
+CODAME,ecosystem,codame.sputnik-dao.near,TRUE
+Encode Accelerator,ecosystem,encodeclub.near,TRUE
+Harmonic Guild,ecosystem,harmonic-guild-v1.sputnik-dao.near,TRUE
+INC4,ecosystem,inc4.poolv1.near,TRUE
+Invoker Labs,ecosystem,invokerlabs.near,TRUE
+Learn NEAR Club,ecosystem,lnc-fund.near,TRUE
+Lyrik Ventures,ecosystem,mvci.near,TRUE
+Merchants of NEAR,ecosystem,the-merchants-of-near.sputnik-dao.near,TRUE
+mutiDAO,ecosystem,mutedaowallet.near,TRUE
+Near Insider,ecosystem,near-insider.sputnik-dao.near,TRUE
+NEAR Mates,ecosystem,mates.near,TRUE
+NEAR NFT Club,ecosystem,near-nft-club.sputnik-dao.near,TRUE
+NEAR Ukraine Guild,ecosystem,ukraine,TRUE
+NEAR Vietnam Hub,ecosystem,rileytran.near,TRUE
+NEARchan,ecosystem,nearchan.sputnik-dao.near,TRUE
+NEARWEEK,ecosystem,nearweek.pool.near,TRUE
+Open Shards Alliance,ecosystem,openshards.sputnik-dao.near,TRUE
+Open Web Collective,ecosystem,medusajs.near,TRUE
+Open Web Sandbox,ecosystem,open-web-sandbox.sputnik-dao.near,TRUE
+Sankore 2.0,ecosystem,sankore2.near,TRUE
+Terraspaces,ecosystem,terraspaces.near,TRUE
+Ukraine Hub,ecosystem,ukraine,TRUE
+Vital Point AI,ecosystem,vitalpointai.near,TRUE
+Vorto Gaming,ecosystem,utopia.secretskelliessociety.near,TRUE
+Avrit,education,avrit.near,TRUE
+Learn NEAR Club,education,login.learnclub.near,TRUE
+Learn NEAR Club,education,learnernft.learnclub.near,TRUE
+NEAR Crowd,education,app.nearcrowd.near,TRUE
+NEAR Wiki,education,thewiki.near,TRUE
+NEAR EVM,ecosystem,aurora,TRUE
+ATO,fungible_token,atocha-token.near,TRUE
+Berry Club,gaming,berryclub.ek.near,TRUE
+Duel Network,gaming,f403300af8224ce076d164456b60c9eab46eb2097908ebc046b9ae09426de080,TRUE
+Land to Empire,gaming,app.l2e.near,TRUE
+NearCrash,gaming,house_nearcrash.near,TRUE
+PixelDapps,gaming,pixeltoken.near,TRUE
+Pumpopoly,gaming,world.pumpopoly.near,TRUE
+ZomLand,gaming,zomland.near,TRUE
+,gaming,tayc-games.near,TRUE
+Sweat Еconomy,health,deposits.grow.sweat,TRUE
+ONTO Wallet,identity,grantsspecial.near,TRUE
+Cypherock,infrastructure,cypherock.near,TRUE
+HERE Wallet,infrastructure,neafiol.near,TRUE
+Leap Wallet,infrastructure,leapwallet.near,TRUE
+Meteor Wallet,infrastructure,enleap.near,TRUE
+MyNearWallet,infrastructure,kikimora.sputnikdao.near,TRUE
+NEAR Wallet,infrastructure,queendom.near,TRUE
+Nightly,infrastructure,a0131e3a7193239f7223771c5f8d70ca8de68e70280c7dea7667202cd336a54d,TRUE
+Omni,infrastructure,omniadefi.near,TRUE
+OnMachina,infrastructure,v1emw6ugvs.near,TRUE
+Strike Protocols,infrastructure,strikeprotocols.near,TRUE
+Unique One Network  (UNET),interoperability,f5cfbc74057c610c8ef151a439252680ac68c6dc.factory.bridge.near,TRUE
+GONEAR.NAME,marketplace,c.nearbet.near,TRUE
+Tamago,music,tamatips.near,TRUE
+Tamago,music,tamagoapp.near,TRUE
+Mr. Brown,fungible_token,mrbrown.near,TRUE
+ArtFans,fungible_token,arts_artfans.near,TRUE
+Berry Cards,fungible_token,"cards.berryclub.ek.near
+",TRUE
+Few and Far,fungible_token,market.fewandfar.near,TRUE
+Few and Far,fungible_token,fewandfar.near,TRUE
+Meerkats,fungible_token,meerkatslol.near,TRUE
+Mintbase,fungible_token,simple.market.mintbase1.near,TRUE
+Mintbase,fungible_token,mintbase1.near,TRUE
+Nativo,fungible_token,nativo-minter.near,TRUE
+Near Postcards,fungible_token,pcards.near,TRUE
+NEARNauts,fungible_token,nearnautsnft.near,TRUE
+Playible,fungible_token,pack_minter.playible.near,TRUE
+Playible,fungible_token,pack.promotional.nfl.playible.near,TRUE
+Playible,fungible_token,pack.promotional.basketball.playible.near,TRUE
+Secret Skellies Society,fungible_token,laboratory.secretskelliessociety.near,TRUE
+Sora.art,fungible_token,marketplace.sora-art.near,TRUE
+Spin,fungible_token,spin-nft-contract.near,TRUE
+TradePort,fungible_token,market.tradeport.near,TRUE
+UniqArt,fungible_token,nft.uniqart.near,TRUE
+,fungible_token,serumnft.near,TRUE
+Myriad,social_media,myriadcore.near,TRUE
+Myriad,social_media,myriadtips.near,TRUE
+Near Social,social_media,social.near,TRUE
+Linear,staking pool,linear-protocol.near,TRUE
+Metapool,staking pool,meta-pool.near,TRUE
+,staking pool,rocknroll.near,
+,staking pool,dsrvlabs.near,
+,staking pool,dokia.near,
+,staking pool,sparkpool.near,
+,staking pool,zkv-nodes.near,
+,staking pool,baziliknear.near,
+,staking pool,lunanova.near,
+,staking pool,stakefish.near,
+,staking pool,stakin.near,
+,staking pool,bobby.near,
+,staking pool,electric_1.near,
+,staking pool,near8888.near,
+,staking pool,okexpool.poolv1.near,
+,staking pool,wade.near,
+,staking pool,kukulastake1.poolv1.near,
+,staking pool,anonymous.near,
+,staking pool,zpool.poolv1.near,
+,staking pool,lux.near,
+,staking pool,staking4all-validator01.near,
+,staking pool,cryptosolutions.poolv1.near,
+,staking pool,nortwhale.poolv1.near,
+,staking pool,johnsmith.poolv1.near,
+,staking pool,d1.near,
+,staking pool,abl_id.near,
+,staking pool,ohm.near,
+,staking pool,iosgvc.poolv1.near,
+,staking pool,dimaro2.near,
+,staking pool,easy2stake.near,
+,staking pool,anonstake.near,
+,staking pool,ad43b3962733565046380e5657803703d7f70450931cc4ebc52a8c520bb8e4d7,
+,staking pool,wetez.poolv1.near,
+,staking pool,staked.near,
+,staking pool,hotbitstake.near,
+,staking pool,northernlights_id.near,
+,staking pool,link2.near,
+,staking pool,a1in-miningpond.poolv1.near,
+,staking pool,doggo.near,
+,staking pool,k300labs.near,
+,staking pool,lunarpulse.poolv1.near,
+,staking pool,abl_pool.poolv1.near,
+,staking pool,peloclick.near,
+,staking pool,basilisk-stake.near,
+,staking pool,fibocrypto2.near,
+,staking pool,dklabco.near,
+,staking pool,fenya.pool.near,
+,staking pool,coinpayu.near,
+,staking pool,jazza.near,
+,staking pool,bisontrails_validator.near,
+,staking pool,cypherhunter.near,
+,staking pool,08bisontrails_investinwomen.poolv1.near,
+,staking pool,infinite.poolv1.near,
+,staking pool,bizi.near,
+,staking pool,ashert.poolv1.near,
+,staking pool,continuer.near,
+,staking pool,heung_min_son.near,
+,staking pool,rioblocks.poolv1.near,
+,staking pool,certusone.near,
+,staking pool,ideocolabventures_id.near,
+,staking pool,majlovesreg.poolv1.near,
+,staking pool,swiss-staking.near,
+,staking pool,artemis_id.near,
+,staking pool,jose_mourinho.near,
+,staking pool,near4u.poolv1.near,
+,staking pool,mantradao.poolv1.near,
+,staking pool,01stake.poolv1.near,
+,staking pool,dialecticstake.near,
+,staking pool,00agent.poolv1.near,
+,staking pool,genesislab.near,
+,staking pool,jubi.poolv1.near,
+,staking pool,sweden.poolv1.near,
+,staking pool,neardublin.near,
+,staking pool,miningpond_asia_jp.poolv1.near,
+,staking pool,nearcrowd.near,
+,staking pool,0963283dc6dbcb47038cca871f816ab64f2d29c5f4f2a246be9e2e8c260ab311,
+,staking pool,groovy.near,
+,staking pool,agnico-1.poolv1.near,
+,staking pool,legends.near,
+,staking pool,rockx.poolv1.near,
+,staking pool,47cc8d88e864651022c4318ad520c70d2f9ae34cfb53b084643791e6f8594a83,
+,staking pool,kryptovlada-pool.poolv1.near,
+,staking pool,onlygainz.poolv1.near,
+,staking pool,doubletop_io.near,
+,staking pool,spamton.near,
+,staking pool,raynetwork.poolv1.near,
+,staking pool,latenthero.poolv1.near,
+,staking pool,tayang.poolv1.near,
+,staking pool,solidstate.near,
+,staking pool,coredump.near,
+,staking pool,dimasik1.near,
+,staking pool,blackhox.near,
+,staking pool,darvin228.poolv1.near,
+,staking pool,blackblocks.poolv1.near,
+,staking pool,sashamaxymchuk.near,
+,staking pool,luckypool.poolv1.near,
+,staking pool,cs_skipkun.poolv1.near,
+,staking pool,anyvalid.poolv1.near,
+,staking pool,0xblock.poolv1.near,
+,staking pool,searchtamanna.near,
+,staking pool,evgnear.near,
+,staking pool,pool.zod.near,
+,staking pool,bablonear.poolv1.near,
+,staking pool,prometei1100.poolv1.near,
+,staking pool,kyc1.near,
+,staking pool,stakenearpool.near,
+,staking pool,stakedao_retail.poolv1.near,
+,staking pool,l2e_pool.near,
+,staking pool,marmaj.near,
+,staking pool,zentria.poolv1.near,
+,staking pool,nodeone.poolv1.near,
+,staking pool,centurion.poolv1.near,
+,staking pool,seoul-near-staking-pool-five.poolv1.near,
+,staking pool,kuutamo.poolv1.near,
+,staking pool,stakingcabin.near,
+,staking pool,anchikovproduction.near,
+,staking pool,marikon.near,
+,staking pool,mintia.poolv1.near,
+,staking pool,galich.near,
+,staking pool,jstaking.poolv1.near,
+,staking pool,vaultstaking.near,
+,staking pool,lobsteres.near,
+,staking pool,ledgerxfigment.near,
+,staking pool,operator-kosmos-vc.p2p-org.near,
+,staking pool,fulcrum.poolv1.near,
+,staking pool,ib.poolv1.near,
+,staking pool,huobipool.poolv1.near,
+,staking pool,chorusone.near,
+,staking pool,lowfeevalidation.poolv1.near,
+,staking pool,tribe.poolv1.near,
+,staking pool,figment.near,
+,staking pool,blockdaemon0.near,
+,staking pool,audit_one.poolv1.near,
+,staking pool,chainworks.poolv1.near,
+,staking pool,sphere.near,
+,staking pool,alex.near,
+,staking pool,fd04644aae2a2f84e3742269140f5bdc35c70fbed13ff3bd5642a78b0ac572e4,
+,staking pool,trillian.poolv1.near,
+,staking pool,p2p-org.near,
+,staking pool,simjach.near,
+,staking pool,miningpond_asia_in.poolv1.near,
+,staking pool,nemo.poolv1.near,
+,staking pool,valconaur.near,
+,staking pool,blue9.near,
+,staking pool,gpvalidator.poolv1.near,
+,staking pool,spectrum_staking.near,
+,staking pool,ivzor.poolv1.near,
+,staking pool,stakely_io.near,
+,staking pool,webdev.near,
+,staking pool,al3c5.poolv1.near,
+,staking pool,hsykj.poolv1.near,
+,staking pool,x50capital.near,
+,staking pool,staking-power.near,
+,staking pool,lavenderfive.near,
+,staking pool,zetsi.near,
+,staking pool,blockngine.poolv1.near,
+,staking pool,smcvalidator.near,
+,staking pool,6e95ed5d0b1250408394db2c8c95f413a4efdf860997ca62840b73bf1dfec2ea,
+,staking pool,davletuner.near,
+,staking pool,n0ok.near,
+,staking pool,mudassarhirekudi.near,
+,staking pool,hhgtgr.poolv1.near,
+,staking pool,bflame.near,
+,staking pool,stakeangle.near,
+,staking pool,maluconiraef.poolv1.near,
+,staking pool,qweqaz.near,
+,staking pool,nufi.poolv1.near,
+,staking pool,shardlabs-staking.near,
+,staking pool,onehispano.near,
+,staking pool,scottymain.poolv1.near,
+,staking pool,kkdarla.near,
+,staking pool,projectstake.near,
+,staking pool,jzteam.poolv1.near,
+,staking pool,oraclepool.poolv1.near,
+,staking pool,4-ire.near,
+,staking pool,qwerty.poolv1.near,
+,staking pool,stakewithjenni.near,
+,staking pool,cipher.poolv1.near,
+,staking pool,lionstake.near,
+,staking pool,trustednode.near,
+,staking pool,bflame.poolv1.near,
+,staking pool,nodeone.near,
+,staking pool,edae63ed34f16f094dc62a0dae308b0a21953c6f1dffa96d6c46e0a047377ade,
+,staking pool,restake.near,
+,staking pool,9d87dfd7001c0e28b7251621c7ed009e6a9da3ba70a1b58c8e53526d6aa5fb11,
+,staking pool,stakebowl.near,
+,staking pool,usn.pool.near,
+,staking pool,lscmval.near,
+,staking pool,huobi-pos.near,
+,staking pool,gfs_ventures.near,
+,staking pool,0xgenesisblock.poolv1.near,
+,staking pool,oceanblock.poolv1.near,
+,staking pool,cybernet.poolv1.near,
+,staking pool,leadnode.poolv1.near,
+,staking pool,namdokmai.near,
+,staking pool,machfund.poolv1.near,
+,staking pool,cyberstake.poolv1.near,
+,staking pool,rossi-validator.poolv1.near,
+,staking pool,zer0knowledge.poolv1.near,
+,staking pool,samid1.near,
+,staking pool,teajs.poolv1.near,
+,staking pool,alinode.poolv1.near,
+,staking pool,lastnode.poolv1.near,
+,staking pool,gromazek.near,
+,staking pool,poddsy.near,
+,staking pool,akipool.near,
+,staking pool,binancenode3.poolv1.near,
+,staking pool,avado_staking.near,
+,staking pool,pool.near,
+,staking pool,domanodes.near,
+,staking pool,blackhox.poolv1.near,
+,staking pool,domanodes.poolv1.near,
+,staking pool,shrm.poolv1.near,
+,staking pool,pos-validator.poolv1.near,
+,staking pool,sam.poolv1.near,
+,staking pool,andrea-owner.near,
+,staking pool,jumbo_exchange.pool.near,
+,staking pool,binnostake-pool.poolv1.near,
+,staking pool,page_up.poolv1.near,
+,staking pool,c5c583dd57bfb59c53803521ff1db77b474806e1388fdce9cf941841cfd5e0c7,
+,staking pool,usn-unofficial.poolowner.near,
+,staking pool,sweat_validator.near,
+,staking pool,nearua.near,
+,staking pool,omnistake.near,
+,staking pool,04f9f0c8b1b8406e65c7516e58fdfc310560988b3f945898307c9dc42392ff43,
+,staking pool,kiln_validator.near,
+,staking pool,yes_protocol1.near,
+,staking pool,atomic-nodes.near,
+,staking pool,7e3102560f9946598def60fc57e1a55334c7b33e83a071fc3c135644a138d954,
+,staking pool,b3fd752c38887ded23a4b873df95f837033fb7ab8004ca6a4a912d243e59f027,
+,staking pool,yiqi233.near,
+,staking pool,arifj.near,
+,staking pool,thesecretcrypto.near,
+,staking pool,primary_stake.poolv1.near,
+,staking pool,frogadier.poolv1.near,
+,staking pool,galacticdigital.near,
+,staking pool,qbit.near,
+,staking pool,stake1val.near,
+,staking pool,a2f18954e41df296d156566126a846c2053a657a7ceb33c00ccac0a4a994dd3e,
+,staking pool,1x2.near,
+,staking pool,trend-deposits.poolv1.near,
+,staking pool,punka.poolv1.near,
+,staking pool,inc4.near,
+,staking pool,crabhouse.poolv1.near,
+,staking pool,stakeplus.near,
+,staking pool,baba_nyura.poolv1.near,
+,staking pool,infstones.poolv1.near,
+,staking pool,ym304.poolv1.near,
+,staking pool,psixoz.near,
+,staking pool,binancenode2.poolv1.near,
+,staking pool,test_pool.poolv1.near,
+,staking pool,d6f3a951d3e3dc7f78d6e3a9d3e22af1b88720b3b1cb5f53bcc71ecf1c599046,
+,staking pool,sunset.poolv1.near,
+,staking pool,synclub.near,
+,staking pool,vitalpointaivalidator.near,
+,staking pool,digiindia.poolv1.near,
+,staking pool,8a6a0e9266758aaa7c3670b5d8a4670abba3f2ac93477b5e49a867d0a9af80b2,
+,staking pool,letsnode.near,
+,staking pool,luganodes.poolv1.near,
+,staking pool,frensvalidator.poolv1.near,
+,staking pool,ops1.ashpool.near,
+,staking pool,bg-pinger.near,
+,staking pool,bg-1.poolv1.near,
+,staking pool,neardevgov.near,
+,staking pool,vipkoval.near,
+,staking pool,inklgod.near,
+,staking pool,inklgod.poolv1.near,
+,staking pool,sazhiv.near,
+,staking pool,pinrocks.near,
+,staking pool,a8296e9882bc2463bffac9e4576e9ed264e47bda730c9ff7a9dbe27c75afdf4a,
+,staking pool,teoviteovi.poolv1.near,
+,staking pool,swissstar.near,
+,staking pool,ruziev.near,
+,staking pool,p2pstaking.near,
+,staking pool,do0k13.near,
+,staking pool,ifedi.near,
+,staking pool,cunum.poolv1.near,
+,staking pool,hapi_owner.near,
+,staking pool,stakerrash.poolv1.near,
+,staking pool,welldonestake.near,
+,staking pool,chain0ps.near,
+,staking pool,nearkoreahub.near,
+,staking pool,lovali.near,
+,staking pool,joehank.near,
+,staking pool,2pilot.near,
+,staking pool,snsmln.poolv1.near,
+,staking pool,abahmane.poolv1.near,
+,staking pool,samid1.poolv1.near,
+,staking pool,letsnode.poolv1.near,
+,staking pool,mariozito.near,
+,staking pool,0254ecf3733145faae4d718b909621b8695798115c882651b13bd34e2a2a58ed,
+,staking pool,e7ca5fc10d57281bd954754e98b4a731ff01489ac2b8ec1b120340112c538b93,
+,staking pool,ou812.poolv1.near,
+,staking pool,open-web-academy.sputnik-dao.near,
+,staking pool,vcap.poolv1.near,
+,staking pool,chain0ps.poolv1.near,
+,staking pool,loyanix.poolv1.near,
+,staking pool,golden_whale.poolv1.near,
+,staking pool,smartnode.near,
+,staking pool,meduza.poolv1.near,
+,staking pool,2f975578d12cb710d558b97196484fc8fbdaf464c1ad6d212a5ddf12a820f4ae,
+,staking pool,nodeverse_2.near,
+,staking pool,blntmain.near,
+,staking pool,2e850d2ec6d6efa107dd5820c049c0343d603cee9ba555ff9945f1833c1333df,
+,staking pool,leex.poolv1.near,
+,staking pool,phadhazi.near,
+,staking pool,evstigneeff2.near,
+,staking pool,evstigneeff.poolv1.near,
+,staking pool,pinrocks.poolv1.near,
+,staking pool,nearukraineguild.near,
+,staking pool,neardevvn.near,
+,staking pool,nearuaguild.poolv1.near,
+,staking pool,polkachu.poolv1.near,
+,staking pool,ibsblock.poolv1.near,
+,staking pool,iamoskvin.near,
+,staking pool,maiamain.near,
+,staking pool,xardas.near,
+,staking pool,jagon.poolv1.near,
+,staking pool,wackazong.poolv1.near,
+,staking pool,kentnearvn.near,
+,staking pool,agrest.near,
+,staking pool,nepser.near,
+,staking pool,interstakeone.near,
+,staking pool,upgold.near,
+,staking pool,mr_eagleowl.near,
+,staking pool,smartnode.poolv1.near,
+,staking pool,apm.poolv1.near,
+,staking pool,korchagin.near,
+,staking pool,n_shoko.near,
+,staking pool,openprojects_staking-platform.pool.near,
+,staking pool,7eb99564b1efa4d0542ea11a6f6e7b9490b8610a2b721a0f0311161ec3c179c3,
+,staking pool,cunum.near,
+,staking pool,anya-forger.poolv1.near,
+,staking pool,bee1stake.poolv1.near,
+,staking pool,nodeverse_2.poolv1.near,
+,staking pool,fc5f2ad3f57e0c8cad807f813c82afc17501728a4ddbb1417bffcdc58d3c1cc2,
+,staking pool,encipher.near,
+,staking pool,gruberx.near,
+,staking pool,solidstate.poolv1.near,
+,staking pool,n_shoko.poolv1.near,
+,staking pool,ua_nodes.near,
+,staking pool,meria-staking.poolv1.near,
+,staking pool,casualpool.poolv1.near,
+,staking pool,snoopfear.poolv1.near,
+,staking pool,kiln-1.poolv1.near,
+,staking pool,cactus.poolv1.near,
+,staking pool,owa.poolv1.near,
+,staking pool,stakewars.near,
+,staking pool,guardia.near,
+,staking pool,gritsly.poolv1.near,
+,staking pool,meria.poolv1.near,
+,staking pool,perov.near,
+,staking pool,trdm.near,
+NEAR,token,near.tkn.near,
+WDAI,token,wdai.tkn.near,
+DREAM,token,dream.tkn.near,
+WETH,token,c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.factory.bridge.near,
+WNEAR,token,wnear.tkn.near,
+luckybastard,token,luckybastard.tkn.near,
+Pi,token,pi.tkn.near,
+GMS,token,gms.tkn.near,
+SPOOKY,token,spooky.tkn.near,
+FOMO,token,fomo.tkn.near,
+SNAIL,token,snail.tkn.near,
+POKETA,token,poketa.tkn.near,
+BANANA,token,banana.tkn.near,
+Golddigger,token,golddigger.tkn.near,
+AVOCADO,token,avocado.tkn.near,
+WUSDC,token,wusdc.tkn.near,
+KITTY,token,kitty.tkn.near,
+NETH,token,neth.tkn.near,
+NUSDT,token,nusdt.tkn.near,
+USDT,token,usdt.tkn.near,
+NUSDC,token,nusdc.tkn.near,
+WUSDT,token,wusdt.tkn.near,
+DAI,token,dai.tkn.near,
+USDC,token,usdc.tkn.near,
+NDAI,token,ndai.tkn.near,
+BNB,token,bnb.tkn.near,
+tracker,token,tracker.tkn.near,
+SWAG,token,swag.tkn.near,
+TEST,token,test.tkn.near,
+FIRE,token,abcder.near,
+BEE,token,bee.tkn.near,
+MRCH,token,bed4ab0019ff361d83ddeb74883dac8a70f5ea1e.factory.bridge.near,
+FNRIX,token,finarix.near,
+BAT,token,0d8775f648430679a709e98d2b0cb6250d2887ef.factory.bridge.near,
+GWJ,token,288f5c0fc03d073378d004201129bc145a4a82fc.factory.bridge.near,
+SOCIALMEET,token,socialmeet.tkn.near,
+HAK,token,hak.tkn.near,
+CAT,token,cat.tkn.near,
+PRESENCE,token,c6903b623f1548f533eb367f6f1b7d717b9351c2.factory.bridge.near,
+BEER,token,beer.tkn.near,
+MRKTNG,token,mrktng.tkn.near,
+mz,token,mz.tkn.near,
+AVB,token,avb.tkn.near,
+NUT,token,nut.tkn.near,
+LUN2,token,deluna.near,
+CTRL,token,ctrl.tkn.near,
+TEST,token,satoooshi.near,
+FONS,token,fons.near,
+TIA,token,tia-token.theiadev.near,
+NVRS,token,rocketbois-reward.near,
+NearX,token,nearx.stader-labs.near,
+SYN,token,syn.tkn.near,
+TKN,token,sub.aoidghpidfuvjn.near,
+METROP,token,metrop.near,
+CONV,token,convtest.near,
+oin.finance,token,superbot.near,
+rees,token,rees.tkn.near,
+MHMDTST,token,mhmdtst.tkn.near,
+CYPT,token,ctoken.near,
+IXTM,token,ixtm.near,
+MASK,token,mask.tkn.near,
+RUCT,token,ruct.tkn.near,
+DAT-X,token,danteairdrop.near,
+NEAR@80,token,wnear-at-80-0.wentokensir.near,
+AMLT,token,ca0e7269600d353f70b14ad118a49575455c0f2f.factory.bridge.near,
+OPN,token,opntoken.near,
+DEC,token,dec.tkn.near,
+USDC,token,usdc.mocks.near,
+PLASMA,token,kokumokongz_token_test.near,
+CCD,token,ccd.tkn.near,
+FORTH,token,77fba179c79de5b7653f68b5039af940ada60ce0.factory.bridge.near,
+,token,4cd988afbad37289baaf53c13e98e2bd46aaea8c.factory.bridge.near,
+rVNDL,token,rvndl.tkn.near,
+SNAIL,token,snl.slowisfast.near,
+RSK1,token,rsk1.tkn.near,
+SANC,token,03ec7bb59be036870ef696a2abf124f496d6735a.factory.bridge.near,
+RIDE,token,ride.tkn.near,
+DACHA,token,dacha.tkn.near,
+NC,token,nc.tkn.near,
+TYGS,token,tygs.tkn.near,
+idna,token,idna.tkn.near,
+DU,token,du.tkn.near,
+SWEAT,token,sweat_token_testing.near,
+GGB,token,ggb.tkn.near,
+BST,token,bst.tkn.near,
+TARA,token,tara.tkn.near,
+EGG,token,egg.tkn.near,
+PIG,token,pig.tkn.near,
+DONUT,token,donut.tkn.near,
+DISK,token,disk.tkn.near,
+GZ,token,gz.tkn.near,
+CHIC,token,chic.tkn.near,
+OBX,token,obx.tkn.near,
+nSAMO,token,nsamo.tkn.near,
+HUSKY,token,husky.tkn.near,
+MARTIAN,token,martian.tkn.near,
+Pepsico,token,pepsico.tkn.near,
+spittor,token,spittor.tkn.near,
+0HUSKY,token,0husky.tkn.near,
+THUSKY,token,thusky.tkn.near,
+PPAY,token,054d64b73d3d8a21af3d764efd76bcaa774f3bb2.factory.bridge.near,
+CBT,token,token.cryptoblessing.near,
+HALO,token,haloutc.near,
+testing,token,testing-token.staderlabs-test.near,
+Loom,token,loom.tkn.near,
+SOUL,token,soultoken.near,
+FUSD,token,fusd.tkn.near,
+ANGLE,token,31429d1856ad1377a8a0079410b297e1a9e214c2.factory.bridge.near,
+sNEAR,token,snear.tkn.near,
+LDT,token,76a6baa20598b6d203d3eae6cc87e326bcb60e43.factory.bridge.near,
+SNAP,token,snap.tkn.near,
+WTT,token,tinkerunion_ft.enleap.near,
+,token,bbbbca6a901c926f240b89eacb641d8aec7aeafd.factory.bridge.near,
+RFTT,token,rftt.tkn.near,
+ART,token,art.tkn.near,
+BETA_BRRR,token,beta_brrr.beta.burrow.near,
+NCN,token,ncn.tkn.near,
+USD,token,usd.tkn.near,
+BIERSTREIT,token,bierstreit.tkn.near,
+CAS,token,cas.tkn.near,
+$FLIP,token,near_flip.near,
+BNN,token,bnn.tkn.near,
+iotha,token,iotha.tkn.near,
+MP18,token,mp18.tkn.near,
+MP02,token,mp02.tkn.near,
+PANDA,token,panda.tkn.near,
+CTZN,token,ctzn.tkn.near,
+O,token,o.tkn.near,
+NVISION,token,nvision.tkn.near,
+FAR,token,far.tkn.near,
+POTATO,token,v1.dacha-finance.near,
+BXF,token,bxf.tkn.near,
+nUSDO,token,v3.oin_finance.near,
+METACOIN,token,metacoin.tkn.near,
+bones,token,bones.tkn.near,
+TCKT,token,tckt.tkn.near,
+STKE,token,stke.tkn.near,
+PIXEL,token,pixel.tkn.near,
+MEME,token,meme.tkn.near,
+FLOBO,token,flobo.tkn.near,
+WAFI,token,wafi.tkn.near,
+nMEME,token,nmeme.tkn.near,
+NEKO(OLD),token,ft.nekotoken.near,
+baby,token,baby.tkn.near,
+GLD,token,gld.tkn.near,
+KKD,token,kkd.tkn.near,
+ЛОЛ,token,lolcoin.qbit.near,
+AAF,token,tkn_artfans.near,
+ANS,token,44ee4ae1e0c2e6160715f24c02fd8df72afe31f2.factory.bridge.near,
+SHTN,token,shtn.tkn.near,
+SAUDA,token,sauda.tkn.near,
+,token,5067006f830224960fb419d7f25a3a53e9919bb0.factory.bridge.near,
+TAO,token,tao.tkn.near,
+ROSANNA,token,rosanna.tkn.near,
+ELONMUSK,token,elonmusk.tkn.near,
+ZHAIMIE,token,zhaimie.tkn.near,
+SAM,token,sam.tkn.near,
+ABRAHAMLINCOLN,token,abrahamlincoln.tkn.near,
+PRINCE,token,prince.tkn.near,
+HAPPYMOTHERSDAY,token,happymothersday.tkn.near,
+ILUVU,token,iluvu.tkn.near,
+MERRYCHRISTMAS,token,merrychristmas.tkn.near,
+ADAM,token,adam.tkn.near,
+MAHATMAGANDHI,token,mahatmagandhi.tkn.near,
+ILOVE,token,ilove.tkn.near,
+ILIKE,token,ilike.tkn.near,
+EXECUTIVE,token,executive.tkn.near,
+HAPPYNEWYEAR,token,happynewyear.tkn.near,
+HAPPYFATHERSDAY,token,happyfathersday.tkn.near,
+ADAMMIHELICH,token,adammihelich.tkn.near,
+HAPPYBIRTHDAY,token,happybirthday.tkn.near,
+TINY,token,tiny.tkn.near,
+PHONEME,token,phoneme.tkn.near,
+CALLME,token,callme.tkn.near,
+JPYC,token,2370f9d504c7a6e775bf6e14b3f12846b594cd53.factory.bridge.near,
+WILLYOUMARRYME,token,willyoumarryme.tkn.near,
+RING,token,ring.tkn.near,
+IWILL,token,iwill.tkn.near,
+Love,token,love.tkn.near,
+SCAM,token,scam.tkn.near,
+BEANZ,token,beanz.tkn.near,
+p0k,token,p0k.tkn.near,
+MM,token,mm.tkn.near,
+inline,token,inline.tkn.near,
+Biden,token,biden.tkn.near,
+SPOT,token,spot.tkn.near,
+nusd,token,nusd.tkn.near,
+CACA,token,caca.tkn.near,
+lee,token,lee.tkn.near,
+rNEAR,token,craftingrnear.near,
+NEARnft,token,nearnft.tkn.near,
+NST,token,nst.tkn.near,
+CRAB,token,crab.tkn.near,
+CHVILKA,token,chvilka.tkn.near,
+HONEY,token,honey.tkn.near,
+leek,token,leek.tkn.near,
+TIKTOK,token,tiktok.tkn.near,
+SHIB,token,shib.tkn.near,
+ELT,token,elt.tkn.near,
+AURORA,token,aurora.tkn.near,
+HRT,token,hrt.tkn.near,
+MMR,token,mmr.tkn.near,
+SHIBA,token,shiba.tkn.near,
+Nshib,token,nshib.tkn.near,
+champ,token,champ.tkn.near,
+SCAT,token,csgo.near,
+MRD,token,mrd.tkn.near,
+pex,token,pex.tkn.near,
+BOON,token,boon.tkn.near,
+Roman,token,roman.tkn.near,
+PLAY,token,play.tkn.near,
+FRITZ,token,fritz.tkn.near,
+EARTHCHANGE,token,earthchange.near,
+Dust,token,dust.naramunzdev.near,
+CHS,token,chs.tkn.near,
+REN,token,408e41876cccdc0f92210600ef50372656052a38.factory.bridge.near,
+One,token,harmony.aasha.near,
+NEAR@20,token,near-20-0000.wentokensir.near,
+CONFUZED,token,confuzed.tkn.near,
+OPN,token,lock-opntoken.near,
+MOTION,token,8634f0689a502b3659f2b3c9e5650d365067b48a.factory.bridge.near,
+CREAM,token,2ba592f78db6436527729929aaf6c908497cb200.factory.bridge.near,
+CURT,token,curt.tkn.near,
+,token,6b4c7a5e3f0b99fcd83e9c089bddd6c7fce5c611.factory.bridge.near,
+GTkn,token,gtkn.newtoken.near,
+ATO,token,ato.tkn.near,
+CAFE,token,cafe.devtest.near,
+$SPLASH,token,ft.soundsplash.near,
+HBTC,token,0316eb71485b0ab14103307bf65a021042c6d380.factory.bridge.near,
+CGT,token,f56b164efd3cfc02ba739b719b6526a6fa1ca32a.factory.bridge.near,
+USDT.e,token,usdt.mocks.near,
+VOW,token,vow_token.near,
+TAMA,token,tamatoken.near,
+MVP,token,mvp.tkn.near,
+MIKE,token,mike.tkn.near,
+SHIP,token,key_near_space.near,
+NFD,token,dfdb7f72c1f195c5951a234e8db9806eb0635346.factory.bridge.near,
+BLSD,token,blsd.tkn.near,
+XYI,token,xyi.tkn.near,
+NS,token,ns.tkn.near,
+CART,token,cart.tkn.near,
+MEOW,token,cattoken.near,
+TIMUR,token,timur.tkn.near,
+DOGE,token,doge.tkn.near,
+PLAT,token,plat.tkn.near,
+XXX,token,xxx.tkn.near,
+CRF,token,508df5aa4746be37b5b6a69684dfd8bdc322219d.factory.bridge.near,
+TSOY,token,tsoy.tkn.near,
+KPR,token,kpr.tkn.near,
+FIRST,token,first.tkn.near,
+MNFT,token,39fc9e94caeacb435842fadedecb783589f50f5f.factory.bridge.near,
+LAND,token,land.tkn.near,
+NEAR@40,token,wnear-at-40-0.wentokensir.near,
+LIBERTY,token,liberty.tkn.near,
+KISS,token,kiss.tkn.near,
+MATIC,token,7d1afa7b718fb893db30a3abc0cfc608aacfebb0.factory.bridge.near,
+BAD,token,bad.tkn.near,
+WEALTH,token,wealth.tkn.near,
+DLTA,token,0000000de40dfa9b17854cbc7869d80f9f98d823.factory.bridge.near,
+ALCX,token,dbdb4d16eda451d0503b854cf79d55697f90c8df.factory.bridge.near,
+RVRS,token,rivers_token.near,
+NEAR@150,token,wnear-at-150-0.wentokensir.near,
+SWEAT,token,test.sweat,
+NVP,token,nvp.tkn.near,
+Net,token,net.tkn.near,
+NEARPUNK,token,nearpunk.tkn.near,
+FERAL,token,feral.tkn.near,
+USDD,token,0c10bf8fcb7bf5412187a595ab97a3609160b5c6.factory.bridge.near,
+SAGA,token,saga.havendao.near,
+,token,token.sigmund.near,
+LINEAR,token,linear-staging.near,
+Test Token,token,test-token.staderlabs-test.near,
+SER,token,token.serpius.near,
+NearX,token,nearx-rc-3.staderlabs-test.near,
+EXZ,token,john31337.near,
+KSM,token,kusama_airdrop.near,
+NSTART,token,near_starter_token.near,
+NGTF,token,ngt-fake.near,
+HBSC,token,hbsc.tkn.near,
+DUSN,token,fake4-dusn.near,
+AEX,token,aextoken.near,
+USDT.e,token,dac17f958d2ee523a2206206994597c13d831ec7.factory.bridge.near,
+CRFT,token,craftorium.tamada.near,
+HAPI,token,d9c2d319cd7e6177336b0a9c93c21cb48d84fb54.factory.bridge.near,
+1MIL,token,a4ef4b0b23c1fc81d3f9ecf93510e64f58a4a016.factory.bridge.near,
+USDT,token,4.contract.portalbridge.near,
+ASTRO,token,avtoken.near,
+STRW,token,strw.burritobattle.near,
+UNET,token,unet.tkn.near,
+fradao,token,fradao.tkn.near,
+CELO,token,celo.token.a11bd.near,
+SOL,token,sol.token.a11bd.near,
+CTNEAR,token,cointiva.tamada.near,
+OIN,token,9aeb50f542050172359a0e1a25a9933bc8c01259.factory.bridge.near,
+UMINT,token,e99de844ef3ef72806cf006224ef3b813e82662f.factory.bridge.near,
+neardoge,token,neardoge.tkn.near,
+CZDOG,token,czdog.tkn.near,
+GZA,token,gza.tkn.near,
+REKT,token,rekt.tkn.near,
+MERITOCRACY,token,meritocracy.tkn.near,
+JBOUW,token,jbouw.tkn.near,
+PUTT,token,putt.tkn.near,
+WST,token,wst.tkn.near,
+GACHI,token,gachi.tkn.near,
+NK,token,nk.tkn.near,
+BOO,token,boo.tkn.near,
+D3G3N,token,d3g3n.tkn.near,
+NEARDOG,token,neardog.tkn.near,
+DUCK,token,duck.tkn.near,
+NEARKAT,token,nearkat.tkn.near,
+ND,token,nd.tkn.near,
+INFINITY,token,infinity.tkn.near,
+NVC,token,nvc.tkn.near,
+KVLAD,token,kvlad.tkn.near,
+MIKA,token,mika.tkn.near,
+BLAZE,token,blaze.tkn.near,
+SLUSH,token,slush.tkn.near,
+CUCUMBER,token,farm.berryclub.ek.near,
+ASC,token,asc.tkn.near,
+TALIBAN,token,taliban.tkn.near,
+GROOVE,token,groove.tkn.near,
+MBGA,token,mbga.tkn.near,
+MAGIC,token,magic.tkn.near,
+nTRASH,token,ntrash.tkn.near,
+NGMI,token,ngmi.tkn.near,
+LFG,token,lfg.tkn.near,
+hongdou,token,hongdou.tkn.near,
+HODL,token,hodl.tkn.near,
+IKENGA,token,ikenga.tkn.near,
+FLCT,token,flct.tkn.near,
+SHIT,token,shit.tkn.near,
+FLA,token,azerotha.near,
+PADTHAI,token,padthai.near,
+pixiv,token,pixiv.tkn.near,
+dan,token,dan.tkn.near,
+VAC,token,vexedapes_token.near,
+PAD,token,ea7cc765ebc94c4805e3bff28d7e4ae48d06468a.factory.bridge.near,
+HYPE,token,hype.tkn.near,
+AD,token,adtoken.near,
+PW,token,pw.tkn.near,
+NEXP,token,nexp.near,
+GEAR,token,gear.enleap.near,
+Indulgency,token,indulgency.tkn.near,
+UNI,token,1f9840a85d5af5bf1d1762f925bdaddc4201f984.factory.bridge.near,
+DAMN,token,damn.tkn.near,
+IlliaPolosukhin,token,illiapolosukhin.tkn.near,
+SHRM,token,token.shrm.near,
+NEARBIT,token,nearbit.tkn.near,
+NEIR,token,neir.tkn.near,
+FLOKI,token,floki.tkn.near,
+JAR,token,tipjargon.near,
+TER,token,ter.tkn.near,
+FIRERUNE,token,firerune.tkn.near,
+Ralfusha,token,ralfusha.tkn.near,
+LGBT,token,lgbt.tkn.near,
+BSA,token,bsa.tkn.near,
+PUMPOPOLY,token,token.pumpopoly.near,
+xABR,token,xabr.a11bd.near,
+MODA,token,1117ac6ad6cdf1a3bc543bad3b133724620522d5.factory.bridge.near,
+KSW,token,7162469321ae5880f077d250b626f3271b21b903.factory.bridge.near,
+LC,token,ft.mil_lesya.near,
+Stake,token,stake.tkn.near,
+BT,token,token.bwitter.near,
+NEWFY,token,newfy-token.near,
+PLASMA,token,kokumokongz_token_wallet.near,
+KSM,token,kusama-airdrop.near,
+bHOME,token,b8919522331c59f5c16bdfaa6a121a6e03a91f62.factory.bridge.near,
+TAMIL,token,tamil.tkn.near,
+ZOD,token,zod.near,
+sPXT,token,skyward-pixeltoken.near,
+LUCK,token,lucky_nft.near,
+WHALES,token,whales.tkn.near,
+GEM,token,gems.l2e.near,
+ELIXIR,token,elixir.l2e.near,
+SHMEKS,token,shmeks.tkn.near,
+cheems,token,cheems.tkn.near,
+frigg,token,frigg.tkn.near,
+CHF,token,chf.tkn.near,
+SOLACE,token,501ace9c35e60f03a2af4d484f49f9b1efde9f40.factory.bridge.near,
+cUSD,token,cusd.token.a11bd.near,
+PSNG,token,themunkymonkey.near,
+GOLD,token,gold.tkn.near,
+RIMJOB,token,rimjob.tkn.near,
+FRAX,token,853d955acef822db058eb8505911ed77f175b99e.factory.bridge.near,
+INSP,token,inspira.near,
+PICKLE,token,429881672b9ae42b8eba0e26cd9c73711b891ca5.factory.bridge.near,
+fAURORA,token,f-aurora.near,
+PNX,token,token.pnx_test.near,
+YNP,token,ynp.tkn.near,
+dogsheng,token,dogsheng.tkn.near,
+HOOBA,token,hooba.tkn.near,
+KORO,token,koro.tkn.near,
+KONGZ,token,kongztoken.near,
+CAXAP,token,caxap.tkn.near,
+ELECTRIK,token,ndn.electrik.near,
+MOON,token,moon.tkn.near,
+Chap,token,chap.tkn.near,
+YES,token,yes.tkn.near,
+PANG,token,keystore.near,
+UST,token,ust.token.a11bd.near,
+HT,token,6f259637dcd74c767781e37bc6133cd6a68aa161.factory.bridge.near,
+PACT,token,8.contract.portalbridge.near,
+DOJO,token,dojos.near,
+ANC,token,anctokenwallet.near,
+CHRM,token,chromeknightsft.near,
+ELT,token,380291a9a8593b39f123cf39cc1cc47463330b1f.factory.bridge.near,
+rMC,token,39a15a0695c77cbe5fd4f06ab0ccb7bad62f696f.factory.bridge.near,
+0xMR,token,035df12e0f3ac6671126525f1015e47d79dfeddf.factory.bridge.near,
+UST,token,a47c8bf37f92abed4a126bda807a7b7498661acd.factory.bridge.near,
+REF,token,token.ref-finance.near,
+BAKED,token,a4cb0dce4849bdcad2d553e9e68644cf40e26cce.factory.bridge.near,
+GLG,token,glg.tkn.near,
+IBOX,token,ibox.tkn.near,
+SER,token,ser.tkn.near,
+PUNK2317,token,punk2317.tkn.near,
+fx,token,fx.tkn.near,
+FAME,token,818f49467021bdaadae69e071e79ad2fd7226a1e.factory.bridge.near,
+DCITY,token,dcity.tkn.near,
+SFT,token,0aabcc65ef352ad84b1326df188c95b6ab856c1c.factory.bridge.near,
+fBRRR,token,fbrrr.jumbo_exchange.near,
+RARE,token,93dfaf57d986b9ca77df9376c50878e013d9c7c8.factory.bridge.near,
+LUNA,token,d2877702675e6ceb975b4a1dff9fb7baf4c91ea9.factory.bridge.near,
+agEUR,token,1a7e4e63778b4f12a199c062f3efdd288afcbce8.factory.bridge.near,
+NFTM,token,nftm.tkn.near,
+FXS,token,3432b6a60d23ca0dfca7761b7ab56459d9c964d0.factory.bridge.near,
+SNX,token,c011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f.factory.bridge.near,
+BAL,token,ba100000625a3754423978a60c9317c58a424e3d.factory.bridge.near,
+AMP,token,ff20817765cb7f73d4bde2e66e067e58d11095c2.factory.bridge.near,
+MERITOCRACYCOIN,token,meritocracycoin.tkn.near,
+MAG,token,mag.tkn.near,
+PLSM,token,plsm.tkn.near,
+CRYP,token,cryp.tkn.near,
+MAT,token,mat.tkn.near,
+PBL,token,pbl.tkn.near,
+FUE,token,fue.tkn.near,
+SKY,token,sky.tkn.near,
+DAO,token,dao.tkn.near,
+hhUSD,token,ft.hip-hop.near,
+ADV,token,adv.tkn.near,
+THING,token,thing.tkn.near,
+CBT,token,cbt.tkn.near,
+SNT,token,744d70fdbe2ba4cf95131626614a1763df805b9e.factory.bridge.near,
+LUCK,token,luck.tkn.near,
+SKILL,token,skilltoken.allskills.near,
+VLAD,token,vlad.tkn.near,
+AAVE,token,7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9.factory.bridge.near,
+COMP,token,c00e94cb662c3520282e6f5717214004a7f26888.factory.bridge.near,
+CRO,token,a0b73e1ff0b80914ab6fe0444e65848c4c34450b.factory.bridge.near,
+TUSD,token,0000000000085d4780b73119b644ae5ecd22b376.factory.bridge.near,
+NEAR@120,token,wnear-at-120-0.wentokensir.near,
+YFI,token,0bc529c00c6401aef6d220be8c6ea1667f6ad93e.factory.bridge.near,
+DSGN,token,537a9095b78517597b5f2058edcd6e1978095909.factory.bridge.near,
+BUSD,token,4fabb145d64652a948d72533023f6e7a623c7c53.factory.bridge.near,
+GUSD,token,056fd409e1d7a124bd7017459dfea2f387b6d5cd.factory.bridge.near,
+DOOM,token,a4f9cec920ca520a7feb2c3a63050e08967bc111.factory.bridge.near,
+SDT,token,73968b9a57c6e53d41345fd57a6e6ae27d6cdb2f.factory.bridge.near,
+INV,token,41d5d79431a913c4ae7d69a668ecdfe5ff9dfb68.factory.bridge.near,
+BSC,token,bsc.tkn.near,
+WBSC,token,wbsc.tkn.near,
+Peter,token,peter.tkn.near,
+GOOSE,token,goose.tkn.near,
+LDXI,token,ldxi.near,
+$ASAC,token,coin.asac.near,
+FTX Token,token,50d1c9771902476076ecfc8b2a83ad6b9355a4c9.factory.bridge.near,
+LON,token,0000000000095413afc295d19edeb1ad7b71c952.factory.bridge.near,
+SPEW,token,spewtoken.near,
+SPACE,token,cc7ab8d78dba187dc95bf3bb86e65e0c26d0041f.factory.bridge.near,
+TESSST,token,tessst.near,
+Misfits,token,misfits.tkn.near,
+PEPE,token,pepe.tkn.near,
+RWTEST,token,rwtest.tkn.near,
+rUSD,token,craftingrusd.near,
+LENS,token,5d1e237d348277d2f8a22dc683e3d57f285c3bb3.factory.bridge.near,
+LPB,token,cpnear_co.near,
+LPB,token,lpbot.near,
+YVZ,token,yvz.tkn.near,
+nMKR,token,9f8f72aa9304c8b593d555f12ef6589cc3a579a2.factory.bridge.near,
+SKYWARD,token,skyward.tkn.near,
+TARA,token,f001937650bb4f62b57521824b2c20f5b91bea05.factory.bridge.near,
+W33D,token,w33d.tkn.near,
+MILF,token,milf.tkn.near,
+STEVEJOBS,token,stevejobs.tkn.near,
+BAI,token,bai.tkn.near,
+UCT,token,uct.tkn.near,
+TESSST,token,loool.near,
+REF,token,ref.tkn.near,
+BIX,token,009c43b42aefac590c719e971020575974122803.factory.bridge.near,
+CODE,token,9adaba9ffda15e3a043c907d390f645147eb532a.factory.bridge.near,
+ktch,token,ktch.tkn.near,
+FUD,token,fud.tkn.near,
+SLD,token,1ef6a7e2c966fb7c5403efefde38338b1a95a084.factory.bridge.near,
+TBR,token,theburningrealm.near,
+OBS,token,obs.openbisea.near,
+hNEAR,token,storage.mydev.near,
+ZODD,token,dust.zod.near,
+NOT,token,not.tkn.near,
+END,token,7f5c4aded107f66687e6e55dee36a3a8fa3de030.factory.bridge.near,
+AMC,token,amc.tkn.near,
+CASH,token,cash.tkn.near,
+MCS,token,mcs.tkn.near,
+PKR,token,pkr.tkn.near,
+META,token,meta.tkn.near,
+PGGY,token,pggy.tkn.near,
+LG,token,lg.tkn.near,
+AMZN,token,amzn.tkn.near,
+TEXT,token,text.tkn.near,
+DEX,token,dex.tkn.near,
+DEFI,token,defi.tkn.near,
+CONGRATULATIONSGRADUATE,token,congratulationsgraduate.tkn.near,
+ALBERTEINSTEIN,token,alberteinstein.tkn.near,
+LWN,token,lwn.tkn.near,
+PLY,token,ply.tkn.near,
+OOPS,token,oops.tkn.near,
+KING,token,king.tkn.near,
+wNEAR@150,token,wnear-150-0000.wentokensir.near,
+wNEAR@40,token,wnear-40-0000.wentokensir.near,
+MARTINLUTHERKINGJR,token,martinlutherkingjr.tkn.near,
+KOTYA,token,kotya.tkn.near,
+OTDAI,token,otdai.tkn.near,
+RHOC,token,168296bb09e24a88805cb9c33356536b980d3fc5.factory.bridge.near,
+TEAJS,token,teajsc.near,
+ODY,token,ody.tkn.near,
+DAO,token,0f51bb10119727a7e5ea3538074fb341f56b09ad.factory.bridge.near,
+TRIBE,token,tribe.tkn.near,
+MFOX,token,ft.metafoxonry.near,
+BEPRO,token,cf3c8be2e2c42331da80ef210e9b1b307c03d36a.factory.bridge.near,
+NVRS,token,9b204442fe63137a47930b78976c4f1a7c34d555e46fb51f614d0801520cac01,
+NVRS,token,rocket-staking.near,
+$NTV,token,nativo-token.near,
+LTS,token,ce84ee6aa2d3d84325c528b25a248b50c5edad68.factory.bridge.near,
+APYS,token,apys.token.a11bd.near,
+DISC,token,discovol-token.near,
+NearX,token,nearx-rc-1.staderlabs-test.near,
+SD,token,30d20208d987713f46dfd34ef128bb16c404d10f.factory.bridge.near,
+DATA,token,data.tkn.near,
+LUNA,token,luna.token.a11bd.near,
+marmaj,token,marmaj.tkn.near,
+GTC,token,de30da39c46104798bb5aa3fe8b9e0e1f348163f.factory.bridge.near,
+PULSE,token,52a047ee205701895ee06a375492490ec9c597ce.factory.bridge.near,
+DAI,token,6b175474e89094c44da98b954eedeac495271d0f.factory.bridge.near,
+FLX,token,3ea8ea4237344c9931214796d9417af1a1180770.factory.bridge.near,
+WBTC,token,2260fac5e5542a773aa44fbcfedf7c193bc2c599.factory.bridge.near,
+AURORA,token,aaaaaa20d9e0e2461697782ef11675f668207961.factory.bridge.near,
+CHICA,token,token.bocachica_mars.near,
+Croncat,devtooling,manager_v1.croncat.near,TRUE
+Quizchain,devtooling,quizchain.near,TRUE
+Exchanges,Uncategorized,5c33c6218d47e00ef229f60da78d0897e1ee9665312550b8afd5f9c7bc6957d2,
+Exchanges,Uncategorized,d73888a2619c7761735f23c798536145dfa87f9306b5f21275eb4b1a7ba971b9,
+Exchanges,Uncategorized,4b8a5f175fe1df178782f8c28ef71ad55363b5eddee1b525574fec447ff8a96c,
+Exchanges,Uncategorized,1e6ef8464ce09f96c6fc22583ead00fa0b65119128daa9732366d2a2e856e960,
+Exchanges,Uncategorized,423df0a6640e9467769c55a573f15b9ee999dc8970048959c72890abf5cc3a8e,
+Exchanges,Uncategorized,d93f6f23f55e5a4723e4c4dd063233947bb124d58ef948f6fab04a582e046c00,
+Exchanges,Uncategorized,2937e06f4ef2ad010c922bf7527cdaa9070a202a29f416f02f0138af2f3a9b72,
+SPIN,Uncategorized,v1.vault.spin-fi.near,
+Jump Finance,Uncategorized,jumptoken.jumpfinance.near,
+Jump Finance,Uncategorized,jumphunter.near,
+Jump Finance,Uncategorized,lockedjumptoken.jumpfinance.near,
+Jump Finance,Uncategorized,xjumptoken.jumpfinance.near,
+Realis Network,Uncategorized,token.v1.realisnetwork.near,
+Neko,Uncategorized,stake.nekotoken.near,
+Pembrock,Uncategorized,rewards.v1.pembrock.near,
+Playible,Uncategorized,game.basketball.playible.near,
+Playible,Uncategorized,athlete.basketball.playible.near,
+Playible,Uncategorized,athlete.promotional.basketball.playible.near,
+devgovgigs,Uncategorized,devgovgigs.near,
+Bodega Lab,Uncategorized,citizen.bodega-lab.near,
+Beavers,Uncategorized,bearversegame_wallet.near,
+LazyFI,Uncategorized,app-rewards.lazyfi-wallet.near.near,
+LazyFI,Uncategorized,app-rewards.lazyfi-wallet.near,
+Bearverse,Uncategorized,bvrs_the_last_winter.near,
+Marble DAO,Uncategorized,artex.marbledao.near,
+Marble DAO,Uncategorized,dex.marbledex.near,
+Marble DAO,Uncategorized,farming.marbledex.near,
+dAngel Fund,Uncategorized,token.dangelfund.near,
+ASAC,Uncategorized,asac.marketplaces.near,
+El Cafe Cartel,Uncategorized,staking.elcafecartel.near,
+Boca Chica,Uncategorized,launchpad.bocachica_mars.near,
+Megapont,Uncategorized,megapont.marketplaces.near,
+Bitverse,Uncategorized,Bitverse_games.near,
+Sweat Economy,Uncategorized,e589457354361489a89039b8be6737cbc2db4d13919b6ccf23889a60f3b0d8f3,
+Sweat Economy,Uncategorized,ccb91e1db61e8d7e1d4ae3e043001140132959a86ee35a548b6563a46284a6ea,
+Few and Far,Uncategorized,onboarding.wallets.fewandfar.near,
+Few and Far,Uncategorized,royalties.fewandfar.near,
+Few and Far,Uncategorized,fnf-club.collections.fewandfar.near,
+Few and Far,Uncategorized,auth.fewandfar.near,
+SeatLab,Uncategorized,tickets.stlb.near,
+SeatLab,Uncategorized,collectables.stlb.near,
+social.near,Uncategorized,NEAR Social,
+NEAR Crowd,Uncategorized,mdteam.near,
+Learn NEAR Club,Uncategorized,referralnft.learnclub.near,
+Learn NEAR Club,Uncategorized,redeem.learnclub.near,
+Learn NEAR Club,Uncategorized,referral.learnclub.near,
+,validator,atomic-nodes.poolv1.near,
+,validator,nearcrowd.poolv1.near,
+,validator,2pilot.poolv1.near,
+,validator,anonymous.poolv1.near,
+,validator,doubletop.poolv1.near,
+,validator,continue.poolv1.near,
+,validator,genesislab.poolv1.near,
+,validator,neardevgov.poolv1.near,
+,validator,ruziev.poolv1.near,
+,validator,chorusone.poolv1.near,
+,validator,northernlights.poolv1.near,
+,validator,dokiacapital.poolv1.near,
+,validator,usn-unofficial.pool.near,
+,validator,pandora.poolv1.near,
+,validator,synclub.poolv1.near,
+,validator,twinstake.poolv1.near,
+,validator,figment.poolv1.near,
+,validator,ideocolabventures.poolv1.near,
+,validator,p2pstaking.poolv1.near,
+,validator,bisontrails.poolv1.near,
+,validator,gfs-ventures.poolv1.near,
+,validator,dsrvlabs.poolv1.near,
+,validator,hapi.poolv1.near,
+,validator,shardlabs.poolv1.near,
+,validator,satori.poolv1.near,
+,validator,yes_protocol1.poolv1.near,
+,validator,stake1.poolv1.near,
+,validator,4ire.poolv1.near,
+,validator,dqw9k3e4422cxt92masmy.poolv1.near,
+,validator,staking_opp_disc.poolv1.near,
