@@ -27,10 +27,7 @@ dates AS (
     SELECT
         date_day
     FROM
-        {{ source(
-            'crosschain',
-            'dim_dates'
-        ) }}
+        {{ ref('silver__dates') }}
     WHERE
         date_day >= '2020-08-25'
         AND date_day < CURRENT_DATE
