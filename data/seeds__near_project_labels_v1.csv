@@ -1,4 +1,4 @@
-Project Name,Category,Wallet Address,Enabled
+Project_Name,Category,Wallet_Address,Enabled
 AssetDash,analytics,assetdash.near,TRUE
 Defy Trends,analytics,defytrends.near,TRUE
 NearBlocks,analytics,anthromachine.near,TRUE
