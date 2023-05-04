@@ -63,6 +63,14 @@ $$
         }
 
         snowflake.execute({sqlText: `GRANT OWNERSHIP ON DATABASE ${DESTINATION_DB_NAME} TO ROLE ${ROLE_NAME};`})
+
+            var existing_tags = snowflake.execute({sqlText: `SHOW TAGS IN DATABASE ${DESTINATION_DB_NAME};`});
+        while (existing_tags.next()) {
+            var schema = existing_tags.getColumnValue(4);
+            var tag_name = existing_tags.getColumnValue(2)
+            snowflake.execute({sqlText: `GRANT OWNERSHIP ON TAG ${DESTINATION_DB_NAME}.${schema}.${tag_name} TO ROLE ${ROLE_NAME} COPY CURRENT GRANTS;`});
+        }
+        
         snowflake.execute({sqlText: `COMMIT;`});
     } catch (err) {
         snowflake.execute({sqlText: `ROLLBACK;`});
