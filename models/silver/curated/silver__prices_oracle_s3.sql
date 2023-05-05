@@ -6,12 +6,18 @@
     tags = ['curated']
 ) }}
 
-WITH txs AS (
+WITH token_labels AS (
 
     SELECT
         *
     FROM
-        {{ ref('silver__streamline_transactions_final') }}
+        {{ ref('silver__token_labels') }}
+),
+events_function_call AS (
+    SELECT
+        *
+    FROM
+        {{ ref('silver__actions_events_function_call_s3') }}
 
         {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
         WHERE
@@ -21,42 +27,12 @@ WITH txs AS (
             {{ incremental_load_filter('_load_timestamp') }}
         {% endif %}
 ),
-token_labels AS (
-    SELECT
-        *
-    FROM
-        {{ ref('silver__token_labels') }}
-),
-oracle_msgs AS (
-    SELECT
-        block_id,
-        tx_hash,
-        block_timestamp,
-        tx_receiver,
-        ARRAY_SIZE(
-            tx :actions
-        ) AS actions_len,
-        tx :actions [0] :FunctionCall :method_name :: STRING AS method_name,
-        TRY_PARSE_JSON(
-            TRY_BASE64_DECODE_STRING(
-                tx :actions [0] :FunctionCall :args
-            )
-        ) AS response,
-        tx,
-        _load_timestamp
-    FROM
-        txs
-    WHERE
-        tx_receiver = 'priceoracle.near'
-        AND method_name = 'report_prices'
-),
 prices AS (
     SELECT
         block_id,
         tx_hash,
         block_timestamp,
-        tx_receiver,
-        actions_len,
+        receiver_id,
         INDEX,
         VALUE :asset_id :: STRING AS token_contract,
         VALUE :price :multiplier :: DOUBLE AS raw_price,
@@ -64,13 +40,16 @@ prices AS (
             WHEN token_contract IN ('4691937a7508860f876c9c0a2a617e7d9e945d4b.factory.bridge.near') THEN 6
             WHEN token_contract IN (
                 'aaaaaa20d9e0e2461697782ef11675f668207961.factory.bridge.near'
-            ) THEN 5
+            )
+            AND block_id > 77644611 THEN 5
             WHEN token_contract IN (
                 '2260fac5e5542a773aa44fbcfedf7c193bc2c599.factory.bridge.near'
-            ) and block_id > 77644611 THEN 2
+            )
+            AND block_id > 77644611 THEN 2
             WHEN token_contract IN (
                 '2260fac5e5542a773aa44fbcfedf7c193bc2c599.factory.bridge.near'
-            ) and len(raw_price) < 9 THEN 2
+            )
+            AND len(raw_price) < 9 THEN 2
             ELSE 4
         END AS decimals,
         raw_price / pow(
@@ -79,24 +58,25 @@ prices AS (
         ) AS price_usd,
         _load_timestamp
     FROM
-        oracle_msgs,
+        events_function_call,
         LATERAL FLATTEN(
-            input => response :prices
+            input => args :prices
         )
+    WHERE
+        method_name = 'report_prices'
 ),
-add_labels AS (
+FINAL AS (
     SELECT
         p.block_id,
         p.tx_hash,
         p.block_timestamp,
-        p.actions_len,
         p.index,
         l.token,
         l.symbol,
         p.token_contract,
         p.raw_price,
         p.price_usd,
-        p.tx_receiver AS source,
+        p.receiver_id AS source,
         p._load_timestamp
     FROM
         prices p
@@ -105,6 +85,6 @@ add_labels AS (
 SELECT
     *
 FROM
-    add_labels
+    FINAL
 WHERE
     token_contract != 'aurora'
