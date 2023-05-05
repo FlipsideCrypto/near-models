@@ -20,6 +20,6 @@ SELECT
     category,
     wallet_address,
     enabled,
-    'Near Foundation' AS source
+    'Near Foundation' AS creator
 FROM
     labels

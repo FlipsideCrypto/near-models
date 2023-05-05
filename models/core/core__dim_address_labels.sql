@@ -16,7 +16,7 @@ WITH flipside_labels AS (
         label_subtype,
         l1_label,
         l2_label,
-        creator AS source
+        creator
     FROM
         {{ ref('silver__address_labels') }}
 ),
@@ -31,7 +31,7 @@ nf_labels AS (
         NULL AS label_subtype,
         NULL AS l1_label,
         NULL AS l2_label,
-        source
+        creator
     FROM
         {{ ref('silver__foundation_labels') }}
 ),
