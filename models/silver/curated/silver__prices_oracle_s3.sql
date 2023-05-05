@@ -65,7 +65,7 @@ prices AS (
     WHERE
         method_name = 'report_prices'
 ),
-add_labels AS (
+FINAL AS (
     SELECT
         p.block_id,
         p.tx_hash,
@@ -85,6 +85,6 @@ add_labels AS (
 SELECT
     *
 FROM
-    add_labels
+    FINAL
 WHERE
     token_contract != 'aurora'
