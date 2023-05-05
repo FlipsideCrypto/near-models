@@ -1,7 +1,8 @@
 {{ config(
     materialized = 'incremental',
     unique_key = 'address',
-    cluster_by = 'address'
+    cluster_by = 'address',
+    tags = ['labels']
 ) }}
 
 WITH address_labels AS (
