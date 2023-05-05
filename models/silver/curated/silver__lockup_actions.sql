@@ -1,14 +1,48 @@
 {{ config(
     materialized = 'incremental',
-    unique_key = 'tx_hash'
+    unique_key = 'tx_hash',
+    tags = ['curated'],
 ) }}
 
-WITH lockup_actions AS (
+WITH txs AS (
 
     SELECT
-        *
+        tx_hash,
+        tx_status,
+        _load_timestamp,
+        _partition_by_block_number
+    FROM
+        {{ ref('silver__streamline_transactions_final') }}
+
+        {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
+        WHERE
+            {{ partition_load_manual('no_buffer') }}
+        {% else %}
+        WHERE
+            {{ incremental_load_filter('_load_timestamp') }}
+        {% endif %}
+),
+lockup_actions AS (
+    SELECT
+        fc.tx_hash,
+        fc.action_id,
+        SPLIT(
+            fc.action_id,
+            '-'
+        ) [0] :: STRING AS receipt_object_id,
+        fc.block_timestamp,
+        fc.block_id,
+        fc.signer_id,
+        fc.receiver_id,
+        fc.args,
+        fc.deposit,
+        fc.method_name,
+        fc._load_timestamp,
+        fc._partition_by_block_number
     FROM
         {{ ref('silver__actions_events_function_call_s3') }}
+        fc
+        LEFT JOIN txs USING (tx_hash)
     WHERE
         (
             receiver_id = 'lockup.near'
@@ -18,11 +52,12 @@ WITH lockup_actions AS (
             'on_lockup_create',
             'create',
             'new'
-        ) 
-        and tx_hash not in (
+        )
+        AND tx_hash NOT IN (
             'Ez6rNL3fP62c4nMroYUmjVR4MbqEeVoL6RzmuajGQrkS',
             'TcCm1jzMFnwgAT3Wh2Qr1n2tR7ZVXKcv3ThKbXAhe7H'
         )
+        AND tx_status != 'Fail' 
         {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
             AND {{ partition_load_manual('no_buffer') }}
         {% else %}
@@ -31,7 +66,17 @@ WITH lockup_actions AS (
 ),
 lockup_xfers AS (
     SELECT
-        *
+        tx_hash,
+        action_id,
+        SPLIT(
+            action_id,
+            '-'
+        ) [0] :: STRING AS receipt_object_id,
+        block_timestamp,
+        block_id,
+        deposit,
+        _load_timestamp,
+        _partition_by_block_number
     FROM
         {{ ref('silver__transfers_s3') }}
     WHERE
@@ -40,25 +85,13 @@ lockup_xfers AS (
                 DISTINCT tx_hash
             FROM
                 lockup_actions
-        ) {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
+        ) 
+        {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
             AND {{ partition_load_manual('no_buffer') }}
         {% else %}
             AND {{ incremental_load_filter('_load_timestamp') }}
         {% endif %}
 ),
-tx_status as (
-    select
-    tx_hash,
-    tx_status,
-    _load_timestamp
-    _partition_by_block_number
-    from {{ref('silver__streamline_transactions_final')}}
-    {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
-            WHERE {{ partition_load_manual('no_buffer') }}
-        {% else %}
-            WHERE {{ incremental_load_filter('_load_timestamp') }}
-        {% endif %}
-)
 method_on_lockup_create AS (
     SELECT
         tx_hash,
@@ -95,7 +128,9 @@ method_create AS (
         args :owner_account_id :: STRING AS owner_account_id,
         args :lockup_duration :: STRING AS lockup_duration,
         args :lockup_timestamp :: STRING AS lockup_timestamp,
-        TO_TIMESTAMP_NTZ(args :lockup_timestamp) AS lockup_timestamp_ntz,
+        TO_TIMESTAMP_NTZ(
+            args :lockup_timestamp
+        ) AS lockup_timestamp_ntz,
         args :vesting_schedule :: STRING AS vesting_schedule,
         args :release_duration :: STRING AS release_duration,
         _load_timestamp,
@@ -123,21 +158,16 @@ method_early_new AS (
         args :owner_account_id :: STRING AS owner_account_id,
         args :lockup_duration :: STRING AS lockup_duration,
         args :lockup_timestamp :: STRING AS lockup_timestamp,
-        TO_TIMESTAMP_NTZ(args :lockup_timestamp) AS lockup_timestamp_ntz,
+        TO_TIMESTAMP_NTZ(
+            args :lockup_timestamp
+        ) AS lockup_timestamp_ntz,
         args :vesting_schedule :: STRING AS vesting_schedule,
         args :release_duration :: STRING AS release_duration,
         fc._load_timestamp,
         fc._partition_by_block_number
     FROM
         lockup_actions fc
-        LEFT JOIN near.silver.transfers_s3 xf
-        ON SPLIT(
-            fc.action_id,
-            '-'
-        ) [0] :: STRING = SPLIT(
-            xf.action_id,
-            '-'
-        ) [0] :: STRING
+        LEFT JOIN lockup_xfers xf USING (receipt_object_id)
     WHERE
         signer_id = 'lockup.near'
         AND method_name = 'new'
