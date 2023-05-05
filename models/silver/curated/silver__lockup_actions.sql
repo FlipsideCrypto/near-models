@@ -26,6 +26,7 @@ method_on_lockup_create AS (
     SELECT
         tx_hash,
         block_timestamp,
+        block_id,
         signer_id,
         args,
         args :attached_deposit :: DOUBLE * 1e-24 AS deposit,
@@ -41,6 +42,7 @@ method_create AS (
     SELECT
         tx_hash,
         block_timestamp,
+        block_id,
         signer_id,
         deposit * 1e-24 AS deposit,
         args,
@@ -61,6 +63,7 @@ FINAL AS (
     SELECT
         olc.tx_hash,
         olc.block_timestamp,
+        olc.block_id,
         olc.signer_id,
         C.deposit,
         olc.lockup_account_id,
