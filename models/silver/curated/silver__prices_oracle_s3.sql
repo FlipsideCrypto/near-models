@@ -13,6 +13,20 @@ WITH token_labels AS (
     FROM
         {{ ref('silver__token_labels') }}
 ),
+events_function_call AS (
+    SELECT
+        *
+    FROM
+        {{ ref('silver__actions_events_function_call_s3') }}
+
+        {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
+        WHERE
+            {{ partition_load_manual('no_buffer') }}
+        {% else %}
+        WHERE
+            {{ incremental_load_filter('_load_timestamp') }}
+        {% endif %}
+),
 prices AS (
     SELECT
         block_id,
@@ -44,7 +58,7 @@ prices AS (
         ) AS price_usd,
         _load_timestamp
     FROM
-        {{ ref('silver__actions_events_function_call_s3') }},
+        events_function_call,
         LATERAL FLATTEN(
             input => args :prices
         )
