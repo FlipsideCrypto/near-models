@@ -52,5 +52,5 @@ FROM
     FINAL qualify ROW_NUMBER() over (
         PARTITION BY address
         ORDER BY
-            source
+            creator
     ) = 1
