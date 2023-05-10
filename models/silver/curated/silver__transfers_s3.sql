@@ -11,7 +11,9 @@ WITH action_events AS(
   SELECT
     tx_hash,
     action_id,
-    action_data :deposit :: INT AS deposit
+    action_data :deposit :: INT AS deposit,
+    _load_timestamp,
+    _partition_by_block_number
   FROM
     {{ ref('silver__actions_events_s3') }}
   WHERE
@@ -36,7 +38,8 @@ txs AS (
       WHEN tx :receipt [0] :outcome :status :: STRING = '{"SuccessValue":""}' THEN TRUE
       ELSE FALSE
     END AS status,
-    _load_timestamp
+    _load_timestamp,
+    _partition_by_block_number
   FROM
     {{ ref('silver__streamline_transactions_final') }}
 
@@ -75,7 +78,8 @@ actions AS (
     t.transaction_fee,
     t.gas_used,
     t.status,
-    t._load_timestamp
+    t._load_timestamp,
+    t._partition_by_block_number
   FROM
     txs AS t
     INNER JOIN receipts AS r
@@ -96,7 +100,8 @@ FINAL AS (
     transaction_fee,
     gas_used,
     status,
-    _load_timestamp
+    _load_timestamp,
+    _partition_by_block_number
   FROM
     actions
 )
