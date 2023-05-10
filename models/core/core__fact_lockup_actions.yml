@@ -1,46 +1,68 @@
 version: 2
 
 models:
-  - name: silver__lockup_actions
+  - name: core__fact_lockup_actions
     description: |-
       This table records all disbursements by the contract lockup.near.
 
     columns:
       - name: TX_HASH
         description: "{{ doc('tx_hash')}}"
-        tests: 
-          - not_null:
-              where: _load_timestamp <= current_timestamp - interval '2 hours'
 
       - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp')}}"
-        tests:
-          - not_null:
-              where: _load_timestamp <= current_timestamp - interval '2 hours'
 
       - name: BLOCK_ID
         description: "{{ doc('block_id')}}"
 
       - name: DEPOSIT
         description: "{{ doc('deposit')}}"
+        tests: 
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - DOUBLE
+                - FLOAT
+                - NUMBER
 
       - name: LOCKUP_ACCOUNT_ID
         description: "{{ doc('lockup_account_id')}}"
+        tests: 
+          - not_null
 
       - name: OWNER_ACCOUNT_ID
         description: "{{ doc('owner_account_id')}}"
+        tests: 
+          - not_null
 
       - name: LOCKUP_DURATION
         description: "{{ doc('lockup_duration')}}"
+        tests: 
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - VARCHAR
 
       - name: LOCKUP_TIMESTAMP
         description: "{{ doc('lockup_timestamp')}}"
+        tests: 
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - VARCHAR
 
       - name: LOCKUP_TIMESTAMP_NTZ
         description: "{{ doc('lockup_timestamp_ntz')}}"
+        tests: 
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
 
       - name: RELEASE_DURATION
         description: "{{ doc('release_duration')}}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - VARCHAR
 
       - name: VESTING_SCHEDULE
         description: "{{ doc('vesting_schedule')}}"
@@ -48,8 +70,3 @@ models:
       - name: TRANSFERS_INFORMATION
         description: "{{ doc('transfers_information')}}"
         
-      - name: _LOAD_TIMESTAMP
-        description: "{{ doc('_load_timestamp')}}"
-
-      - name: _PARTITION_BY_BLOCK_NUMBER
-        description: "{{ doc('_partition_by_block_number')}}"
