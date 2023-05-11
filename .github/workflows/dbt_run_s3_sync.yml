@@ -16,7 +16,7 @@ env:
   PASSWORD: "${{ secrets.PASSWORD }}"
   REGION: "${{ vars.REGION }}"
   DATABASE: "${{ vars.DATABASE }}"
-  WAREHOUSE: "NEAR_S3_SYNC"
+  WAREHOUSE: NEAR_S3_SYNC
   SCHEMA: "${{ vars.SCHEMA }}"
 
 jobs:
