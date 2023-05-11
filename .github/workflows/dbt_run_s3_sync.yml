@@ -16,7 +16,7 @@ env:
   PASSWORD: "${{ secrets.PASSWORD }}"
   REGION: "${{ vars.REGION }}"
   DATABASE: "${{ vars.DATABASE }}"
-  WAREHOUSE: "${{ vars.WAREHOUSE }}"
+  WAREHOUSE: "NEAR_S3_SYNC"
   SCHEMA: "${{ vars.SCHEMA }}"
 
 jobs:
@@ -26,5 +26,5 @@ jobs:
       dbt_command: >
         dbt run --vars {"S3_LOOKBACK_HOURS":-6} -m models/silver/streamline/streamline__s3_sync.sql
       environment: workflow_prod
-      warehouse: ${{ vars.WAREHOUSE }}
+      warehouse: "NEAR_S3_SYNC"
     secrets: inherit
