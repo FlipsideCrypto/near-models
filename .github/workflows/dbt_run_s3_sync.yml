@@ -26,5 +26,5 @@ jobs:
       dbt_command: >
         dbt run --vars {"S3_LOOKBACK_HOURS":-6} -m models/silver/streamline/streamline__s3_sync.sql
       environment: workflow_prod
-      warehouse: "NEAR_S3_SYNC"
+      warehouse: NEAR_S3_SYNC
     secrets: inherit
