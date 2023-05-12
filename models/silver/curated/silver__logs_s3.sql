@@ -55,6 +55,6 @@ SELECT
     block_id,
     block_timestamp,
     _load_timestamp,
-    _partition_by_block_number,
+    _partition_by_block_number
 FROM
     FINAL
