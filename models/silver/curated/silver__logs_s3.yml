@@ -1,0 +1,69 @@
+version: 2
+
+models:
+  - name: silver__logs_s3
+    description: |-
+      This table extracts all logs from receipts and decodes the arguments for easy use.
+
+    columns:
+      - name: ACTION_ID
+        description: "{{ doc('action_id')}}"
+
+      - name: TX_HASH
+        description: "{{ doc('tx_hash')}}"
+        tests:
+          - not_null:
+              where: _load_timestamp <= current_timestamp - interval '2 hours'
+
+      - name: RECEIPT_OBJECT_ID
+        description: "{{ doc('receipt_object_id')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: BLOCK_ID
+        description: "{{ doc('block_id')}}"
+
+      - name: BLOCK_TIMESTAMP
+        description: "{{ doc('block_timestamp')}}"
+
+      - name: RECEIVER_ID
+        description: "{{ doc('receiver_id')}}"
+
+      - name: SIGNER_ID
+        description: "{{ doc('signer_id')}}"
+
+      - name: _PARTITION_BY_BLOCK_NUMBER
+        description: "{{ doc('_partition_by_block_number')}}"
+
+      - name: _LOAD_TIMESTAMP
+        description: "{{ doc('_load_timestamp')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
+          - dbt_expectations.expect_row_values_to_have_recent_data:
+              datepart: day
+              interval: 1
+
+      - name: CLEAN_LOG
+        description: "{{ doc('clean_log')}}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+                - OBJECT
+                - ARRAY
+
+      - name: IS_STANDARD
+        description: "{{ doc('is_standard')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - BOOLEAN
