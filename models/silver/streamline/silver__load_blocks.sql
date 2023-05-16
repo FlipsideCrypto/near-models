@@ -23,7 +23,7 @@ WITH blocks_json AS (
             {{ partition_load_manual('no_buffer') }}
             AND block_id IN (
                 SELECT
-                    block_id - 1
+                    missing_block_id
                 FROM
                     {{ target.database }}.tests.streamline_block_gaps
             )
