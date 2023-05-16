@@ -31,6 +31,18 @@ receipts AS (
             {{ incremental_load_filter('_load_timestamp') }}
         {% endif %}
 ),
+tx AS (
+    SELECT
+        *
+    FROM
+        {{ ref('silver__streamline_transactions_final') }}
+    WHERE
+        {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
+            {{ partition_load_manual('no_buffer') }}
+        {% else %}
+            {{ incremental_load_filter('_load_timestamp') }}
+        {% endif %}
+),
 standard_logs AS (
     SELECT
         action_id,
@@ -60,8 +72,6 @@ nft_events AS (
     WHERE
         STANDARD = 'nep171' -- nep171 nft STANDARD, version  nep245 IS multitoken STANDARD,  nep141 IS fungible token STANDARD
         AND event = 'nft_mint'
-    ORDER BY
-        block_timestamp DESC
 ),
 raw_mint_events AS (
     SELECT
@@ -77,7 +87,7 @@ raw_mint_events AS (
         INDEX AS batch_index,
         ARRAY_SIZE(
             DATA :: ARRAY
-        ) AS owner_per_txns,
+        ) AS owner_per_tx,
         VALUE :owner_id :: STRING AS owner_id,
         VALUE :token_ids :: ARRAY AS tokens,
         TRY_PARSE_JSON(
@@ -88,8 +98,6 @@ raw_mint_events AS (
         LATERAL FLATTEN(
             input => DATA
         )
-    ORDER BY
-        block_timestamp DESC
 ),
 mint_events AS (
     SELECT
@@ -101,16 +109,16 @@ mint_events AS (
         signer_id,
         _LOAD_TIMESTAMP,
         _PARTITION_BY_BLOCK_NUMBER,
-        owner_per_txns,
+        owner_per_tx,
         batch_index,
         owner_id,
         tokens,
         memo,
         INDEX AS token_index,
         ARRAY_SIZE(
-            tokens :: ARRAY
-        ) AS mint_per_txns,
-        VALUE AS token_id,
+            tokens
+        ) AS mint_per_tx,
+        VALUE : STRING AS token_id,
         concat_ws(
             '-',
             receipt_object_id,
@@ -133,7 +141,7 @@ mint_receipts AS (
         gas_burnt / pow(
             10,
             16
-        ) AS mint_fee -- // Tgas
+        ) AS gas_burnt -- // Tgas
     FROM
         receipts
     WHERE
@@ -143,30 +151,51 @@ mint_receipts AS (
             FROM
                 mint_events
         )
+),
+mint_tx AS (
+    SELECT
+        tx_hash,
+        tx_signer,
+        tx_receiver,
+        tx_status
+    FROM
+        tx
+    WHERE
+        tx_hash IN (
+            SELECT
+                DISTINCT tx_hash
+            FROM
+                mint_events
+        )
 )
+
 SELECT
     mint_events.action_id,
     mint_events.tx_hash,
-    mint_events.receipt_object_id,
     mint_events.block_id,
     mint_events.block_timestamp,
+    mint_events._LOAD_TIMESTAMP,
+    mint_tx.tx_signer AS tx_signer,
+    mint_tx.tx_receiver AS tx_receiver,
+    mint_tx.tx_status AS tx_status,
+    mint_events.receipt_object_id,
     mint_events.receiver_id,
     mint_events.signer_id,
-    mint_events._LOAD_TIMESTAMP,
     mint_events._PARTITION_BY_BLOCK_NUMBER,
-    mint_events.owner_per_txns,
     mint_events.owner_id,
+    mint_events.token_id as nft_id,
     mint_events.memo,
-    mint_events.mint_per_txns,
-    mint_events.token_id,
+    mint_events.owner_per_tx,
+    mint_events.mint_per_tx,
     (
-        mint_receipts.mint_fee / (
-            owner_per_txns * mint_per_txns
+        mint_receipts.gas_burnt / (
+            owner_per_tx * mint_per_tx
         )
-    ) :: FLOAT AS mint_fee
+    ) :: FLOAT AS gas_burnt
 FROM
     mint_events
     LEFT JOIN mint_receipts
     ON mint_events.receipt_object_id = mint_receipts.receipt_id
-ORDER BY
-    block_timestamp DESC
+    LEFT JOIN mint_tx
+    ON mint_events.tx_hash = mint_tx.tx_hash
+
