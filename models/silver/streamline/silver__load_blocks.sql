@@ -18,14 +18,19 @@ WITH blocks_json AS (
     FROM
         {{ ref('bronze__streamline_blocks') }}
 
-    {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
-    WHERE
-        {{ partition_load_manual('no_buffer') }}
-    {% else %}
-    WHERE
-        {{ partition_batch_load(150000) }}
-    {% endif %}
-
+        {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
+        WHERE
+            {{ partition_load_manual('no_buffer') }}
+            AND block_id IN (
+                SELECT
+                    missing_block_id
+                FROM
+                    {{ target.database }}.tests.streamline_block_gaps
+            )
+        {% else %}
+        WHERE
+            {{ partition_batch_load(150000) }}
+        {% endif %}
 )
 SELECT
     *

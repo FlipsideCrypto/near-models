@@ -6,6 +6,7 @@ WITH silver_blocks AS (
 
   SELECT
     block_id,
+    block_id - 1 as missing_block_id,
     block_timestamp,
     block_hash,
     prev_hash,

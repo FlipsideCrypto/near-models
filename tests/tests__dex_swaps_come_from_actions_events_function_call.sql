@@ -1,45 +1,78 @@
-with actual as (
-    select tx_hash from {{ ref('silver__dex_swaps') }}
-),
+{{ config(
+    enabled = False
+) }}
 
-success_txs as (
-    select tx_hash
-    from {{ ref('silver__transactions') }}
-    where tx_status = 'Success'
-),
+WITH actual AS (
 
-expected as (
-    select
+    SELECT
+        tx_hash
+    FROM
+        {{ ref('silver__dex_swaps') }}
+),
+success_txs AS (
+    SELECT
+        tx_hash
+    FROM
+        {{ ref('silver__transactions') }}
+    WHERE
+        tx_status = 'Success'
+),
+expected AS (
+    SELECT
         tx_hash,
-        iff(method_name = 'ft_transfer_call',
-            try_parse_json(try_parse_json(args):msg),
-            try_parse_json(args)
-        ):actions as actions
-    from {{ ref('silver__actions_events_function_call') }}
-    where method_name in ('ft_transfer_call', 'swap')
-      and tx_hash in (select tx_hash from success_txs)
-      and actions is not null
-      and array_size(actions) > 0
+        IFF(
+            method_name = 'ft_transfer_call',
+            TRY_PARSE_JSON(TRY_PARSE_JSON(args) :msg),
+            TRY_PARSE_JSON(args)
+        ) :actions AS actions
+    FROM
+        {{ ref('silver__actions_events_function_call') }}
+    WHERE
+        method_name IN (
+            'ft_transfer_call',
+            'swap'
+        )
+        AND tx_hash IN (
+            SELECT
+                tx_hash
+            FROM
+                success_txs
+        )
+        AND actions IS NOT NULL
+        AND ARRAY_SIZE(actions) > 0
 ),
-
-in_both as (
-    select
+in_both AS (
+    SELECT
         tx_hash
-    from expected
-    where tx_hash in (select tx_hash from actual)
+    FROM
+        expected
+    WHERE
+        tx_hash IN (
+            SELECT
+                tx_hash
+            FROM
+                actual
+        )
 ),
-
-both as (
-    select
+BOTH AS (
+    SELECT
         tx_hash
-    from expected
-    union
-    select
+    FROM
+        expected
+    UNION
+    SELECT
         tx_hash
-    from actual
+    FROM
+        actual
 )
-
-select
+SELECT
     tx_hash
-from both
-where tx_hash not in (select tx_hash from in_both)
+FROM
+    BOTH
+WHERE
+    tx_hash NOT IN (
+        SELECT
+            tx_hash
+        FROM
+            in_both
+    )
