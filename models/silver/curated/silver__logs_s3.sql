@@ -54,6 +54,7 @@ SELECT
     tx_hash,
     receipt_object_id,
     block_id,
+    gas_burnt,
     block_timestamp,
     _load_timestamp,
     _partition_by_block_number
