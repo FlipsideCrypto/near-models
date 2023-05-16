@@ -1,13 +1,15 @@
 version: 2
 
 models:
-  - name: silver__standard_nft_mints_s3
+  - name: silver__standard_nft_mint_s3
     description: |-
       This table records all the nft mints transfer in the near db following Nears standard
 
     columns:
       - name: RECEIPT_OBJECT_ID
         description: "{{ doc('receipt_object_id')}}"
+        tests:
+          - not_null
 
       - name: BLOCK_ID
         description: "{{ doc('block_id')}}"
@@ -32,11 +34,8 @@ models:
       - name: _PARTITION_BY_BLOCK_NUMBER
         description: "{{ doc('_partition_by_block_number') }}"
 
-      - name: OWNER_PER_TRX
-        description: "{{ doc('owner_per_trx') }}"
-
-      - name: BATCH_INDEX
-        description: "{{ doc('batch_index') }}"
+      - name: OWNER_PER_TXN
+        description: "{{ doc('owner_per_txn') }}"
 
       - name: OWNER_ID
         description: "{{ doc('owner_id') }}"
@@ -44,14 +43,11 @@ models:
       - name: MEMO
         description: "{{ doc('memo') }}"
 
-      - name: TOKEN_INDEX
-        description: "{{ doc('token_index') }}"
-
-      - name: MINT_PER_TRX
-        description: "{{ doc('mint_per_trx') }}"
+      - name: MINT_PER_TXN
+        description: "{{ doc('mint_per_txn') }}"
 
       - name: TOKEN_ID
-        description: "{{ doc('token_id') }}"
+        description: "{{ doc('nft_token_id') }}"
 
-      - name: MINT_FEES
-        description: "{{ doc('mint_fees') }}"
+      - name: MINT_FEE
+        description: "{{ doc('mint_fee') }}"

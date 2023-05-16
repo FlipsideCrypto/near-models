@@ -77,7 +77,7 @@ raw_mint_events AS (
         INDEX AS batch_index,
         ARRAY_SIZE(
             DATA :: ARRAY
-        ) AS owner_per_trx,
+        ) AS owner_per_txns,
         VALUE :owner_id :: STRING AS owner_id,
         VALUE :token_ids :: ARRAY AS tokens,
         TRY_PARSE_JSON(
@@ -101,7 +101,7 @@ mint_events AS (
         signer_id,
         _LOAD_TIMESTAMP,
         _PARTITION_BY_BLOCK_NUMBER,
-        owner_per_trx,
+        owner_per_txns,
         batch_index,
         owner_id,
         tokens,
@@ -109,7 +109,7 @@ mint_events AS (
         INDEX AS token_index,
         ARRAY_SIZE(
             tokens :: ARRAY
-        ) AS mint_per_trx,
+        ) AS mint_per_txns,
         VALUE AS token_id,
         concat_ws(
             '-',
@@ -145,6 +145,7 @@ mint_receipts AS (
         )
 )
 SELECT
+    mint_events.action_id,
     mint_events.tx_hash,
     mint_events.receipt_object_id,
     mint_events.block_id,
@@ -153,16 +154,14 @@ SELECT
     mint_events.signer_id,
     mint_events._LOAD_TIMESTAMP,
     mint_events._PARTITION_BY_BLOCK_NUMBER,
-    mint_events.owner_per_trx,
-    mint_events.batch_index,
+    mint_events.owner_per_txns,
     mint_events.owner_id,
     mint_events.memo,
-    mint_events.token_index,
-    mint_events.mint_per_trx,
+    mint_events.mint_per_txns,
     mint_events.token_id,
     (
         mint_receipts.mint_fee / (
-            owner_per_trx * mint_per_trx
+            owner_per_txns * mint_per_txns
         )
     ) :: FLOAT AS mint_fee
 FROM
