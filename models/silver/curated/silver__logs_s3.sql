@@ -31,6 +31,7 @@ FINAL AS (
         signer_id,
         _load_timestamp,
         _partition_by_block_number,
+        gas_burnt,
         INDEX AS action_index,
         COALESCE(TRY_PARSE_JSON(VALUE), TRY_PARSE_JSON(SPLIT(VALUE, 'EVENT_JSON:') [1]), VALUE :: STRING) AS clean_log,
         VALUE ILIKE 'event_json:%' AS is_standard
@@ -53,6 +54,7 @@ SELECT
     tx_hash,
     receipt_object_id,
     block_id,
+    gas_burnt,
     block_timestamp,
     _load_timestamp,
     _partition_by_block_number

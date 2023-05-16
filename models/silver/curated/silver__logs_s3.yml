@@ -33,6 +33,9 @@ models:
       - name: RECEIVER_ID
         description: "{{ doc('receiver_id')}}"
 
+      - name: GAS_BURNT
+        description: "{{ doc('gas_burnt')}}"
+
       - name: SIGNER_ID
         description: "{{ doc('signer_id')}}"
 
