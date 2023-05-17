@@ -1,4 +1,5 @@
 {% docs mint_per_tx %}
 
-Number of mint per mint funtion method
+Number of NFTs minted per `nft_mint` event called.
+
 {% enddocs %}

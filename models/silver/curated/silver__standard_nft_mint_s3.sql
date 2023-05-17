@@ -32,15 +32,11 @@ tx AS (
         {% endif %}
 ),
 function_call AS (
-
     SELECT
-    action_id,
-    TRY_PARSE_JSON(args) AS args_json,
-    method_name,
-    deposit / pow(
-        10,
-        24
-    ) AS deposit
+        action_id,
+        TRY_PARSE_JSON(args) AS args_json,
+        method_name,
+        deposit
     FROM
         {{ ref("silver__actions_events_function_call_s3") }}
     WHERE
@@ -59,10 +55,7 @@ standard_logs AS (
         block_timestamp,
         receiver_id,
         signer_id,
-        gas_burnt / pow(
-            10,
-            16
-        ) AS gas_burnt,
+        gas_burnt,
         _LOAD_TIMESTAMP,
         _PARTITION_BY_BLOCK_NUMBER,
         TRY_PARSE_JSON(clean_log) AS clean_log
@@ -83,7 +76,7 @@ nft_events AS (
         clean_log :version AS version
     FROM
         standard_logs
-    LEFT JOIN function_call
+        LEFT JOIN function_call
     ON standard_logs.action_id = function_call.action_id
     WHERE
         STANDARD = 'nep171' -- nep171 nft STANDARD, version  nep245 IS multitoken STANDARD,  nep141 IS fungible token STANDARD
@@ -119,7 +112,6 @@ raw_mint_events AS (
             input => DATA
         )
 ),
-
 mint_events AS (
     SELECT
         tx_hash,
@@ -147,7 +139,8 @@ mint_events AS (
             '-',
             receipt_object_id,
             batch_index,
-            token_index
+            token_index,
+            token_id
         ) AS action_id
     FROM
         raw_mint_events,
@@ -160,7 +153,8 @@ mint_tx AS (
         tx_hash,
         tx_signer,
         tx_receiver,
-        tx_status
+        tx_status,
+        transaction_fee
     FROM
         tx
     WHERE
@@ -171,15 +165,13 @@ mint_tx AS (
                 mint_events
         )
 )
-
 SELECT
     mint_events.action_id,
     mint_events.tx_hash,
     mint_events.block_id,
     mint_events.block_timestamp,
-    mint_events._LOAD_TIMESTAMP,
-    mint_events.args_json,
     mint_events.method_name,
+    mint_events.args_json as args,
     mint_events.deposit,
     mint_tx.tx_signer AS tx_signer,
     mint_tx.tx_receiver AS tx_receiver,
@@ -187,17 +179,15 @@ SELECT
     mint_events.receipt_object_id,
     mint_events.receiver_id,
     mint_events.signer_id,
-    mint_events._PARTITION_BY_BLOCK_NUMBER,
     mint_events.owner_id,
     mint_events.token_id,
     mint_events.memo,
     mint_events.owner_per_tx,
     mint_events.mint_per_tx,
-    (
-        mint_events.gas_burnt / (
-            owner_per_tx * mint_per_tx
-        )
-    ) :: FLOAT AS gas_burnt
+    mint_events.gas_burnt, -- gas burnt during receipt processing
+    mint_tx.transaction_fee, -- gas burnt during entire transaction processing
+    mint_events._LOAD_TIMESTAMP,
+    mint_events._PARTITION_BY_BLOCK_NUMBER
 FROM
     mint_events
     LEFT JOIN mint_tx

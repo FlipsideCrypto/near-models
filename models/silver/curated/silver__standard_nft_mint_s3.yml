@@ -3,34 +3,35 @@ version: 2
 models:
   - name: silver__standard_nft_mint_s3
     description: |-
-      This table records all the nft mints transfer in the near db following Nears standard
+      This table records all the NFT Mints per the NEP171 standard, across various methods.
 
     columns:
       - name: ACTION_ID
         description: "{{ doc('action_id') }}"
+        tests:
+          - unique:
+              where: receiver_id != 'realbirds.near'
 
       - name: TX_HASH
         description: "{{ doc('tx_hash') }}"
+        tests:
+          - not_null:
+              where: _load_timestamp <= current_timestamp - interval '2 hours'
 
       - name: BLOCK_ID
         description: "{{ doc('block_id')}}"
 
       - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp')}}"
-
-      - name: _LOAD_TIMESTAMP
-        description: "{{ doc('_load_timestamp') }}"
         tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - TIMESTAMP_NTZ
-
-      - name: ARGS_JSON
-        description: "{{ doc('args_json') }}"
+          - not_null:
+              where: _load_timestamp <= current_timestamp - interval '2 hours'
 
       - name: METHOD_NAME
         description: "{{ doc('method_name') }}"
+
+      - name: ARGS
+        description: "{{ doc('args') }}"
 
       - name: DEPOSIT
         description: "{{ doc('deposit') }}"
@@ -53,8 +54,6 @@ models:
       - name: SIGNER_ID
         description: "{{ doc('signer_id')}}"
 
-      - name: _PARTITION_BY_BLOCK_NUMBER
-        description: "{{ doc('_partition_by_block_number') }}"
 
       - name: OWNER_PER_TX
         description: "{{ doc('owner_per_tx') }}"
@@ -73,3 +72,17 @@ models:
 
       - name: GAS_BURNT
         description: "{{ doc('gas_burnt') }}"
+
+      - name: TRANSACTION_FEE
+        description: "{{ doc('transaction_fee') }}"
+
+      - name: _LOAD_TIMESTAMP
+        description: "{{ doc('_load_timestamp') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
+
+      - name: _PARTITION_BY_BLOCK_NUMBER
+        description: "{{ doc('_partition_by_block_number') }}"
