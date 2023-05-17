@@ -6,22 +6,17 @@ models:
       This table records all the nft mints transfer in the near db following Nears standard
 
     columns:
-      - name: RECEIPT_OBJECT_ID
-        description: "{{ doc('receipt_object_id')}}"
-        tests:
-          - not_null
+      - name: ACTION_ID
+        description: "{{ doc('action_id') }}"
+
+      - name: TX_HASH
+        description: "{{ doc('tx_hash') }}"
 
       - name: BLOCK_ID
         description: "{{ doc('block_id')}}"
 
       - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp')}}"
-
-      - name: RECEIVER_ID
-        description: "{{ doc('receiver_id')}}"
-
-      - name: SIGNER_ID
-        description: "{{ doc('signer_id')}}"
 
       - name: _LOAD_TIMESTAMP
         description: "{{ doc('_load_timestamp') }}"
@@ -30,6 +25,33 @@ models:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - TIMESTAMP_NTZ
+
+      - name: ARGS_JSON
+        description: "{{ doc('args_json') }}"
+
+      - name: METHOD_NAME
+        description: "{{ doc('method_name') }}"
+
+      - name: DEPOSIT
+        description: "{{ doc('deposit') }}"
+
+      - name: TX_SIGNER
+        description: "{{ doc('tx_signer') }}"
+
+      - name: TX_RECEIVER
+        description: "{{ doc('tx_receiver') }}"
+
+      - name: TX_STATUS
+        description: "{{ doc('tx_status') }}"
+
+      - name: RECEIPT_OBBJECT_ID
+        description: "{{ doc('receipt_object_id') }}"
+
+      - name: RECEIVER_ID
+        description: "{{ doc('receiver_id')}}"
+
+      - name: SIGNER_ID
+        description: "{{ doc('signer_id')}}"
 
       - name: _PARTITION_BY_BLOCK_NUMBER
         description: "{{ doc('_partition_by_block_number') }}"
