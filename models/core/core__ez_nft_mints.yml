@@ -3,7 +3,7 @@ version: 2
 models:
   - name: core__ez_nft_mints
     description: |-
-      This table records all the nft mints transfer in the near db
+      Deprecating soon! Please use the new fact_nft_mints table.
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:

@@ -1,0 +1,88 @@
+version: 2
+
+models:
+  - name: silver__standard_nft_mint_s3
+    description: |-
+      This table records all the NFT Mints per the NEP171 standard, across various methods.
+
+    columns:
+      - name: ACTION_ID
+        description: "{{ doc('action_id') }}"
+        tests:
+          - unique:
+              where: receiver_id != 'realbirds.near'
+
+      - name: TX_HASH
+        description: "{{ doc('tx_hash') }}"
+        tests:
+          - not_null:
+              where: _load_timestamp <= current_timestamp - interval '2 hours'
+
+      - name: BLOCK_ID
+        description: "{{ doc('block_id')}}"
+
+      - name: BLOCK_TIMESTAMP
+        description: "{{ doc('block_timestamp')}}"
+        tests:
+          - not_null:
+              where: _load_timestamp <= current_timestamp - interval '2 hours'
+
+      - name: METHOD_NAME
+        description: "{{ doc('method_name') }}"
+
+      - name: ARGS
+        description: "{{ doc('args') }}"
+
+      - name: DEPOSIT
+        description: "{{ doc('deposit') }}"
+
+      - name: TX_SIGNER
+        description: "{{ doc('tx_signer') }}"
+
+      - name: TX_RECEIVER
+        description: "{{ doc('tx_receiver') }}"
+
+      - name: TX_STATUS
+        description: "{{ doc('tx_status') }}"
+
+      - name: RECEIPT_OBBJECT_ID
+        description: "{{ doc('receipt_object_id') }}"
+
+      - name: RECEIVER_ID
+        description: "{{ doc('receiver_id')}}"
+
+      - name: SIGNER_ID
+        description: "{{ doc('signer_id')}}"
+
+
+      - name: OWNER_PER_TX
+        description: "{{ doc('owner_per_tx') }}"
+
+      - name: OWNER_ID
+        description: "{{ doc('owner_id') }}"
+
+      - name: MEMO
+        description: "{{ doc('memo') }}"
+
+      - name: MINT_PER_TX
+        description: "{{ doc('mint_per_tx') }}"
+
+      - name: TOKEN_ID
+        description: "{{ doc('nft_token_id') }}"
+
+      - name: GAS_BURNT
+        description: "{{ doc('gas_burnt') }}"
+
+      - name: TRANSACTION_FEE
+        description: "{{ doc('transaction_fee') }}"
+
+      - name: _LOAD_TIMESTAMP
+        description: "{{ doc('_load_timestamp') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
+
+      - name: _PARTITION_BY_BLOCK_NUMBER
+        description: "{{ doc('_partition_by_block_number') }}"

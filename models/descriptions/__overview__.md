@@ -28,6 +28,8 @@ There is more information on how to use dbt docs in the last section of this doc
 - [fact_actions_events_function_call](#!/model/model.near.core__fact_actions_events_function_call)
 - [fact_actions_events](#!/model/model.near.core__fact_actions_events)
 - [fact_blocks](#!/model/model.near.core__fact_blocks)
+- [fact_lockup_actions](#!/model/model.near.core__fact_lockup_actions)
+- [fact_nft_mints](#!/model/model.near.core__fact_nft_mints)
 - [fact_prices](#!/model/model.near.core__fact_prices)
 - [fact_receipts](#!/model/model.near.core__fact_receipts)
 - [fact_token_metadata](#!/model/model.near.core__fact_token_metadata)
@@ -37,10 +39,8 @@ There is more information on how to use dbt docs in the last section of this doc
 - [fact_staking_pool_balances](#!/model/model.near.core__fact_staking_pool_balances)
 - [fact_staking_pool_daily_balances](#!/model/model.near.core__fact_staking_pool_daily_balances)
 
-
 **Convenience Tables:**
 - [ez_dex_swaps](#!/model/model.near.core__ez_dex_swaps)
-- [ez_nft_mints](#!/model/model.near.core__ez_nft_mints)
 - [ez_usn_supply](#!/model/model.near.core__ez_usn_supply)
 
 ### Social Tables (`NEAR`.`SOCIAL`.`<table_name>`)
