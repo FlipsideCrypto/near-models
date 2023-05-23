@@ -1,0 +1,70 @@
+
+version: 2
+
+models:
+  - name: silver_horizon__decoded_actions
+    description: |-
+      Decoded FunctionCall events for receipts where the contract nearhorizon.near was called.
+
+    columns:
+      - name: action_id_horizon
+        description: "{{ doc('action_id')}}"
+        tests:
+          - unique
+
+      - name: tx_hash
+        description: "{{ doc('tx_hash')}}"
+        tests:
+          - not_null:
+              where: _load_timestamp <= current_timestamp - interval '2 hours'
+
+      - name: receipt_object_id
+        description: "{{ doc('receipt_object_id')}}"
+
+      - name: block_id
+        description: "{{ doc('block_id')}}"
+
+      - name: block_timestamp
+        description: "{{ doc('block_timestamp')}}"
+        tests: 
+          - not_null:
+              where: _load_timestamp <= current_timestamp - interval '2 hours'
+
+      - name: method_name
+        description: "{{ doc('method_name')}}"
+        tests:
+          - not_null
+
+      - name: args
+        description: "{{ doc('args')}}"
+        tests: 
+          - not_null
+
+      - name: deposit
+        description: "{{ doc('deposit')}}"
+
+      - name: attached_gas
+        description: "{{ doc('attached_gas')}}"
+
+      - name: receiver_id
+        description: "{{ doc('receiver_id')}}"
+        tests: 
+          - not_null
+
+      - name: signer_id
+        description: "{{ doc('signer_id')}}"
+        tests:
+          - not_null
+
+      - name: receipt_succeeded
+        description: "{{ doc('receipt_succeeded')}}"
+
+      - name: _partition_by_block_number
+        description: "{{ doc('_partition_by_block_number')}}"
+
+      - name: _load_timestamp
+        description: "{{ doc('_load_timestamp')}}"
+        tests:
+          - dbt_expectations.expect_row_values_to_have_recent_data:
+              datepart: day
+              interval: 5

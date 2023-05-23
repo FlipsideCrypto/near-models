@@ -1,0 +1,44 @@
+
+version: 2
+
+models:
+  - name: horizon__fact_decoded_actions
+    description: |-
+      Decoded FunctionCall events for receipts where the contract nearhorizon.near was called.
+
+    columns:
+      - name: action_id_horizon
+        description: "{{ doc('action_id')}}"
+
+      - name: tx_hash
+        description: "{{ doc('tx_hash')}}"
+
+      - name: receipt_object_id
+        description: "{{ doc('receipt_object_id')}}"
+
+      - name: block_id
+        description: "{{ doc('block_id')}}"
+
+      - name: block_timestamp
+        description: "{{ doc('block_timestamp')}}"
+
+      - name: method_name
+        description: "{{ doc('method_name')}}"
+
+      - name: args
+        description: "{{ doc('args')}}"
+
+      - name: deposit
+        description: "{{ doc('deposit')}}"
+
+      - name: attached_gas
+        description: "{{ doc('attached_gas')}}"
+
+      - name: receiver_id
+        description: "{{ doc('receiver_id')}}"
+      
+      - name: signer_id
+        description: "{{ doc('signer_id')}}"
+
+      - name: receipt_succeeded
+        description: "{{ doc('receipt_succeeded')}}"
