@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'incremental',
-    unique_key = 'action_id_shorizon',
+    unique_key = 'action_id_horizon',
     cluster_by = ['_load_timestamp::date', '_partition_by_block_number'],
     tags = ['curated', 'horizon']
 ) }}
