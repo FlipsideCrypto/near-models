@@ -26,6 +26,9 @@ models:
 
       - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp')}}"
+        tests:
+          - not_null:
+              where: _load_timestamp <= current_timestamp - interval '2 hours'
 
       - name: ACTION_NAME
         description: "{{ doc('action_name')}}"
