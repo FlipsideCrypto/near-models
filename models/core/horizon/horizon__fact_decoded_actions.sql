@@ -19,6 +19,8 @@ WITH horizon AS (
         receipt_succeeded
     FROM
         {{ ref('silver_horizon__decoded_actions') }}
+    WHERE
+        method_name != 'set'
 )
 SELECT
     *
