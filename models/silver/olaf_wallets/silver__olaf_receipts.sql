@@ -24,7 +24,10 @@ WITH receipts AS (
 
 select
     distinct receiver_id as receiver_account_id,
+    block_timestamp,
+    block_id,
     receipt_object_id,
     receipt_actions:predecessor_id::string as account_creator,
     _load_timestamp
 from receipts
+qualify row_number() over (partition by receiver_account_id order by block_timestamp asc) = 1
