@@ -1,10 +1,9 @@
-import requests as res
 import snowflake.snowpark as snowpark
-import logging
+# import logging
 
-logger = logging.getLogger("python_logger")
-# logger.info("Logging from Python module.")
-# logger.error("Logging an error from Python handler: ")
+# logger = logging.getLogger("python_logger")
+# logger.info("Logging test from Python module.")
+# logger.error("Logging an error from Python handler")
 
 def request(df, headers, session):
     # params for api call
@@ -12,54 +11,61 @@ def request(df, headers, session):
     api_route = "/balances/NEAR"
     block_parameter = "?block_height="
     # temp block id input, max on May 22
-    block_height = 92485306
+    block_height = "92485306"
 
     schema = snowpark.session.StructType(
         [
+            snowpark.types.StructField("BLOCK_HEIGHT", snowpark.types.StringType()),
             snowpark.types.StructField("LOCKUP_ACCOUNT_ID", snowpark.types.StringType()),
             snowpark.types.StructField("RESPONSE", snowpark.types.VariantType())
         ])
 
-    values = []
+    response_df = session.createDataFrame([], schema)
 
     for row in df.collect():
-        url = base_accounts_url + row["LOCKUP_ACCOUNT_ID"] + api_route + block_parameter + str(block_height)
+        # TODO add dynamic block height
+        url = base_accounts_url + row["LOCKUP_ACCOUNT_ID"] + api_route + block_parameter + block_height
         try:
-            r = res.get(url, headers=headers)
+            sql = f"""
+                select
+                    {block_height} as BLOCK_HEIGHT,
+                    '{row['LOCKUP_ACCOUNT_ID']}' as LOCKUP_ACCOUNT_ID,
+                    ethereum.streamline.udf_api(
+                        'GET',
+                        '{url}',
+                        {headers},
+                        {dict()}
+                    ) as RESPONSE
+            """
+            response_df = response_df.union(session.sql(sql))
 
-            response = {
-                "account_id": row["LOCKUP_ACCOUNT_ID"],
-                "data": r.json(),
-                "error": None,
-                "status_code": r.status_code,
-            }
+            # response = {
+            #     "account_id": row["LOCKUP_ACCOUNT_ID"],
+            #     "block_height": block_height,
+            #     "data": r.json(),
+            #     "error": None,
+            #     "status_code": r.status_code,
+            # }
 
         except Exception as e:
-            response = {
-                "account_id": row["LOCKUP_ACCOUNT_ID"],
-                "data": None,
-                "error": str(e),
-                "status_code": None
-            }
+            response_df = response_df.union(
+                session.createDataFrame([{
+                    "BLOCK_HEIGHT": block_height, 
+                    "LOCKUP_ACCOUNT_ID": row["LOCKUP_ACCOUNT_ID"], 
+                    "RESPONSE": {"error": str(e)}
+                }],
+                schema)
+            )
+    # logger.info("Test info log from request function")
 
-        values.append(
-            {
-                "LOCKUP_ACCOUNT_ID": row["LOCKUP_ACCOUNT_ID"],
-                "RESPONSE": response
-            }
-        )
-
-    return session.createDataFrame(values, schema)
+    return response_df
 
 def model(dbt, session):
 
     dbt.config(
         # TODO reconfig to incremental
-        materialized='table',
-        packages=['requests']
+        materialized='table'
     )
-    logger.info("Test INFO log from dbt model")
-    logger.info("Test ERROR log from dbt model")
 
     # TODO store this securely
     PAGODA_KEY = ""
@@ -76,17 +82,8 @@ def model(dbt, session):
 
     # filter to active accounts only, based on is_deleted column
     active_lockup_accounts = lockup_accounts.filter(lockup_accounts.is_deleted == False)
-    account_sample = active_lockup_accounts.limit(10)
+    account_sample = active_lockup_accounts.limit(100)
     
-    # try adding a new col
-    # add_col = account_sample.withColumn(
-    #     "res", 
-    #     request(
-    #         account_sample,
-    #         headers,
-    #         session
-    #     ).RESPONSE
-    #     )
 
     # call api via request function
     test = request(
@@ -94,6 +91,5 @@ def model(dbt, session):
         headers,
         session
     )
-
 
     return test
