@@ -14,7 +14,7 @@ def request(session, base_url, df=None, parameters=None):
 
     # temp hard-coded params
     # TODO store this securely
-    PAGODA_KEY = "17847af4-c948-4690-beae-bafa77429822"
+    PAGODA_KEY = ""
     # single block id input, max block on May 22
     block_height = "92485306"
 
