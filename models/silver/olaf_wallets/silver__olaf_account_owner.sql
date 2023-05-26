@@ -2,7 +2,7 @@
     materialized = 'incremental',
     incremental_strategy = 'delete+insert',
     unique_key = 'receipt_object_id',
-    cluster_by = ['_load_timestamp::DATE'],
+    cluster_by = ['receiver_account_id'],
     tags = ['receipt_map','olaf']
 ) }}
 
@@ -31,3 +31,5 @@ select
     _load_timestamp
 from receipts
 qualify row_number() over (partition by receiver_account_id order by block_timestamp asc) = 1
+
+// Time -> 18 minutes and 31.11
