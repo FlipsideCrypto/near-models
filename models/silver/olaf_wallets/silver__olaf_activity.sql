@@ -19,6 +19,7 @@ WITH fact_actions_events AS (
         {% else %}
             {{ incremental_load_filter('_load_timestamp') }}
         {% endif %}
+    LIMIT 20000000
 ),
 
 actions_methods as (
