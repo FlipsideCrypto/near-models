@@ -34,6 +34,7 @@ tx AS (
 function_call AS (
     SELECT
         action_id,
+        tx_hash,
         TRY_PARSE_JSON(args) AS args_json,
         method_name,
         deposit
@@ -46,6 +47,7 @@ function_call AS (
             {{ incremental_load_filter('_load_timestamp') }}
         {% endif %}
 ),
+
 standard_logs AS (
     SELECT
         action_id,
@@ -67,9 +69,9 @@ standard_logs AS (
 nft_events AS (
     SELECT
         standard_logs.*,
-        function_call.method_name,
-        function_call.deposit,
-        function_call.args_json,
+        COALESCE(function_call.method_name,fc2.method_name) as method_name,
+        COALESCE(function_call.deposit,fc2.deposit) as deposit,
+        COALESCE(function_call.args_json,fc2.args_json) as args_json,
         clean_log :data AS DATA,
         clean_log :event AS event,
         clean_log :standard AS STANDARD,
@@ -78,6 +80,8 @@ nft_events AS (
         standard_logs
         LEFT JOIN function_call
     ON standard_logs.action_id = function_call.action_id
+     LEFT JOIN function_call as fc2
+    ON standard_logs.tx_hash = fc2.tx_hash and function_call.action_id is null
     WHERE
         STANDARD = 'nep171' -- nep171 nft STANDARD, version  nep245 IS multitoken STANDARD,  nep141 IS fungible token STANDARD
         AND event = 'nft_mint'
