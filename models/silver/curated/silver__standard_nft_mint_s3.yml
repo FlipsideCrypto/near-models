@@ -17,7 +17,8 @@ models:
         tests:
           - not_null:
               where: _load_timestamp <= current_timestamp - interval '2 hours'
-
+          - unique:
+              where: receiver_id != BjY9TdpY5HR3okqKZG5iTR4Xw4kNqsxeeSG81hpVvikg'
       - name: BLOCK_ID
         description: "{{ doc('block_id')}}"
 
