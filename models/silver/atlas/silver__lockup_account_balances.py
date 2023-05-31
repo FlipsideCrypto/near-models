@@ -1,9 +1,4 @@
 import snowflake.snowpark as snowpark
-# import logging
-
-# logger = logging.getLogger("python_logger")
-# logger.info("Logging test from Python module.")
-# logger.error("Logging an error from Python handler")
 
 def request(session, base_url, df=None, parameters=None):
     """
@@ -13,8 +8,8 @@ def request(session, base_url, df=None, parameters=None):
     """
 
     # temp hard-coded params
-    # TODO store this securely
-    PAGODA_KEY = ""
+    API_KEY = session.sql("select * from near._internal.api_key where platform = 'pagoda'").collect()[0]["API_KEY"]
+
     # single block id input, max block on May 22
     block_height = "92485306"
 
@@ -22,7 +17,7 @@ def request(session, base_url, df=None, parameters=None):
     method = 'GET'
     headers = {
         "Content-Type": "application/json",
-        "x-api-key": PAGODA_KEY
+        "x-api-key": API_KEY
     }
     data = {}
 
@@ -81,23 +76,19 @@ def request(session, base_url, df=None, parameters=None):
 def model(dbt, session):
 
     dbt.config(
-        # TODO reconfig to incremental
-        materialized='table'
+        materialized='incremental'
     )
 
     # upstream tables
 
     # configure df for lockup_accounts
     lockup_accounts = dbt.ref("silver__lockup_accounts")
-
     # filter to active accounts only, based on is_deleted column
-    active_lockup_accounts = lockup_accounts.filter(lockup_accounts.is_deleted == False)
-    account_sample = active_lockup_accounts.limit(5)
-    
+    active_lockup_accounts = lockup_accounts.filter(lockup_accounts.is_active).limit(5)
 
     # call api via request function
     base_url = "https://near-mainnet.api.pagoda.co/eapi/v1/accounts/{account_id}/balances/NEAR"
-    df = account_sample
+    df = active_lockup_accounts
     parameters = "?block_height={block_height}"
 
     test = request(

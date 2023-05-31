@@ -35,7 +35,7 @@ deletion_date AS (
             block_timestamp
         ) AS deletion_date,
         action_data :beneficiary_id :: STRING AS beneficiary_id,
-        TRUE AS is_deleted
+        FALSE AS is_active
     FROM
         actions_events
     WHERE
@@ -50,9 +50,9 @@ FINAL AS (
         deletion_date,
         beneficiary_id,
         COALESCE(
-            is_deleted,
-            FALSE
-        ) AS is_deleted
+            is_active,
+            TRUE
+        ) AS is_active
     FROM
         all_lockup_accounts A
         LEFT JOIN deletion_date d USING (lockup_account_id)
