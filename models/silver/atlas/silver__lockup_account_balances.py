@@ -24,7 +24,8 @@ def request(session, base_url, df=None):
                 snowpark.types.StructField('BLOCK_ID', snowpark.types.IntegerType()),
                 snowpark.types.StructField('LOCKUP_ACCOUNT_ID', snowpark.types.StringType()),
                 snowpark.types.StructField('RESPONSE', snowpark.types.VariantType()),
-                snowpark.types.StructField('_REQUEST_TIMESTAMP', snowpark.types.TimestampType())
+                snowpark.types.StructField('_REQUEST_TIMESTAMP', snowpark.types.TimestampType()),
+                snowpark.types.StructField('_RES_ID', snowpark.types.StringType())
             ]
         )
 
@@ -57,7 +58,8 @@ def request(session, base_url, df=None):
                         {headers},
                         {data}
                     ) as RESPONSE,
-                    CURRENT_TIMESTAMP as _REQUEST_TIMESTAMP
+                    CURRENT_TIMESTAMP as _REQUEST_TIMESTAMP,
+                    CONCAT_WS('-', LOCKUP_ACCOUNT_ID, BLOCK_ID) as _RES_ID
             """
 
             try:
@@ -78,7 +80,8 @@ def request(session, base_url, df=None):
                                 'RESPONSE': {
                                         'error': str(e)
                                     },
-                                '_REQUEST_TIMESTAMP': datetime.now()
+                                '_REQUEST_TIMESTAMP': datetime.now(),
+                                '_RES_ID': f"{account_id['LOCKUP_ACCOUNT_ID']}-{block_id['BLOCK_ID']}"
                             }
                         ],
                         schema
@@ -94,8 +97,8 @@ def request(session, base_url, df=None):
 def model(dbt, session):
 
     dbt.config(
-        materialized='table',
-        unique_key='LOCKUP_ACCOUNT_ID'
+        materialized='incremental',
+        unique_key='_RES_ID'
     )
 
     # configure upstream tables
@@ -113,8 +116,15 @@ def model(dbt, session):
         )
 
     # limit scope of query for testing
-    lockup_accounts = lockup_accounts.order_by('LOCKUP_ACCOUNT_ID').limit(3)
+    lockup_accounts = lockup_accounts.order_by('LOCKUP_ACCOUNT_ID').limit(5)
     blocks_to_query = blocks_to_query.where("BLOCK_DATE >= '2023-05-25'")
+    # blocks_to_query = blocks_to_query.where("BLOCK_DATE BETWEEN '2023-05-25' AND '2023-05-28'")
+
+    # define incremental logic
+    if dbt.is_incremental:
+
+        max_from_this = f"select max(BLOCK_DATE) from {dbt.this}"
+        blocks_to_query = blocks_to_query.filter(blocks_to_query.BLOCK_DATE >= session.sql(max_from_this).collect()[0][0])
 
     active_accounts = lockup_accounts.select(
             'LOCKUP_ACCOUNT_ID', 'DELETION_BLOCK_ID'
