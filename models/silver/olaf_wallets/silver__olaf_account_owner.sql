@@ -27,6 +27,7 @@ select
     block_timestamp,
     block_id,
     receipt_object_id,
+    signer_id,
     receipt_actions:predecessor_id::string as account_creator,
     _load_timestamp
 from receipts
