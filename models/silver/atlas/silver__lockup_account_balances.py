@@ -7,13 +7,9 @@ def request(session, base_url, df=None, parameters=None):
     parameters (optional) - string of parameters to append to base_url
     """
 
-    # temp hard-coded params
+    # define params for UDF_API
     API_KEY = session.sql("select * from near._internal.api_key where platform = 'pagoda'").collect()[0]["API_KEY"]
 
-    # single block id input, max block on May 22
-    block_height = "92485306"
-
-    # params for UDF_API
     method = 'GET'
     headers = {
         "Content-Type": "application/json",
@@ -24,7 +20,7 @@ def request(session, base_url, df=None, parameters=None):
     # define schema for response df
     schema = snowpark.session.StructType(
         [
-            snowpark.types.StructField("BLOCK_HEIGHT", snowpark.types.IntegerType()),
+            snowpark.types.StructField("BLOCK_ID", snowpark.types.IntegerType()),
             snowpark.types.StructField("LOCKUP_ACCOUNT_ID", snowpark.types.StringType()),
             snowpark.types.StructField("RESPONSE", snowpark.types.VariantType())
         ])
@@ -34,69 +30,84 @@ def request(session, base_url, df=None, parameters=None):
 
     # loop through df and call api via udf
     # TODO - change to request batch of N at a time, instead of 1 by 1
-    # TODO - adjust param to backfill past block heights (2nd upstream table?)
-    for row in df.collect():
 
-        # url = base_url.replace("{account_id}", row["LOCKUP_ACCOUNT_ID"]) + parameters.replace("{block_height}", block_height) if parameters else base_url.replace("{account_id}", row["LOCKUP_ACCOUNT_ID"])
-        url = base_url.replace("{account_id}", row["LOCKUP_ACCOUNT_ID"]) + parameters.replace("{block_height}", block_height)
+    for block_id in df.select("BLOCK_ID").distinct().order_by("BLOCK_ID").collect():
+        
+        for account_id in df.select("LOCKUP_ACCOUNT_ID").where(f"BLOCK_ID = {block_id['BLOCK_ID']}").collect():
+            
+            url = base_url.replace("{account_id}", account_id["LOCKUP_ACCOUNT_ID"]).replace("{block_id}", str(block_id['BLOCK_ID']))
 
-        sql = f"""
-            select
-                {block_height}::INT as BLOCK_HEIGHT,
-                '{row['LOCKUP_ACCOUNT_ID']}' as LOCKUP_ACCOUNT_ID,
-                ethereum.streamline.udf_api(
-                    '{method}',
-                    '{url}',
-                    {headers},
-                    {data}
-                ) as RESPONSE
-        """
+            sql = f"""
+                select
+                    {block_id['BLOCK_ID']}::INT as BLOCK_ID,
+                    '{account_id['LOCKUP_ACCOUNT_ID']}' as LOCKUP_ACCOUNT_ID,
+                    ethereum.streamline.udf_api(
+                        '{method}',
+                        '{url}',
+                        {headers},
+                        {data}
+                    ) as RESPONSE
+            """
 
-        try:
-            # https://docs.snowflake.com/en/developer-guide/snowpark/reference/python/api/snowflake.snowpark.Session.sql.html
-            # session.sql creates the df, .collect() must be called to actually execute the query
-            r = session.sql(sql).collect()
-            row_df = session.createDataFrame(r, schema)
-            response_df = response_df.union(row_df)
+            try:
+                r = session.sql(sql).collect()
+                row_df = session.createDataFrame(r, schema)
+                response_df = response_df.union(row_df)
 
-        except Exception as e:
-            response_df = response_df.union(
-                session.createDataFrame([{
-                    "BLOCK_HEIGHT": block_height, 
-                    "LOCKUP_ACCOUNT_ID": row["LOCKUP_ACCOUNT_ID"], 
-                    "RESPONSE": {"error": str(e)}
-                }],
-                schema)
-            )
-            # TODO - error behavior? maybe raise after N errors 
+            except Exception as e:
+                response_df = response_df.union(
+                    session.createDataFrame([{
+                        "BLOCK_ID": block_id["BLOCK_ID"], 
+                        "LOCKUP_ACCOUNT_ID": account_id["LOCKUP_ACCOUNT_ID"], 
+                        "RESPONSE": {"error": str(e)}
+                    }],
+                    schema)
+                )
+                # TODO - error behavior? maybe raise after N errors 
 
     return response_df
-
 
 def model(dbt, session):
 
     dbt.config(
-        materialized='incremental'
+        materialized="incremental",
+        unique_key="LOCKUP_ACCOUNT_ID"
     )
 
-    # upstream tables
-
-    # configure df for lockup_accounts
+    # configure upstream tables
     lockup_accounts = dbt.ref("silver__lockup_accounts")
-    # filter to active accounts only, based on is_deleted column
-    active_lockup_accounts = lockup_accounts.filter(lockup_accounts.is_active).limit(5)
+
+    blocks_to_query = dbt.ref("silver__streamline_blocks")
+    blocks_to_query = blocks_to_query.groupBy(
+        snowpark.functions.date_trunc("DAY", "BLOCK_TIMESTAMP")
+        ).agg(
+            snowpark.functions.max("BLOCK_ID").as_("BLOCK_ID")
+        ).with_column_renamed(
+            "DATE_TRUNC(DAY, BLOCK_TIMESTAMP)", "BLOCK_DATE")
+
+    # filter to 2 accounts for testing and just the past few days
+    # both will exist from 5/20-28, on 5/29 just the 00...near addr is active
+    lockup_accounts = lockup_accounts.where("""
+        LOCKUP_ACCOUNT_ID in ('3ad09b207cac4aa12d5688005e4b3e360aa9be30.lockup.near', '00b7340093669c30b417f1afc32149edb0be4df8.lockup.near')
+    """)
+    blocks_to_query = blocks_to_query.where("BLOCK_DATE >= '2023-05-20'")
+
+    active_accounts = lockup_accounts.select(
+        "LOCKUP_ACCOUNT_ID", "DELETION_BLOCK_ID").cross_join(
+            blocks_to_query
+        ).where(
+            "COALESCE(DELETION_BLOCK_ID, 1000000000000) >= BLOCK_ID"
+        )
 
     # call api via request function
-    base_url = "https://near-mainnet.api.pagoda.co/eapi/v1/accounts/{account_id}/balances/NEAR"
-    df = active_lockup_accounts
-    parameters = "?block_height={block_height}"
+    base_url = "https://near-mainnet.api.pagoda.co/eapi/v1/accounts/{account_id}/balances/NEAR?block_height={block_id}"
+    df = active_accounts
 
-    test = request(
+    final_df = request(
         session,
         base_url,
-        df,
-        parameters
+        df
     )
 
     # dbt models return a df which is written as a table
-    return test
+    return final_df

@@ -34,6 +34,7 @@ deletion_date AS (
             'day',
             block_timestamp
         ) AS deletion_date,
+        block_id,
         action_data :beneficiary_id :: STRING AS beneficiary_id,
         FALSE AS is_active
     FROM
@@ -48,6 +49,7 @@ FINAL AS (
         A.lockup_account_id,
         A.creation_date,
         deletion_date,
+        block_id as deletion_block_id,
         beneficiary_id,
         COALESCE(
             is_active,
