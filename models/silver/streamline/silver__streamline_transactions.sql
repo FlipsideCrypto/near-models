@@ -78,6 +78,8 @@ FINAL AS (
         _partition_by_block_number
     FROM
         txs
+    qualify
+        row_number() over (partition by tx_hash order by _load_timestamp desc) = 1
 )
 SELECT
     *

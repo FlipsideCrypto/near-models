@@ -8,7 +8,7 @@ models:
 
     columns:
       - name: action_id_social
-        description: "{{ doc('block_id')}}"
+        description: "{{ doc('action_id')}}"
         tests:
           - unique
 
