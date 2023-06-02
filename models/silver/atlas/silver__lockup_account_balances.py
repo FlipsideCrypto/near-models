@@ -1,5 +1,25 @@
-import snowflake.snowpark as snowpark
+import snowflake.snowpark.types as T
+import snowflake.snowpark.functions as F
 from datetime import datetime
+
+
+def register_udf_construct_url():
+    construct_url = (
+        F.udf(
+            lambda base_url, account_id, block_id: base_url.replace('{account_id}', account_id).replace('{block_id}', str(block_id)), 
+            name='construct_url', 
+            input_types=[
+                snowpark.types.StringType(), 
+                snowpark.types.StringType(), 
+                snowpark.types.IntegerType()
+                ], 
+            return_type=snowpark.types.StringType(), 
+            if_not_exists=True
+        )
+    )
+
+    return construct_url
+
 
 def request(session, base_url, df=None):
     """
@@ -18,19 +38,19 @@ def request(session, base_url, df=None):
     data = {}
 
     # define schema for response df
-    schema = snowpark.session.StructType(
+    schema = T.StructType(
             [
-                snowpark.types.StructField('BLOCK_DATE', snowpark.types.DateType()),
-                snowpark.types.StructField('BLOCK_ID', snowpark.types.IntegerType()),
-                snowpark.types.StructField('LOCKUP_ACCOUNT_ID', snowpark.types.StringType()),
-                snowpark.types.StructField('RESPONSE', snowpark.types.VariantType()),
-                snowpark.types.StructField('_REQUEST_TIMESTAMP', snowpark.types.TimestampType()),
-                snowpark.types.StructField('_RES_ID', snowpark.types.StringType())
+                T.StructField('BLOCK_DATE', T.DateType()),
+                T.StructField('BLOCK_ID', T.IntegerType()),
+                T.StructField('LOCKUP_ACCOUNT_ID', T.StringType()),
+                T.StructField('RESPONSE', T.VariantType()),
+                T.StructField('_REQUEST_TIMESTAMP', T.TimestampType()),
+                T.StructField('_RES_ID', T.StringType())
             ]
         )
 
     # create empty df to store response
-    response_df = session.createDataFrame([], schema)
+    response_df = session.create_dataframe([], schema)
 
     # loop through df and call api via udf
     # TODO - change to request batch of N at a time, instead of 1 by 1
@@ -63,15 +83,16 @@ def request(session, base_url, df=None):
             """
 
             try:
+                # execute sql via collect() and append to response
                 r = session.sql(sql).collect()
-                row_df = session.createDataFrame(r, schema)
-                response_df = response_df.union(row_df)
+                response_df = response_df.union(session.createDataFrame(r, schema))
 
             except Exception as e:
                 error_count += 1
 
+                # log error in table
                 response_df = response_df.union(
-                    session.createDataFrame(
+                    session.create_dataframe(
                         [
                             {
                                 'BLOCK_DATE': block_id['BLOCK_DATE'],
@@ -105,10 +126,10 @@ def model(dbt, session):
     lockup_accounts = dbt.ref('silver__lockup_accounts')
 
     blocks_to_query = dbt.ref('silver__streamline_blocks')
-    blocks_to_query = blocks_to_query.groupBy(
-            snowpark.functions.date_trunc('DAY', 'BLOCK_TIMESTAMP')
+    blocks_to_query = blocks_to_query.group_by(
+            F.date_trunc('DAY', 'BLOCK_TIMESTAMP')
         ).agg(
-            snowpark.functions.max('BLOCK_ID').as_('BLOCK_ID')
+            F.max('BLOCK_ID').as_('BLOCK_ID')
         ).with_column_renamed(
             'DATE_TRUNC(DAY, BLOCK_TIMESTAMP)', 'BLOCK_DATE'
         ).where(
@@ -117,8 +138,11 @@ def model(dbt, session):
 
     # limit scope of query for testing
     lockup_accounts = lockup_accounts.order_by('LOCKUP_ACCOUNT_ID').limit(5)
-    blocks_to_query = blocks_to_query.where("BLOCK_DATE >= '2023-05-25'")
-    # blocks_to_query = blocks_to_query.where("BLOCK_DATE BETWEEN '2023-05-25' AND '2023-05-28'")
+
+    # use the first date range on full-refresh to load a range
+    blocks_to_query = blocks_to_query.where("BLOCK_DATE BETWEEN '2023-05-25' AND '2023-05-28'")
+    # use the below to test incremental load
+    # blocks_to_query = blocks_to_query.where("BLOCK_DATE >= '2023-05-25'")
 
     # define incremental logic
     if dbt.is_incremental:
