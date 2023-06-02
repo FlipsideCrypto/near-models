@@ -4,16 +4,21 @@ from datetime import datetime
 
 
 def register_udf_construct_url():
+    """
+    Helper function to register a UDF to construct the URL for the API call.
+    This particular URL requires 2 inputs from another table, account_id and block_id, with are passed in as both a URL path and parameter.
+    The inputs will be passed to the UDF, not to the registration function, thus the function has no arguments while the UDF has 3, as indicated by the array input_types.
+    """
     construct_url = (
         F.udf(
             lambda base_url, account_id, block_id: base_url.replace('{account_id}', account_id).replace('{block_id}', str(block_id)), 
             name='construct_url', 
             input_types=[
-                snowpark.types.StringType(), 
-                snowpark.types.StringType(), 
-                snowpark.types.IntegerType()
+                T.StringType(), 
+                T.StringType(), 
+                T.IntegerType()
                 ], 
-            return_type=snowpark.types.StringType(), 
+            return_type=T.StringType(), 
             if_not_exists=True
         )
     )
@@ -21,19 +26,17 @@ def register_udf_construct_url():
     return construct_url
 
 
-def request(session, base_url, df=None):
+def request(session, base_url, api_key=None, df=None):
     """
     Function to call the UDF_API.
     df (optional) - Snowpark DataFrame of input data
     """
 
     # define params for UDF_API
-    API_KEY = session.sql("select * from near._internal.api_key where platform = 'pagoda'").collect()[0]['API_KEY']
-
     method = 'GET'
     headers = {
         'Content-Type': 'application/json',
-        'x-api-key': API_KEY
+        'x-api-key': api_key
     }
     data = {}
 
@@ -114,6 +117,7 @@ def request(session, base_url, df=None):
                     raise Exception(f"Too many errors - {error_count}")
 
     return response_df
+    # pass
 
 def model(dbt, session):
 
@@ -160,11 +164,13 @@ def model(dbt, session):
 
     # call api via request function
     base_url = 'https://near-mainnet.api.pagoda.co/eapi/v1/accounts/{account_id}/balances/NEAR?block_height={block_id}'
+    api_key = session.sql("select * from near._internal.api_key where platform = 'pagoda'").collect()[0]['API_KEY']
     df = active_accounts
 
     final_df = request(
         session,
         base_url,
+        api_key,
         df
     )
 
