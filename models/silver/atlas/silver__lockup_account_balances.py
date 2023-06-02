@@ -46,7 +46,7 @@ def batch_request(session, base_url, api_key=None, df=None):
     construct_url = register_udf_construct_url()
 
     response_df = df.with_columns(
-        ["RESPONSE", "_REQUEST_TIMESTAMP", "_RES_ID"],
+        ['RESPONSE', '_REQUEST_TIMESTAMP', '_RES_ID'],
         [
             F.call_udf(
                 'ethereum.streamline.udf_api',
@@ -68,10 +68,10 @@ def batch_request(session, base_url, api_key=None, df=None):
         ]
     )
     
-    return response_df
+    return response_df.select('BLOCK_DATE', 'BLOCK_ID', 'LOCKUP_ACCOUNT_ID', 'RESPONSE', '_REQUEST_TIMESTAMP', '_RES_ID')
 
 
-def loop_request(session, base_url, api_key=None, df=None):
+def loop_request(session, base_url, schema, api_key=None, df=None):
     """
     Call the UDF_API in a loop, one call at a time, to isolate and log errors as JSON responses, instead of raising an exception.
     """
@@ -89,20 +89,7 @@ def loop_request(session, base_url, api_key=None, df=None):
 
     error_count = 0
 
-    # build response_df
-    schema = T.StructType([
-        T.StructField('BLOCK_DATE', T.DateType()),
-        T.StructField('BLOCK_ID', T.IntegerType()),
-        T.StructField('LOCKUP_ACCOUNT_ID', T.StringType()),
-        T.StructField('RESPONSE', T.VariantType()),
-        T.StructField('_REQUEST_TIMESTAMP', T.TimestampType()),
-        T.StructField('_RES_ID', T.StringType())
-    ])
-
     response_df = session.create_dataframe([], schema)
-
-
-    # for block_id in df.select('BLOCK_ID', 'BLOCK_DATE').distinct().order_by('BLOCK_ID').collect():
         
     for record in df.select('LOCKUP_ACCOUNT_ID', 'BLOCK_ID', 'BLOCK_DATE').collect():
         
@@ -114,12 +101,13 @@ def loop_request(session, base_url, api_key=None, df=None):
         # )
 
         url = base_url.replace(
-                "{account_id}", record['LOCKUP_ACCOUNT_ID']
+                '{account_id}', record['LOCKUP_ACCOUNT_ID']
             ).replace(
-                "{block_id}", str(record['BLOCK_ID'])
+                '{block_id}', str(record['BLOCK_ID'])
             )
 
         # TODO constuct sql UDF? or is this fine?
+        # i can use withcolumns here, as well, with a sql execute as the value
         sql = f"""
             select
                 '{record['BLOCK_DATE']}'::DATE as BLOCK_DATE,
@@ -165,6 +153,7 @@ def loop_request(session, base_url, api_key=None, df=None):
             # arbitrary limit of 10 errors
             if error_count >= 10:
                 # raise exception and break loop at threshold
+                # consider writing output to a table before raising exception, preserve the data that was already called
                 raise Exception(f"Too many errors - {error_count}")
 
     return response_df
@@ -193,12 +182,12 @@ def model(dbt, session):
         )
 
     # limit scope of query for testing
-    lockup_accounts = lockup_accounts.order_by('LOCKUP_ACCOUNT_ID').limit(5)
+    lockup_accounts = lockup_accounts.order_by('LOCKUP_ACCOUNT_ID').limit(100)
 
     # use the first date range on full-refresh to load a range
-    # blocks_to_query = blocks_to_query.where("BLOCK_DATE BETWEEN '2023-05-25' AND '2023-05-28'")
+    # blocks_to_query = blocks_to_query.where("BLOCK_DATE BETWEEN '2023-05-29' AND '2023-05-31'")
     # use the below to test incremental load
-    blocks_to_query = blocks_to_query.where("BLOCK_DATE >= '2023-05-25'")
+    blocks_to_query = blocks_to_query.where("BLOCK_DATE = '2023-05-25'")
 
     # define incremental logic
     if dbt.is_incremental:
@@ -214,7 +203,7 @@ def model(dbt, session):
             'COALESCE(DELETION_BLOCK_ID, 1000000000000) >= BLOCK_ID'
         )
 
-    # call api via request function
+    # call api via request function(s)
     base_url = 'https://near-mainnet.api.pagoda.co/eapi/v1/accounts/{account_id}/balances/NEAR?block_height={block_id}'
     api_key = session.sql("select * from near._internal.api_key where platform = 'pagoda'").collect()[0]['API_KEY']
     df = active_accounts.with_column(
@@ -224,11 +213,8 @@ def model(dbt, session):
         )
     )
 
-    batch_size = 25
-    counter = 0
 
-    # TODO - this can be passed to loop_request
-    # build response_df
+    # build df to hold response(s)
     schema = T.StructType([
         T.StructField('BLOCK_DATE', T.DateType()),
         T.StructField('BLOCK_ID', T.IntegerType()),
@@ -240,8 +226,14 @@ def model(dbt, session):
 
     final_df = session.create_dataframe([], schema)
 
+    batch_size = 25
+
+    # iterate 1 block group at a time
     for block_id in df.select('BLOCK_ID', 'BLOCK_DATE').distinct().collect():
 
+        counter = 0
+
+        # send account/balance request(s) in batches of batch_size
         while counter <= df.where(f"BLOCK_ID = {block_id['BLOCK_ID']}").count():
 
             input_df = df.where(f"BLOCK_ID = {block_id['BLOCK_ID']} AND ROW_NUM > {counter} AND ROW_NUM <= {counter + batch_size}")
@@ -252,25 +244,29 @@ def model(dbt, session):
                     base_url,
                     api_key,
                     input_df
-                ).collect()
+                )
 
-                final_df = final_df.union(
-                    r.select(
-                        'BLOCK_DATE', 'BLOCK_ID', 'LOCKUP_ACCOUNT_ID', 'RESPONSE', '_REQUEST_TIMESTAMP', '_RES_ID')
-                    )
+                # .collect() executes the query, triggering an error within the block, if any exists
+                r.collect()
+
+                # final_df = final_df.union(session.createDataFrame(r, schema))
+                final_df = final_df.union(r)
 
             except Exception as e:
                 # if above fails, call each row individually
                 # it is considerably slower, but allows for logging errors (on the individual call(s) that failed) instead of the job failing
-
-                final_df = final_df.union(
-                    loop_request(
+                
+                r = loop_request(
                         session,
                         base_url,
+                        schema,
                         api_key,
                         input_df
-                        ).select('BLOCK_DATE', 'BLOCK_ID', 'LOCKUP_ACCOUNT_ID', 'RESPONSE', '_REQUEST_TIMESTAMP', '_RES_ID')
                     )
+
+                # final_df = final_df.union(session.createDataFrame(r, schema))
+                final_df = final_df.union(r)
+
 
             counter += batch_size
 
