@@ -1,5 +1,6 @@
 import snowflake.snowpark.types as T
 import snowflake.snowpark.functions as F
+from snowflake.snowpark.window import Window
 from datetime import datetime
 # import logging
 
@@ -100,64 +101,71 @@ def loop_request(session, base_url, api_key=None, df=None):
 
     response_df = session.create_dataframe([], schema)
 
-    for block_id in df.select('BLOCK_ID', 'BLOCK_DATE').distinct().order_by('BLOCK_ID').collect():
+
+    # for block_id in df.select('BLOCK_ID', 'BLOCK_DATE').distinct().order_by('BLOCK_ID').collect():
         
-        for account_id in df.select('LOCKUP_ACCOUNT_ID').where(f"BLOCK_ID = {block_id['BLOCK_ID']}").collect():
-            
-            # TODO - swap with construct_url
-            url = base_url.replace(
-                    "{account_id}", account_id['LOCKUP_ACCOUNT_ID']
-                ).replace(
-                    "{block_id}", str(block_id['BLOCK_ID'])
+    for record in df.select('LOCKUP_ACCOUNT_ID', 'BLOCK_ID', 'BLOCK_DATE').collect():
+        
+        # TODO - swap with construct_url
+        # url = construct_url(
+        #     F.lit(base_url),
+        #     F.lit(account_id['LOCKUP_ACCOUNT_ID']),
+        #     F.col('BLOCK_ID')
+        # )
+
+        url = base_url.replace(
+                "{account_id}", record['LOCKUP_ACCOUNT_ID']
+            ).replace(
+                "{block_id}", str(record['BLOCK_ID'])
+            )
+
+        # TODO constuct sql UDF? or is this fine?
+        sql = f"""
+            select
+                '{record['BLOCK_DATE']}'::DATE as BLOCK_DATE,
+                {record['BLOCK_ID']}::INT as BLOCK_ID,
+                '{record['LOCKUP_ACCOUNT_ID']}' as LOCKUP_ACCOUNT_ID,
+                ethereum.streamline.udf_api(
+                    '{method}',
+                    '{url}',
+                    {headers},
+                    {data}
+                ) as RESPONSE,
+                CURRENT_TIMESTAMP as _REQUEST_TIMESTAMP,
+                CONCAT_WS('-', LOCKUP_ACCOUNT_ID, BLOCK_ID) as _RES_ID
+        """
+
+        try:
+            # execute sql via collect() and append to response
+            r = session.sql(sql).collect()
+            response_df = response_df.union(session.createDataFrame(r, schema))
+
+        except Exception as e:
+            error_count += 1
+
+            # log error in table
+            response_df = response_df.union(
+                session.create_dataframe(
+                    [
+                        {
+                            'BLOCK_DATE': record['BLOCK_DATE'],
+                            'BLOCK_ID': record['BLOCK_ID'], 
+                            'LOCKUP_ACCOUNT_ID': record['LOCKUP_ACCOUNT_ID'], 
+                            'RESPONSE': {
+                                    'error': str(e)
+                                },
+                            '_REQUEST_TIMESTAMP': datetime.now(),
+                            '_RES_ID': f"{record['LOCKUP_ACCOUNT_ID']}-{record['BLOCK_ID']}"
+                        }
+                    ],
+                    schema
                 )
+            )
 
-            # TODO constuct sql UDF? or is this fine?
-            sql = f"""
-                select
-                    '{block_id['BLOCK_DATE']}'::DATE as BLOCK_DATE,
-                    {block_id['BLOCK_ID']}::INT as BLOCK_ID,
-                    '{account_id['LOCKUP_ACCOUNT_ID']}' as LOCKUP_ACCOUNT_ID,
-                    ethereum.streamline.udf_api(
-                        '{method}',
-                        '{url}',
-                        {headers},
-                        {data}
-                    ) as RESPONSE,
-                    CURRENT_TIMESTAMP as _REQUEST_TIMESTAMP,
-                    CONCAT_WS('-', LOCKUP_ACCOUNT_ID, BLOCK_ID) as _RES_ID
-            """
-
-            try:
-                # execute sql via collect() and append to response
-                r = session.sql(sql).collect()
-                response_df = response_df.union(session.createDataFrame(r, schema))
-
-            except Exception as e:
-                error_count += 1
-
-                # log error in table
-                response_df = response_df.union(
-                    session.create_dataframe(
-                        [
-                            {
-                                'BLOCK_DATE': block_id['BLOCK_DATE'],
-                                'BLOCK_ID': block_id['BLOCK_ID'], 
-                                'LOCKUP_ACCOUNT_ID': account_id['LOCKUP_ACCOUNT_ID'], 
-                                'RESPONSE': {
-                                        'error': str(e)
-                                    },
-                                '_REQUEST_TIMESTAMP': datetime.now(),
-                                '_RES_ID': f"{account_id['LOCKUP_ACCOUNT_ID']}-{block_id['BLOCK_ID']}"
-                            }
-                        ],
-                        schema
-                    )
-                )
-
-                # arbitrary limit of 10 errors
-                if error_count >= 10:
-                    # raise exception and break loop at threshold
-                    raise Exception(f"Too many errors - {error_count}")
+            # arbitrary limit of 10 errors
+            if error_count >= 10:
+                # raise exception and break loop at threshold
+                raise Exception(f"Too many errors - {error_count}")
 
     return response_df
 
@@ -209,33 +217,62 @@ def model(dbt, session):
     # call api via request function
     base_url = 'https://near-mainnet.api.pagoda.co/eapi/v1/accounts/{account_id}/balances/NEAR?block_height={block_id}'
     api_key = session.sql("select * from near._internal.api_key where platform = 'pagoda'").collect()[0]['API_KEY']
-    df = active_accounts
+    df = active_accounts.with_column(
+        'ROW_NUM',
+        F.row_number().over(
+            Window.partition_by('BLOCK_ID').order_by('LOCKUP_ACCOUNT_ID')
+        )
+    )
 
-    # TODO - implement batches here with a .limit() & loop
     batch_size = 25
+    counter = 0
 
-    try:
-        final_df = batch_request(
-            session,
-            base_url,
-            api_key,
-            df
-        )
+    # TODO - this can be passed to loop_request
+    # build response_df
+    schema = T.StructType([
+        T.StructField('BLOCK_DATE', T.DateType()),
+        T.StructField('BLOCK_ID', T.IntegerType()),
+        T.StructField('LOCKUP_ACCOUNT_ID', T.StringType()),
+        T.StructField('RESPONSE', T.VariantType()),
+        T.StructField('_REQUEST_TIMESTAMP', T.TimestampType()),
+        T.StructField('_RES_ID', T.StringType())
+    ])
 
-        # batch_request returns a df which is not executed until dbt executes and attempts to write to a table
-        # initiate execution to any error within the batch, and kick-off a loop through the batch instead
-        execute = final_df.collect()
+    final_df = session.create_dataframe([], schema)
 
-    except Exception as e:
-        # if above fails, call each row individually
-        # it is considerably slower, but allows for logging errors (on the individual call(s) that failed) instead of the job failing
-        
-        final_df = loop_request(
-            session, 
-            base_url,
-            api_key,
-            df
-        )
+    for block_id in df.select('BLOCK_ID', 'BLOCK_DATE').distinct().collect():
+
+        while counter <= df.where(f"BLOCK_ID = {block_id['BLOCK_ID']}").count():
+
+            input_df = df.where(f"BLOCK_ID = {block_id['BLOCK_ID']} AND ROW_NUM > {counter} AND ROW_NUM <= {counter + batch_size}")
+
+            try:
+                r = batch_request(
+                    session,
+                    base_url,
+                    api_key,
+                    input_df
+                ).collect()
+
+                final_df = final_df.union(
+                    r.select(
+                        'BLOCK_DATE', 'BLOCK_ID', 'LOCKUP_ACCOUNT_ID', 'RESPONSE', '_REQUEST_TIMESTAMP', '_RES_ID')
+                    )
+
+            except Exception as e:
+                # if above fails, call each row individually
+                # it is considerably slower, but allows for logging errors (on the individual call(s) that failed) instead of the job failing
+
+                final_df = final_df.union(
+                    loop_request(
+                        session,
+                        base_url,
+                        api_key,
+                        input_df
+                        ).select('BLOCK_DATE', 'BLOCK_ID', 'LOCKUP_ACCOUNT_ID', 'RESPONSE', '_REQUEST_TIMESTAMP', '_RES_ID')
+                    )
+
+            counter += batch_size
 
     # dbt models return a df which is written as a table
     return final_df
