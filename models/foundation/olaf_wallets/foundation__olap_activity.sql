@@ -1,9 +1,9 @@
 {{ config(
     materialized = 'incremental',
-    incremental_strategy = 'delete+insert',
-    cluster_by = ['signer_account_id'],
+    incremental_strategy = 'merge',
+    cluster_by = ['_partition_by_block_number', 'block_timestamp::date']
     unique_key = 'signer_account_id',
-    tags = ['actions', 'olaf']
+    tags = ['actions', 'olap']
 ) }}
 
 
@@ -24,12 +24,14 @@ WITH fact_actions_events AS (
 
 actions_methods as (
     SELECT  
-        a.signer_id as signer_account_id,
-        a.receiver_id   as receiver_account_id,
-        a.tx_hash as transaction_hash,
+        a.signer_id,
+        a.receiver_id,
+        a.tx_hash,
         nvl(action_data:method_name::string, 'no_method') as method_name,
         _load_timestamp,
+        block_timestamp,
         _partition_by_block_number,
+        a.action_name,
         CASE WHEN a.action_name = 'FunctionCall' THEN 'FUNCTION_CALL'
             WHEN a.action_name = 'AddKey' THEN 'ADD_KEY'
             WHEN a.action_name = 'Transfer' THEN 'TRANSFER'
