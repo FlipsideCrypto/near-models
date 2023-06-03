@@ -1,7 +1,7 @@
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'merge',
-    cluster_by = ['_partition_by_block_number', 'block_timestamp::date']
+    cluster_by = ['_partition_by_block_number', 'block_timestamp::date'],
     unique_key = 'signer_account_id',
     tags = ['actions', 'olap']
 ) }}
@@ -56,7 +56,9 @@ actions_methods_count as(
        count(distinct nft_mints) as nft_mints
    FROM actions_methods
    GROUP BY signer_account_id
+   // Group by block_timestamp::date truncate and signer_account_id
 ),
+
 txs_metrics as (
    SELECT
        //a.block_timestamp,
@@ -68,6 +70,7 @@ txs_metrics as (
        count(distinct a.block_timestamp) as total_days_active
    FROM fact_actions_events as a
    GROUP BY signer_account_id
+   // Group by block_timestamp::date truncate and signer_account_id
 ),
 activity_metrics as (
     SELECT 
