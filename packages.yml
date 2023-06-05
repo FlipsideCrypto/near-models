@@ -2,4 +2,6 @@ packages:
   - package: calogica/dbt_expectations
     version: 0.8.0
   - package: dbt-labs/dbt_utils
-    version: 0.9.2
+    version: 1.0.0
+  - git: https://github.com/FlipsideCrypto/fsc-utils.git
+    revision: "v1.3.0"
