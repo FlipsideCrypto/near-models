@@ -220,7 +220,8 @@ FINAL AS (
             1,
             1,
             'e'
-        ) :: NUMBER / pow(10, IFNULL(token_labels_in.decimals, 0)) AS amount_in,
+        ) :: NUMBER AS amount_in_raw,
+        amount_in_raw / pow(10, IFNULL(token_labels_in.decimals, 0)) AS amount_in,
         token_out,
         token_labels_out.symbol AS token_out_symbol,
         REGEXP_SUBSTR(
@@ -229,7 +230,8 @@ FINAL AS (
             1,
             1,
             'e'
-        ) :: NUMBER / pow(10, IFNULL(token_labels_out.decimals, 0)) AS amount_out,
+        ) :: NUMBER AS amount_out_raw,
+        amount_out_raw / pow(10, IFNULL(token_labels_out.decimals, 0)) AS amount_out,
         swap_index,
         _load_timestamp
     FROM
