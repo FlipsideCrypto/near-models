@@ -1,7 +1,7 @@
 {{ config(
     materialized = "incremental",
     cluster_by = ["_load_timestamp::DATE","block_timestamp::DATE"],
-    unique_key = "action_id",
+    unique_key = "mint_action_id",
     incremental_strategy = "delete+insert",
     tags = ['curated']
 ) }}
@@ -34,6 +34,7 @@ tx AS (
 function_call AS (
     SELECT
         action_id,
+        tx_hash,
         TRY_PARSE_JSON(args) AS args_json,
         method_name,
         deposit
@@ -48,7 +49,8 @@ function_call AS (
 ),
 standard_logs AS (
     SELECT
-        action_id,
+        action_id AS logs_id,
+        concat_ws('-', receipt_object_id, '0') as action_id,
         tx_hash,
         receipt_object_id,
         block_id,
@@ -77,7 +79,7 @@ nft_events AS (
     FROM
         standard_logs
         LEFT JOIN function_call
-    ON standard_logs.action_id = function_call.action_id
+    ON standard_logs.ACTION_ID = function_call.ACTION_ID
     WHERE
         STANDARD = 'nep171' -- nep171 nft STANDARD, version  nep245 IS multitoken STANDARD,  nep141 IS fungible token STANDARD
         AND event = 'nft_mint'
@@ -114,6 +116,7 @@ raw_mint_events AS (
 ),
 mint_events AS (
     SELECT
+        action_id,
         tx_hash,
         receipt_object_id,
         block_id,
@@ -137,11 +140,11 @@ mint_events AS (
         VALUE :: STRING AS token_id,
         concat_ws(
             '-',
-            receipt_object_id,
-            batch_index,
-            token_index,
-            token_id
-        ) AS action_id
+            action_id,
+            COALESCE(batch_index, '0'),
+            COALESCE(token_index, '0'),
+            COALESCE(token_id, '0')
+        ) AS mint_action_id
     FROM
         raw_mint_events,
         LATERAL FLATTEN(
@@ -165,8 +168,10 @@ mint_tx AS (
                 mint_events
         )
 )
+
 SELECT
     mint_events.action_id,
+    mint_events.mint_action_id,
     mint_events.tx_hash,
     mint_events.block_id,
     mint_events.block_timestamp,

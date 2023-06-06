@@ -9,8 +9,16 @@ models:
       - name: ACTION_ID
         description: "{{ doc('action_id') }}"
         tests:
+          - not_null:
+              where: _load_timestamp <= current_timestamp - interval '2 hours'
+
+      - name: MINT_ACTION_ID
+        description: "{{ doc('mint_action_id') }}"
+        tests:
           - unique:
               where: receiver_id != 'realbirds.near'
+          - not_null:
+              where: _load_timestamp <= current_timestamp - interval '2 hours'
 
       - name: TX_HASH
         description: "{{ doc('tx_hash') }}"
@@ -29,6 +37,9 @@ models:
 
       - name: METHOD_NAME
         description: "{{ doc('method_name') }}"
+        tests:
+          - not_null:
+              where: _load_timestamp <= current_timestamp - interval '2 hours'
 
       - name: ARGS
         description: "{{ doc('args') }}"
@@ -41,9 +52,15 @@ models:
 
       - name: TX_RECEIVER
         description: "{{ doc('tx_receiver') }}"
+        tests:
+          - not_null:
+              where: _load_timestamp <= current_timestamp - interval '2 hours'
 
       - name: TX_STATUS
         description: "{{ doc('tx_status') }}"
+        tests:
+          - not_null:
+              where: _load_timestamp <= current_timestamp - interval '2 hours'
 
       - name: RECEIPT_OBBJECT_ID
         description: "{{ doc('receipt_object_id') }}"
@@ -53,7 +70,6 @@ models:
 
       - name: SIGNER_ID
         description: "{{ doc('signer_id')}}"
-
 
       - name: OWNER_PER_TX
         description: "{{ doc('owner_per_tx') }}"
@@ -75,6 +91,9 @@ models:
 
       - name: TRANSACTION_FEE
         description: "{{ doc('transaction_fee') }}"
+        tests:
+          - not_null:
+              where: _load_timestamp <= current_timestamp - interval '2 hours'
 
       - name: _LOAD_TIMESTAMP
         description: "{{ doc('_load_timestamp') }}"
