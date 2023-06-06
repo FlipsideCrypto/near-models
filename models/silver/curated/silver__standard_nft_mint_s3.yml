@@ -37,6 +37,9 @@ models:
 
       - name: METHOD_NAME
         description: "{{ doc('method_name') }}"
+        tests:
+          - not_null:
+              where: _load_timestamp <= current_timestamp - interval '2 hours'
 
       - name: ARGS
         description: "{{ doc('args') }}"
