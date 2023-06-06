@@ -30,7 +30,7 @@ env:
   PASSWORD: "${{ secrets.PASSWORD }}"
   REGION: "${{ vars.REGION }}"
   DATABASE: "${{ vars.DATABASE }}"
-  WAREHOUSE: "${{ vars.WAREHOUSE }}"
+  WAREHOUSE: "${{ inputs.WAREHOUSE }}"
   SCHEMA: "${{ vars.SCHEMA }}"
 
 
@@ -43,5 +43,5 @@ jobs:
     with:
       dbt_command: |
          ${{ inputs.dbt_command }}
-      warehouse: ${{ vars.WAREHOUSE }}
+      warehouse: ${{ inputs.WAREHOUSE }}
     secrets: inherit 
