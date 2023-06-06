@@ -15,7 +15,6 @@ SELECT
     block_timestamp,
     block_id,
     tx_hash,
-    receipt_index,
     receipt_object_id,
     receipt_outcome_id,
     receiver_id,

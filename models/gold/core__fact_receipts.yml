@@ -28,14 +28,6 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: RECEIPT_INDEX
-        description: "{{ doc('receipt_index')}}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - NUMBER
-
       - name: RECEIPT_OBJECT_ID
         description: "{{ doc('receipt_object_id')}}"
         tests:
