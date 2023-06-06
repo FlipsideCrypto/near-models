@@ -51,7 +51,7 @@ tests:
     silver:
       +severity: warn # default to warn for int tests
       +error_if: ">25"
-    core:
+    gold:
       +severity: error # default to warn for int tests
   +store_failures: true # all tests
 
