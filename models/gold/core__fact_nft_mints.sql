@@ -22,6 +22,7 @@ WITH nft_mints AS (
         mint_per_tx,
         gas_burnt,
         transaction_fee,
+        implied_price,
         tx_status
     FROM
         {{ ref('silver__standard_nft_mint_s3') }}
