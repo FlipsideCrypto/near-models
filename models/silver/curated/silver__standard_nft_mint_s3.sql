@@ -197,7 +197,7 @@ SELECT
     mint_events._LOAD_TIMESTAMP,
     mint_events._PARTITION_BY_BLOCK_NUMBER,
     mint_events.log_counter,
-    (mint_events.deposit / mint_events.log_counter) as implied_price
+    (mint_events.deposit / mint_events.log_counter) :: FLOAT as implied_price
 FROM
     mint_events
     LEFT JOIN mint_tx

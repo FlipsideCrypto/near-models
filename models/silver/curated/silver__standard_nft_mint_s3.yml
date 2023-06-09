@@ -89,6 +89,9 @@ models:
       - name: GAS_BURNT
         description: "{{ doc('gas_burnt') }}"
 
+      - name: IMPLIED_PRICE
+        description: "{{ doc('implied_price') }}"
+
       - name: TRANSACTION_FEE
         description: "{{ doc('transaction_fee') }}"
         tests:
