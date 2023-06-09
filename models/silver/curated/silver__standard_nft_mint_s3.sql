@@ -60,7 +60,8 @@ standard_logs AS (
         gas_burnt,
         _LOAD_TIMESTAMP,
         _PARTITION_BY_BLOCK_NUMBER,
-        TRY_PARSE_JSON(clean_log) AS clean_log
+        TRY_PARSE_JSON(clean_log) AS clean_log,
+        COUNT(*) OVER (PARTITION BY tx_hash) AS log_counter
     FROM
         logs
     WHERE
@@ -107,7 +108,8 @@ raw_mint_events AS (
         VALUE :token_ids :: ARRAY AS tokens,
         TRY_PARSE_JSON(
             VALUE :memo
-        ) AS memo
+        ) AS memo,
+        log_counter
     FROM
         nft_events,
         LATERAL FLATTEN(
@@ -144,7 +146,8 @@ mint_events AS (
             COALESCE(batch_index, '0'),
             COALESCE(token_index, '0'),
             COALESCE(token_id, '0')
-        ) AS mint_action_id
+        ) AS mint_action_id,
+        log_counter
     FROM
         raw_mint_events,
         LATERAL FLATTEN(
@@ -192,7 +195,9 @@ SELECT
     mint_events.gas_burnt, -- gas burnt during receipt processing
     mint_tx.transaction_fee, -- gas burnt during entire transaction processing
     mint_events._LOAD_TIMESTAMP,
-    mint_events._PARTITION_BY_BLOCK_NUMBER
+    mint_events._PARTITION_BY_BLOCK_NUMBER,
+    mint_events.log_counter,
+    (mint_events.deposit / mint_events.log_counter) :: FLOAT as implied_price
 FROM
     mint_events
     LEFT JOIN mint_tx
