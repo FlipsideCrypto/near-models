@@ -27,16 +27,30 @@ models:
 
       - name: RECEIPT_SUCCEEDED
         description: "{{ doc('receipt_succeeded')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - BOOLEAN
 
       - name: ERROR_TYPE_0
         description: "{{ doc('error_type_0')}}"
-    
+        tests:
+          - not_null:
+              where: NOT RECEIPT_SUCCEEDED 
+            
       - name: ERROR_TYPE_1
         description: "{{ doc('error_type_1')}}"
-
+        tests:
+          - not_null:
+              where: NOT RECEIPT_SUCCEEDED
+            
       - name: ERROR_TYPE_2
         description: "{{ doc('error_type_2')}}"
-      
+        tests:
+          - not_null:
+              where: NOT RECEIPT_SUCCEEDED AND ERROR_TYPE_1 NOT IN ('DelegateActionExpired', 'DelegateActionInvalidSignature')
+            
       - name: ERROR_MESSAGE
         description: "{{ doc('error_message')}}"
 
