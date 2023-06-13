@@ -3,9 +3,9 @@ version: 2
 models:
   - name: core__ez_usn_supply
     description: |-
-      Deprecating soon! 
+      Deprecating soon!
 
-    columns:    
+    columns:
       - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp')}}"
         tests:
@@ -57,7 +57,7 @@ models:
               column_type_list:
                 - STRING
                 - VARCHAR
-      
+
       - name: EVENT
         description: "{{ doc('event')}}"
         tests:
