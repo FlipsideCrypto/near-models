@@ -18,7 +18,7 @@ WITH receipts AS (
             outer => TRUE
         ) b
 
-        {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
+        {% if var("MANUAL_FIX" )  or var("MANUAL_FIX_DEV" )  %}
     WHERE
         {{ partition_load_manual('front') }}
     {% else %}

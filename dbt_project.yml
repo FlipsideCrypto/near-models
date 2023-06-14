@@ -30,7 +30,7 @@ on-run-start:
   - "{{create_get_nearblocks_fts()}}"
 
 on-run-end:
-  - '{{ apply_meta_as_tags(results) }}'
+  - "{{ apply_meta_as_tags(results) }}"
 
 # Configuring models
 # Full documentation: https://docs.getdbt.com/docs/configuring-models
@@ -44,7 +44,10 @@ models:
     relation: true
     columns: true
   +on_schema_change: "append_new_columns"
-  +post-hook: ["{% if target.name == 'prod_cloud' and this.schema != 'bronze' %} grant select on {{ this }} to share near_mdao {% endif %}"]
+  +post-hook:
+    [
+      "{% if target.name == 'prod_cloud' and this.schema != 'bronze' %} grant select on {{ this }} to share near_mdao {% endif %}",
+    ]
 
 tests:
   near:
@@ -61,3 +64,5 @@ vars:
   STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES: False
   UPDATE_UDFS_AND_SPS: False
   UPDATE_SNOWFLAKE_TAGS: True
+  MANUAL_FIX: False
+  MANUAL_FIX_DEV: False
