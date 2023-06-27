@@ -18,7 +18,7 @@ WITH blocks_json AS (
     FROM
         {{ ref('bronze__streamline_blocks') }}
 
-        {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
+        {% if var("MANUAL_FIX") %}
         WHERE
             {{ partition_load_manual('no_buffer') }}
             AND block_id IN (

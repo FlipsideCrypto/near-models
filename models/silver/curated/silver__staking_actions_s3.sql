@@ -21,7 +21,7 @@ WITH actions_events_function_call AS (
             'unstake',
             'unstake_all'
         ) 
-        {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
+        {% if var("MANUAL_FIX") %}
             AND {{ partition_load_manual('no_buffer') }}
         {% else %}
             AND {{ incremental_load_filter('_load_timestamp') }}
@@ -33,7 +33,7 @@ base_txs AS (
     FROM
         {{ ref('silver__streamline_transactions_final') }}
 
-        {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
+        {% if var("MANUAL_FIX") %}
         WHERE
             {{ partition_load_manual('no_buffer') }}
         {% else %}

@@ -11,7 +11,7 @@ WITH txs AS (
     FROM
         {{ ref('silver__streamline_transactions_final') }}
 
-        {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
+        {% if var("MANUAL_FIX") %}
         WHERE
             {{ partition_load_manual('no_buffer') }}
         {% else %}
@@ -25,7 +25,7 @@ function_calls AS (
     FROM
         {{ ref('silver__actions_events_function_call_s3') }}
 
-        {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
+        {% if var("MANUAL_FIX") %}
         WHERE
             {{ partition_load_manual('no_buffer') }}
         {% else %}
@@ -39,7 +39,7 @@ xfers AS (
     FROM
         {{ ref('silver__transfers_s3') }}
 
-        {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
+        {% if var("MANUAL_FIX") %}
         WHERE
             {{ partition_load_manual('no_buffer') }}
         {% else %}

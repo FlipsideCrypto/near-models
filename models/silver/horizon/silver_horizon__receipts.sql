@@ -12,7 +12,7 @@ WITH all_horizon_receipts AS (
     FROM
         {{ ref('silver__streamline_receipts_final') }}
     WHERE
-        {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
+        {% if var("MANUAL_FIX") %}
             {{ partition_load_manual('no_buffer') }}
         {% else %}
             {{ incremental_load_filter('_load_timestamp') }}

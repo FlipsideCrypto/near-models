@@ -19,7 +19,7 @@ events_function_call AS (
     FROM
         {{ ref('silver__actions_events_function_call_s3') }}
 
-        {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
+        {% if var("MANUAL_FIX") %}
         WHERE
             {{ partition_load_manual('no_buffer') }}
         {% else %}
