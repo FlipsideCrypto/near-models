@@ -7,8 +7,18 @@
     tags = ['load', 'load_shards']
 ) }}
 
-WITH shards_json AS (
+WITH missing_shards AS (
 
+    SELECT
+        _partition_by_block_number,
+        VALUE AS block_id
+    FROM
+        {{ target.database }}.tests.chunk_gaps,
+        LATERAL FLATTEN(
+            input => blocks_to_walk
+        )
+),
+shards_json AS (
     SELECT
         block_id,
         concat_ws(
@@ -26,15 +36,17 @@ WITH shards_json AS (
 
         {% if var("MANUAL_FIX") %}
         WHERE
-            {{ partition_load_manual('no_buffer') }}
+            _partition_by_block_number IN (
+                SELECT
+                    DISTINCT _partition_by_block_number
+                FROM
+                    missing_shards
+            )
             AND block_id IN (
                 SELECT
-                    VALUE
+                    DISTINCT block_id
                 FROM
-                    {{ target.database }}.tests.chunk_gaps,
-                    LATERAL FLATTEN(
-                        input => blocks_to_walk
-                    )
+                    missing_shards
             )
         {% else %}
         WHERE

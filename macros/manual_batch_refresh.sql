@@ -3,19 +3,19 @@
     ) %}
     {# if range_start and range_end not set in cli, default to earliest rpc data #}
     {% set range_start = var(
-        'range_start',
+        'RANGE_START',
         46700000
     ) %}
     {% set range_end = var(
-        'range_end',
+        'RANGE_END',
         47000000
     ) %}
     {% set front_buffer = var(
-        'front_buffer',
+        'FRONT_BUFFER',
         1
     ) %}
     {% set end_buffer = var(
-        'end_buffer',
+        'END_BUFFER',
         1
     ) %}
     {% if scope == 'front' %}

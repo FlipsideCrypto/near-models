@@ -90,14 +90,14 @@ If data needs to be re-run for some reason, partitions of data can be re-reun th
 Any data refresh will need to be done in a batch due to the nature of the receipt <> tx hash mapping. The view `silver__receipt_tx_hash_mapping` is a recursive AncestryTree that follows linked receipt outcome ids to map all receipts generated in a transaction back to the primary hash. Receipts can be generated many blocks after the transaction occurs, so a generous buffer is required to ensure all receipts are captured.
   
 The fix makes use of [project variables](https://docs.getdbt.com/docs/build/project-variables#defining-variables-on-the-command-line) to pass the following parameters:
- - manual_fix (required): This will run the models with the specified range, rather than the standard incremental logic. `False` by default.
- - range_start (required): The start of the block partition range (nearest 10,000) to run.
- - range_end (required): The end of the block partition range (nearest 10,000) to run.
- - front_buffer (optional): The number of partitions to add to the front of the range. 1 by default, not likely to need changing.
- - end_buffer (optional): The number of partitions to add to the end of the range. 1 by default, not likely to need changing.
+ - MANUAL_FIX (required): This will run the models with the specified range, rather than the standard incremental logic. `False` by default.
+ - RANGE_START (required): The start of the block partition range (nearest 10,000) to run.
+ - RANGE_END (required): The end of the block partition range (nearest 10,000) to run.
+ - FRONT_BUFFER (optional): The number of partitions to add to the front of the range. 1 by default, not likely to need changing.
+ - END_BUFFER (optional): The number of partitions to add to the end of the range. 1 by default, not likely to need changing.
 
 
-`front_buffer` and `end_buffer` are set to 1 by default and indicate how many partitions (10k blocks) should be added on to the front or end of the range.
+`FRONT_BUFFER` and `END_BUFFER` are set to 1 by default and indicate how many partitions (10k blocks) should be added on to the front or end of the range.
  - Flatten receipts is set to look back 1 partition to grab receipts that may have occurred prior to the start of the range.
  - Receipt tx hash mapping is set to look back 1 partition to grab receipts that may have occurred prior to the start of the range.
  - Receipts final does not buffer the range to only map receipts that occurred within the range to a tx hash (but the lookback is necessary in case the tree is truncated by the partition break).
@@ -131,18 +131,24 @@ You can visualize these tags by using the DAG Explorer in the [docs](https://fli
  - `load_blocks` will run just the blocks models, landing data in `silver__streamline_blocks`.
  - `load_shards` will run just the shards models, landing data in `silver__streamline_receipts`, `silver__streamline_receipt_chunks`, and `silver__streamline_transactions`.
 
-The logic in the load_x models will only check the external table for blocks and shards known to be missing. It will query the sequence gap test table(s). An accurate partition range is required.
+The logic in the load_x models will only check the external table for blocks and shards known to be missing. It will query the sequence gap test table(s), thus the partition range is not required for this step, as it will take that from the test table.
 
 ```
-dbt run -s tag:load --vars '{"manual_fix": True, "range_start": X, "range_end": Y}'
+dbt run -s tag:load --vars '{"MANUAL_FIX": True}'
 ```
 
 #### Map Tx Hash <> Receipt Hash
-The middle step is to map receipt IDs to transaction hashes. This is done in 3 models, which are tagged with `receipt_map`. 2 of these models are helper views that recursively map out the receipt->parent receipt->...->transaction, thus linking all receipts to a transaction. This step is computationally intensive, and requires a tight partition range. For present blocks with more activity, <250k is recommended.  
+The middle step is to map receipt IDs to transaction hashes. This is done in 3 models, which are tagged with `receipt_map`. 2 of these models are helper views that recursively map out the receipt->parent receipt->...->transaction, thus linking all receipts to a transaction. This step is computationally intensive, and requires a tight partition range. For present blocks with more activity, <250k is recommended. 
 
-If the range being mapped is the same range as the block/shard re-walk, then the tag can simply be appended to the same job.
+The following will read a range of receipts from `silver__streamline_receipts` and link receipts to the corresponding tx hash, saving the result to `silver__streamline_receipts_final`. It will then insert receipt data into the `tx` object in `silver__streamline_transactions_final`.
+
 ```
-dbt run -s tag:load tag:receipt_map --vars '{"manual_fix": True, "range_start": X, "range_end": Y}'
+dbt run -s tag:receipt_map --vars '{"MANUAL_FIX": True, "RANGE_START": X, "RANGE_END": Y}'
+```
+
+If the range being mapped is the same range as the block/shard re-walk, then the tag can simply be appended to the load job and the receipts will be mapped after ingestion.
+```
+dbt run -s tag:load tag:receipt_map --vars '{"MANUAL_FIX": True, "RANGE_START": X, "RANGE_END": Y}'
 ```
 
 The end result of this run will be `streamline__receipts_final` and `streamline__transactions_final` ([link](https://flipsidecrypto.github.io/near-models/#!/overview?g_v=1&g_i=tag:load%20tag:receipt_map)).
@@ -151,11 +157,11 @@ The end result of this run will be `streamline__receipts_final` and `streamline_
  Actions and curated models include the conditional based on target name so the tags `actions` and `curated` can be included to re-run the fixed data in downstream silver models. If missing data is loaded in new, this should not be necessary as `_load_timestamp` will be set to when the data hits snowflake and will flow through the standard incremental logic in the curated models. However, the range can be run with the curated tag:
 
  ```
-dbt run -s tag:curated --vars '{"manual_fix": True, "range_start": X, "range_end": Y}'
+dbt run -s tag:curated --vars '{"MANUAL_FIX": True, "RANGE_START": X, "RANGE_END": Y}'
 ```
 Or
 ```
-dbt run -s tag:load tag:receipt_map tag:curated --vars '{"manual_fix": True, "range_start": X, "range_end": Y}'
+dbt run -s tag:load tag:receipt_map tag:curated --vars '{"MANUAL_FIX": True, "RANGE_START": X, "RANGE_END": Y}'
 ```
 
 ### Incremental Load Strategy

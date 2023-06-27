@@ -7,8 +7,15 @@
     tags = ['load', 'load_blocks']
 ) }}
 
-WITH blocks_json AS (
+WITH missing_blocks AS (
 
+    SELECT
+        _partition_by_block_number,
+        missing_block_id
+    FROM
+        {{ target.database }}.tests.streamline_block_gaps
+),
+blocks_json AS (
     SELECT
         block_id,
         VALUE,
@@ -20,12 +27,17 @@ WITH blocks_json AS (
 
         {% if var("MANUAL_FIX") %}
         WHERE
-            {{ partition_load_manual('no_buffer') }}
+            _partition_by_block_number IN (
+                SELECT
+                    DISTINCT _partition_by_block_number
+                FROM
+                    missing_blocks
+            )
             AND block_id IN (
                 SELECT
                     missing_block_id
                 FROM
-                    {{ target.database }}.tests.streamline_block_gaps
+                    missing_blocks
             )
         {% else %}
         WHERE
