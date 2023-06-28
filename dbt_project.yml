@@ -50,7 +50,7 @@ tests:
   near:
     silver:
       +severity: warn # default to warn for int tests
-      +error_if: ">25"
+      +error_if: ">25" # TODO - threshold not working
     gold:
       +severity: error # default to warn for int tests
   +store_failures: true # all tests
@@ -61,3 +61,4 @@ vars:
   STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES: False
   UPDATE_UDFS_AND_SPS: False
   UPDATE_SNOWFLAKE_TAGS: True
+  MANUAL_FIX: False

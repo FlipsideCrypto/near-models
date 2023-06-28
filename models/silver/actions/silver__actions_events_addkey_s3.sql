@@ -14,7 +14,7 @@ WITH action_events AS (
     {{ ref('silver__actions_events_s3') }}
   WHERE
     action_name = 'AddKey' 
-    {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
+    {% if var("MANUAL_FIX") %}
       AND {{ partition_load_manual('no_buffer') }}
     {% else %}
       AND {{ incremental_load_filter('_load_timestamp') }}

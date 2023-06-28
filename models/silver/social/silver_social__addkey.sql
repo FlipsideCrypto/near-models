@@ -12,7 +12,7 @@ WITH receipts AS (
     FROM
         {{ ref('silver__streamline_receipts_final') }}
     WHERE
-        {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
+        {% if var("MANUAL_FIX") %}
             {{ partition_load_manual('no_buffer') }}
         {% else %}
             {{ incremental_load_filter('_load_timestamp') }}
@@ -34,7 +34,7 @@ from_addkey_event AS (
     FROM
         {{ ref('silver__actions_events_addkey_s3') }}
     WHERE
-        {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
+        {% if var("MANUAL_FIX") %}
             {{ partition_load_manual('no_buffer') }}
         {% else %}
             {{ incremental_load_filter('_load_timestamp') }}
@@ -58,7 +58,7 @@ nested_in_functioncall AS (
     FROM
         {{ ref('silver__actions_events_function_call_s3') }}
     WHERE
-        {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
+        {% if var("MANUAL_FIX") %}
             {{ partition_load_manual('no_buffer') }}
         {% else %}
             {{ incremental_load_filter('_load_timestamp') }}

@@ -13,7 +13,7 @@ WITH int_txs AS (
   FROM
     {{ ref('silver__streamline_transactions') }}
 
-    {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
+    {% if var("MANUAL_FIX") %}
     WHERE
       {{ partition_load_manual('no_buffer') }}
     {% else %}
@@ -31,7 +31,7 @@ int_receipts AS (
   FROM
     {{ ref('silver__streamline_receipts_final') }}
 
-    {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
+    {% if var("MANUAL_FIX") %}
     WHERE
       {{ partition_load_manual('end') }}
     {% else %}

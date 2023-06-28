@@ -41,7 +41,8 @@ WITH function_call AS (
         method_name IN (
             'nft_mint',
             'nft_mint_batch'
-        ) {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
+        ) 
+        {% if var("MANUAL_FIX") %}
             AND {{ partition_load_manual('no_buffer') }}
         {% else %}
             AND {{ incremental_load_filter("_load_timestamp") }}
@@ -67,7 +68,8 @@ mint_transactions AS (
             FROM
                 function_call
         )
-        AND tx_status = 'Success' {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
+        AND tx_status = 'Success' 
+        {% if var("MANUAL_FIX") %}
             AND {{ partition_load_manual('no_buffer') }}
         {% else %}
             AND {{ incremental_load_filter("_load_timestamp") }}
@@ -91,7 +93,7 @@ receipts_data AS (
             FROM
                 function_call
         ) 
-        {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
+        {% if var("MANUAL_FIX") %}
             AND {{ partition_load_manual('no_buffer') }}
         {% else %}
             AND {{ incremental_load_filter("_load_timestamp") }}

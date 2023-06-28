@@ -12,7 +12,7 @@ WITH all_social_receipts AS (
     FROM
         {{ ref('silver_social__receipts') }}
     WHERE
-        {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
+        {% if var("MANUAL_FIX") %}
             {{ partition_load_manual('no_buffer') }}
         {% else %}
             {{ incremental_load_filter('_load_timestamp') }}
@@ -31,7 +31,7 @@ decoded_function_calls AS (
     FROM
         {{ ref('silver__actions_events_function_call_s3') }}
     WHERE
-        {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
+        {% if var("MANUAL_FIX") %}
             {{ partition_load_manual('no_buffer') }}
         {% else %}
             {{ incremental_load_filter('_load_timestamp') }}

@@ -23,7 +23,7 @@ WITH base_swap_calls AS (
             'swap',
             'ft_transfer_call'
         ) 
-        {% if target.name == 'manual_fix' or target.name == 'manual_fix_dev' %}
+        {% if var("MANUAL_FIX") %}
             AND {{ partition_load_manual('no_buffer') }}
         {% else %}
             AND {{ incremental_load_filter('_load_timestamp') }}
