@@ -99,6 +99,7 @@ base_transactions AS (
     LEFT JOIN int_blocks b USING (block_id)
 ),
 {# The following steps were copied directly from legacy tx model to replicate columns #}
+-- TODO - refactor and simplify, if needed
 actions AS (
   SELECT
     tx_hash,
@@ -132,6 +133,7 @@ transactions AS (
     base_transactions
 ),
 {# changed this from a lateral flatten to use receipts model #}
+-- TODO refactor to use new receipt status
 receipts AS (
   SELECT
     tx_hash,
@@ -187,7 +189,7 @@ FINAL AS (
     transactions AS t
     LEFT JOIN receipts AS r
     ON t.tx_hash = r.tx_hash
-    JOIN actions
+    LEFT JOIN actions
     ON t.tx_hash = actions.tx_hash
 )
 SELECT

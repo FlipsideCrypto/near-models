@@ -62,7 +62,7 @@ models:
           - not_null:
               where: _load_timestamp <= current_timestamp - interval '2 hours'
 
-      - name: RECEIPT_OBBJECT_ID
+      - name: RECEIPT_OBJECT_ID
         description: "{{ doc('receipt_object_id') }}"
 
       - name: RECEIVER_ID

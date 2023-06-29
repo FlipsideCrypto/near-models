@@ -6,7 +6,21 @@
     tags = ['receipt_map']
 ) }}
 
-WITH base_receipts AS (
+WITH 
+current_nulls as (
+    select * from {{ this }}
+
+        {% if var("MANUAL_FIX") %}
+        WHERE
+            {{ partition_load_manual('no_buffer') }}
+        {% else %}
+        WHERE
+            {{ partition_batch_load(150000) }}
+            OR {{ incremental_load_filter('_load_timestamp') }}
+        {% endif %}
+        and tx_hash is null
+),
+base_receipts AS (
 
     SELECT
         *
@@ -21,6 +35,7 @@ WITH base_receipts AS (
             {{ partition_batch_load(150000) }}
             OR {{ incremental_load_filter('_load_timestamp') }}
         {% endif %}
+        and receipt_id in (select receipt_object_id from current_nulls)
 ),
 blocks AS (
     SELECT
