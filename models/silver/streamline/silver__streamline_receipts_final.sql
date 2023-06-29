@@ -21,12 +21,6 @@ WITH base_receipts AS (
             {{ partition_batch_load(150000) }}
             OR {{ incremental_load_filter('_load_timestamp') }}
         {% endif %}
-        AND receipt_id IN (
-            SELECT
-                receipt_object_id
-            FROM
-                current_nulls
-        )
 ),
 blocks AS (
     SELECT
