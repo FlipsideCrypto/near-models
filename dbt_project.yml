@@ -39,21 +39,17 @@ on-run-end:
 # as tables. These settings can be overridden in the individual model files
 # using the `{{ config(...) }}` macro.
 models:
-  +copy_grants: true
+  +copy_grants: True
   +persist_docs:
-    relation: true
-    columns: true
+    relation: True
+    columns: True
   +on_schema_change: "append_new_columns"
-  +post-hook: ["{% if target.name == 'prod_cloud' and this.schema != 'bronze' %} grant select on {{ this }} to share near_mdao {% endif %}"]
 
 tests:
   near:
     silver:
-      +severity: warn # default to warn for int tests
-      +error_if: ">25" # TODO - threshold not working
-    gold:
-      +severity: error # default to warn for int tests
-  +store_failures: true # all tests
+      +error_if: ">100" # only raise as error if >100, otherwise warn
+  +store_failures: True # all tests
 
 vars:
   "dbt_date:time_zone": GMT

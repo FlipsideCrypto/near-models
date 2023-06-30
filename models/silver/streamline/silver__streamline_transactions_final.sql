@@ -187,7 +187,7 @@ FINAL AS (
     transactions AS t
     LEFT JOIN receipts AS r
     ON t.tx_hash = r.tx_hash
-    JOIN actions
+    LEFT JOIN actions
     ON t.tx_hash = actions.tx_hash
 )
 SELECT
