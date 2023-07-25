@@ -8,15 +8,12 @@
 ) }}
 
 WITH missing_shards AS (
-
+    -- TODO write a (FAST) ephemeral model to test for shard gaps via missing chunks and add that into the load model
+    -- scanning external tables is v slow, but don't just re-load everything in a partition
     SELECT
-        _partition_by_block_number,
-        VALUE AS block_id
+        DISTINCT _partition_by_block_number
     FROM
-        {{ target.database }}.tests.chunk_gaps,
-        LATERAL FLATTEN(
-            input => blocks_to_walk
-        )
+        {{ target.database }}.tests.chunk_gaps
 ),
 shards_json AS (
     SELECT
@@ -39,12 +36,6 @@ shards_json AS (
             _partition_by_block_number IN (
                 SELECT
                     DISTINCT _partition_by_block_number
-                FROM
-                    missing_shards
-            )
-            AND block_id IN (
-                SELECT
-                    DISTINCT block_id
                 FROM
                     missing_shards
             )
