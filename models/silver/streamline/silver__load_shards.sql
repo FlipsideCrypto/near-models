@@ -8,13 +8,13 @@
 ) }}
 
 WITH missing_shards AS (
-    -- TODO write a (FAST) ephemeral model to test for shard gaps via missing chunks and add that into the load model
-    -- scanning external tables is v slow, but don't just re-load everything in a partition
+
     SELECT
-        DISTINCT _partition_by_block_number
+        *
     FROM
         {{ target.database }}.tests.chunk_gaps
 ),
+
 shards_json AS (
     SELECT
         block_id,
@@ -32,16 +32,34 @@ shards_json AS (
         {{ ref('bronze__streamline_shards') }}
 
         {% if var("MANUAL_FIX") %}
+            -- TODO can drop this conditional once new process confirmed
         WHERE
-            _partition_by_block_number IN (
+            TRUE
+            {# _partition_by_block_number IN (
                 SELECT
                     DISTINCT _partition_by_block_number
                 FROM
                     missing_shards
-            )
+            ) #}
         {% else %}
         WHERE
+            -- TODO change to load timestamp based on s3 file timestamp
             {{ partition_batch_load(150000) }}
+            OR -- lookback for late files, should not be needed once changeover to timestamp process
+            (
+                _partition_by_block_number IN (
+                    SELECT
+                        DISTINCT _partition_by_block_number
+                    FROM
+                        missed_shards
+                )
+                AND block_id IN (
+                    SELECT
+                        DISTINCT block_id
+                    FROM
+                        missed_shards
+                )
+            )
         {% endif %}
 )
 SELECT

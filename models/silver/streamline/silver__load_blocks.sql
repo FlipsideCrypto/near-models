@@ -7,14 +7,15 @@
     tags = ['load', 'load_blocks']
 ) }}
 
-WITH missing_blocks AS (
+WITH {# missed_blocks AS (
 
-    SELECT
-        _partition_by_block_number,
-        missing_block_id
-    FROM
-        {{ target.database }}.tests.streamline_block_gaps
+SELECT
+    missing_block_id,
+    _partition_by_block_number
+FROM
+    {{ ref('_missed_blocks') }}
 ),
+#}
 blocks_json AS (
     SELECT
         block_id,
@@ -24,27 +25,52 @@ blocks_json AS (
         _partition_by_block_number
     FROM
         {{ ref('bronze__streamline_blocks') }}
-
-        {% if var("MANUAL_FIX") %}
-        WHERE
-            _partition_by_block_number IN (
-                SELECT
-                    DISTINCT _partition_by_block_number
-                FROM
-                    missing_blocks
+    WHERE
+        {{ partition_batch_load(150000) }}
+        -- lookback for late blocks
+        {# OR (
+        _partition_by_block_number IN (
+            SELECT
+                DISTINCT _partition_by_block_number
+            FROM
+                missed_blocks
+        )
+        AND block_id IN (
+            SELECT
+                missing_block_id
+            FROM
+                missed_blocks
+        )
+) #}
+),
+meta AS (
+    SELECT
+        registered_on AS _inserted_timestamp,
+        file_name AS _filename
+    FROM
+        TABLE(
+            information_schema.external_table_files(
+                table_name => {{ source(
+                    'streamline_dev',
+                    'blocks'
+                ) }}
             )
-            AND block_id IN (
-                SELECT
-                    missing_block_id
-                FROM
-                    missing_blocks
-            )
-        {% else %}
-        WHERE
-            {{ partition_batch_load(150000) }}
-        {% endif %}
+        )
+    WHERE
+        _filename IN (
+            SELECT
+                DISTINCT _filename
+            FROM
+                blocks_json
+        )
 )
 SELECT
-    *
+    block_id,
+    VALUE,
+    _filename,
+    _load_timestamp,
+    _partition_by_block_number,
+    _inserted_timestamp
 FROM
     blocks_json
+    LEFT JOIN meta USING (_filename)
