@@ -7,14 +7,17 @@
     tags = ['load', 'load_blocks']
 ) }}
 
-WITH missing_blocks AS (
+WITH {% if var("MANUAL_FIX") %}
+    missing_blocks AS (
 
-    SELECT
-        _partition_by_block_number,
-        missing_block_id
-    FROM
-        {{ target.database }}.tests.streamline_block_gaps
-),
+        SELECT
+            _partition_by_block_number,
+            missing_block_id
+        FROM
+            {{ target.database }}.tests.streamline_block_gaps
+    ),
+{% endif %}
+
 blocks_json AS (
     SELECT
         block_id,
@@ -40,7 +43,7 @@ blocks_json AS (
                     missing_blocks
             )
         {% else %}
-        WHERE
+            WHERE
             {{ partition_batch_load(150000) }}
         {% endif %}
 )
