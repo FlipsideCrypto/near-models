@@ -18,6 +18,7 @@ WITH receipts AS (
         {% else %}
             {{ incremental_load_filter('_load_timestamp') }}
         {% endif %}
+        AND receipt_succeeded
 ),
 FINAL AS (
     SELECT
