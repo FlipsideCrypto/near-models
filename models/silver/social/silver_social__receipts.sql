@@ -18,7 +18,9 @@ WITH all_social_receipts AS (
             {{ incremental_load_filter('_load_timestamp') }}
         {% endif %}
         AND (LOWER(signer_id) = 'social.near'
-        OR LOWER(receiver_id) = 'social.near'))
+        OR LOWER(receiver_id) = 'social.near')
+        AND receipt_succeeded
+        )
     SELECT
         tx_hash,
         receipt_object_id,

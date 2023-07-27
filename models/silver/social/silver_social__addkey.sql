@@ -18,6 +18,7 @@ WITH receipts AS (
             {{ incremental_load_filter('_load_timestamp') }}
         {% endif %}
         AND _partition_by_block_number >= 59670000
+        AND receipt_succeeded
 ),
 from_addkey_event AS (
     SELECT
