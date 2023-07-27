@@ -36,6 +36,9 @@ models:
       - name: GAS_BURNT
         description: "{{ doc('gas_burnt')}}"
 
+      - name: RECEIPT_SUCCEEDED
+        description: "{{ doc('receipt_succeeded')}}"
+
       - name: SIGNER_ID
         description: "{{ doc('signer_id')}}"
 

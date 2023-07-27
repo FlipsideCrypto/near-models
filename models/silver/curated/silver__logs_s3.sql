@@ -32,6 +32,7 @@ FINAL AS (
         _load_timestamp,
         _partition_by_block_number,
         gas_burnt,
+        receipt_succeeded,
         INDEX AS action_index,
         COALESCE(TRY_PARSE_JSON(VALUE), TRY_PARSE_JSON(SPLIT(VALUE, 'EVENT_JSON:') [1]), VALUE :: STRING) AS clean_log,
         VALUE ILIKE 'event_json:%' AS is_standard
@@ -55,6 +56,7 @@ SELECT
     receipt_object_id,
     block_id,
     gas_burnt,
+    receipt_succeeded,
     block_timestamp,
     _load_timestamp,
     _partition_by_block_number

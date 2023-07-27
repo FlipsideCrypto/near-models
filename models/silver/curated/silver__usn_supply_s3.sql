@@ -20,6 +20,7 @@ WITH txs AS (
         WHERE
             {{ incremental_load_filter('_load_timestamp') }}
         {% endif %}
+        AND receipt_succeeded
 ),
 logs AS (
     SELECT
