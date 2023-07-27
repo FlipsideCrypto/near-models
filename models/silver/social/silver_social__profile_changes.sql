@@ -17,8 +17,7 @@ WITH decoded_actions AS (
         {% else %}
             {{ incremental_load_filter('_load_timestamp') }}
         {% endif %}
-    AND
-        node = 'profile'
+        AND node = 'profile'
 ),
 flatten_profile_json AS (
     SELECT

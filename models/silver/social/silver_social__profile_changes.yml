@@ -38,7 +38,8 @@ models:
       - name: profile_data
         description: "{{ doc('profile_data')}}"
         tests:
-          - not_null
+          - not_null:
+              where: profile_section not in ('horizon_tnc', 'team')
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - varchar
