@@ -25,6 +25,9 @@ models:
           - not_null:
               where: "block_id not in (34691244, 34691277)"
 
+      - name: RECEIPT_SUCCEEDED
+        description: "{{ doc('receipt_succeeded')}}"
+
       - name: TX_HASH
         description: "{{ doc('tx_hash')}}"
         tests:

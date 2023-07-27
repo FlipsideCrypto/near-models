@@ -21,8 +21,9 @@ WITH all_horizon_receipts AS (
             LOWER(signer_id) = 'nearhorizon.near'
             OR LOWER(receiver_id) = 'nearhorizon.near'
         )
-        AND _partition_by_block_number >= 86000000)
+        AND _partition_by_block_number >= 86000000
         AND receipt_succeeded
+        )
     SELECT
         tx_hash,
         receipt_object_id,
