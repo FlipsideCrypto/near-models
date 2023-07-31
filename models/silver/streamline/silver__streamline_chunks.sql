@@ -22,6 +22,7 @@ FINAL AS (
         shard_id,
         _load_timestamp,
         _partition_by_block_number,
+        _inserted_timestamp,
         chunk,
         chunk :header :height_created :: NUMBER AS height_created,
         chunk :header :height_included :: NUMBER AS height_included,

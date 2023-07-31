@@ -3,14 +3,14 @@
 {% if is_incremental() %}
 _partition_by_block_number BETWEEN (
     SELECT
-        MAX(_partition_by_block_number) - 10000
+        MAX(_partition_by_block_number)
     FROM
         {{ this }}
 )
 AND (
     (
         SELECT
-            MAX(_partition_by_block_number) - 10000
+            MAX(_partition_by_block_number)
         FROM
             {{ this }}
     ) + {{ batch_size }}

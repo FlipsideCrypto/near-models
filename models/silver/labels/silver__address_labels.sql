@@ -16,7 +16,8 @@ WITH address_labels AS (
         label_subtype,
         address_name,
         project_name,
-        _load_timestamp
+        _load_timestamp,
+        _inserted_timestamp
     FROM
         {{ ref('bronze__address_labels') }}
 
@@ -41,6 +42,7 @@ SELECT
     label_subtype,
     label_type AS l1_label,
     label_subtype AS l2_label,
-    _load_timestamp
+    _load_timestamp,
+    _inserted_timestamp
 FROM
     address_labels

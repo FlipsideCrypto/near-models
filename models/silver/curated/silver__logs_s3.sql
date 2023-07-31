@@ -31,6 +31,7 @@ FINAL AS (
         signer_id,
         _load_timestamp,
         _partition_by_block_number,
+        _inserted_timestamp,
         gas_burnt,
         INDEX AS action_index,
         COALESCE(TRY_PARSE_JSON(VALUE), TRY_PARSE_JSON(SPLIT(VALUE, 'EVENT_JSON:') [1]), VALUE :: STRING) AS clean_log,
@@ -57,6 +58,7 @@ SELECT
     gas_burnt,
     block_timestamp,
     _load_timestamp,
-    _partition_by_block_number
+    _partition_by_block_number,
+    _inserted_timestamp
 FROM
     FINAL

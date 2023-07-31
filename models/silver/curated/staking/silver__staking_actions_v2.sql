@@ -52,7 +52,8 @@ staking_actions AS (
         ) AS decimals,
         signer_id = log_signer_id AS _log_signer_id_match,
         _load_timestamp,
-        _partition_by_block_number
+        _partition_by_block_number,
+        _inserted_timestamp
     FROM
         pool_events
     WHERE
@@ -78,7 +79,8 @@ FINAL AS (
         decimals,
         _log_signer_id_match,
         _load_timestamp,
-        _partition_by_block_number
+        _partition_by_block_number,
+        _inserted_timestamp
     FROM
         staking_actions
 )

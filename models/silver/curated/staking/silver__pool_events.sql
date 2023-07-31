@@ -32,7 +32,8 @@ FINAL AS (
         logs,
         VALUE AS LOG,
         _load_timestamp,
-        _partition_by_block_number
+        _partition_by_block_number,
+        _inserted_timestamp
     FROM
         receipts,
         LATERAL FLATTEN(logs)

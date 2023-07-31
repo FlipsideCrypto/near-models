@@ -16,7 +16,8 @@ WITH txs AS (
         tx_receiver,
         tx,
         tx_status,
-        _load_timestamp
+        _load_timestamp,
+        _inserted_timestamp
     FROM
         {{ ref('silver__streamline_transactions_final') }}
 
@@ -41,7 +42,8 @@ function_calls AS (
         signer_id,
         method_name,
         args,
-        _load_timestamp
+        _load_timestamp,
+        _inserted_timestamp
     FROM
         {{ ref('silver__actions_events_function_call_s3') }}
     WHERE
@@ -69,7 +71,8 @@ add_addresses_from_tx AS (
         method_name,
         args,
         tx_status,
-        _load_timestamp
+        _load_timestamp,
+        _inserted_timestamp
     FROM
         function_calls fc
         LEFT JOIN txs USING (tx_hash)
@@ -85,7 +88,8 @@ new_pools AS (
             args :reward_fee_fraction
         ) AS reward_fee_fraction,
         'Create' AS tx_type,
-        _load_timestamp
+        _load_timestamp,
+        _inserted_timestamp
     FROM
         add_addresses_from_tx
     WHERE
@@ -110,7 +114,8 @@ updated_pools AS (
             args :reward_fee_fraction
         ) AS reward_fee_fraction,
         'Update' AS tx_type,
-        _load_timestamp
+        _load_timestamp,
+        _inserted_timestamp
     FROM
         add_addresses_from_tx
     WHERE

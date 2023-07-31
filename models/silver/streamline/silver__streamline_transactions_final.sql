@@ -92,7 +92,8 @@ base_transactions AS (
       _signer_id
     ) AS tx,
     _load_timestamp,
-    _partition_by_block_number
+    _partition_by_block_number,
+    t._inserted_timestamp
   FROM
     int_txs t
     LEFT JOIN receipt_array r USING (tx_hash)
@@ -127,7 +128,8 @@ transactions AS (
     tx :outcome :outcome :gas_burnt :: NUMBER AS transaction_gas_burnt,
     tx :outcome :outcome :tokens_burnt :: NUMBER AS transaction_tokens_burnt,
     _load_timestamp,
-    _partition_by_block_number
+    _partition_by_block_number,
+    _inserted_timestamp
   FROM
     base_transactions
 ),
@@ -172,6 +174,7 @@ FINAL AS (
     t.transaction_tokens_burnt + r.receipt_tokens_burnt AS transaction_fee,
     _load_timestamp,
     _partition_by_block_number,
+    _inserted_timestamp,
     COALESCE(
       actions.attached_gas,
       gas_used
@@ -205,7 +208,8 @@ SELECT
   _load_timestamp,
   _partition_by_block_number,
   attached_gas,
-  tx_status
+  tx_status,
+  _inserted_timestamp
 FROM
   FINAL qualify ROW_NUMBER() over (
     PARTITION BY tx_hash

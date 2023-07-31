@@ -60,7 +60,8 @@ pool_txs AS (
         tx_signer,
         tx,
         method_name,
-        txs._load_timestamp AS _load_timestamp
+        txs._load_timestamp AS _load_timestamp,
+        txs._inserted_timestamp AS _inserted_timestamp
     FROM
         txs
         INNER JOIN actions_events_function_call
@@ -83,7 +84,8 @@ deposit_and_stake_txs AS (
             'e'
         ) :: NUMBER AS stake_amount,
         'Stake' AS action,
-        _load_timestamp
+        _load_timestamp,
+        _inserted_timestamp
     FROM
         pool_txs
     WHERE
@@ -107,7 +109,8 @@ stake_txs AS (
             'e'
         ) :: NUMBER AS stake_amount,
         'Stake' AS action,
-        _load_timestamp
+        _load_timestamp,
+        _inserted_timestamp
     FROM
         pool_txs
     WHERE
@@ -131,7 +134,8 @@ stake_all_txs AS (
             'e'
         ) :: NUMBER AS stake_amount,
         'Stake' AS action,
-        _load_timestamp
+        _load_timestamp,
+        _inserted_timestamp
     FROM
         pool_txs
     WHERE
@@ -155,7 +159,8 @@ unstake_txs AS (
             'e'
         ) :: NUMBER AS stake_amount,
         'Unstake' AS action,
-        _load_timestamp
+        _load_timestamp,
+        _inserted_timestamp
     FROM
         pool_txs
     WHERE
@@ -179,7 +184,8 @@ unstake_all_txs AS (
             'e'
         ) :: NUMBER AS stake_amount,
         'Unstake' AS action,
-        _load_timestamp
+        _load_timestamp,
+        _inserted_timestamp
     FROM
         pool_txs
     WHERE

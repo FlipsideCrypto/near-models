@@ -35,7 +35,8 @@ flatten_profile_json AS (
         VALUE :: STRING AS profile_data,
         -- must store as string due to various possible inputs
         _load_timestamp,
-        _partition_by_block_number
+        _partition_by_block_number,
+        _inserted_timestamp
     FROM
         decoded_actions,
         LATERAL FLATTEN(node_data)
@@ -50,6 +51,7 @@ SELECT
     profile_section,
     profile_data,
     _load_timestamp,
-    _partition_by_block_number
+    _partition_by_block_number,
+    _inserted_timestamp
 FROM
     flatten_profile_json

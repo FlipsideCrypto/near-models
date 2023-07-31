@@ -28,6 +28,7 @@ FINAL AS (
         ) AS receipt_execution_outcome_id,
         _load_timestamp,
         _partition_by_block_number,
+        _inserted_timestamp,
         chunk :header :chunk_hash :: STRING AS chunk_hash,
         VALUE :execution_outcome :: OBJECT AS execution_outcome,
         VALUE :receipt :: OBJECT AS receipt,

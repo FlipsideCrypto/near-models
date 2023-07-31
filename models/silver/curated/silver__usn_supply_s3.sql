@@ -3,7 +3,8 @@
     unique_key = 'tx_hash',
     incremental_strategy = 'delete+insert',
     cluster_by = ['block_timestamp::DATE', '_load_timestamp::DATE'],
-    tags = ['curated']
+    tags = ['curated'],
+    enabled = False
 ) }}
 
 WITH txs AS (

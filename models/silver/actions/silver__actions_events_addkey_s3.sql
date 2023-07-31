@@ -33,7 +33,8 @@ addkey_events AS (
     action_data :access_key :permission :FunctionCall :method_names :: ARRAY AS method_name,
     action_data :access_key :permission :FunctionCall :receiver_id :: STRING AS receiver_id,
     _partition_by_block_number,
-    _load_timestamp
+    _load_timestamp,
+    _inserted_timestamp
   FROM
     action_events
 )

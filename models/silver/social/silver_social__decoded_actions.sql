@@ -61,7 +61,8 @@ join_wallet_ids AS (
         r.signer_id,
         r.execution_outcome,
         fc._load_timestamp,
-        fc._partition_by_block_number
+        fc._partition_by_block_number,
+        fc._inserted_timestamp
     FROM
         decoded_function_calls fc
         LEFT JOIN all_social_receipts r USING (receipt_object_id)
@@ -82,7 +83,8 @@ action_data AS (
         receiver_id,
         signer_id,
         _load_timestamp,
-        _partition_by_block_number
+        _partition_by_block_number,
+        _inserted_timestamp
     FROM
         join_wallet_ids
 ),
@@ -100,7 +102,8 @@ flattened_actions AS (
         key AS node,
         VALUE AS node_data,
         _load_timestamp,
-        _partition_by_block_number
+        _partition_by_block_number,
+        _inserted_timestamp
     FROM
         action_data,
         LATERAL FLATTEN (

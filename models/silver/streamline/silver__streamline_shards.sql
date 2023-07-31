@@ -29,7 +29,8 @@ shards AS (
         VALUE :shard_id :: NUMBER AS shard_number,
         VALUE :state_changes :: variant AS state_changes,
         _partition_by_block_number,
-        _load_timestamp
+        _load_timestamp,
+        _inserted_timestamp
     FROM
         shardsjson
 )

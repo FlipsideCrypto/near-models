@@ -38,6 +38,7 @@ WITH all_social_receipts AS (
         proof,
         metadata,
         _load_timestamp,
-        _partition_by_block_number
+        _partition_by_block_number,
+        _inserted_timestamp
     FROM
         all_social_receipts

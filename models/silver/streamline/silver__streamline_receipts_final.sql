@@ -49,7 +49,8 @@ append_tx_hash AS (
         r.error_type_2,
         r.error_message,
         r._load_timestamp,
-        r._partition_by_block_number
+        r._partition_by_block_number,
+        r._inserted_timestamp
     FROM
         base_receipts r
         LEFT JOIN {{ ref('silver__receipt_tx_hash_mapping') }}
@@ -80,7 +81,8 @@ FINAL AS (
         error_type_2,
         error_message,
         _load_timestamp,
-        _partition_by_block_number
+        _partition_by_block_number,
+        _inserted_timestamp
     FROM
         append_tx_hash r
         LEFT JOIN blocks b USING (block_id)

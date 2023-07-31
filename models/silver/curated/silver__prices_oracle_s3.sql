@@ -56,7 +56,8 @@ prices AS (
             10,
             decimals
         ) AS price_usd,
-        _load_timestamp
+        _load_timestamp,
+        _inserted_timestamp
     FROM
         events_function_call,
         LATERAL FLATTEN(
@@ -77,7 +78,8 @@ FINAL AS (
         p.raw_price,
         p.price_usd,
         p.receiver_id AS source,
-        p._load_timestamp
+        p._load_timestamp,
+        p._inserted_timestamp
     FROM
         prices p
         LEFT JOIN token_labels l USING (token_contract)

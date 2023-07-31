@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'incremental',
-    incremental_strategy = 'merge',
+    incremental_strategy = 'delete+insert',
     cluster_by = ['_partition_by_block_number', '_load_timestamp::DATE'],
     unique_key = 'block_id',
     full_refresh = False,
@@ -24,7 +24,8 @@ blocks_json AS (
         VALUE,
         _filename,
         _load_timestamp,
-        _partition_by_block_number
+        _partition_by_block_number,
+        _inserted_timestamp
     FROM
         {{ ref('bronze__streamline_blocks') }}
 
