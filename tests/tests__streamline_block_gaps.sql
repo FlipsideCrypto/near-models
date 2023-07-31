@@ -26,7 +26,7 @@ WITH silver_blocks AS (
         MAX(_inserted_timestamp)
       FROM
         {{ ref('silver__streamline_blocks') }}
-    ) - INTERVAL '1 hour'
+    ) - INTERVAL '6 hours'
 )
 SELECT
   *

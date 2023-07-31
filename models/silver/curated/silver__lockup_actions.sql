@@ -16,7 +16,7 @@ WITH txs AS (
             {{ partition_load_manual('no_buffer') }}
         {% else %}
         WHERE
-            {{ incremental_load_filter('_load_timestamp') }}
+            {{ incremental_load_filter('_inserted_timestamp') }}
         {% endif %}
 ),
 function_calls AS (
@@ -30,7 +30,7 @@ function_calls AS (
             {{ partition_load_manual('no_buffer') }}
         {% else %}
         WHERE
-            {{ incremental_load_filter('_load_timestamp') }}
+            {{ incremental_load_filter('_inserted_timestamp') }}
         {% endif %}
 ),
 xfers AS (
@@ -44,7 +44,7 @@ xfers AS (
             {{ partition_load_manual('no_buffer') }}
         {% else %}
         WHERE
-            {{ incremental_load_filter('_load_timestamp') }}
+            {{ incremental_load_filter('_inserted_timestamp') }}
         {% endif %}
 ),
 lockup_actions AS (

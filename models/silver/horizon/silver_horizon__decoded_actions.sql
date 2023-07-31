@@ -1,7 +1,7 @@
 {{ config(
     materialized = 'incremental',
     unique_key = 'action_id_horizon',
-    cluster_by = ['_load_timestamp::date', '_partition_by_block_number'],
+    cluster_by = ['_inserted_timestamp::date', '_partition_by_block_number'],
     tags = ['curated', 'horizon']
 ) }}
 
@@ -15,7 +15,7 @@ WITH all_horizon_receipts AS (
         {% if var("MANUAL_FIX") %}
             {{ partition_load_manual('no_buffer') }}
         {% else %}
-            {{ incremental_load_filter('_load_timestamp') }}
+            {{ incremental_load_filter('_inserted_timestamp') }}
         {% endif %}
 ),
 decoded_function_calls AS (
@@ -31,7 +31,7 @@ decoded_function_calls AS (
         {% if var("MANUAL_FIX") %}
             {{ partition_load_manual('no_buffer') }}
         {% else %}
-            {{ incremental_load_filter('_load_timestamp') }}
+            {{ incremental_load_filter('_inserted_timestamp') }}
         {% endif %}
         AND _partition_by_block_number >= 85000000
         AND SPLIT(

@@ -1,7 +1,7 @@
 {{ config(
     materialized = 'incremental',
     unique_key = 'receipt_object_id',
-    cluster_by = ['_load_timestamp::date', 'block_timestamp::DATE'],
+    cluster_by = ['_inserted_timestamp::date', 'block_timestamp::DATE'],
     tags = ['curated', 'horizon']
 ) }}
 
@@ -15,7 +15,7 @@ WITH all_horizon_receipts AS (
         {% if var("MANUAL_FIX") %}
             {{ partition_load_manual('no_buffer') }}
         {% else %}
-            {{ incremental_load_filter('_load_timestamp') }}
+            {{ incremental_load_filter('_inserted_timestamp') }}
         {% endif %}
         AND (
             LOWER(signer_id) = 'nearhorizon.near'

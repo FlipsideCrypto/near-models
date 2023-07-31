@@ -17,7 +17,7 @@ WITH block_chunks_included AS (
                 MAX(_inserted_timestamp)
             FROM
                 {{ ref('silver__streamline_blocks') }}
-        ) - INTERVAL '1 hour'
+        ) - INTERVAL '6 hours'
 ),
 chunks_per_block AS (
     SELECT
@@ -33,7 +33,7 @@ chunks_per_block AS (
                 MAX(_inserted_timestamp)
             FROM
                 {{ ref('silver__streamline_chunks') }}
-        ) - INTERVAL '1 hour'
+        ) - INTERVAL '6 hours'
     GROUP BY
         1
 ),

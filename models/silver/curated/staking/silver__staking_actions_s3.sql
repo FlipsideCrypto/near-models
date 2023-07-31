@@ -11,7 +11,8 @@ WITH actions_events_function_call AS (
     SELECT
         tx_hash,
         method_name,
-        _load_timestamp
+        _load_timestamp,
+        _inserted_timestamp
     FROM
         {{ ref('silver__actions_events_function_call_s3') }}
     WHERE
@@ -24,7 +25,7 @@ WITH actions_events_function_call AS (
         {% if var("MANUAL_FIX") %}
             AND {{ partition_load_manual('no_buffer') }}
         {% else %}
-            AND {{ incremental_load_filter('_load_timestamp') }}
+            AND {{ incremental_load_filter('_inserted_timestamp') }}
         {% endif %}
 ),
 base_txs AS (
@@ -38,7 +39,7 @@ base_txs AS (
             {{ partition_load_manual('no_buffer') }}
         {% else %}
         WHERE
-            {{ incremental_load_filter('_load_timestamp') }}
+            {{ incremental_load_filter('_inserted_timestamp') }}
         {% endif %}
 ),
 txs AS (

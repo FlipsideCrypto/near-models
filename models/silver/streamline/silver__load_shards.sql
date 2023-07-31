@@ -18,20 +18,17 @@ WITH {% if var("MANUAL_FIX") %}
     ),
 {% endif %}
 
-last_day AS (
+local_range AS (
     SELECT
         *
     FROM
         {{ ref('bronze__streamline_shards') }}
     WHERE
-        _partition_by_block_number >= (
-            SELECT
-                MIN(_partition_by_block_number)
-            FROM
-                {{ this }}
-            WHERE
-                _inserted_timestamp >= CURRENT_TIMESTAMP - interval '24 hours'
-        )
+        {{ partition_incremental_load(
+            75000,
+            20000,
+            0
+        ) }}
 ),
 shards_json AS (
     SELECT
@@ -66,7 +63,7 @@ shards_json AS (
         )
     {% else %}
     FROM
-        last_day
+        local_range
     WHERE
         {{ incremental_load_filter('_inserted_timestamp') }}
     {% endif %}

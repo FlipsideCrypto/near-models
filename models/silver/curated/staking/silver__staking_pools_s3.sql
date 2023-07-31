@@ -26,7 +26,7 @@ WITH txs AS (
             {{ partition_load_manual('no_buffer') }}
         {% else %}
         WHERE
-            {{ incremental_load_filter('_load_timestamp') }}
+            {{ incremental_load_filter('_inserted_timestamp') }}
         {% endif %}
 ),
 function_calls AS (
@@ -55,7 +55,7 @@ function_calls AS (
         {% if var("MANUAL_FIX") %}
             AND {{ partition_load_manual('no_buffer') }}
         {% else %}
-            AND {{ incremental_load_filter('_load_timestamp') }}
+            AND {{ incremental_load_filter('_inserted_timestamp') }}
         {% endif %}
 ),
 add_addresses_from_tx AS (

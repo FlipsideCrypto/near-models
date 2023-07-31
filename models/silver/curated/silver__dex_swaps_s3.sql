@@ -2,7 +2,7 @@
     materialized = "incremental",
     unique_key = "swap_id",
     incremental_strategy = "delete+insert",
-    cluster_by = ["block_timestamp::DATE", "_load_timestamp::DATE"],
+    cluster_by = ["block_timestamp::DATE"],
     tags = ['curated']
 ) }}
 
@@ -27,7 +27,7 @@ WITH base_swap_calls AS (
         {% if var("MANUAL_FIX") %}
             AND {{ partition_load_manual('no_buffer') }}
         {% else %}
-            AND {{ incremental_load_filter('_load_timestamp') }}
+            AND {{ incremental_load_filter('_inserted_timestamp') }}
         {% endif %}
 ),
 base_swaps AS (
