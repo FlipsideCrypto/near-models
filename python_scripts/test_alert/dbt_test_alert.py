@@ -50,7 +50,7 @@ def log_test_result():
 
 def create_message(**kwargs):
     messageBody = {
-        "text": f"Hey{' <@U037AH6DS8P>' if len(kwargs['messages']['fail']) > 0 else ''}, new DBT test results for :{os.environ.get('DATABASE').split('_DEV')[0]}: {os.environ.get('DATABASE')}",
+        "text": f"Hey{' <@here>' if len(kwargs['messages']['fail']) > 0 else ''}, new DBT test results for :{os.environ.get('DATABASE').split('_DEV')[0]}: {os.environ.get('DATABASE')}",
         "attachments": [
             {
                 "color": kwargs["color"],
@@ -80,13 +80,13 @@ def create_message(**kwargs):
 
                     {
                         "type": "button",
-                        "text": "View the full run results",
+                        "text": "View Warnings",
                         "style": "primary",
                         "url": "https://github.com/FlipsideCrypto/near-models/actions/workflows/dbt_test.yml",
                         "confirm": {
-                            "title": "I haven't figured this part out yet",
-                            "text": "I'm not sure how to get the run id from the workflow run, see all tests by clicking Ok",
-                            "ok_text": "Ok",
+                            "title": f"{kwargs['warn_count']} Warnings",
+                            "text": "\n".join(kwargs["messages"]["warn"]) if len(kwargs["messages"]["warn"]) > 0 else "None :)",
+                            "ok_text": "Continue to GHA",
                             "dismiss_text": "Dismiss"
                         }
                     }
