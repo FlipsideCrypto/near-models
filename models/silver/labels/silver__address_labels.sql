@@ -23,12 +23,7 @@ WITH address_labels AS (
 
 {% if is_incremental() %}
 WHERE
-    _load_timestamp >= (
-        SELECT
-            MAX(_load_timestamp)
-        FROM
-            {{ this }}
-    )
+    {{ incremental_load_filter('_inserted_timestamp') }}
 {% endif %}
 )
 SELECT
