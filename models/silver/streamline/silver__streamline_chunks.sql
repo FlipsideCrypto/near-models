@@ -2,7 +2,7 @@
     materialized = 'incremental',
     incremental_strategy = 'merge',
     unique_key = 'chunk_hash',
-    cluster_by = ['_load_timestamp::date','height_created','height_included'],
+    cluster_by = ['_inserted_timestamp::date'],
     tags = ['load', 'load_shards']
 ) }}
 
@@ -13,7 +13,7 @@ WITH shards AS (
     FROM
         {{ ref('silver__streamline_shards') }}
     WHERE
-        {{ incremental_load_filter('_load_timestamp') }}
+        {{ incremental_load_filter('_inserted_timestamp') }}
         AND chunk != 'null'
 ),
 FINAL AS (

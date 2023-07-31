@@ -1,7 +1,7 @@
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'delete+insert',
-    cluster_by = ['_partition_by_block_number', '_load_timestamp::DATE'],
+    cluster_by = ['_partition_by_block_number', '_inserted_timestamp::DATE'],
     unique_key = 'block_id',
     tags = ['load', 'load_blocks']
 ) }}
@@ -14,11 +14,11 @@ WITH blocks_json AS (
         {{ ref('silver__load_blocks') }}
         {# Note - no partition load as blocks is lightweight enough #}
     WHERE
-        {{ incremental_load_filter('_load_timestamp') }}
+        {{ incremental_load_filter('_inserted_timestamp') }}
         qualify ROW_NUMBER() over (
             PARTITION BY block_id
             ORDER BY
-                _load_timestamp DESC
+                _inserted_timestamp DESC
         ) = 1
 ),
 blocks AS (

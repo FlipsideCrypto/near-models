@@ -2,7 +2,7 @@
     materialized = 'incremental',
     incremental_strategy = 'merge',
     unique_key = 'receipt_id',
-    cluster_by = ['_load_timestamp::date', 'block_id'],
+    cluster_by = ['_inserted_timestamp::date', 'block_id'],
     tags = ['load', 'load_shards']
 ) }}
 
@@ -14,7 +14,7 @@ WITH chunks AS (
         {{ ref('silver__streamline_chunks') }}
     WHERE
         ARRAY_SIZE(receipts) > 0
-        AND {{ incremental_load_filter('_load_timestamp') }}
+        AND {{ incremental_load_filter('_inserted_timestamp') }}
 ),
 chunk_receipts AS (
     SELECT

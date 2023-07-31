@@ -2,7 +2,7 @@
   materialized = 'incremental',
   unique_key = 'tx_hash',
   incremental_strategy = 'delete+insert',
-  cluster_by = ['_load_timestamp::date', 'block_timestamp::date'],
+  cluster_by = ['_inserted_timestamp::date', 'block_timestamp::date'],
   tags = ['receipt_map']
 ) }}
 
@@ -133,7 +133,7 @@ transactions AS (
   FROM
     base_transactions
 ),
-{# changed this from a lateral flatten to use receipts model #}
+-- TODO - refactor to use the receipt_succeeded field in receipts
 receipts AS (
   SELECT
     tx_hash,
@@ -214,5 +214,5 @@ FROM
   FINAL qualify ROW_NUMBER() over (
     PARTITION BY tx_hash
     ORDER BY
-      _load_timestamp DESC
+      _inserted_timestamp DESC
   ) = 1

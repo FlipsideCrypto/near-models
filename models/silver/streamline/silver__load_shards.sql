@@ -1,7 +1,7 @@
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'delete+insert',
-    cluster_by = ['_partition_by_block_number', '_load_timestamp::DATE'],
+    cluster_by = ['_partition_by_block_number', '_inserted_timestamp::DATE'],
     unique_key = 'shard_id',
     full_refresh = False,
     tags = ['load', 'load_shards']
@@ -54,7 +54,7 @@ shards_json AS (
             )
         {% else %}
             WHERE
-            {{ partition_batch_load(150000) }}
+            {{ incremental_load_filter('_inserted_timestamp') }}
         {% endif %}
 )
 SELECT
