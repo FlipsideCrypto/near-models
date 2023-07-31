@@ -53,3 +53,6 @@ models:
 
       - name: _PARTITION_BY_BLOCK_NUMBER
         description: "{{ doc('_partition_by_block_number')}}"
+
+      - name: _INSERTED_TIMESTAMP
+        description: "{{ doc('_inserted_timestamp')}}"

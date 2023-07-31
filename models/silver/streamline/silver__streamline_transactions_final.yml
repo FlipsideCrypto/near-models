@@ -76,3 +76,6 @@ models:
         tests:
           - not_null:
               where: _load_timestamp <= current_timestamp - interval '2 hours'
+
+      - name: _INSERTED_TIMESTAMP
+        description: "{{ doc('_inserted_timestamp')}}"
