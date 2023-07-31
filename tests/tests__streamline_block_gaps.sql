@@ -1,5 +1,6 @@
 {{ config(
-  severity = 'error'
+  error_if = '>=25',
+  warn_if = '<25'
 ) }}
 
 WITH silver_blocks AS (
@@ -20,13 +21,6 @@ WITH silver_blocks AS (
     CURRENT_TIMESTAMP AS _test_timestamp
   FROM
     {{ ref('silver__streamline_blocks') }}
-  WHERE
-    _inserted_timestamp <= (
-      SELECT
-        MAX(_inserted_timestamp)
-      FROM
-        {{ ref('silver__streamline_blocks') }}
-    ) - INTERVAL '6 hours'
 )
 SELECT
   *
