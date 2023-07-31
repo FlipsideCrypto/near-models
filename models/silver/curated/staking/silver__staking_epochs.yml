@@ -1,0 +1,77 @@
+version: 2
+
+models:
+  - name: silver__staking_epochs
+    description: |-
+      This table extracts epoch information for each pool from the logs of the reward receipts. 
+      Note, it appears that the epoch log is only recorded during an act of withdrawal or deposit by a delegator, anbd not on each epoch.
+
+    tests:
+        - dbt_utils.recency:
+            datepart: day
+            field: block_timestamp
+            interval: 1
+
+    columns:
+      - name: TX_HASH
+        description: "{{ doc('tx_hash')}}"
+        tests:
+          - not_null
+
+      - name: BLOCK_ID
+        description: "{{ doc('block_id')}}"
+        tests:
+          - not_null
+
+      - name: BLOCK_TIMESTAMP
+        description: "{{ doc('block_timestamp')}}"
+        tests:
+          - not_null
+
+      - name: POOL_ID
+        description: "{{ doc('pool_id')}}"
+        tests:
+          - not_null
+
+      - name: EPOCH_NUMBER
+        description: "{{ doc('epoch_number')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: NUMBER
+
+      - name: REWARD_TOKENS
+        description: "{{ doc('reward_tokens')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: NUMBER
+
+      - name: TOTAL_STAKED_BALANCE
+        description: "{{ doc('total_staked_balance')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: NUMBER
+
+      - name: TOTAL_STAKING_SHARES
+        description: "{{ doc('total_staking_shares')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: NUMBER
+
+      - name: LOG
+        description: "{{ doc('log')}}"
+
+      - name: _LOAD_TIMESTAMP
+        description: "{{ doc('_load_timestamp')}}"
+
+      - name: _PARTITION_BY_BLOCK_NUMBER
+        description: "{{ doc('_partition_by_block_number')}}"
+
+      - name: _EPOCH_ID
+        description: "{{ doc('_epoch_id')}}"
+        tests:
+          - unique
+          - not_null

@@ -10,7 +10,7 @@ _partition_by_block_number BETWEEN (
 AND (
     (
         SELECT
-            MAX(_partition_by_block_number)
+            MAX(_partition_by_block_number) - 10000
         FROM
             {{ this }}
     ) + {{ batch_size }}
