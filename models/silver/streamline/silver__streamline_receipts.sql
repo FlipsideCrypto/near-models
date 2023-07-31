@@ -13,7 +13,7 @@ WITH receipt_execution_outcomes AS (
     FROM
         {{ ref('silver__streamline_receipt_execution_outcome') }}
     WHERE
-        {{ incremental_load_filter('_inserted_timestamp') }}
+        {{ incremental_load_filter('_inserted_timestamp ') }}
 ),
 FINAL AS (
     SELECT

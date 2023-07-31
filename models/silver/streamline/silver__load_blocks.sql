@@ -8,16 +8,31 @@
 ) }}
 
 WITH {% if var("MANUAL_FIX") %}
-    missing_blocks AS (
+    missed_blocks AS (
 
         SELECT
             _partition_by_block_number,
             missing_block_id
         FROM
-            {{ target.database }}.tests.streamline_block_gaps
+            {{ ref('_missed_blocks') }}
     ),
 {% endif %}
 
+last_day AS (
+    SELECT
+        *
+    FROM
+        {{ ref('bronze__streamline_blocks') }}
+    WHERE
+        _partition_by_block_number >= (
+            SELECT
+                MIN(_partition_by_block_number)
+            FROM
+                {{ this }}
+            WHERE
+                _inserted_timestamp >= CURRENT_TIMESTAMP - interval '24 hours'
+        )
+),
 blocks_json AS (
     SELECT
         block_id,
@@ -26,27 +41,29 @@ blocks_json AS (
         _load_timestamp,
         _partition_by_block_number,
         _inserted_timestamp
-    FROM
-        {{ ref('bronze__streamline_blocks') }}
 
         {% if var("MANUAL_FIX") %}
-        WHERE
-            _partition_by_block_number IN (
-                SELECT
-                    DISTINCT _partition_by_block_number
-                FROM
-                    missing_blocks
-            )
-            AND block_id IN (
-                SELECT
-                    missing_block_id
-                FROM
-                    missing_blocks
-            )
-        {% else %}
-            WHERE
-            {{ incremental_load_filter('_inserted_timestamp') }}
-        {% endif %}
+    FROM
+        {{ ref('bronze__streamline_blocks') }}
+    WHERE
+        _partition_by_block_number IN (
+            SELECT
+                DISTINCT _partition_by_block_number
+            FROM
+                missed_blocks
+        )
+        AND block_id IN (
+            SELECT
+                missing_block_id
+            FROM
+                missed_blocks
+        )
+    {% else %}
+    FROM
+        last_day
+    WHERE
+        {{ incremental_load_filter('_inserted_timestamp') }}
+    {% endif %}
 )
 SELECT
     *

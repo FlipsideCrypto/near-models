@@ -7,16 +7,17 @@ WITH block_chunks_included AS (
     SELECT
         block_id,
         header :chunks_included AS chunks_included,
-        _partition_by_block_number
+        _partition_by_block_number,
+        _inserted_timestamp
     FROM
         {{ ref('silver__streamline_blocks') }}
     WHERE
-        _load_timestamp <= (
+        _inserted_timestamp <= (
             SELECT
-                MAX(_load_timestamp)
+                MAX(_inserted_timestamp)
             FROM
                 {{ ref('silver__streamline_blocks') }}
-        ) - INTERVAL '2 hours'
+        ) - INTERVAL '1 hour'
 ),
 chunks_per_block AS (
     SELECT
@@ -27,12 +28,12 @@ chunks_per_block AS (
     FROM
         {{ ref('silver__streamline_chunks') }}
     WHERE
-        _load_timestamp <= (
+        _inserted_timestamp <= (
             SELECT
-                MAX(_load_timestamp)
+                MAX(_inserted_timestamp)
             FROM
                 {{ ref('silver__streamline_chunks') }}
-        ) - INTERVAL '2 hours'
+        ) - INTERVAL '1 hour'
     GROUP BY
         1
 ),

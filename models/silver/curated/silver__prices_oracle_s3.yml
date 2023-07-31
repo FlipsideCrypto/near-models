@@ -19,13 +19,13 @@ models:
         description: "{{ doc('block_timestamp')}}"
         tests:
           - not_null:
-              where: _load_timestamp <= current_timestamp - interval '2 hours'
+              where: _inserted_timestamp <= current_timestamp - interval '1 hour'
 
       - name: TX_HASH
         description: "{{ doc('tx_hash')}}"
         tests:
           - not_null:
-              where: _load_timestamp <= current_timestamp - interval '2 hours'
+              where: _inserted_timestamp <= current_timestamp - interval '1 hour'
               
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:

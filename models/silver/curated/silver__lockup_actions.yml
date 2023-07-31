@@ -10,13 +10,13 @@ models:
         description: "{{ doc('tx_hash')}}"
         tests: 
           - not_null:
-              where: _load_timestamp <= current_timestamp - interval '2 hours'
+              where: _inserted_timestamp <= current_timestamp - interval '1 hour'
 
       - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp')}}"
         tests:
           - not_null:
-              where: _load_timestamp <= current_timestamp - interval '2 hours'
+              where: _inserted_timestamp <= current_timestamp - interval '1 hour'
 
       - name: BLOCK_ID
         description: "{{ doc('block_id')}}"
