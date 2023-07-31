@@ -60,7 +60,8 @@ FINAL AS (
         r.receipt_succeeded,
         r.logs,
         fc._load_timestamp,
-        fc._partition_by_block_number
+        fc._partition_by_block_number,
+        fc._inserted_timestamp
     FROM
         decoded_function_calls fc
         LEFT JOIN all_horizon_receipts r USING (receipt_object_id)
@@ -79,6 +80,7 @@ SELECT
     signer_id,
     receipt_succeeded,
     _load_timestamp,
-    _partition_by_block_number
+    _partition_by_block_number,
+    _inserted_timestamp
 FROM
     FINAL

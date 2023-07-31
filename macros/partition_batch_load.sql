@@ -1,23 +1,21 @@
 {% macro partition_batch_load(batch_size) %}
 
 {% if is_incremental() %}
-
-    _partition_by_block_number BETWEEN (
+_partition_by_block_number BETWEEN (
+    SELECT
+        MAX(_partition_by_block_number)
+    FROM
+        {{ this }}
+)
+AND (
+    (
         SELECT
-            MAX(_partition_by_block_number) - 10000
+            MAX(_partition_by_block_number)
         FROM
             {{ this }}
-    )
-    AND (
-        (
-            SELECT
-                MAX(_partition_by_block_number)
-            FROM
-                {{ this }}
-        ) + {{ batch_size }}
-    )
+    ) + {{ batch_size }}
+)
 {%- else -%}
-
     _partition_by_block_number BETWEEN 9820000
     AND 10000000
 {% endif %}
@@ -30,24 +28,21 @@
     ) %}
 
 {% if is_incremental() %}
-
-    _partition_by_block_number BETWEEN (
+_partition_by_block_number BETWEEN (
+    SELECT
+        MAX(_partition_by_block_number) - {{ front_buffer }}
+    FROM
+        {{ this }}
+)
+AND (
+    (
         SELECT
-            MAX(_partition_by_block_number) - {{ front_buffer }}
+            MAX(_partition_by_block_number)
         FROM
             {{ this }}
-    )
-    AND (
-        (
-            SELECT
-                MAX(_partition_by_block_number)
-            FROM
-                {{ this }}
-        ) + {{ batch_size }} + {{ end_buffer }}
-    )
+    ) + {{ batch_size }} + {{ end_buffer }}
+)
 {%- else -%}
-
     TRUE
 {% endif %}
 {%- endmacro %}
-

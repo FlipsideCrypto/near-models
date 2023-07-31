@@ -24,7 +24,8 @@ chunk_receipts AS (
         _load_timestamp,
         _partition_by_block_number,
         chunk_hash,
-        VALUE AS receipt
+        VALUE AS receipt,
+        _inserted_timestamp
     FROM
         chunks,
         LATERAL FLATTEN(
@@ -49,7 +50,8 @@ FINAL AS (
             ) [0] :: STRING
         ) AS receipt_type,
         _load_timestamp,
-        _partition_by_block_number
+        _partition_by_block_number,
+        _inserted_timestamp
     FROM
         chunk_receipts
 )

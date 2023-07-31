@@ -32,6 +32,7 @@ flatten_actions AS (
         chunk_hash,
         _load_timestamp,
         _partition_by_block_number,
+        _inserted_timestamp,
         receipt_actions,
         execution_outcome,
         VALUE AS action_object,
@@ -53,6 +54,7 @@ FINAL AS (
         chunk_hash,
         _load_timestamp,
         _partition_by_block_number,
+        _inserted_timestamp,
         this,
         key AS action_name,
         TRY_PARSE_JSON(VALUE) AS action_data,
@@ -80,6 +82,7 @@ SELECT
     action_name,
     action_data,
     _load_timestamp,
-    _partition_by_block_number
+    _partition_by_block_number,
+    _inserted_timestamp
 FROM
     FINAL

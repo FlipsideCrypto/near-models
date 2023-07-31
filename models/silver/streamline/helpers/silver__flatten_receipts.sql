@@ -10,7 +10,8 @@ WITH receipts AS (
         b.value :: STRING item,
         block_id,
         _load_timestamp,
-        _partition_by_block_number
+        _partition_by_block_number,
+        _inserted_timestamp
     FROM
         {{ ref('silver__streamline_receipts') }} A
         JOIN LATERAL FLATTEN(

@@ -63,7 +63,8 @@ lockup_actions AS (
         deposit,
         method_name,
         _load_timestamp,
-        _partition_by_block_number
+        _partition_by_block_number,
+        _inserted_timestamp
     FROM
         function_calls
     WHERE
@@ -104,7 +105,8 @@ agg_arguments AS (
             DISTINCT method_name
         ) AS method_count,
         MIN(_load_timestamp) AS _load_timestamp,
-        MIN(_partition_by_block_number) AS _partition_by_block_number
+        MIN(_partition_by_block_number) AS _partition_by_block_number,
+        MIN(_inserted_timestamp) AS _inserted_timestamp
     FROM
         lockup_actions
     GROUP BY
@@ -122,7 +124,8 @@ lockup_xfers AS (
         block_id,
         deposit,
         _load_timestamp,
-        _partition_by_block_number
+        _partition_by_block_number,
+        _inserted_timestamp
     FROM
         xfers
     WHERE
@@ -170,7 +173,8 @@ parse_args_json AS (
         args_all :new :transfers_information :: STRING AS transfers_information,
         args_all,
         A._load_timestamp,
-        A._partition_by_block_number
+        A._partition_by_block_number,
+        A._inserted_timestamp
     FROM
         agg_arguments A
         LEFT JOIN lockup_xfers x
@@ -193,7 +197,8 @@ FINAL AS (
         transfers_information,
         args_all,
         f._load_timestamp,
-        f._partition_by_block_number
+        f._partition_by_block_number,
+        f._inserted_timestamp
     FROM
         parse_args_json f
         LEFT JOIN txs USING (tx_hash)

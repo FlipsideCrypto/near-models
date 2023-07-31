@@ -69,3 +69,6 @@ models:
         description: "{{ doc('receipt_outcome_id')}}"
         tests:
           - not_null
+
+      - name: _INSERTED_TIMESTAMP
+        description: "{{ doc('_inserted_timestamp')}}"

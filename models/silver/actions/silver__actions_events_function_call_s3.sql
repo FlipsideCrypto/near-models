@@ -36,7 +36,8 @@ decoding AS (
     action_data :gas :: NUMBER AS attached_gas,
     action_data :method_name :: STRING AS method_name,
     _load_timestamp,
-    _partition_by_block_number
+    _partition_by_block_number,
+    _inserted_timestamp
   FROM
     action_events
 ),
@@ -54,7 +55,8 @@ function_calls AS (
     deposit,
     attached_gas,
     _load_timestamp,
-    _partition_by_block_number
+    _partition_by_block_number,
+    _inserted_timestamp
   FROM
     decoding
 )

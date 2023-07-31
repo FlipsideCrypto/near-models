@@ -30,7 +30,8 @@ from_addkey_event AS (
         receiver_id,
         'AddKey' AS _source,
         _partition_by_block_number,
-        _load_timestamp
+        _load_timestamp,
+        _inserted_timestamp
     FROM
         {{ ref('silver__actions_events_addkey_s3') }}
     WHERE
@@ -54,7 +55,8 @@ nested_in_functioncall AS (
         ) AS receiver_id,
         'FunctionCall' AS _source,
         _partition_by_block_number,
-        _load_timestamp
+        _load_timestamp,
+        _inserted_timestamp
     FROM
         {{ ref('silver__actions_events_function_call_s3') }}
     WHERE
@@ -79,7 +81,8 @@ combine AS (
         allowance,
         _source,
         _partition_by_block_number,
-        _load_timestamp
+        _load_timestamp,
+        _inserted_timestamp
     FROM
         from_addkey_event
     UNION
@@ -95,7 +98,8 @@ combine AS (
         allowance,
         _source,
         _partition_by_block_number,
-        _load_timestamp
+        _load_timestamp,
+        _inserted_timestamp
     FROM
         nested_in_functioncall
 ),
@@ -110,7 +114,8 @@ FINAL AS (
         r.signer_id,
         A._source,
         A._partition_by_block_number,
-        A._load_timestamp
+        A._load_timestamp,
+        A._inserted_timestamp
     FROM
         combine A
         LEFT JOIN receipts r

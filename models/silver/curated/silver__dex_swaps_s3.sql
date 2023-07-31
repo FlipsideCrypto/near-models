@@ -15,6 +15,7 @@ WITH base_swap_calls AS (
         action_id,
         args,
         _load_timestamp,
+        _inserted_timestamp,
         method_name
     FROM
         {{ ref('silver__actions_events_function_call_s3') }}
@@ -40,7 +41,8 @@ base_swaps AS (
             TRY_PARSE_JSON(TRY_PARSE_JSON(args) :msg),
             TRY_PARSE_JSON(args)
         ) :actions AS actions,
-        _load_timestamp
+        _load_timestamp,
+        _inserted_timestamp
     FROM
         base_swap_calls
 ),
@@ -56,7 +58,8 @@ agg_swaps AS (
                 action_id,
                 action.index
         ) AS action_list,
-        ANY_VALUE(_load_timestamp) AS _load_timestamp
+        ANY_VALUE(_load_timestamp) AS _load_timestamp,
+        ANY_VALUE(_inserted_timestamp) as _inserted_timestamp
     FROM
         base_swaps,
         LATERAL FLATTEN(
@@ -83,7 +86,8 @@ actions AS (
             NULL
         ) :: text AS token_out,
         action.index AS swap_index,
-        _load_timestamp
+        _load_timestamp,
+        _inserted_timestamp
     FROM
         agg_swaps,
         LATERAL FLATTEN(
@@ -100,6 +104,7 @@ receipts AS (
     SELECT
         block_id,
         tx_hash,
+        -- TODO use the receipt succeeded column here
         CASE
             WHEN PARSE_JSON(
                 r.status_value
@@ -172,6 +177,7 @@ final_table AS (
     SELECT
         swap_logs.swap_index,
         actions._load_timestamp,
+        actions._inserted_timestamp,
         actions.block_id,
         actions.block_timestamp,
         swap_logs.tx_hash,
@@ -233,7 +239,8 @@ FINAL AS (
         ) :: NUMBER AS amount_out_raw,
         amount_out_raw / pow(10, IFNULL(token_labels_out.decimals, 0)) AS amount_out,
         swap_index,
-        _load_timestamp
+        _load_timestamp,
+        _inserted_timestamp
     FROM
         final_table
         LEFT JOIN token_labels AS token_labels_in

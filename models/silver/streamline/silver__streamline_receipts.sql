@@ -57,7 +57,8 @@ FINAL AS (
             ) [0] :: STRING
         ) AS receipt_type,
         _load_timestamp,
-        _partition_by_block_number
+        _partition_by_block_number,
+        _inserted_timestamp
     FROM
         receipt_execution_outcomes
 )

@@ -6,7 +6,7 @@
     tags = ['load', 'load_blocks']
 ) }}
 
-WITH blocksjson AS (
+WITH blocks_json AS (
 
     SELECT
         *
@@ -44,9 +44,10 @@ blocks AS (
         VALUE :chunks :: ARRAY AS chunks,
         VALUE :header :: OBJECT AS header,
         _partition_by_block_number,
-        _load_timestamp
+        _load_timestamp,
+        _inserted_timestamp
     FROM
-        blocksjson
+        blocks_json
 ),
 FINAL AS (
     SELECT
@@ -68,7 +69,8 @@ FINAL AS (
         {# the core view contains a number of columns that are found in the header #}
         header,
         _partition_by_block_number,
-        _load_timestamp
+        _load_timestamp,
+        _inserted_timestamp
     FROM
         blocks
 )

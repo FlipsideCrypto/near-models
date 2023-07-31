@@ -33,7 +33,8 @@ posts AS (
         parsed_node_data :text :: STRING AS post_text,
         parsed_node_data :image :: STRING AS post_image,
         _partition_by_block_number,
-        _load_timestamp
+        _load_timestamp,
+        _inserted_timestamp
     FROM
         decoded_actions
     WHERE
@@ -51,6 +52,7 @@ SELECT
     post_text,
     post_image,
     _partition_by_block_number,
-    _load_timestamp
+    _load_timestamp,
+    _inserted_timestamp
 FROM
     posts

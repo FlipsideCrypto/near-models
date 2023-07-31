@@ -60,6 +60,7 @@ standard_logs AS (
         gas_burnt,
         _LOAD_TIMESTAMP,
         _PARTITION_BY_BLOCK_NUMBER,
+        _inserted_timestamp,
         TRY_PARSE_JSON(clean_log) AS clean_log,
         COUNT(*) OVER (PARTITION BY tx_hash) AS log_counter
     FROM
@@ -97,6 +98,7 @@ raw_mint_events AS (
         gas_burnt,
         _LOAD_TIMESTAMP,
         _PARTITION_BY_BLOCK_NUMBER,
+        _inserted_timestamp,
         INDEX AS batch_index,
         args_json,
         method_name,
@@ -127,6 +129,7 @@ mint_events AS (
         signer_id,
         _LOAD_TIMESTAMP,
         _PARTITION_BY_BLOCK_NUMBER,
+        _inserted_timestamp,
         args_json,
         method_name,
         deposit,
@@ -197,7 +200,8 @@ SELECT
     mint_events._LOAD_TIMESTAMP,
     mint_events._PARTITION_BY_BLOCK_NUMBER,
     mint_events.log_counter,
-    (mint_events.deposit / mint_events.log_counter) :: FLOAT as implied_price
+    (mint_events.deposit / mint_events.log_counter) :: FLOAT as implied_price,
+    mint_events._inserted_timestamp
 FROM
     mint_events
     LEFT JOIN mint_tx

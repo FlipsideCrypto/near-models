@@ -1,27 +1,31 @@
 {{ config(
     materialized = 'incremental',
-    incremental_strategy = 'merge',
+    incremental_strategy = 'delete+insert',
     cluster_by = ['_partition_by_block_number', '_load_timestamp::DATE'],
     unique_key = 'block_id',
     full_refresh = False,
     tags = ['load', 'load_blocks']
 ) }}
 
-WITH missing_blocks AS (
+WITH {% if var("MANUAL_FIX") %}
+    missing_blocks AS (
 
-    SELECT
-        _partition_by_block_number,
-        missing_block_id
-    FROM
-        {{ target.database }}.tests.streamline_block_gaps
-),
+        SELECT
+            _partition_by_block_number,
+            missing_block_id
+        FROM
+            {{ target.database }}.tests.streamline_block_gaps
+    ),
+{% endif %}
+
 blocks_json AS (
     SELECT
         block_id,
         VALUE,
         _filename,
         _load_timestamp,
-        _partition_by_block_number
+        _partition_by_block_number,
+        _inserted_timestamp
     FROM
         {{ ref('bronze__streamline_blocks') }}
 
@@ -40,7 +44,7 @@ blocks_json AS (
                     missing_blocks
             )
         {% else %}
-        WHERE
+            WHERE
             {{ partition_batch_load(150000) }}
         {% endif %}
 )

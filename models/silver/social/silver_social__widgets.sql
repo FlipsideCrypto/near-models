@@ -36,7 +36,8 @@ widgets AS (
             widget_name
         ) AS widget_url,
         _partition_by_block_number,
-        _load_timestamp
+        _load_timestamp,
+        _inserted_timestamp
     FROM
         decoded_actions
 )
@@ -61,6 +62,7 @@ SELECT
     source_data as _source_data,
     node_data as _node_data,
     _partition_by_block_number,
-    _load_timestamp
+    _load_timestamp,
+    _inserted_timestamp
 FROM
     widgets

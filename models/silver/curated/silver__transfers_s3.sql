@@ -13,7 +13,8 @@ WITH action_events AS(
     action_id,
     action_data :deposit :: INT AS deposit,
     _load_timestamp,
-    _partition_by_block_number
+    _partition_by_block_number,
+    _inserted_timestamp
   FROM
     {{ ref('silver__actions_events_s3') }}
   WHERE
@@ -39,7 +40,8 @@ txs AS (
       ELSE FALSE
     END AS status,
     _load_timestamp,
-    _partition_by_block_number
+    _partition_by_block_number,
+    _inserted_timestamp
   FROM
     {{ ref('silver__streamline_transactions_final') }}
 
@@ -79,7 +81,8 @@ actions AS (
     t.gas_used,
     t.status,
     t._load_timestamp,
-    t._partition_by_block_number
+    t._partition_by_block_number,
+    t._inserted_timestamp
   FROM
     txs AS t
     INNER JOIN receipts AS r
@@ -101,7 +104,8 @@ FINAL AS (
     gas_used,
     status,
     _load_timestamp,
-    _partition_by_block_number
+    _partition_by_block_number,
+    _inserted_timestamp
   FROM
     actions
 )

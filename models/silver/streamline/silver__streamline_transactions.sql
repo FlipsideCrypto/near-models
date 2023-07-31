@@ -24,6 +24,7 @@ flatten_transactions AS (
         INDEX AS transactions_index,
         _load_timestamp,
         _partition_by_block_number,
+        _inserted_timestamp,
         chunk :header :chunk_hash :: STRING AS chunk_hash,
         VALUE :outcome :execution_outcome :outcome :receipt_ids :: ARRAY AS outcome_receipts,
         VALUE AS tx
@@ -41,6 +42,7 @@ txs AS (
         transactions_index,
         _load_timestamp,
         _partition_by_block_number,
+        _inserted_timestamp,
         chunk_hash,
         outcome_receipts,
         tx,
@@ -75,7 +77,8 @@ FINAL AS (
         _signature,
         _signer_id,
         _load_timestamp,
-        _partition_by_block_number
+        _partition_by_block_number,
+        _inserted_timestamp
     FROM
         txs
     qualify
