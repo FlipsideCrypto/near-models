@@ -2,7 +2,7 @@
     materialized = 'incremental',
     incremental_strategy = 'delete+insert',
     unique_key = 'receipt_object_id',
-    cluster_by = ['_load_timestamp::date', 'block_id'],
+    cluster_by = ['_inserted_timestamp::date', 'block_id'],
     tags = ['receipt_map']
 ) }}
 
@@ -18,8 +18,7 @@ WITH base_receipts AS (
             {{ partition_load_manual('no_buffer') }}
         {% else %}
         WHERE
-            {{ partition_batch_load(150000) }}
-            OR {{ incremental_load_filter('_load_timestamp') }}
+            {{ incremental_load_filter('_inserted_timestamp') }}
         {% endif %}
 ),
 blocks AS (

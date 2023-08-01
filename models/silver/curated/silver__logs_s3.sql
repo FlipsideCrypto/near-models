@@ -1,6 +1,6 @@
 {{ config(
     materialized = "incremental",
-    cluster_by = ["_load_timestamp::DATE","block_timestamp::DATE"],
+    cluster_by = ["_inserted_timestamp::DATE","block_timestamp::DATE"],
     unique_key = "action_id",
     incremental_strategy = "delete+insert",
     tags = ['curated']
@@ -18,7 +18,7 @@ WITH receipts AS (
             {{ partition_load_manual('no_buffer') }}
         {% else %}
         WHERE
-            {{ incremental_load_filter('_load_timestamp') }}
+            {{ incremental_load_filter('_inserted_timestamp') }}
         {% endif %}
 ),
 FINAL AS (

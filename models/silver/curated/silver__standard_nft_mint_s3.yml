@@ -10,7 +10,7 @@ models:
         description: "{{ doc('action_id') }}"
         tests:
           - not_null:
-              where: _load_timestamp <= current_timestamp - interval '2 hours'
+              where: _inserted_timestamp <= current_timestamp - interval '1 hour'
 
       - name: MINT_ACTION_ID
         description: "{{ doc('mint_action_id') }}"
@@ -18,13 +18,13 @@ models:
           - unique:
               where: receiver_id != 'realbirds.near'
           - not_null:
-              where: _load_timestamp <= current_timestamp - interval '2 hours'
+              where: _inserted_timestamp <= current_timestamp - interval '1 hour'
 
       - name: TX_HASH
         description: "{{ doc('tx_hash') }}"
         tests:
           - not_null:
-              where: _load_timestamp <= current_timestamp - interval '2 hours'
+              where: _inserted_timestamp <= current_timestamp - interval '1 hour'
 
       - name: BLOCK_ID
         description: "{{ doc('block_id')}}"
@@ -33,13 +33,13 @@ models:
         description: "{{ doc('block_timestamp')}}"
         tests:
           - not_null:
-              where: _load_timestamp <= current_timestamp - interval '2 hours'
+              where: _inserted_timestamp <= current_timestamp - interval '1 hour'
 
       - name: METHOD_NAME
         description: "{{ doc('method_name') }}"
         tests:
           - not_null:
-              where: _load_timestamp <= current_timestamp - interval '2 hours'
+              where: _inserted_timestamp <= current_timestamp - interval '1 hour'
 
       - name: ARGS
         description: "{{ doc('args') }}"
@@ -54,13 +54,13 @@ models:
         description: "{{ doc('tx_receiver') }}"
         tests:
           - not_null:
-              where: _load_timestamp <= current_timestamp - interval '2 hours'
+              where: _inserted_timestamp <= current_timestamp - interval '1 hour'
 
       - name: TX_STATUS
         description: "{{ doc('tx_status') }}"
         tests:
           - not_null:
-              where: _load_timestamp <= current_timestamp - interval '2 hours'
+              where: _inserted_timestamp <= current_timestamp - interval '1 hour'
 
       - name: RECEIPT_OBJECT_ID
         description: "{{ doc('receipt_object_id') }}"
@@ -96,7 +96,7 @@ models:
         description: "{{ doc('transaction_fee') }}"
         tests:
           - not_null:
-              where: _load_timestamp <= current_timestamp - interval '2 hours'
+              where: _inserted_timestamp <= current_timestamp - interval '1 hour'
 
       - name: _LOAD_TIMESTAMP
         description: "{{ doc('_load_timestamp') }}"

@@ -2,7 +2,7 @@
     materialized = 'incremental',
     incremental_strategy = 'merge',
     unique_key = 'receipt_id',
-    cluster_by = ['_load_timestamp::date', 'block_id'],
+    cluster_by = ['_inserted_timestamp::date', 'block_id'],
     tags = ['load', 'load_shards']
 ) }}
 
@@ -13,7 +13,7 @@ WITH receipt_execution_outcomes AS (
     FROM
         {{ ref('silver__streamline_receipt_execution_outcome') }}
     WHERE
-        {{ incremental_load_filter('_load_timestamp') }}
+        {{ incremental_load_filter('_inserted_timestamp ') }}
 ),
 FINAL AS (
     SELECT

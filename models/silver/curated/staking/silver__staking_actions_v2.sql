@@ -16,7 +16,7 @@ WITH pool_events AS (
         {% if var("MANUAL_FIX") %}
             {{ partition_load_manual('no_buffer') }}
         {% else %}
-            {{ incremental_load_filter('_load_timestamp') }}
+            {{ incremental_load_filter('_inserted_timestamp') }}
         {% endif %}
 ),
 staking_actions AS (

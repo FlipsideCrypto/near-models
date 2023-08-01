@@ -1,26 +1,35 @@
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'delete+insert',
-    cluster_by = ['_partition_by_block_number', '_load_timestamp::DATE'],
+    cluster_by = ['_partition_by_block_number', '_inserted_timestamp::DATE'],
     unique_key = 'shard_id',
     full_refresh = False,
     tags = ['load', 'load_shards']
 ) }}
 
 WITH {% if var("MANUAL_FIX") %}
-    missing_shards AS (
+    missed_shards AS (
 
         SELECT
             _partition_by_block_number,
-            VALUE AS block_id
+            bblock_id as block_id
         FROM
-            {{ target.database }}.tests.chunk_gaps,
-            LATERAL FLATTEN(
-                input => blocks_to_walk
-            )
+            {{ target.database }}.tests.chunk_gaps
     ),
 {% endif %}
 
+local_range AS (
+    SELECT
+        *
+    FROM
+        {{ ref('bronze__streamline_shards') }}
+    WHERE
+        {{ partition_incremental_load(
+            75000,
+            20000,
+            0
+        ) }}
+),
 shards_json AS (
     SELECT
         block_id,
@@ -35,27 +44,29 @@ shards_json AS (
         _load_timestamp,
         _partition_by_block_number,
         _inserted_timestamp
-    FROM
-        {{ ref('bronze__streamline_shards') }}
 
         {% if var("MANUAL_FIX") %}
-        WHERE
-            _partition_by_block_number IN (
-                SELECT
-                    DISTINCT _partition_by_block_number
-                FROM
-                    missing_shards
-            )
-            AND block_id IN (
-                SELECT
-                    DISTINCT block_id
-                FROM
-                    missing_shards
-            )
-        {% else %}
-            WHERE
-            {{ partition_batch_load(150000) }}
-        {% endif %}
+    FROM
+        {{ ref('bronze__streamline_shards') }}
+    WHERE
+        _partition_by_block_number IN (
+            SELECT
+                DISTINCT _partition_by_block_number
+            FROM
+                missed_shards
+        )
+        AND block_id IN (
+            SELECT
+                DISTINCT block_id
+            FROM
+                missed_shards
+        )
+    {% else %}
+    FROM
+        local_range
+    WHERE
+        {{ incremental_load_filter('_inserted_timestamp') }}
+    {% endif %}
 )
 SELECT
     *

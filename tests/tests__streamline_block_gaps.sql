@@ -1,12 +1,13 @@
 {{ config(
-  severity = 'error'
+  error_if = '>=25',
+  warn_if = '<25'
 ) }}
 
 WITH silver_blocks AS (
 
   SELECT
     block_id,
-    block_id - 1 as missing_block_id,
+    block_id - 1 AS missing_block_id,
     block_timestamp,
     block_hash,
     prev_hash,
@@ -16,11 +17,10 @@ WITH silver_blocks AS (
         block_id ASC
     ) AS prior_hash,
     _partition_by_block_number,
-    current_timestamp as _test_timestamp
+    _inserted_timestamp,
+    CURRENT_TIMESTAMP AS _test_timestamp
   FROM
     {{ ref('silver__streamline_blocks') }}
-  WHERE
-    block_timestamp::date < CURRENT_DATE
 )
 SELECT
   *

@@ -13,7 +13,7 @@ models:
         description: "{{ doc('tx_hash')}}"
         tests:
           - not_null:
-              where: _load_timestamp <= current_timestamp - interval '2 hours'
+              where: _inserted_timestamp <= current_timestamp - interval '1 hour'
 
       - name: RECEIVER_ID
         description: "{{ doc('receiver_id')}}"
@@ -28,7 +28,7 @@ models:
         description: "{{ doc('block_timestamp')}}"
         tests:
           - not_null:
-              where: _load_timestamp <= current_timestamp - interval '2 hours'
+              where: _inserted_timestamp <= current_timestamp - interval '1 hour'
 
       - name: ACTION_NAME
         description: "{{ doc('action_name')}}"

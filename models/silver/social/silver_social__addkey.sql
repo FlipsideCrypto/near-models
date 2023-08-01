@@ -15,7 +15,7 @@ WITH receipts AS (
         {% if var("MANUAL_FIX") %}
             {{ partition_load_manual('no_buffer') }}
         {% else %}
-            {{ incremental_load_filter('_load_timestamp') }}
+            {{ incremental_load_filter('_inserted_timestamp') }}
         {% endif %}
         AND _partition_by_block_number >= 59670000
 ),
@@ -38,7 +38,7 @@ from_addkey_event AS (
         {% if var("MANUAL_FIX") %}
             {{ partition_load_manual('no_buffer') }}
         {% else %}
-            {{ incremental_load_filter('_load_timestamp') }}
+            {{ incremental_load_filter('_inserted_timestamp') }}
         {% endif %}
         AND receiver_id = 'social.near'
 ),
@@ -63,7 +63,7 @@ nested_in_functioncall AS (
         {% if var("MANUAL_FIX") %}
             {{ partition_load_manual('no_buffer') }}
         {% else %}
-            {{ incremental_load_filter('_load_timestamp') }}
+            {{ incremental_load_filter('_inserted_timestamp') }}
         {% endif %}
         AND method_name = 'add_request_and_confirm'
         AND receiver_id = 'social.near'

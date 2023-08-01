@@ -173,7 +173,7 @@ Include the following conditional, as targeted runs of block partitions may be r
         {% if var("MANUAL_FIX") %}
             {{ partition_load_manual('no_buffer') }}
         {% else %}
-            {{ incremental_load_filter('_load_timestamp') }}
+            {{ incremental_load_filter('_inserted_timestamp') }}
         {% endif %}
 ```
 ## More DBT Resources:

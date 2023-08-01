@@ -2,7 +2,7 @@
   materialized = 'incremental',
   incremental_strategy = 'delete+insert',
   unique_key = 'action_id',
-  cluster_by = ['block_timestamp::DATE', '_load_timestamp::DATE'],
+  cluster_by = ['block_timestamp::DATE', '_inserted_timestamp::DATE'],
   tags = ['actions', 'curated']
 ) }}
 
@@ -17,7 +17,7 @@ WITH action_events AS (
     {% if var("MANUAL_FIX") %}
       AND {{ partition_load_manual('no_buffer') }}
     {% else %}
-      AND {{ incremental_load_filter('_load_timestamp') }}
+      AND {{ incremental_load_filter('_inserted_timestamp') }}
     {% endif %}
 ),
 addkey_events AS (

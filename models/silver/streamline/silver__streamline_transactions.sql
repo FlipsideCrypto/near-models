@@ -2,7 +2,7 @@
     materialized = 'incremental',
     incremental_strategy = 'merge',
     unique_key = 'tx_hash',
-    cluster_by = ['_load_timestamp::date', 'block_id', 'tx_hash'],
+    cluster_by = ['_inserted_timestamp::date', 'block_id', 'tx_hash'],
     tags = ['load', 'load_shards']
 ) }}
 
@@ -14,7 +14,7 @@ WITH chunks AS (
         {{ ref('silver__streamline_chunks') }}
     WHERE
         ARRAY_SIZE(chunk_transactions) > 0
-        AND {{ incremental_load_filter('_load_timestamp') }}
+        AND {{ incremental_load_filter('_inserted_timestamp') }}
 ),
 flatten_transactions AS (
     SELECT
@@ -82,7 +82,7 @@ FINAL AS (
     FROM
         txs
     qualify
-        row_number() over (partition by tx_hash order by _load_timestamp desc) = 1
+        row_number() over (partition by tx_hash order by _inserted_timestamp desc) = 1
 )
 SELECT
     *
