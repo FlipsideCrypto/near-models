@@ -14,7 +14,7 @@ WITH {% if var("MANUAL_FIX") %}
             _partition_by_block_number,
             missing_block_id
         FROM
-            {{ ref('_missed_blocks') }}
+            {{ target.database }}.tests.streamline_block_gaps
     ),
 {% endif %}
 

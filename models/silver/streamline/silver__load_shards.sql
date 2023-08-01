@@ -12,9 +12,9 @@ WITH {% if var("MANUAL_FIX") %}
 
         SELECT
             _partition_by_block_number,
-            block_id
+            bblock_id as block_id
         FROM
-            {{ ref('_missed_shards') }}
+            {{ target.database }}.tests.chunk_gaps
     ),
 {% endif %}
 
