@@ -11,9 +11,22 @@ models:
 
       - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp')}}"
+        tests:
+          - not_null:
+              where: _inserted_timestamp <= CURRENT_TIMESTAMP - interval '1 hour'
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
 
       - name: TX_HASH
         description: "{{ doc('tx_hash')}}"
+        tests:
+          - not_null:
+              where: _inserted_timestamp <= CURRENT_TIMESTAMP - interval '1 hour'
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
 
       - name: SWAP_ID
         description: "{{ doc('swap_id')}}"
