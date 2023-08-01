@@ -28,3 +28,4 @@ FROM
   silver_blocks
 WHERE
   prior_hash <> prev_hash
+  AND _inserted_timestamp <= CURRENT_TIMESTAMP - INTERVAL '1 hour'
