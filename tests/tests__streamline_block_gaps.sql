@@ -1,6 +1,6 @@
 {{ config(
   error_if = '>=25',
-  warn_if = '<25'
+  warn_if = 'BETWEEN 1 AND 24'
 ) }}
 
 WITH silver_blocks AS (
