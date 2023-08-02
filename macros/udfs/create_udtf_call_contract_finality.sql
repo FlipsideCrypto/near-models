@@ -9,7 +9,7 @@ CREATE OR REPLACE FUNCTION
         contract_address STRING,
         method_name STRING,
         finality STRING,
-        args STRING
+        args OBJECT
     )
 RETURNS TABLE (
     BLOCK_HEIGHT NUMBER,
@@ -24,7 +24,7 @@ WITH params AS (
         lower(contract_address) AS contract_address,
         lower(method_name) AS method,
         lower(finality) as finality,
-        BASE64_ENCODE(args) AS arg_base64
+        BASE64_ENCODE(args::STRING) AS arg_base64
 ),
 call_function AS (
     SELECT
