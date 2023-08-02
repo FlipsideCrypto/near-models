@@ -10,6 +10,7 @@
                 {{ create_udf_s3_copy_objects() }}
                 {{ create_udf_s3_copy_objects_overwrite() }}
                 {{ create_udf_decode_bytelist() }}
+                {{ create_udf_decode_bytelist_2() }}
                 {{ create_UDTF_CALL_CONTRACT_FUNCTION() }}
                 {{ create_UDTF_CALL_CONTRACT_FUNCTION_BY_HEIGHT() }}
                 {{ create_udf_call_contract_function_3() }}
