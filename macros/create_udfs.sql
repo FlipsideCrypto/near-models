@@ -9,6 +9,11 @@
                 {{ create_udf_s3_list_objects() }}
                 {{ create_udf_s3_copy_objects() }}
                 {{ create_udf_s3_copy_objects_overwrite() }}
+                {{ create_udf_decode_bytelist() }}
+                {{ create_UDTF_CALL_CONTRACT_FUNCTION() }}
+                {{ create_UDTF_CALL_CONTRACT_FUNCTION_BY_HEIGHT() }}
+                {{ create_udf_call_contract_function_3() }}
+                {{ create_udtf_decode_bytelist() }}
             {% endset %}
             {% do run_query(sql) %}
         {{- fsc_utils.create_udfs() -}}
