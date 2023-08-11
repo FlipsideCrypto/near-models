@@ -4,13 +4,17 @@ models:
   - name: silver__streamline_transactions
     description: |-
       Singular transaction objects with the shard id and chunk hash from which it was included. 
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - tx_hash
+            - block_id
 
     columns:
       - name: TX_HASH
         description: "{{ doc('tx_hash')}}"
         tests:
           - not_null
-          - unique
 
       - name: BLOCK_ID
         description: "{{ doc('block_id')}}"
