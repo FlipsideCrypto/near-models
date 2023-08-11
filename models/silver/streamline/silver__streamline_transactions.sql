@@ -78,14 +78,11 @@ FINAL AS (
         _signer_id,
         _load_timestamp,
         _partition_by_block_number,
-        _inserted_timestamp,
-        {{ dbt_utils.generate_surrogate_key(['tx_hash', 'block_id']) }} AS _tx_id,
+        _inserted_timestamp
     FROM
-        txs qualify ROW_NUMBER() over (
-            PARTITION BY _tx_id
-            ORDER BY
-                _inserted_timestamp DESC
-        ) = 1
+        txs
+    qualify
+        row_number() over (partition by tx_hash order by _inserted_timestamp desc) = 1
 )
 SELECT
     *
