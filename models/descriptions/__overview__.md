@@ -41,7 +41,6 @@ There is more information on how to use dbt docs in the last section of this doc
 
 **Convenience Tables:**
 - [ez_dex_swaps](#!/model/model.near.core__ez_dex_swaps)
-- [ez_usn_supply](#!/model/model.near.core__ez_usn_supply)
 
 ### Social Tables (`NEAR`.`SOCIAL`.`<table_name>`)
 - [fact_addkey_events](#!/model/model.near.social__fact_addkey_events)
@@ -54,6 +53,76 @@ There is more information on how to use dbt docs in the last section of this doc
 ### Beta Tables (`NEAR`.`BETA`.`<table_name>`)
 - [github_activity](https://github.com/forgxyz/developer_report_near)
 
+### Custom Functions
+- `NEAR`.`CORE`.`UDTF_CALL_CONTRACT_FUNCTION`
+Call a contract method via the [public NEAR RPC endpoint](https://docs.near.org/api/rpc/setup), modeled after the official documentation, [here](https://docs.near.org/api/rpc/contracts#call-a-contract-function).  
+  
+This function accepts 3 or 4 parameters:
+ - (required) `account_id` STR
+  - This is the deployed contract_address you want to call.
+ - (required) `method_name` STR
+  - This is the method on the contract to call.
+ - (required) `args` OBJ
+  - Any requred or optional input parameters that the contract method accepts.
+  - For best results, this should be formed by using the Snowflake function [`OBJECT_CONSTRUCT()`](https://docs.snowflake.com/en/sql-reference/functions/object_construct)
+- (optional) `block_id` INT
+ - Pass a block height (note - hash not accepted) to call the method at a certain block in time.
+ - If nothing is passed, the default behavior is `final` per the explanation [here](https://docs.near.org/api/rpc/setup#using-finality-param).
+ - Note - when passing in a block id parameter, the archive node is called which may be considerably slower than the primary access node.
+
+
+**Important Note** - this is the public access endpoint, use responsibly.  
+
+#### Examples
+Return 25 accounts that have authorized the contract `social.near`.  
+
+```sql
+SELECT
+    *
+FROM
+    TABLE(
+        near_dev.core.udtf_call_contract_function(
+            'social.near',
+            'get_accounts',
+            OBJECT_CONSTRUCT(
+                'from_index',
+                0,
+                'limit',
+                25
+            )
+        )
+    );
+
+```
+
+Get the staked balance of 100 addresses on the pool `staked.poolv1.near` at block `85,000,000`.
+```sql
+SELECT
+    DATA :result :block_height :: NUMBER AS block_height,
+    VALUE :account_id :: STRING AS account_id,
+    VALUE :can_withdraw :: BOOLEAN AS can_withdraw,
+    VALUE :staked_balance :: NUMBER / pow(
+        10,
+        24
+    ) AS staked_balance,
+    VALUE :unstaked_balance :: NUMBER / pow(
+        10,
+        24
+    ) AS unstaked_balance
+FROM
+    TABLE(
+        near_dev.core.udtf_call_contract_function(
+            'staked.poolv1.near',
+            'get_accounts',
+            {
+                'from_index': 0,
+                'limit': 100
+            },
+            85000000
+        )
+    ),
+    LATERAL FLATTEN(decoded_result)
+```
 
 ## **Data Model Overview**
 

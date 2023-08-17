@@ -6,7 +6,7 @@
     Signature STRING, STRING, OBJECT, NUMBER 
  #}
 CREATE OR REPLACE FUNCTION
-    {{ target.database }}.SILVER.UDTF_CALL_CONTRACT_FUNCTION(
+    {{ target.database }}.CORE.UDTF_CALL_CONTRACT_FUNCTION(
         contract_address STRING,
         method_name STRING,
         args OBJECT,
