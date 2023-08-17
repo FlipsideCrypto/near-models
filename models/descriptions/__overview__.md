@@ -54,22 +54,26 @@ There is more information on how to use dbt docs in the last section of this doc
 - [github_activity](https://github.com/forgxyz/developer_report_near)
 
 ### Custom Functions
-- `NEAR`.`CORE`.`UDTF_CALL_CONTRACT_FUNCTION`
+- `NEAR`.`CORE`.`UDTF_CALL_CONTRACT_FUNCTION`  
+
 Call a contract method via the [public NEAR RPC endpoint](https://docs.near.org/api/rpc/setup), modeled after the official documentation, [here](https://docs.near.org/api/rpc/contracts#call-a-contract-function).  
   
 This function accepts 3 or 4 parameters:
- - (required) `account_id` STR
+ - `account_id` STR (required)
   - This is the deployed contract_address you want to call.
- - (required) `method_name` STR
+
+ - `method_name` STR (required)
   - This is the method on the contract to call.
- - (required) `args` OBJ
+
+ - `args` OBJ (required)
   - Any requred or optional input parameters that the contract method accepts.
   - For best results, this should be formed by using the Snowflake function [`OBJECT_CONSTRUCT()`](https://docs.snowflake.com/en/sql-reference/functions/object_construct)
-- (optional) `block_id` INT
+
+- `block_id` INT (optional)
  - Pass a block height (note - hash not accepted) to call the method at a certain block in time.
  - If nothing is passed, the default behavior is `final` per the explanation [here](https://docs.near.org/api/rpc/setup#using-finality-param).
  - Note - when passing in a block id parameter, the archive node is called which may be considerably slower than the primary access node.
-
+  
 
 **Important Note** - this is the public access endpoint, use responsibly.  
 

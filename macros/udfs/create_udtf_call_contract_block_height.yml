@@ -1,0 +1,19 @@
+version: 2
+
+macros:
+  - name: create_UDTF_CALL_CONTRACT_FUNCTION_BY_HEIGHT
+    description: Creates the Snowflake function `UDTF_CALL_CONTRACT_FUNCTION` with a height parameter input
+    arguments:
+      - name: CONTRACT_ADDRESS
+        type: string
+        description: The contract address to call a function on, also called `account_id` in the Near docs.
+      - name: METHOD_NAME
+        type: string
+        description: The method to call, refer to the deployed contract or Nearblocks.io
+      - name: ARGS
+        type: object
+        description: The parameters to pass to the method call.
+      - name: BLOCK_ID
+        type: number
+        description: The block height at which to call the method.
+ 
