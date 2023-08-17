@@ -2,19 +2,21 @@
 {% set sql %}
 {# 
     Execute a method on a contract at a specific block height.
+    This function is equivalent to the one defined in macro create_UDTF_CALL_CONTRACT_FUNCTION, except for the block height input parameter.
+    Signature STRING, STRING, OBJECT, NUMBER 
  #}
 CREATE OR REPLACE FUNCTION
-    {{ target.database }}.SILVER.UDTF_CALL_CONTRACT_FUNCTION_BY_HEIGHT(
+    {{ target.database }}.SILVER.UDTF_CALL_CONTRACT_FUNCTION(
         contract_address STRING,
         method_name STRING,
-        block_id NUMBER,
-        args OBJECT
+        args OBJECT,
+        block_id NUMBER
     )
 RETURNS TABLE (
     BLOCK_HEIGHT NUMBER,
     DATA VARIANT,
     DECODED_RESULT VARIANT,
-    ERROR STRING
+    ERROR VARIANT
 )
 AS
 $$
@@ -22,11 +24,12 @@ WITH params AS (
     SELECT
         lower(contract_address) AS contract_address,
         lower(method_name) AS method,
-        block_id as block_id,
+        block_id,
         BASE64_ENCODE(args::STRING) AS arg_base64
 ),
 call_function AS (
     SELECT
+        block_id,
         ethereum.streamline.udf_api(
             'POST',
             'https://archival-rpc.mainnet.near.org',
@@ -50,17 +53,22 @@ call_function AS (
 ),
 response AS (
     SELECT
+        block_id,
         res,
         res :data ::VARIANT as data,
-        res :data :result :block_height :: NUMBER AS block_height,
         res :data :result :result :: ARRAY AS res_array,
-        res :data :result :error ::STRING as error
+        TRY_PARSE_JSON(
+            COALESCE(
+                res :data :result :error :: STRING,
+                res :data :error :: STRING
+            )
+        ) AS error
     FROM
         call_function
 ),
 try_decode_hex AS (
     SELECT
-        block_height,
+        block_id,
         b.value AS raw,
         b.index,
         LPAD(TRIM(to_char(b.value :: INT, 'XXXXXXX')) :: STRING, 2, '0') AS hex
@@ -75,7 +83,7 @@ try_decode_hex AS (
 ),
 decoded_response AS (
     SELECT
-        block_height,
+        block_id,
         ARRAY_TO_STRING(ARRAY_AGG(hex) within GROUP (
     ORDER BY
         INDEX ASC), '') AS decoded_response
@@ -85,12 +93,12 @@ decoded_response AS (
         1
 )
 select
-    r.block_height,
+    r.block_id,
     r.DATA,
     TRY_PARSE_JSON(livequery.utils.udf_hex_to_string(decoded_response)) as decoded_result,
     r.error
 from response r
-LEFT JOIN decoded_response d using (block_height)
+LEFT JOIN decoded_response d using (block_id)
 $$
 
 {% endset %}
