@@ -81,7 +81,7 @@ SELECT
     *
 FROM
     TABLE(
-        near_dev.core.udtf_call_contract_function(
+        near.core.udtf_call_contract_function(
             'social.near',
             'get_accounts',
             OBJECT_CONSTRUCT(
@@ -111,7 +111,7 @@ SELECT
     ) AS unstaked_balance
 FROM
     TABLE(
-        near_dev.core.udtf_call_contract_function(
+        near.core.udtf_call_contract_function(
             'staked.poolv1.near',
             'get_accounts',
             {
