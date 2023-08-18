@@ -2,7 +2,10 @@ version: 2
 
 macros:
   - name: create_UDTF_CALL_CONTRACT_FUNCTION_BY_HEIGHT
-    description: Creates the Snowflake function `UDTF_CALL_CONTRACT_FUNCTION` with a height parameter input
+    description: >
+      Creates the Snowflake function `UDTF_CALL_CONTRACT_FUNCTION` with a height parameter input to  
+      call a contract method via the [public NEAR RPC endpoint](https://docs.near.org/api/rpc/setup), modeled after the official documentation, [here](https://docs.near.org/api/rpc/contracts#call-a-contract-function).  
+      See examples on the main docs landing page.
     arguments:
       - name: CONTRACT_ADDRESS
         type: string

@@ -2,7 +2,10 @@ version: 2
 
 macros:
   - name: create_UDTF_CALL_CONTRACT_FUNCTION
-    description: Creates the Snowflake function `UDTF_CALL_CONTRACT_FUNCTION` assuming `final` finality. See the documentation overview page for links to NEAR docs.
+    description: >
+      Creates the Snowflake function `UDTF_CALL_CONTRACT_FUNCTION` to
+      call a contract method via the [public NEAR RPC endpoint](https://docs.near.org/api/rpc/setup), modeled after the official documentation, [here](https://docs.near.org/api/rpc/contracts#call-a-contract-function).  
+      See examples on the main docs landing page.
     arguments:
       - name: CONTRACT_ADDRESS
         type: string

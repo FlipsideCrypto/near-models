@@ -54,7 +54,7 @@ There is more information on how to use dbt docs in the last section of this doc
 - [github_activity](https://github.com/forgxyz/developer_report_near)
 
 ### Custom Functions
-- `NEAR`.`CORE`.`UDTF_CALL_CONTRACT_FUNCTION`  
+- [udtf_call_contract_function](#!/macro/macro.near.create_UDTF_CALL_CONTRACT_FUNCTION_BY_HEIGHT)
 
 Call a contract method via the [public NEAR RPC endpoint](https://docs.near.org/api/rpc/setup), modeled after the official documentation, [here](https://docs.near.org/api/rpc/contracts#call-a-contract-function).  
   
