@@ -1,3 +1,4 @@
+-- depends_on: {{ ref('silver__streamline_blocks') }}
 {{ config(
     materialized = 'incremental',
     unique_key = 'test_timestamp',
@@ -18,7 +19,43 @@ WITH blocks_joined AS (
     ON a.BLOCK_HASH = b.PREV_HASH
     WHERE a.BLOCK_TIMESTAMP < b.BLOCK_TIMESTAMP -- Ensuring temporal order
     AND   a.BLOCK_TIMESTAMP <= DATEADD('hour', -12, CURRENT_TIMESTAMP())
-
+{% if is_incremental() %}
+AND (
+    a.block_id >= (
+        SELECT
+            MIN(block_id)
+        FROM
+            (
+                SELECT
+                    MIN(block_id) AS block_id
+                FROM
+                    {{ ref('silver__streamline_blocks') }}
+                WHERE
+                    block_timestamp BETWEEN DATEADD('hour', -96, CURRENT_TIMESTAMP())
+                    AND DATEADD('hour', -95, CURRENT_TIMESTAMP())
+                UNION
+                SELECT
+                    MIN(VALUE) - 1 AS block_id
+                FROM
+                    (
+                        SELECT
+                            blocks_impacted_array
+                        FROM
+                            {{ this }}
+                            qualify ROW_NUMBER() over (
+                                ORDER BY
+                                    test_timestamp DESC
+                            ) = 1
+                    ),
+                    LATERAL FLATTEN(
+                        input => blocks_impacted_array
+                    )
+            )
+    ) {% if var('OBSERV_FULL_TEST') %}
+        OR b.block_id >= 0
+    {% endif %}
+)
+{% endif %}
 ),
 blocks_impacted AS (
     SELECT
@@ -36,6 +73,7 @@ aggregated_data AS (
         MAX(a.current_block_id) AS max_block,
         MIN(a.current_block_timestamp) AS min_block_timestamp,
         MAX(a.current_block_timestamp) AS max_block_timestamp,
+        COUNT(DISTINCT a.current_block_id) AS blocks_tested,
         COUNT(DISTINCT b.current_block_id) AS blocks_impacted_count,
         ARRAY_AGG(DISTINCT b.current_block_id) AS blocks_impacted_array
     FROM blocks_joined a
@@ -44,11 +82,13 @@ aggregated_data AS (
 )
 
 SELECT 
+    'blocks' AS test_name,
     min_block, 
     max_block, 
     min_block_timestamp, 
-    max_block_timestamp, 
-    blocks_impacted_count, 
+    max_block_timestamp,
+    blocks_tested,
+    blocks_impacted_count,
     blocks_impacted_array,
     CURRENT_TIMESTAMP() AS test_timestamp
 FROM aggregated_data
