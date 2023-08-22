@@ -1,14 +1,14 @@
 {{ config(
     materialized = 'view',
     secure = true,
+    tags = ['core', 'governance'],
     meta={
-    'database_tags':{
-        'table': {
-            'PURPOSE': 'STAKING'
+        'database_tags':{
+            'table': {
+                'PURPOSE': 'STAKING GOVERNANCE'
             }
         }
-    },
-    tags = ['core']
+    }
 ) }}
 
 WITH balance_changes AS (

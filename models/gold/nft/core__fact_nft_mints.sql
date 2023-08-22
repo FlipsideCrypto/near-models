@@ -1,5 +1,13 @@
 {{ config(
-    materialized = 'view'
+    materialized = 'view',
+    meta={
+    'database_tags':{
+        'table': {
+            'PURPOSE': 'NFT'
+            }
+        }
+    },
+    tags = ['core', 'nft']
 ) }}
 
 WITH nft_mints AS (

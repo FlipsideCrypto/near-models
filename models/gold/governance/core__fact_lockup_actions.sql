@@ -1,7 +1,14 @@
 {{ config(
     materialized = 'view',
     secure = true,
-    tags = ['core']
+    tags = ['core', 'governance'],
+    meta={
+        'database_tags':{
+            'table': {
+                'PURPOSE': 'STAKING GOVERNANCE'
+            }
+        }
+    }
 ) }}
 
 WITH lockup_actions AS (
