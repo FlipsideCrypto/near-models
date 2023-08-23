@@ -38,13 +38,13 @@ txs AS (
                 SELECT
                     MAX(_partition_by_block_number)
                 FROM
-                    silver.streamline_receipts_final
+                    {{ target.database }}.silver.streamline_receipts_final
             ) - 20000
             AND _partition_by_block_number <= (
                 SELECT
                     MAX(_partition_by_block_number)
                 FROM
-                    silver.streamline_receipts_final
+                    {{ target.database }}.silver.streamline_receipts_final
             ) + 220000
         {% endif %}
 ),
