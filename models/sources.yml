@@ -1,12 +1,6 @@
 version: 2
 
 sources:
-  - name: gold
-    schema: gold
-    database: flipside_prod_db
-    tables:
-      - name: near_address_labels
-
   - name: streamline_dev
     database: streamline
     schema: near_dev
