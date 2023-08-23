@@ -1,9 +1,9 @@
 version: 2
 
 models:
-  - name: core__ez_dex_swaps
+  - name: defi__ez_dex_swaps
     description: |-
-      Deprecating soon: This is a notice that we're replacing this table with **NEAR.DEFI.EZ_DEX_SWAPS**. Please migrate queries to the new table by **9/14/23**. There will be no column changes or any other changes of any kind.
+      This table records all the swap transactions occurring in NEAR.
 
     columns:
       - name: BLOCK_ID

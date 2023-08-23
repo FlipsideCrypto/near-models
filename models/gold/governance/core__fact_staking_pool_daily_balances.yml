@@ -3,7 +3,7 @@ version: 2
 models:
   - name: core__fact_staking_pool_daily_balances
     description: |-
-      Aggregates the balances of each pool for each day, taking the last balance reported for each pool. This always excludes the present date.
+      Deprecating soon: This is a notice that we're replacing this table with **NEAR.GOV.FACT_STAKING_POOL_DAILY_BALANCES**. Please migrate queries to the new table by **9/14/23**. There will be no column changes or any other changes of any kind.
 
     columns:
       - name: DATE

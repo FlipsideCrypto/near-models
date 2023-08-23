@@ -1,9 +1,11 @@
 version: 2
 
 models:
-  - name: core__fact_staking_pool_balances
+  - name: gov__fact_staking_pool_balances
     description: |-
-      Deprecating soon: This is a notice that we're replacing this table with **NEAR.GOV.FACT_STAKING_POOL_BALANCES**. Please migrate queries to the new table by **9/14/23**. There will be no column changes or any other changes of any kind.
+      Staking pool balances as extracted from receipt logs when an individual makes a staking action.
+      To calculate balance at a point in time, isolate a single record for each pool. This table is transactional-based, so balances are updated with every staking event by users.
+      Note - the amount in balance is decimal adjusted by 10^24.
 
     columns:
       - name: TX_HASH

@@ -18,5 +18,5 @@ sources:
     schema: core
     database: crosschain
     tables:
-      - name: address_labels
+      - name: dim_labels
       - name: dim_dates

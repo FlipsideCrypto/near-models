@@ -1,9 +1,9 @@
 version: 2
 
 models:
-  - name: core__fact_lockup_actions
+  - name: gov__fact_lockup_actions
     description: |-
-      Deprecating soon: This is a notice that we're replacing this table with **NEAR.GOV.FACT_LOCKUP_ACTIONS**. Please migrate queries to the new table by **9/14/23**. There will be no column changes or any other changes of any kind.
+      This table records all disbursements by the contract lockup.near.
 
     columns:
       - name: TX_HASH

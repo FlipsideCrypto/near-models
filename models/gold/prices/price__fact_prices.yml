@@ -1,9 +1,9 @@
 version: 2
 
 models:
-  - name: core__fact_prices
+  - name: price__fact_prices
     description: |-
-      Deprecating soon: This is a notice that we're replacing this table with **NEAR.PRICE.FACT_PRICES**. Please migrate queries to the new table by **9/14/23**. There will be no column changes or any other changes of any kind.
+      This table presents asset prices for the NEAR blockchain from various sources. Presently, only the on-chain oracle is provide.
 
     columns:
       - name: TIMESTAMP

@@ -1,9 +1,9 @@
 version: 2
 
 models:
-  - name: core__fact_nft_mints
+  - name: nft__fact_nft_mints
     description: |-
-      Deprecating soon: This is a notice that we're replacing this table with **NEAR.NFT.FACT_NFT_MINTS**. Please migrate queries to the new table by **9/14/23**. There will be no column changes or any other changes of any kind.
+      This table records all the NFT Mints per the NEP171 standard, across various methods.
 
     columns:
       - name: RECEIPT_OBJECT_ID

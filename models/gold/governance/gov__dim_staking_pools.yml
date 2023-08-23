@@ -1,9 +1,9 @@
 version: 2
 
 models:
-  - name: core__dim_staking_pools
+  - name: gov__dim_staking_pools
     description: |-
-      Deprecating soon: This is a notice that we're replacing this table with **NEAR.GOV.DIM_STAKING_POOLS**. Please migrate queries to the new table by **9/14/23**. There will be no column changes or any other changes of any kind.
+      This table contains registered staking pools with NEAR.
 
     columns:
       - name: TX_HASH
