@@ -16,7 +16,7 @@ env:
   PASSWORD: "${{ secrets.PASSWORD }}"
   REGION: "${{ vars.REGION }}"
   DATABASE: "${{ vars.DATABASE }}"
-  WAREHOUSE: "${{ vars.WAREHOUSE }}"
+  WAREHOUSE: "${{ vars.TEST_WAREHOUSE }}"
   SCHEMA: "${{ vars.SCHEMA }}"
   SLACK_WEBHOOK_URL: "${{ secrets.SLACK_WEBHOOK_URL }}"
 
