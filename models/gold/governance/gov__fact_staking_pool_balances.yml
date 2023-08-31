@@ -1,0 +1,27 @@
+version: 2
+
+models:
+  - name: gov__fact_staking_pool_balances
+    description: |-
+      Staking pool balances as extracted from receipt logs when an individual makes a staking action.
+      To calculate balance at a point in time, isolate a single record for each pool. This table is transactional-based, so balances are updated with every staking event by users.
+      Note - the amount in balance is decimal adjusted by 10^24.
+
+    columns:
+      - name: TX_HASH
+        description: "{{ doc('tx_hash') }}"
+
+      - name: BLOCK_ID
+        description: "{{ doc('block_id') }}"
+
+      - name: BLOCK_TIMESTAMP
+        description: "{{ doc('block_timestamp') }}"
+
+      - name: RECEIPT_OBJECT_ID
+        description: "{{ doc('receipt_object_id') }}"
+
+      - name: ADDRESS
+        description: "{{ doc('pool_address') }}"
+
+      - name: BALANCE
+        description: "{{ doc('balance') }}"

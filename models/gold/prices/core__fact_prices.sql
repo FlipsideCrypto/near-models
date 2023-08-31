@@ -8,7 +8,7 @@
             }
         }
     },
-    tags = ['core']
+    tags = ['core', 'prices']
 ) }}
 
 WITH oracle_prices AS (

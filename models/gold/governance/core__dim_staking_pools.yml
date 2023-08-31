@@ -3,7 +3,7 @@ version: 2
 models:
   - name: core__dim_staking_pools
     description: |-
-      This table contains registered staking pools with NEAR.
+      Deprecating soon: This is a notice that we're replacing this table with **NEAR.GOV.DIM_STAKING_POOLS**. Please migrate queries to the new table by **9/14/23**. There will be no column changes or any other changes of any kind.
 
     columns:
       - name: TX_HASH
@@ -60,4 +60,4 @@ models:
                 - STRING
                 - VARCHAR
           - dbt_expectations.expect_column_values_to_be_in_set:
-              value_set: ['Create', 'Update']
+              value_set: ["Create", "Update"]

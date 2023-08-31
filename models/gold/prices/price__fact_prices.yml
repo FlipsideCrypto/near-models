@@ -1,0 +1,71 @@
+version: 2
+
+models:
+  - name: price__fact_prices
+    description: |-
+      This table presents asset prices for the NEAR blockchain from various sources. Presently, only the on-chain oracle is provide.
+
+    columns:
+      - name: TIMESTAMP
+        description: "{{ doc('timestamp')}}"
+        tests:
+          - dbt_expectations.expect_row_values_to_have_recent_data:
+              datepart: day
+              interval: 1
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
+
+      - name: TOKEN
+        description: "{{ doc('token')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: SYMBOL
+        description: "{{ doc('symbol')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: TOKEN_CONTRACT
+        description: "{{ doc('token_contract')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: RAW_PRICE
+        description: "{{ doc('price_usd')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - FLOAT
+                - DOUBLE
+
+      - name: PRICE_USD
+        description: "{{ doc('price_usd')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - FLOAT
+                - DOUBLE
+
+      - name: SOURCE
+        description: "{{ doc('source')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR

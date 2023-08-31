@@ -1,0 +1,16 @@
+version: 2
+
+models:
+  - name: core__fact_staking_pool_daily_balances
+    description: |-
+      Deprecating soon: This is a notice that we're replacing this table with **NEAR.GOV.FACT_STAKING_POOL_DAILY_BALANCES**. Please migrate queries to the new table by **9/14/23**. There will be no column changes or any other changes of any kind.
+
+    columns:
+      - name: DATE
+        description: "{{ doc('date') }}"
+
+      - name: ADDRESS
+        description: "{{ doc('pool_address') }}"
+
+      - name: BALANCE
+        description: "{{ doc('balance') }}"

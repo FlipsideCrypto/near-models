@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: core__fact_lockup_actions
+  - name: gov__fact_lockup_actions
     description: |-
       This table records all disbursements by the contract lockup.near.
 
@@ -17,7 +17,7 @@ models:
 
       - name: DEPOSIT
         description: "{{ doc('deposit')}}"
-        tests: 
+        tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
@@ -27,17 +27,17 @@ models:
 
       - name: LOCKUP_ACCOUNT_ID
         description: "{{ doc('lockup_account_id')}}"
-        tests: 
+        tests:
           - not_null
 
       - name: OWNER_ACCOUNT_ID
         description: "{{ doc('owner_account_id')}}"
-        tests: 
+        tests:
           - not_null
 
       - name: LOCKUP_DURATION
         description: "{{ doc('lockup_duration')}}"
-        tests: 
+        tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
@@ -45,14 +45,14 @@ models:
 
       - name: LOCKUP_TIMESTAMP
         description: "{{ doc('lockup_timestamp')}}"
-        tests: 
+        tests:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - VARCHAR
 
       - name: LOCKUP_TIMESTAMP_NTZ
         description: "{{ doc('lockup_timestamp_ntz')}}"
-        tests: 
+        tests:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - TIMESTAMP_NTZ
@@ -69,4 +69,3 @@ models:
 
       - name: TRANSFERS_INFORMATION
         description: "{{ doc('transfers_information')}}"
-        

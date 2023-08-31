@@ -1,0 +1,46 @@
+version: 2
+
+models:
+  - name: core__fact_logs
+    description: |-
+      This table extracts all logs from receipts and decodes the arguments for easy use.
+
+    columns:
+      - name: TX_HASH
+        description: "{{ doc('tx_hash')}}"
+        tests:
+          - not_null:
+              where: block_timestamp <= current_timestamp - interval '2 hour'
+      - name: RECEIPT_OBJECT_ID
+        description: "{{ doc('receipt_object_id')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: BLOCK_ID
+        description: "{{ doc('block_id')}}"
+
+      - name: BLOCK_TIMESTAMP
+        description: "{{ doc('block_timestamp')}}"
+
+      - name: RECEIVER_ID
+        description: "{{ doc('receiver_id')}}"
+
+      - name: GAS_BURNT
+        description: "{{ doc('gas_burnt')}}"
+
+      - name: SIGNER_ID
+        description: "{{ doc('signer_id')}}"
+
+      - name: CLEAN_LOG
+        description: "{{ doc('clean_log')}}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+                - OBJECT
+                - ARRAY

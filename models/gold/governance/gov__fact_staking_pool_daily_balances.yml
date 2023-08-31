@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: core__fact_staking_pool_daily_balances
+  - name: gov__fact_staking_pool_daily_balances
     description: |-
       Aggregates the balances of each pool for each day, taking the last balance reported for each pool. This always excludes the present date.
 
