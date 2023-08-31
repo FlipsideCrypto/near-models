@@ -18,7 +18,7 @@ WITH blocks_joined AS (
     LEFT JOIN near_dev.silver.streamline_blocks b
     ON a.BLOCK_HASH = b.PREV_HASH
     WHERE a.BLOCK_TIMESTAMP < b.BLOCK_TIMESTAMP -- Ensuring temporal order
-    AND   a.BLOCK_TIMESTAMP <= DATEADD('hour', -12, CURRENT_TIMESTAMP())
+    AND   a.BLOCK_TIMESTAMP <= DATEADD('hour', -12, SYSDATE())
 {% if is_incremental() %}
 AND (
     a.block_id >= (
@@ -31,8 +31,8 @@ AND (
                 FROM
                     {{ ref('silver__streamline_blocks') }}
                 WHERE
-                    block_timestamp BETWEEN DATEADD('hour', -96, CURRENT_TIMESTAMP())
-                    AND DATEADD('hour', -95, CURRENT_TIMESTAMP())
+                    block_timestamp BETWEEN DATEADD('hour', -96, SYSDATE())
+                    AND DATEADD('hour', -95, SYSDATE())
                 UNION
                 SELECT
                     MIN(VALUE) - 1 AS block_id
@@ -52,7 +52,7 @@ AND (
                     )
             )
     ) {% if var('OBSERV_FULL_TEST') %}
-        OR b.block_id >= 0
+        OR b.block_id >= 9820210
     {% endif %}
 )
 {% endif %}
@@ -90,5 +90,5 @@ SELECT
     blocks_tested,
     blocks_impacted_count,
     blocks_impacted_array,
-    CURRENT_TIMESTAMP() AS test_timestamp
+    SYSDATE() AS test_timestamp
 FROM aggregated_data

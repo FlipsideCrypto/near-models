@@ -18,7 +18,7 @@ WITH block_chunks_included AS (
     FROM
         {{ ref('silver__streamline_blocks') }}
     WHERE
-        block_timestamp <= DATEADD('hour', -12, CURRENT_TIMESTAMP())
+        block_timestamp <= DATEADD('hour', -12, SYSDATE())
 {% if is_incremental() %}
 AND (
     block_id >= (
@@ -31,8 +31,8 @@ AND (
                 FROM
                     {{ ref('silver__streamline_blocks') }}
                 WHERE
-                    block_timestamp BETWEEN DATEADD('hour', -96, CURRENT_TIMESTAMP())
-                    AND DATEADD('hour', -95, CURRENT_TIMESTAMP())
+                    block_timestamp BETWEEN DATEADD('hour', -96, SYSDATE())
+                    AND DATEADD('hour', -95, SYSDATE())
                 UNION
                 SELECT
                     MIN(VALUE) - 1 AS block_id
@@ -52,7 +52,7 @@ AND (
                     )
             )
     ) {% if var('OBSERV_FULL_TEST') %}
-        OR block_id >= 0
+        OR block_id >= 9820210
     {% endif %}
 )
 {% endif %}
@@ -109,8 +109,8 @@ missing AS (
             OR cblock_id IS NULL
             OR chunks_included != chunk_ct
         )
-        AND b_inserted_timestamp <= CURRENT_TIMESTAMP - INTERVAL '1 hour'
-        AND c_inserted_timestamp <= CURRENT_TIMESTAMP - INTERVAL '1 hour'
+        AND b_inserted_timestamp <= SYSDATE() - INTERVAL '1 hour'
+        AND c_inserted_timestamp <= SYSDATE() - INTERVAL '1 hour'
     ORDER BY
         1
 ),
@@ -126,7 +126,7 @@ impacted_blocks AS (
 )
 
 SELECT
-    'chuncks' AS test_name,
+    'chunk' AS test_name,
     min_block,
     max_block,
     min_block_timestamp,
@@ -134,7 +134,7 @@ SELECT
     blocks_tested,
     blocks_impacted_count,
     blocks_impacted_array,
-    CURRENT_TIMESTAMP() AS test_timestamp
+    SYSDATE() AS test_timestamp
 FROM
     summary_stats
     JOIN impacted_blocks
