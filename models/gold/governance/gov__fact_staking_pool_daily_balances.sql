@@ -5,7 +5,7 @@
     meta={
         'database_tags':{
             'table': {
-                'PURPOSE': 'STAKING GOVERNANCE'
+                'PURPOSE': 'STAKING, GOVERNANCE'
             }
         }
     }

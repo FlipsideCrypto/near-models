@@ -65,14 +65,6 @@ There is more information on how to use dbt docs in the last section of this doc
 - [fact_posts](#!/model/model.near.social__fact_posts)
 - [fact_widget_deployments](#!/model/model.near.social__fact_widget_deployments)
 
-### Social Tables (`NEAR`.`SOCIAL`.`<table_name>`)
-
-- [fact_addkey_events](#!/model/model.near.social__fact_addkey_events)
-- [fact_decoded_actions](#!/model/model.near.social__fact_decoded_actions)
-- [fact_profile_changes](#!/model/model.near.social__fact_profile_changes)
-- [fact_posts](#!/model/model.near.social__fact_posts)
-- [fact_widget_deployments](#!/model/model.near.social__fact_widget_deployments)
-
 ### Beta Tables (`NEAR`.`BETA`.`<table_name>`)
 
 - [github_activity](https://github.com/forgxyz/developer_report_near)
