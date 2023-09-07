@@ -1,0 +1,43 @@
+version: 2
+
+models:
+  - name: silver_observability__blocks_completeness
+    description: |-
+      Observability model that queries the blocks table at a designated interval to record and track the completeness of the data.
+    tests:
+      - dbt_utils.recency:
+          datepart: day
+          field: test_timestamp
+          interval: 1
+      - dbt_utils.recency:
+          datepart: hours
+          field: max_block_timestamp
+          interval: 24
+
+    columns:
+      - name: TEST_NAME
+        description: "{{ doc('test_name') }}"
+
+      - name: MIN_BLOCK
+        description: "{{ doc('min_block') }}"
+
+      - name: MAX_BLOCK
+        description: "{{ doc('max_block') }}"
+
+      - name: MIN_BLOCK_TIMESTAMP
+        description: "{{ doc('min_block_timestamp') }}"
+
+      - name: MAX_BLOCK_TIMESTAMP
+        description: "{{ doc('max_block_timestamp') }}"
+
+      - name: BLOCKS_TESTED
+        description: "{{ doc('blocks_tested') }}"
+
+      - name: BLOCKS_IMPACTED_COUNT
+        description: "{{ doc('blocks_impacted_count') }}"
+
+      - name: BLOCKS_IMPACTED_ARRAY
+        description: "{{ doc('blocks_impacted_array') }}"
+
+      - name: TEST_TIMESTAMP
+        description: "{{ doc('test_timestamp') }}"
