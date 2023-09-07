@@ -30,7 +30,7 @@ on-run-start:
   - "{{create_get_nearblocks_fts()}}"
 
 on-run-end:
-  - '{{ apply_meta_as_tags(results) }}'
+  - "{{ apply_meta_as_tags(results) }}"
 
 # Configuring models
 # Full documentation: https://docs.getdbt.com/docs/configuring-models
@@ -58,3 +58,4 @@ vars:
   UPDATE_UDFS_AND_SPS: False
   UPDATE_SNOWFLAKE_TAGS: True
   MANUAL_FIX: False
+  OBSERV_FULL_TEST: False
