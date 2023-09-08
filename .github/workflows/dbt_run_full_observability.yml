@@ -17,7 +17,7 @@ env:
   PASSWORD: "${{ secrets.PASSWORD }}"
   REGION: "${{ vars.REGION }}"
   DATABASE: "${{ vars.DATABASE }}"
-  WAREHOUSE: "${{ inputs.WAREHOUSE }}"
+  WAREHOUSE: "${{ vars.WAREHOUSE }}"
   SCHEMA: "${{ vars.SCHEMA }}"
 
 concurrency:
@@ -41,6 +41,7 @@ jobs:
         run: |
           pip install -r requirements.txt
           dbt deps
+
       - name: Run DBT Jobs
         run: |
           dbt run --threads 2 --vars '{"OBSERV_FULL_TEST":True}' -m tag:observability
