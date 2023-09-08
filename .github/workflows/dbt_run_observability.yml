@@ -1,5 +1,5 @@
-name: dbt_run_full_observability
-run-name: dbt_run_full_observability
+name: dbt_run_observability
+run-name: dbt_run_observability
 
 on:
   workflow_dispatch:
@@ -17,7 +17,7 @@ env:
   PASSWORD: "${{ secrets.PASSWORD }}"
   REGION: "${{ vars.REGION }}"
   DATABASE: "${{ vars.DATABASE }}"
-  WAREHOUSE: "${{ inputs.WAREHOUSE }}"
+  WAREHOUSE: "${{ vars.WAREHOUSE }}"
   SCHEMA: "${{ vars.SCHEMA }}"
 
 concurrency:
