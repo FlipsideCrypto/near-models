@@ -63,7 +63,7 @@ vars:
 dispatch:
   - macro_namespace: dbt
     search_order:
-      - osmosis-models
+      - near-models
       - dbt_snowflake_query_tags
       - dbt
 
