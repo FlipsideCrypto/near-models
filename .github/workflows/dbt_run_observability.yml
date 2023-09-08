@@ -1,5 +1,5 @@
 name: dbt_run_observability
-run-name: dbt_run_full_observability
+run-name: dbt_run_observability
 
 on:
   workflow_dispatch:
