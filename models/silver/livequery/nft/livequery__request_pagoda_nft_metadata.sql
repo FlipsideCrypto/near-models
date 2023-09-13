@@ -1,51 +1,65 @@
 {{ config(
     materialized = 'incremental',
-    unique_key = 'TBD',
-    tags = ['scheduled']
+    unique_key = 'request_id',
+    incremental_strategy = 'delete+insert',
+    tags = ['livequery']
 ) }}
 
-WITH nfts_minted AS (
+WITH request_nft_ids AS (
 
     SELECT
-        receiver_id AS contract_account_id,
+        contract_account_id,
         token_id,
-        MD5(
-            contract_account_id || token_id
-        ) AS nft_id
+        nft_id
     FROM
-        {{ ref('silver__standard_nft_mint_s3') }}
-
-        {% if var("MANUAL_FIX") %}
-        WHERE
-            {{ partition_load_manual('no_buffer') }}
-        {% else %}
-        WHERE
-            {{ incremental_load_filter("_inserted_timestamp") }}
-        {% endif %}
-    LIMIT 10 -- TODO - FOR TESTING, remove for prod
+        {{ target.database }}.livequery.nft_metadata_needed
+    LIMIT 7
 ),
+-- below CTE for manually coding an nft for response testing
+{# manual_testing AS (
+SELECT
+    'collectables.stlb.near' AS contract_account_id,
+    '25161563-5e9a-411a-b13e-62d7f6b9a091_80' AS token_id,
+    MD5(
+        'collectables.stlb.near' || '25161563-5e9a-411a-b13e-62d7f6b9a091_80'
+    ) AS nft_id
+),
+#}
 lq_request AS (
     SELECT
+        contract_account_id,
+        token_id,
+        nft_id,
+        'https://near-mainnet.api.pagoda.co/eapi/v1/NFT/' || contract_account_id || '/' || token_id AS res_url,
         ethereum.streamline.udf_api(
             'GET',
-            'https://near-mainnet.api.pagoda.co/eapi/v1/NFT/' || contract_account_id || '/' || token_id,
-            {
+            res_url,
+            { 
                 'x-api-key': '{{ var('PAGODA_API_KEY', Null )}}',
                 'Content-Type': 'application/json'
             },
             {}
         ) AS lq_response,
-        SYSDATE() AS _request_timestamp
+        SYSDATE() AS _inserted_timestamp
     FROM
-        nfts_minted
+        request_nft_ids
+),
+FINAL AS (
+    SELECT
+        contract_account_id,
+        token_id,
+        nft_id,
+        res_url,
+        lq_response,
+        lq_response :data :message IS NULL AS call_succeeded,
+        MD5(
+            nft_id || call_succeeded
+        ) AS request_id,
+        _inserted_timestamp
+    FROM
+        lq_request
 )
 SELECT
     *
 FROM
-    lq_request
-
-{# TODO
-- ensure deduplication, exclude metadata already requested, route API errors 
-- keep original block/inserted timestamps?
-- test various batch sizes
- #}
+    FINAL
