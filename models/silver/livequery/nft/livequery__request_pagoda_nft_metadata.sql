@@ -1,30 +1,45 @@
 {{ config(
     materialized = 'incremental',
-    unique_key = 'request_id',
+    unique_key = 'nft_id',
     incremental_strategy = 'delete+insert',
     tags = ['livequery']
 ) }}
 
-WITH request_nft_ids AS (
+WITH nfts_minted AS (
 
+    SELECT
+        receiver_id AS contract_account_id,
+        token_id,
+        MD5(
+            receiver_id || token_id
+        ) AS nft_id,
+        COALESCE(
+            _inserted_timestamp,
+            _load_timestamp
+        ) AS _inserted_timestamp
+    FROM
+        {{ ref('silver__standard_nft_mint_s3') }}
+),
+have_metadata AS (
     SELECT
         contract_account_id,
         token_id,
-        nft_id
+        nft_id,
+        _inserted_timestamp
     FROM
-        {{ target.database }}.livequery.nft_metadata_needed
-    LIMIT 7
+        {{ this }}
 ),
--- below CTE for manually coding an nft for response testing
-{# manual_testing AS (
-SELECT
-    'collectables.stlb.near' AS contract_account_id,
-    '25161563-5e9a-411a-b13e-62d7f6b9a091_80' AS token_id,
-    MD5(
-        'collectables.stlb.near' || '25161563-5e9a-411a-b13e-62d7f6b9a091_80'
-    ) AS nft_id
+final_nfts_to_request AS (
+    SELECT
+        *
+    FROM
+        nfts_minted
+    EXCEPT
+    SELECT
+        *
+    FROM
+        have_metadata
 ),
-#}
 lq_request AS (
     SELECT
         contract_account_id,
@@ -40,10 +55,15 @@ lq_request AS (
             },
             {}
         ) AS lq_response,
-        SYSDATE() AS _inserted_timestamp
+        SYSDATE() AS _request_timestamp,
+        _inserted_timestamp
     FROM
-        request_nft_ids
-),
+        final_nfts_to_request
+    LIMIT
+        {{ var(
+            'sql_limit', 10
+        ) }}
+), 
 FINAL AS (
     SELECT
         contract_account_id,
@@ -52,9 +72,7 @@ FINAL AS (
         res_url,
         lq_response,
         lq_response :data :message IS NULL AS call_succeeded,
-        MD5(
-            nft_id || call_succeeded
-        ) AS request_id,
+        _request_timestamp,
         _inserted_timestamp
     FROM
         lq_request
