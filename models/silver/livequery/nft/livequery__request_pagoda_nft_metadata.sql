@@ -46,7 +46,7 @@ lq_request AS (
         token_id,
         nft_id,
         'https://near-mainnet.api.pagoda.co/eapi/v1/NFT/' || contract_account_id || '/' || token_id AS res_url,
-        ethereum.streamline.udf_api(
+        livequery_dev.live.udf_api(
             'GET',
             res_url,
             { 
@@ -61,7 +61,7 @@ lq_request AS (
         final_nfts_to_request
     LIMIT
         {{ var(
-            'sql_limit', 10
+            'SQL_LIMIT', 25
         ) }}
 ), 
 FINAL AS (

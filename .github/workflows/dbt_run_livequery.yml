@@ -28,7 +28,7 @@ jobs:
     uses: FlipsideCrypto/analytics-workflow-templates/.github/workflows/dbt_run_template.yml@main
     with:
       dbt_command: >
-        dbt run -s tag:livequery --vars '{"PAGODA_API_KEY": ${{ secrets.PAGODA_API_KEY }}}'
+        dbt run -s tag:livequery --vars 'PAGODA_API_KEY: ${{ secrets.PAGODA_API_KEY }}'
       environment: workflow_prod
       warehouse: ${{ vars.WAREHOUSE }}
     secrets: inherit 
