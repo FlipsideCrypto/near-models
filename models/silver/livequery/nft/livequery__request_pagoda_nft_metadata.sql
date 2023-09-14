@@ -4,7 +4,8 @@
     incremental_strategy = 'delete+insert',
     tags = ['livequery']
 ) }}
-
+{# TODO - only need to request 1 per collection. Individual token can be disregarded. Thus the nft mints table should be "fixed" as well w collection ID col.
+ #}
 WITH nfts_minted AS (
 
     SELECT
