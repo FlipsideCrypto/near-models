@@ -11,6 +11,12 @@ WITH nfts_minted AS (
     SELECT
         receiver_id AS contract_account_id,
         token_id,
+        -- pending work here, need  to isolate just series id and request 1 per series but not everything is just series:token. When split by ':', there are many with 3, 4 and 7 parts.
+        -- TODO - isolate the individual series to minimize requests.
+        -- 80% are 1 or 2, nearly 20% are 3. A tiny fraction 4 and 7
+        {# coalesce(split(token_id, ':')[1],
+        split(token_id, ':')[0]) as series_id,
+        split(token_id, ':')[1] is null as token_id_is_series_id, #}
         MD5(
             receiver_id || token_id
         ) AS nft_id,
