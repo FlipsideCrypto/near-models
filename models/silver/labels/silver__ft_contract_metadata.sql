@@ -1,7 +1,8 @@
 {{ config(
     materialized = 'incremental',
     unique_key = 'contract_address',
-    incremental_strategy = 'delete+insert'
+    incremental_strategy = 'delete+insert',
+    tags = ['livequery', 'nearblocks']
 ) }}
 
 WITH livequery_results AS (

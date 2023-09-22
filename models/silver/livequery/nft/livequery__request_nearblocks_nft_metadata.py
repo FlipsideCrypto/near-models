@@ -58,10 +58,6 @@ def model(dbt, session):
         call_udf_sql = f"select livequery.live.udf_api('{method}', '{url}', {headers}, {data})"
 
         # execute udf_api call
-        # TODO - wrap in try-except?
-        # can possibly use exception to return the result_df thus far to log what's been collected
-        # maybe add a col for api error
-        # could I send an alert to slack??? i think so
         response = session.sql(call_udf_sql).collect()
 
         token_count = len(json.loads(response[0][0])['data']['tokens'])
