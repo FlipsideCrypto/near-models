@@ -1,63 +1,85 @@
 {{ config(
     materialized = 'incremental',
-    unique_key = 'nft_id',
+    unique_key = 'metadata_id',
     incremental_strategy = 'delete+insert',
     tags = ['livequery']
 ) }}
-{# TODO - only need to request 1 per collection. Individual token can be disregarded. Thus the nft mints table should be "fixed" as well w collection ID col.
- #}
+
 WITH nfts_minted AS (
 
     SELECT
+        tx_hash,
+        block_id,
         receiver_id AS contract_account_id,
         token_id,
-        -- pending work here, need  to isolate just series id and request 1 per series but not everything is just series:token. When split by ':', there are many with 3, 4 and 7 parts.
-        -- TODO - isolate the individual series to minimize requests.
-        -- 80% are 1 or 2, nearly 20% are 3. A tiny fraction 4 and 7
-        {# coalesce(split(token_id, ':')[1],
-        split(token_id, ':')[0]) as series_id,
-        split(token_id, ':')[1] is null as token_id_is_series_id, #}
+        IFF(
+            -- if token id does not include a series id, then set contract to series id, else extract from token id
+            -- note: if a nft is deployed as its own contract, we will see this behavior
+            -- if launched as part of a marketplace contract, like paras, the series id is included in the token id
+            SPLIT(
+                token_id,
+                ':'
+            ) [1] IS NULL,
+            contract_account_id,
+            SPLIT(
+                token_id,
+                ':'
+            ) [0]
+        ) AS series_id,
         MD5(
-            receiver_id || token_id
-        ) AS nft_id,
+            receiver_id || series_id
+        ) AS metadata_id,
         COALESCE(
             _inserted_timestamp,
             _load_timestamp
         ) AS _inserted_timestamp
     FROM
         {{ ref('silver__standard_nft_mint_s3') }}
+    WHERE
+        contract_account_id NOT IN (
+            'nft-assets.l2e.near' -- broken
+        )
 ),
+
+{% if is_incremental() %}
 have_metadata AS (
     SELECT
-        contract_account_id,
-        token_id,
-        nft_id,
-        _inserted_timestamp
+        DISTINCT metadata_id
     FROM
         {{ this }}
 ),
+{% endif %}
+
 final_nfts_to_request AS (
     SELECT
         *
     FROM
         nfts_minted
-    EXCEPT
-    SELECT
-        *
-    FROM
-        have_metadata
+
+{% if is_incremental() %}
+WHERE
+    metadata_id NOT IN (
+        SELECT
+            metadata_id
+        FROM
+            have_metadata
+    )
+{% endif %}
 ),
 lq_request AS (
     SELECT
+        tx_hash,
+        block_id,
         contract_account_id,
         token_id,
-        nft_id,
+        series_id,
+        metadata_id,
         'https://near-mainnet.api.pagoda.co/eapi/v1/NFT/' || contract_account_id || '/' || token_id AS res_url,
-        livequery_dev.live.udf_api(
+        ethereum.streamline.udf_api(
             'GET',
             res_url,
             { 
-                'x-api-key': '{{ var('PAGODA_API_KEY', Null )}}',
+                'x-api-key': '{{ var('PAGODA_API_KEY', NULL) }}',
                 'Content-Type': 'application/json'
             },
             {}
@@ -68,17 +90,29 @@ lq_request AS (
         final_nfts_to_request
     LIMIT
         {{ var(
-            'SQL_LIMIT', 25
+            'SQL_LIMIT', 250
         ) }}
-), 
-FINAL AS (
+), FINAL AS (
     SELECT
+        tx_hash,
+        block_id,
         contract_account_id,
         token_id,
-        nft_id,
+        series_id,
+        metadata_id,
         res_url,
         lq_response,
-        lq_response :data :message IS NULL AS call_succeeded,
+        (
+            lq_response :data :message IS NULL
+        )
+        AND (
+            lq_response :error IS NULL
+        ) AS call_succeeded,
+        COALESCE(
+            lq_response :data :code :: INT,
+            lq_response :status_code :: INT
+        ) AS error_code,
+        lq_response :data :message :: STRING AS error_message,
         _request_timestamp,
         _inserted_timestamp
     FROM
@@ -88,3 +122,4 @@ SELECT
     *
 FROM
     FINAL
+{# qualify row_number() over (partition by metadata_id order by _request_timestamp desc) = 1 #}
