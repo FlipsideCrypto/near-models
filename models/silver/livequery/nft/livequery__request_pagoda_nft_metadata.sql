@@ -2,7 +2,7 @@
     materialized = 'incremental',
     unique_key = 'metadata_id',
     incremental_strategy = 'delete+insert',
-    tags = ['livequery']
+    tags = ['livequery', 'pagoda']
 ) }}
 
 WITH nfts_minted AS (
