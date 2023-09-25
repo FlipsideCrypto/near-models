@@ -15,9 +15,9 @@ WITH livequery_response AS (
         call_succeeded
 
 {% if is_incremental() %}
-AND _inserted_timestamp >= (
+AND _request_timestamp >= (
     SELECT
-        MAX(_inserted_timestamp)
+        MAX(_request_timestamp)
     FROM
         {{ this }}
 )
@@ -29,7 +29,9 @@ FINAL AS (
         series_id,
         metadata_id,
         lq_response :data :contract_metadata :: variant AS contract_metadata,
-        lq_response :data :nft :metadata :: variant AS token_metadata
+        lq_response :data :nft :metadata :: variant AS token_metadata,
+        _inserted_timestamp,
+        _request_timestamp
     FROM
         livequery_response
 )

@@ -1,3 +1,5 @@
+{# Deprecated 9/25/2023 #}
+
 {% macro get_nearblocks_fts() %}
 {% set sql %}
 

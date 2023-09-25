@@ -2,7 +2,7 @@
     materialized = 'incremental',
     unique_key = 'contract_address',
     incremental_strategy = 'delete+insert',
-    tags = ['livequery', 'nearblocks']
+    tags = ['livequery', 'nearblocks'],
 ) }}
 
 WITH livequery_results AS (
@@ -24,8 +24,6 @@ WHERE
 ),
 flatten_results AS (
     SELECT
-        page,
-        INDEX,
         VALUE :base_uri :: STRING AS base_uri,
         VALUE :contract :: STRING AS contract_address,
         VALUE :icon :: STRING AS icon,
@@ -43,3 +41,4 @@ SELECT
     *
 FROM
     flatten_results
+qualify row_number() over (partition by contract_address order by _inserted_timestamp desc) = 1

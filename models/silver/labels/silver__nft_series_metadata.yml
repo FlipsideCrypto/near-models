@@ -1,0 +1,44 @@
+version: 2
+
+models:
+  - name: silver__nft_series_metadata
+    description: |-
+      NFT Series-level metadata provided by the Pagoda NFT endpoint.
+    tests:
+      - dbt_utils.recency:
+          datepart: day
+          field: _inserted_timestamp
+          interval: 5
+
+    columns:
+      - name: CONTRACT_ADDRESS
+        description: "{{ doc('contract_address')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: VARCHAR
+
+      - name: SERIES_ID
+        description: "{{ doc('series_id')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: VARCHAR
+
+      - name: METADATA_ID
+        description: "{{ doc('metadata_id')}}"
+        tests:
+          - not_null
+          - unique
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: VARCHAR
+
+      - name: CONTRACT_METADATA
+        description: "{{ doc('contract_metadata')}}"
+
+      - name: TOKEN_METADATA
+        description: "{{ doc('token_metadata')}}"
+
+      - name: _INSERTED_TIMESTAMP
+        description: "{{ doc('_inserted_timestamp')}}"
+

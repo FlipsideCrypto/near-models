@@ -4,8 +4,8 @@ run-name: dbt_run_livequery
 on:
   workflow_dispatch:
   schedule:
-    # Runs hourly (see https://crontab.guru)
-    - cron: '0 * * * *'
+    # Runs weekly at 0 UTC on Mondays (see https://crontab.guru)
+    - cron: '0 0 * * 1'
 
 env:
   USE_VARS: "${{ vars.USE_VARS }}"
@@ -28,7 +28,7 @@ jobs:
     uses: FlipsideCrypto/analytics-workflow-templates/.github/workflows/dbt_run_template.yml@main
     with:
       dbt_command: >
-        dbt run -s tag:livequery --vars '{"PAGODA_API_KEY": "${{ secrets.PAGODA_API_KEY }}", "SQL_LIMIT": ${{ vars.PAGODA_SQL_LIMIT }}}'
+        dbt run -s tag:nearblocks
       environment: workflow_prod
       warehouse: ${{ vars.WAREHOUSE }}
     secrets: inherit 

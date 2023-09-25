@@ -24,8 +24,6 @@ WHERE
 ),
 flatten_results AS (
     SELECT
-        page,
-        INDEX,
         VALUE :contract :: STRING AS contract_address,
         VALUE :decimals :: INT AS decimals,
         VALUE :icon :: STRING AS icon,
@@ -42,3 +40,4 @@ SELECT
     *
 FROM
     flatten_results
+qualify row_number() over (partition by contract_address order by _inserted_timestamp desc) = 1

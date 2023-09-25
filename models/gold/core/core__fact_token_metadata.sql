@@ -9,6 +9,7 @@
     },
     tags = ['core']
 ) }}
+{# Deprecated 9/25/2023 TODO deprecate and delete in favor of new view #}
 
 WITH nearblocks_ft_api AS (
 
