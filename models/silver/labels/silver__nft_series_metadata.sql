@@ -39,4 +39,4 @@ SELECT
     *
 FROM
     FINAL
-qualify row_number() over (partition by metadata_id order by _inserted_timestamp desc) = 1
+qualify row_number() over (partition by metadata_id order by _request_timestamp desc) = 1
