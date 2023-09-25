@@ -7,7 +7,7 @@ models:
     tests:
       - dbt_utils.recency:
           datepart: day
-          field: _inserted_timestamp
+          field: _request_timestamp
           interval: 5
 
     columns:
@@ -42,3 +42,5 @@ models:
       - name: _INSERTED_TIMESTAMP
         description: "{{ doc('_inserted_timestamp')}}"
 
+      - name: _REQUEST_TIMESTAMP
+        description: "{{ doc('_request_timestamp')}}"

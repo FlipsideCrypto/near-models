@@ -1,5 +1,5 @@
-name: dbt_run_livequery
-run-name: dbt_run_livequery
+name: dbt_run_livequery_weekly
+run-name: dbt_run_livequery_weekly
 
 on:
   workflow_dispatch:
