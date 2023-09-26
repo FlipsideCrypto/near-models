@@ -1,6 +1,5 @@
 import anyjson as json
 import snowflake.snowpark.types as T
-import snowflake.snowpark.functions as F
 
 from datetime import datetime
 
@@ -51,8 +50,7 @@ def model(dbt, session):
 
     while True:
         # set url for GET request based on url_params
-        url = base_url + '?' + \
-            '&'.join([f'{k}={v}' for k, v in url_params.items()])
+        url = f'{base_url}?{"&".join([f"{k}={v}" for k, v in url_params.items()])}'
 
         # call udf api (max 50 requests per page)
         call_udf_sql = f"select livequery.live.udf_api('{method}', '{url}', {headers}, {data})"
@@ -75,7 +73,7 @@ def model(dbt, session):
                             page,
                             call_udf_sql,
                             token_count,
-                            response,
+                            json.loads(response[0][0]),
                             _inserted_timestamp,
                             _res_id
                         ]

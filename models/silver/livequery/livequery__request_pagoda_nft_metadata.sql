@@ -122,4 +122,3 @@ SELECT
     *
 FROM
     FINAL
-{# qualify row_number() over (partition by metadata_id order by _request_timestamp desc) = 1 #}

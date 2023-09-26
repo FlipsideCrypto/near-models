@@ -34,7 +34,7 @@ flatten_results AS (
         _res_id
     FROM
         livequery_results,
-        LATERAL FLATTEN(input => TRY_PARSE_JSON(DATA [0] [0]) :data :tokens)
+        LATERAL FLATTEN(input => DATA :data :tokens)
 )
 SELECT
     *
