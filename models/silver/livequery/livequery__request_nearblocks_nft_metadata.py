@@ -62,7 +62,7 @@ def model(dbt, session):
 
         if token_count > 0:
 
-            _inserted_timestamp = datetime.now()
+            _inserted_timestamp = datetime.utcnow()
             _res_id = f'{_inserted_timestamp.date()}-{page}'
 
             # append response to result df
