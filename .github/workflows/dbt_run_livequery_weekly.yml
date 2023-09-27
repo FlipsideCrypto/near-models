@@ -1,12 +1,11 @@
-name: dbt_run_nearblocks_api
-run-name: dbt_run_nearblocks_api
+name: dbt_run_livequery_weekly
+run-name: dbt_run_livequery_weekly
 
 on:
   workflow_dispatch:
-  # Disabling schedule 
-  # schedule:
-    # Runs 0100 UTC daily (see https://crontab.guru)
-    # - cron: '0 1 * * *'
+  schedule:
+    # Runs weekly at 0 UTC on Mondays (see https://crontab.guru)
+    - cron: '0 0 * * 1'
 
 env:
   USE_VARS: "${{ vars.USE_VARS }}"
@@ -29,7 +28,7 @@ jobs:
     uses: FlipsideCrypto/analytics-workflow-templates/.github/workflows/dbt_run_template.yml@main
     with:
       dbt_command: >
-        dbt run-operation get_nearblocks_fts
+        dbt run -s tag:nearblocks
       environment: workflow_prod
       warehouse: ${{ vars.WAREHOUSE }}
     secrets: inherit 

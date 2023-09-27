@@ -1,0 +1,51 @@
+version: 2
+
+models:
+  - name: silver__ft_contract_metadata
+    description: |-
+      Fungible Token contract metadata provided by the Nearblocks NFT endpoint.
+    tests:
+      - dbt_utils.recency:
+          datepart: day
+          field: _inserted_timestamp
+          interval: 14
+
+    columns:
+      - name: CONTRACT_ADDRESS
+        description: "{{ doc('contract_address')}}"
+        tests:
+          - not_null
+          - unique
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: VARCHAR
+
+      - name: DECIMALS
+        description: "{{ doc('decimals')}}"
+        tests:
+          - not_null
+
+      - name: ICON
+        description: "{{ doc('icon')}}"
+
+      - name: NAME
+        description: "{{ doc('name')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: VARCHAR
+
+      - name: SYMBOL
+        description: "{{ doc('symbol')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: VARCHAR
+
+      - name: DATA
+        description: "{{ doc('data')}}"
+
+      - name: _INSERTED_TIMESTAMP
+        description: "{{ doc('_inserted_timestamp')}}"
+
+      - name: _RES_ID
+        description: "{{ doc('_res_id')}}"

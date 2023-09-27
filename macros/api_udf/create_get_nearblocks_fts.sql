@@ -1,3 +1,4 @@
+{# Deprecated 9/25/2023 #}
 {% macro create_get_nearblocks_fts() %}
   {% set create_table %}
   CREATE schema if NOT EXISTS {{ target.database }}.bronze_api;
