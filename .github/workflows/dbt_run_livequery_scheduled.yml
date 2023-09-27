@@ -19,6 +19,8 @@ env:
   DATABASE: "${{ vars.DATABASE }}"
   WAREHOUSE: "${{ vars.WAREHOUSE }}"
   SCHEMA: "${{ vars.SCHEMA }}"
+  PAGODA_API_KEY: "${{ secrets.PAGODA_API_KEY }}"
+  PAGODA_SQL_LIMIT: "${{ vars.PAGODA_SQL_LIMIT }}"
 
 concurrency:
   group: ${{ github.workflow }}
