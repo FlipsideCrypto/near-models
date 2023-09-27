@@ -30,7 +30,7 @@ jobs:
     uses: FlipsideCrypto/analytics-workflow-templates/.github/workflows/dbt_run_template.yml@main
     with:
       dbt_command: >
-        dbt run -s tag:pagoda --vars '{"PAGODA_API_KEY": ${{ secrets.PAGODA_API_KEY }}, "SQL_LIMIT": ${{ vars.PAGODA_SQL_LIMIT }}}'
+        dbt run -s tag:pagoda --vars '{"PAGODA_API_KEY": $PAGODA_API_KEY, "SQL_LIMIT": ${{ vars.PAGODA_SQL_LIMIT }}}'
       environment: workflow_prod
       warehouse: ${{ vars.WAREHOUSE }}
     secrets: inherit 
