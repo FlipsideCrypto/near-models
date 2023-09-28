@@ -4,8 +4,8 @@ run-name: dbt_run_scheduled
 on:
   workflow_dispatch:
   schedule:
-    # Runs "every hour" (see https://crontab.guru)
-    - cron: "0 */1 * * *"
+    # Runs "every 30 mins" (see https://crontab.guru)
+    - cron: "*/30 * * * *"
 
 env:
   USE_VARS: "${{ vars.USE_VARS }}"
@@ -28,7 +28,7 @@ jobs:
     uses: FlipsideCrypto/analytics-workflow-templates/.github/workflows/dbt_run_template.yml@main
     with:
       dbt_command: >
-        dbt seed; dbt run -s models/bronze tag:helper tag:load+ tag:labels+ --exclude streamline__s3_sync
+        dbt seed; dbt run -s models/bronze tag:helper tag:load+ tag:labels+ --exclude streamline__s3_sync tag:livequery
       environment: workflow_prod
       warehouse: ${{ vars.WAREHOUSE }}
     secrets: inherit

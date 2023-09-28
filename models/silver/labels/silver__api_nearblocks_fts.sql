@@ -6,6 +6,8 @@
     tags = ['api', 'labels']
 ) }}
 
+{# Deprecated 9/25/2023, TODO disable via config #}
+
 WITH nearblocks_token_api AS (
 
     SELECT

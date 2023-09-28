@@ -15,6 +15,7 @@ WITH token_labels AS (
         {{ ref('silver__token_labels') }}
 ),
 nearblocks_fts_api AS (
+{# Deprecated 9/25/2023, TODO update this view to new token ingestion job #}
     SELECT
         token,
         symbol,
