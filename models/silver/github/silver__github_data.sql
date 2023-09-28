@@ -3,7 +3,7 @@
     unique_key = ['_res_id'],
     cluster_by = ['_inserted_timestamp::DATE'],
     full_refresh = false,
-    tags = ['curated']
+    tags = ['activity']
 ) }}
 
 SELECT

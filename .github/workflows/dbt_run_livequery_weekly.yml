@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
   schedule:
     # Runs weekly at 0 UTC on Mondays (see https://crontab.guru)
-    - cron: '0 0 * * 1'
+    - cron: "0 0 * * 1"
 
 env:
   USE_VARS: "${{ vars.USE_VARS }}"
@@ -22,13 +22,13 @@ env:
 
 concurrency:
   group: ${{ github.workflow }}
-  
+
 jobs:
   called_workflow_template:
     uses: FlipsideCrypto/analytics-workflow-templates/.github/workflows/dbt_run_template.yml@main
     with:
       dbt_command: >
-        dbt run -s tag:nearblocks
+        dbt run -s tag:nearblocks tag:activity
       environment: workflow_prod
       warehouse: ${{ vars.WAREHOUSE }}
-    secrets: inherit 
+    secrets: inherit
