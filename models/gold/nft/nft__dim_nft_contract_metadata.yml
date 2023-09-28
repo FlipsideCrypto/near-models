@@ -1,0 +1,25 @@
+version: 2
+
+models:
+  - name: nft__dim_nft_contract_metadata
+    description: |-
+      NFT Contract-level metadata provided by the Nearblocks NFT endpoint.
+
+    columns:
+      - name: CONTRACT_ADDRESS
+        description: "{{ doc('contract_address')}}"
+      
+      - name: NAME
+        description: "{{ doc('name')}}"
+
+      - name: SYMBOL
+        description: "{{ doc('symbol')}}"
+
+      - name: BASE_URI
+        description: "{{ doc('base_uri')}}"
+
+      - name: ICON
+        description: "{{ doc('icon')}}"
+
+      - name: TOKENS
+        description: "{{ doc('tokens')}}"
