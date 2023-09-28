@@ -19,6 +19,6 @@ SELECT
     data,
     provider,
     endpoint_github,
-    _inserted_timestamp as timestamp
+    _inserted_timestamp as snapshot_timestamp
 FROM
     github_data
