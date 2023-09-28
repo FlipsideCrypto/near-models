@@ -1,0 +1,27 @@
+version: 2
+
+models:
+  - name: core__fact_developer_activity
+    description: Table for developer activity
+
+    columns:
+      - name: REPO_OWNER
+        description: "Repo owner"
+
+      - name: REPO_NAME
+        description: "Repo name"
+
+      - name: ENDPOINT_NAME
+        description: "Endpoint name for the data"
+
+      - name: DATA
+        description: "Data from the endpoint"
+
+      - name: PROVIDER
+        description: "Provider for the data"
+
+      - name: ENDPOINT_GITHUB
+        description: " Endpoint for data"
+
+      - name: INSERTED_AT
+        description: "Timestamp when the data was inserted into the table"

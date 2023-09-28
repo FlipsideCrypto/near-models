@@ -20,3 +20,4 @@ sources:
     schema: silver
     tables:
       - name: number_sequence
+      - name: github_activity
