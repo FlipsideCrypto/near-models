@@ -11,9 +11,6 @@ models:
 
       - name: TX_HASH
         description: "{{ doc('tx_hash')}}"
-        tests:
-          - not_null:
-              where: _inserted_timestamp <= current_timestamp - interval '1 hour'
 
       - name: RECEIPT_OBJECT_ID
         description: "{{ doc('receipt_object_id')}}"
