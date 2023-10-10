@@ -1,12 +1,17 @@
 {{ config(
     materialized = 'view',
     secure = true,
-    meta ={ 'database_tags':{ 'table':{ 'PURPOSE': 'DEFI, SWAPS' }} },
+    meta={
+    'database_tags':{
+        'table': {
+            'PURPOSE': 'DEFI, SWAPS'
+            }
+        }
+    },
     tags = ['core']
 ) }}
 
 WITH dex_swaps AS (
-
     SELECT
         *
     FROM
@@ -34,12 +39,12 @@ FINAL AS (
         pool_id,
         token_in_symbol AS token_in,
         token_in AS token_in_contract,
-        amount_in,
         amount_in_raw,
+        amount_in,
         token_out_symbol AS token_out,
         token_out AS token_out_contract,
-        amount_out,
-        amount_out_raw
+        amount_out_raw,
+        amount_out
     FROM
         dex_swaps
     WHERE
