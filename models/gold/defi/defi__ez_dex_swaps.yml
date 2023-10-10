@@ -73,6 +73,16 @@ models:
                 - STRING
                 - VARCHAR
 
+      - name: AMOUNT_IN_RAW
+        description: "{{ doc('amount_raw')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
+                - DOUBLE
+
       - name: AMOUNT_IN
         description: "{{ doc('amount_in')}}"
         tests:
@@ -99,6 +109,15 @@ models:
                 - STRING
                 - VARCHAR
 
+      - name: AMOUNT_OUT_RAW
+        description: "{{ doc('amount_raw')}}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
+                - DOUBLE
+          
       - name: AMOUNT_OUT
         description: "{{ doc('amount_out')}}"
         tests:
