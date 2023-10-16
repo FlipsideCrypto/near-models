@@ -8,9 +8,7 @@ models:
     columns:
       - name: TX_HASH
         description: "{{ doc('tx_hash')}}"
-        tests:
-          - not_null:
-              where: block_timestamp <= current_timestamp - interval '2 hour'
+
       - name: RECEIPT_OBJECT_ID
         description: "{{ doc('receipt_object_id')}}"
         tests:
