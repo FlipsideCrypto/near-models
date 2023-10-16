@@ -13,15 +13,12 @@ WITH logs AS (
 )
 SELECT
     tx_hash,
+    block_timestamp,
+    block_id,
     receiver_id,
     signer_id,
     clean_log,
     receipt_object_id,
-    block_id,
-    gas_burnt,
-    block_timestamp,
-    tx_hash,
-    block_id,
-    block_timestamp
+    gas_burnt
 FROM
     logs
