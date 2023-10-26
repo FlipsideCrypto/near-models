@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'view',
-    secure = true,
+    secure = false,
     meta={
     'database_tags':{
         'table': {

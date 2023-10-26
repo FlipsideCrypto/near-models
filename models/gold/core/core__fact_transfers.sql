@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'view',
-    secure = true,
+    secure = false,
     tags = ['core']
 ) }}
 
