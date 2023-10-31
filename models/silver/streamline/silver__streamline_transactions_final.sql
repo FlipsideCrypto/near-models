@@ -133,15 +133,10 @@ transactions AS (
   FROM
     base_transactions
 ),
--- TODO - refactor to use the receipt_succeeded field in receipts
 receipts AS (
   SELECT
     tx_hash,
-    IFF(
-      execution_outcome :outcome :status :Failure IS NOT NULL,
-      'Fail',
-      'Success'
-    ) AS success_or_fail,
+    receipt_succeeded,
     SUM(
       gas_burnt
     ) over (
@@ -180,11 +175,11 @@ FINAL AS (
       gas_used
     ) AS attached_gas,
     LAST_VALUE(
-      r.success_or_fail
+      r.receipt_succeeded
     ) over (
       PARTITION BY r.tx_hash
       ORDER BY
-        r.success_or_fail DESC
+        r.receipt_succeeded DESC
     ) AS tx_status
   FROM
     transactions AS t
