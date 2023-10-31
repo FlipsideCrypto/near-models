@@ -9,8 +9,11 @@
 WITH action_events AS(
 
   SELECT
+    block_id,
+    block_timestamp,
     tx_hash,
     action_id,
+    receipt_object_id,
     action_data :deposit :: INT AS deposit,
     _load_timestamp,
     _partition_by_block_number,
@@ -19,16 +22,16 @@ WITH action_events AS(
     {{ ref('silver__actions_events_s3') }}
   WHERE
     action_name = 'Transfer' 
-    {% if var("MANUAL_FIX") %}
-      AND {{ partition_load_manual('no_buffer') }}
-    {% else %}
-      AND {{ incremental_load_filter("_inserted_timestamp") }}
-    {% endif %}
+  AND 
+    _partition_by_block_number >= 102410000
+  AND
+      tx_hash in (select tx_hash from NEAR.silver.transfers_s3 where block_timestamp is null)
+    
 ),
 txs AS (
   SELECT
     tx_hash,
-    tx :receipt AS tx_receipt,
+    tx :receipt :: ARRAY AS tx_receipt,
     block_id,
     block_timestamp,
     tx_receiver,
@@ -45,19 +48,17 @@ txs AS (
   FROM
     {{ ref('silver__streamline_transactions_final') }}
 
-    {% if var("MANUAL_FIX") %}
     WHERE
-      {{ partition_load_manual('no_buffer') }}
-    {% else %}
-    WHERE
-      {{ incremental_load_filter("_inserted_timestamp") }}
-    {% endif %}
+    _partition_by_block_number >= 102410000
+  AND
+      tx_hash in (select tx_hash from NEAR.silver.transfers_s3 where block_timestamp is null)
+    
 ),
 receipts AS (
   SELECT
     tx_hash,
     ARRAY_AGG(
-      VALUE :id
+      VALUE :id :: STRING
     ) AS receipt_object_id
   FROM
     txs,
@@ -71,8 +72,8 @@ actions AS (
   SELECT
     t.tx_hash,
     A.action_id,
-    t.block_id,
-    t.block_timestamp,
+    A.block_id,
+    A.block_timestamp,
     t.tx_signer,
     t.tx_receiver,
     A.deposit,
