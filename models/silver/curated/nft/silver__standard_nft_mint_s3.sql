@@ -6,8 +6,24 @@
     tags = ['curated']
 ) }}
 
-WITH logs AS (
+WITH
 
+{% if is_incremental() %}
+retry_txs AS (
+
+    SELECT
+        tx_hash,
+        _partition_by_block_number
+    FROM
+        {{ this }}
+    WHERE
+        tx_signer IS NULL
+        OR transaction_fee IS NULL
+        OR tx_receiver IS NULL
+),
+{% endif %}
+
+logs AS (
     SELECT
         *
     FROM
@@ -17,6 +33,20 @@ WITH logs AS (
             {{ partition_load_manual('no_buffer') }}
         {% else %}
             {{ incremental_load_filter('_inserted_timestamp') }}
+            OR (
+                tx_hash IN (
+                    SELECT
+                        tx_hash
+                    FROM
+                        retry_txs
+                )
+                AND _partition_by_block_number IN (
+                    SELECT
+                        DISTINCT _partition_by_block_number
+                    FROM
+                        retry_txs
+                )
+            )
         {% endif %}
 ),
 tx AS (
@@ -29,6 +59,20 @@ tx AS (
             {{ partition_load_manual('no_buffer') }}
         {% else %}
             {{ incremental_load_filter('_inserted_timestamp') }}
+            OR (
+                tx_hash IN (
+                    SELECT
+                        tx_hash
+                    FROM
+                        retry_txs
+                )
+                AND _partition_by_block_number IN (
+                    SELECT
+                        DISTINCT _partition_by_block_number
+                    FROM
+                        retry_txs
+                )
+            )
         {% endif %}
 ),
 function_call AS (
@@ -45,12 +89,30 @@ function_call AS (
             {{ partition_load_manual('no_buffer') }}
         {% else %}
             {{ incremental_load_filter('_inserted_timestamp') }}
+            OR (
+                tx_hash IN (
+                    SELECT
+                        tx_hash
+                    FROM
+                        retry_txs
+                )
+                AND _partition_by_block_number IN (
+                    SELECT
+                        DISTINCT _partition_by_block_number
+                    FROM
+                        retry_txs
+                )
+            )
         {% endif %}
 ),
 standard_logs AS (
     SELECT
         action_id AS logs_id,
-        concat_ws('-', receipt_object_id, '0') as action_id,
+        concat_ws(
+            '-', 
+            receipt_object_id,
+            '0'
+        ) AS action_id,
         tx_hash,
         receipt_object_id,
         block_id,
@@ -62,7 +124,9 @@ standard_logs AS (
         _PARTITION_BY_BLOCK_NUMBER,
         _inserted_timestamp,
         TRY_PARSE_JSON(clean_log) AS clean_log,
-        COUNT(*) OVER (PARTITION BY tx_hash) AS log_counter
+        COUNT(*) over (
+            PARTITION BY tx_hash
+        ) AS log_counter
     FROM
         logs
     WHERE
@@ -81,7 +145,7 @@ nft_events AS (
     FROM
         standard_logs
         LEFT JOIN function_call
-    ON standard_logs.ACTION_ID = function_call.ACTION_ID
+        ON standard_logs.action_id = function_call.action_id
     WHERE
         STANDARD = 'nep171' -- nep171 nft STANDARD, version  nep245 IS multitoken STANDARD,  nep141 IS fungible token STANDARD
         AND event = 'nft_mint'
@@ -146,9 +210,18 @@ mint_events AS (
         concat_ws(
             '-',
             action_id,
-            COALESCE(batch_index, '0'),
-            COALESCE(token_index, '0'),
-            COALESCE(token_id, '0')
+            COALESCE(
+                batch_index,
+                '0'
+            ),
+            COALESCE(
+                token_index,
+                '0'
+            ),
+            COALESCE(
+                token_id,
+                '0'
+            )
         ) AS mint_action_id,
         log_counter
     FROM
@@ -174,7 +247,6 @@ mint_tx AS (
                 mint_events
         )
 )
-
 SELECT
     mint_events.action_id,
     mint_events.mint_action_id,
@@ -182,7 +254,7 @@ SELECT
     mint_events.block_id,
     mint_events.block_timestamp,
     mint_events.method_name,
-    mint_events.args_json as args,
+    mint_events.args_json AS args,
     mint_events.deposit,
     mint_tx.tx_signer AS tx_signer,
     mint_tx.tx_receiver AS tx_receiver,
@@ -195,12 +267,16 @@ SELECT
     mint_events.memo,
     mint_events.owner_per_tx,
     mint_events.mint_per_tx,
-    mint_events.gas_burnt, -- gas burnt during receipt processing
-    mint_tx.transaction_fee, -- gas burnt during entire transaction processing
+    mint_events.gas_burnt,
+    -- gas burnt during receipt processing
+    mint_tx.transaction_fee,
+    -- gas burnt during entire transaction processing
     mint_events._LOAD_TIMESTAMP,
     mint_events._PARTITION_BY_BLOCK_NUMBER,
     mint_events.log_counter,
-    (mint_events.deposit / mint_events.log_counter) :: FLOAT as implied_price,
+    (
+        mint_events.deposit / mint_events.log_counter
+    ) :: FLOAT AS implied_price,
     mint_events._inserted_timestamp
 FROM
     mint_events
