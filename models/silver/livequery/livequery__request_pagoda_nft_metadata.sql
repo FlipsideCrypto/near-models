@@ -75,7 +75,7 @@ lq_request AS (
         series_id,
         metadata_id,
         'https://near-mainnet.api.pagoda.co/eapi/v1/NFT/' || contract_account_id || '/' || token_id AS res_url,
-        ethereum.streamline.udf_api(
+        live.udf_api(
             'GET',
             res_url,
             { 
