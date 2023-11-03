@@ -17,9 +17,13 @@ retry_txs AS (
     FROM
         {{ this }}
     WHERE
-        tx_signer IS NULL
-        OR transaction_fee IS NULL
-        OR tx_receiver IS NULL
+        _partition_by_block_number BETWEEN 103070000
+        AND 104820000 -- temp range, change to 3 day window
+        AND (
+            tx_signer IS NULL
+            OR transaction_fee IS NULL
+            OR tx_receiver IS NULL
+        )
 ),
 {% endif %}
 
@@ -40,13 +44,10 @@ logs AS (
                     FROM
                         retry_txs
                 )
-                AND _partition_by_block_number IN (
-                    SELECT
-                        DISTINCT _partition_by_block_number
-                    FROM
-                        retry_txs
+                AND  _partition_by_block_number BETWEEN 103070000
+        AND 104820000 
                 )
-            )
+            
         {% endif %}
 ),
 tx AS (
@@ -66,13 +67,10 @@ tx AS (
                     FROM
                         retry_txs
                 )
-                AND _partition_by_block_number IN (
-                    SELECT
-                        DISTINCT _partition_by_block_number
-                    FROM
-                        retry_txs
+                   AND  _partition_by_block_number BETWEEN 103070000
+        AND 104820000 
                 )
-            )
+            
         {% endif %}
 ),
 function_call AS (
@@ -96,20 +94,17 @@ function_call AS (
                     FROM
                         retry_txs
                 )
-                AND _partition_by_block_number IN (
-                    SELECT
-                        DISTINCT _partition_by_block_number
-                    FROM
-                        retry_txs
+                  AND  _partition_by_block_number BETWEEN 103070000
+        AND 104820000 
                 )
-            )
+            
         {% endif %}
 ),
 standard_logs AS (
     SELECT
         action_id AS logs_id,
         concat_ws(
-            '-', 
+            '-',
             receipt_object_id,
             '0'
         ) AS action_id,
