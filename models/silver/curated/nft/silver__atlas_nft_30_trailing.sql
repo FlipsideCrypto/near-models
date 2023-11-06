@@ -8,7 +8,7 @@
 WITH date_range AS (
     SELECT
         day
-    FROM {{ ref('silver__nft_transactions') }}
+    FROM {{ ref('silver__atlas_nft_transactions') }}
     WHERE
         {% if var("MANUAL_FIX") %}
             {{ partition_load_manual('no_buffer') }}
@@ -24,6 +24,6 @@ SELECT
     d.day as day,
     COUNT(t.tx_hash) AS txns
 FROM date_range d
-LEFT JOIN {{ ref('silver__nft_transactions') }} t
+LEFT JOIN {{ ref('silver__atlas_nft_transactions') }} t
     ON t.day BETWEEN d.day - INTERVAL '29 day' AND d.day
 GROUP BY d.day
