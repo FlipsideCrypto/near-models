@@ -13,11 +13,11 @@ WITH date_range AS (
         {% if var("MANUAL_FIX") %}
             {{ partition_load_manual('no_buffer') }}
         {% else %}
-            {{ incremental_load_filter('_inserted_timestamp') }}
+            {{ incremental_last_x_days('_inserted_timestamp', 3) }}
         {% endif %}    
     GROUP BY day
 
-),
+)
 
 
 SELECT

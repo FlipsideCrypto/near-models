@@ -1,6 +1,6 @@
 {{ config(
     materialized = "incremental",
-    cluster_by = ["block_timestamp::DATE"],
+    cluster_by = ["day"],
     unique_key = "action_id",
     incremental_strategy = "delete+insert",
     tags = ['curated']
