@@ -20,7 +20,7 @@
   ) -%}
 
 {% if is_incremental() %}
-{{ time_col }} >= CURRENT_DATE() - INTERVAL '{{ time_in_days }}'
+{{ time_col }} :: DATE >= SYSDATE() - INTERVAL '{{ time_in_days }}'
 {% else %}
   TRUE
 {% endif %}
