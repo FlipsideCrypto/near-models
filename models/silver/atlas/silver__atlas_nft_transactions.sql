@@ -3,7 +3,7 @@
     cluster_by = ["day"],
     unique_key = "action_id",
     incremental_strategy = "delete+insert",
-    tags = ['curated']
+    tags = ['atlas']
 ) }}
 
 WITH nft_mints AS (
@@ -49,7 +49,7 @@ nft_transfers AS (
 
 unioned_nft_data AS (
     SELECT * FROM nft_mints
-    UNION
+    UNION ALL
     SELECT * FROM nft_transfers
 )
 

@@ -1,0 +1,55 @@
+version: 2
+
+models:
+  - name: silver__atlas_nft_transactions
+    description: |-
+      This incremental dbt model unifies NFT minting and transfer data into a single view, providing a comprehensive look at NFT activities. It captures daily activities by transaction hash, method name, receiver ID, signer ID, owner, and token ID.
+
+    columns:
+      - name: action_id
+        description: { { doc('action_id') } }
+        tests:
+          - unique
+          - not_null
+
+      - name: day
+        description: { { doc('date') } }
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_date
+
+      - name: tx_hash
+        description: { { doc('tx_hash') } }
+        tests:
+          - not_null
+
+      - name: method_name
+        description: "The name of the method called in the transaction, indicating the type of action ('nft_transfer' or mint related)."
+        tests:
+          - not_null
+
+      - name: receiver_id
+        description: { { doc('receiver_id') } }
+        tests:
+          - not_null
+
+      - name: signer_id
+        description: { { doc('signer_id') } }
+        tests:
+          - not_null
+
+      - name: owner
+        description: { { doc('owner') } }
+        tests:
+          - not_null
+
+      - name: token_id
+        description: { { doc('token_id') } }
+        tests:
+          - not_null
+
+      - name: _inserted_timestamp
+        description: { { doc('_inserted_timestamp') } }
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_increasing

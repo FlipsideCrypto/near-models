@@ -4,7 +4,7 @@
     materialized = 'incremental',
     unique_key = 'action_id',
     incremental_strategy = 'delete+insert',
-    tags = ['curated']
+    tags = ['atlas']
 ) }}
 
 WITH nft_data AS (

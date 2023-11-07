@@ -2,23 +2,21 @@
     materialized = 'incremental',
     unique_key = 'day',
     incremental_strategy = 'delete+insert',
-    tags = ['curated']
+    tags = ['atlas']
 ) }}
 
 WITH date_range AS (
     SELECT
-        day
-    FROM {{ ref('silver__atlas_nft_transactions') }}
+        date_day as day
+    FROM {{ ref('silver__dates') }}
     WHERE
-        {% if var("MANUAL_FIX") %}
-            {{ partition_load_manual('no_buffer') }}
+        {% if is_incremental() %}
+            date_day >= SYSDATE() - INTERVAL '3 DAY'
         {% else %}
-            {{ incremental_last_x_days('_inserted_timestamp', 3) }}
-        {% endif %}    
-    GROUP BY day
-
+            date_day >= '2021-05-01' -- first day of data
+        {% endif %}
+    AND date_day <= SYSDATE()::DATE 
 )
-
 
 SELECT
     d.day as day,

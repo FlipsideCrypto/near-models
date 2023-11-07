@@ -1,0 +1,48 @@
+version: 2
+
+models:
+  - name: silver__atlas_nft_table
+    description: |-
+      This view model provides a breakdown of NFT transaction activities by receiver_id. It includes counts of unique tokens, transfers within the last 24 hours and 3 days, all transfers, unique owners, total transactions, and minting events.
+
+    columns:
+      - name: receiver_id
+        description: { { doc('receiver_id') } }
+        tests:
+          - not_null
+          - unique
+
+      - name: tokens
+        description: { { doc('token_id ') } }
+        tests:
+          - not_null
+
+      - name: transfers_24h
+        description: "The count of 'nft_transfer' transactions that occurred in the last 24 hours."
+        tests:
+          - not_null
+
+      - name: transfers_3d
+        description: "The count of 'nft_transfer' transactions that occurred in the last 3 days."
+        tests:
+          - not_null
+
+      - name: all_transfers
+        description: "The total count of 'nft_transfer' transactions."
+        tests:
+          - not_null
+
+      - name: owners
+        description: "The count of distinct owners that have interacted with the receiver's tokens."
+        tests:
+          - not_null
+
+      - name: transactions
+        description: "{{ doc('tx_count')}}"
+        tests:
+          - not_null
+
+      - name: mints
+        description: "The count of transactions where the method_name indicates a minting event rather than a transfer."
+        tests:
+          - not_null
