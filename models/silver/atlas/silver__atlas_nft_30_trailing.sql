@@ -13,7 +13,7 @@ WITH date_range AS (
         {% if is_incremental() %}
             date_day >= SYSDATE() - INTERVAL '3 DAY'
         {% else %}
-            date_day >= '2021-05-01' -- first day of data
+            date_day >= '2021-01-01' -- first day of data
         {% endif %}
     AND date_day <= SYSDATE()::DATE 
 )

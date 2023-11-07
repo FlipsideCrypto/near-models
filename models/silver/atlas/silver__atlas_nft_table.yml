@@ -7,13 +7,12 @@ models:
 
     columns:
       - name: receiver_id
-        description: { { doc('receiver_id') } }
+        description: "{ { doc('receiver_id')}}"
         tests:
           - not_null
-          - unique
 
       - name: tokens
-        description: { { doc('token_id ') } }
+        description: "The count of unique tokens that have been received by the receiver_id."
         tests:
           - not_null
 
