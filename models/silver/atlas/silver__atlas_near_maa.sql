@@ -2,7 +2,7 @@
     materialized = 'incremental',
     incremental_stratege = 'delete+insert',
     unique_key = 'active_day',
-    tags = ['atlas', 'atlas_24h']
+    tags = ['atlas']
 ) }}
 
 WITH dates AS (
@@ -29,12 +29,15 @@ txns AS (
     SELECT
         block_timestamp :: DATE AS active_day,
         tx_signer,
+        first_tx_timestamp,
         COALESCE(
             _inserted_timestamp,
             _load_timestamp
         ) AS _inserted_timestamp
     FROM
-        {{ ref('silver__streamline_transactions_final') }}
+        {{ ref('silver__streamline_transactions_final') }} t
+        LEFT JOIN signer_first_date s
+        ON t.tx_signer = s.address
     WHERE
         {% if var("MANUAL_FIX") %}
             {{ partition_load_manual('no_buffer') }}
@@ -52,10 +55,12 @@ FINAL AS (
             DISTINCT tx_signer
         ) AS maa,
         COUNT(
-            DISTINCT CASE
-                WHEN first_tx_timestamp >= d.active_day - INTERVAL '30 Days'
-                AND first_tx_timestamp < d.active_day THEN tx_signer
-            END
+            DISTINCT IFF(
+                first_tx_timestamp >= d.active_day - INTERVAL '30 Days'
+                AND first_tx_timestamp < d.active_day,
+                tx_signer,
+                NULL
+            )
         ) AS new_maas,
         MAX(_inserted_timestamp) AS _inserted_timestamp
     FROM
@@ -63,8 +68,6 @@ FINAL AS (
         LEFT JOIN txns t
         ON t.active_day < d.active_day
         AND t.active_day >= d.active_day - INTERVAL '30 days'
-        LEFT JOIN signer_first_date s
-        ON t.tx_signer = s.address
     WHERE
         d.active_day != SYSDATE() :: DATE
     GROUP BY
