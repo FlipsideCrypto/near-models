@@ -14,7 +14,16 @@ WITH dates AS (
             'crosschain',
             'dim_dates'
         ) }}
-    WHERE date_day between '2020-07-21' AND SYSDATE() :: DATE
+    WHERE
+        date_day BETWEEN '2020-07-21'
+        AND SYSDATE() :: DATE
+),
+signer_first_date AS (
+    SELECT
+        address,
+        first_tx_timestamp
+    FROM
+        {{ ref('silver__atlas_address_first_action') }}
 ),
 txns AS (
     SELECT
@@ -42,12 +51,20 @@ FINAL AS (
         COUNT(
             DISTINCT tx_signer
         ) AS maa,
+        COUNT(
+            DISTINCT CASE
+                WHEN first_tx_timestamp >= d.active_day - INTERVAL '30 Days'
+                AND first_tx_timestamp < d.active_day THEN tx_signer
+            END
+        ) AS new_maas,
         MAX(_inserted_timestamp) AS _inserted_timestamp
     FROM
         dates d
         LEFT JOIN txns t
         ON t.active_day < d.active_day
         AND t.active_day >= d.active_day - INTERVAL '30 days'
+        LEFT JOIN signer_first_date s
+        ON t.tx_signer = s.address
     WHERE
         d.active_day != SYSDATE() :: DATE
     GROUP BY
@@ -57,5 +74,3 @@ SELECT
     *
 FROM
     FINAL
-
-  
