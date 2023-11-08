@@ -1,0 +1,43 @@
+version: 2
+
+models:
+  - name: atlas__fact_near_maas
+    description: |-
+      Monthly Active Accounts (wallets) on NEAR, including new and returning wallets, calculated over a rolling 30 day window. An active account, here, is defined as the signing of at least one transaction.
+
+    columns:
+      - name: active_day
+        description: "{{ doc('active_day') }}"
+        tests:
+          - not_null
+          - unique
+
+      - name: maa
+        description: "{{ doc('maa')}}"
+        tests:
+          - not_null
+
+      - name: new_maas
+        description: "{{ doc('new_maas') }}"
+        tests:
+          - not_null
+
+      - name: returning_maas
+        description: "{{ doc('returning_maas') }}"
+        tests:
+          - not_null
+
+      - name: inserted_timestamp
+        description: "{{ doc('inserted_timestamp') }}"
+        tests:
+          - not_null
+
+      - name: modified_timestamp
+        description: "{{ doc('modified_timestamp') }}"
+        tests:
+          - not_null
+
+      - name: invocation_id
+        description: "{{ doc('invocation_id') }}"
+        tests:
+          - not_null
