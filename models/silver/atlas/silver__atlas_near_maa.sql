@@ -15,9 +15,21 @@ WITH dates AS (
             'crosschain',
             'dim_dates'
         ) }}
-    WHERE
-        date_day BETWEEN '2020-07-21'
-        AND SYSDATE() :: DATE
+
+{% if is_incremental() %}
+WHERE
+    date_day > (
+        SELECT
+            MAX(active_day)
+        FROM
+            {{ this }}
+    )
+    AND date_day < SYSDATE() :: DATE
+{% else %}
+WHERE
+    date_day BETWEEN '2020-07-21'
+    AND SYSDATE() :: DATE
+{% endif %}
 ),
 signer_first_date AS (
     SELECT
@@ -40,15 +52,22 @@ txns AS (
         t
         LEFT JOIN signer_first_date s
         ON t.tx_signer = s.address
-    WHERE
+
         {% if var("MANUAL_FIX") %}
-            {{ partition_load_manual('no_buffer') }}
-        {% else %}
-            {{ incremental_last_x_days(
-                '_inserted_timestamp',
-                31
-            ) }}
-        {% endif %}
+    WHERE
+        {{ partition_load_manual('no_buffer') }}
+    {% else %}
+
+{% if is_incremental() %}
+WHERE
+    block_timestamp :: DATE >= (
+        SELECT
+            MAX(active_day)
+        FROM
+            {{ this }}
+    ) - INTERVAL '30 days'
+{% endif %}
+{% endif %}
 ),
 FINAL AS (
     SELECT
@@ -81,8 +100,8 @@ SELECT
     new_maas,
     maa - new_maas AS returning_maas,
     _inserted_timestamp,
-    SYSDATE() as inserted_timestamp,
-    SYSDATE() as modified_timestamp,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS invocation_id
 FROM
     FINAL
