@@ -1,7 +1,8 @@
 {{ config(
     materialized = 'incremental',
     unique_key = 'address',
-    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION"
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION",
+    tags = ['atlas']
 ) }}
 
 WITH txs AS (

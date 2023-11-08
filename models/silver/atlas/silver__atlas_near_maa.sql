@@ -1,6 +1,7 @@
 {{ config(
     materialized = 'incremental',
-    incremental_stratege = 'delete+insert',
+    incremental_stratege = 'merge',
+    merge_exclude_columns = ["inserted_timestamp"],
     unique_key = 'active_day',
     tags = ['atlas']
 ) }}
@@ -35,7 +36,8 @@ txns AS (
             _load_timestamp
         ) AS _inserted_timestamp
     FROM
-        {{ ref('silver__streamline_transactions_final') }} t
+        {{ ref('silver__streamline_transactions_final') }}
+        t
         LEFT JOIN signer_first_date s
         ON t.tx_signer = s.address
     WHERE
@@ -74,6 +76,13 @@ FINAL AS (
         1
 )
 SELECT
-    *
+    active_day,
+    maa,
+    new_maas,
+    maa - new_maas AS returning_maas,
+    _inserted_timestamp,
+    SYSDATE() as inserted_timestamp,
+    SYSDATE() as modified_timestamp,
+    '{{ invocation_id }}' AS invocation_id
 FROM
     FINAL
