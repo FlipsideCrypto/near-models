@@ -29,3 +29,9 @@ columns:
 
   - name: mints
     description: "{{ doc('mint_count')}}"
+
+  - name: inserted_timestamp
+    description: "{{ doc('inserted_timestamp')}}"
+
+  - name: modified_timestamp
+    description: "{{ doc('modified_timestamp')}}"

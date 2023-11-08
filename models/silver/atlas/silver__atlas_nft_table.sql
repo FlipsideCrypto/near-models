@@ -2,7 +2,8 @@
 
 {{ config(
     unique_key = 'receiver_id',
-    materialized = 'view',
+    incremental_strategy = 'merge',
+    merge_exclude_columns = ["inserted_timestamp"],   
     tags = ['atlas']
 ) }}
 
@@ -22,7 +23,10 @@ select
   count(case when method_name = 'nft_transfer' then tx_hash end) as all_transfers,
   count(distinct owner) as owners,
   count(*) as transactions,
-  count(case when method_name != 'nft_transfer' then tx_hash end) as mints
+  count(case when method_name != 'nft_transfer' then tx_hash end) as mints,
+  SYSDATE() as inserted_timestamp,
+  SYSDATE() as modified_timestamp,
+  '{{ invocation_id }}' AS invocation_id
 from nft_data
 group by 1
 order by 3 desc

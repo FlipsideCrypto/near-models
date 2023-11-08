@@ -2,7 +2,8 @@
     materialized = "incremental",
     cluster_by = ["day"],
     unique_key = "action_id",
-    incremental_strategy = "delete+insert",
+    merge_exclude_columns = ["inserted_timestamp"],    
+    incremental_strategy = "merge",
     tags = ['atlas']
 ) }}
 
@@ -66,5 +67,8 @@ SELECT
     signer_id,
     owner,
     token_id,
-    _inserted_timestamp
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    _inserted_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
 FROM unioned_nft_data

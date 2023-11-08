@@ -11,3 +11,9 @@ models:
 
       - name: txns
         description: "{{ doc('tx_count')}}"
+
+      - name: inserted_timestamp
+        description: "{{ doc('inserted_timestamp')}}"
+
+      - name: modified_timestamp
+        description: "{{ doc('modified_timestamp')}}"

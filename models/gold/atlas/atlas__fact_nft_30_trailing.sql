@@ -5,13 +5,15 @@
 ) }}
 
 
-WITH 30_trailing AS (
+WITH trailing AS (
     SELECT
         day,
-        txns
-    FROM {{ ref('silver__atlas_nft_transactions') }}
+        txns,
+        inserted_timestamp,
+        modified_timestamp
+    FROM {{ ref('silver__atlas_nft_30_trailing') }}
 )
 
 SELECT 
     *
-FROM 30_trailing
+FROM trailing

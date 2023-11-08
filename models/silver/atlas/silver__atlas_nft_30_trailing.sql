@@ -1,7 +1,8 @@
 {{ config(
     materialized = 'incremental',
     unique_key = 'day',
-    incremental_strategy = 'delete+insert',
+    incremental_strategy = "merge",
+    merge_exclude_columns = ["inserted_timestamp"],    
     tags = ['atlas']
 ) }}
 
@@ -20,7 +21,10 @@ WITH date_range AS (
 
 SELECT
     d.day as day,
-    COUNT(t.tx_hash) AS txns
+    COUNT(t.tx_hash) AS txns,
+    SYSDATE() as inserted_timestamp,
+    SYSDATE() as modified_timestamp,
+    '{{ invocation_id }}' AS invocation_id
 FROM date_range d
 LEFT JOIN {{ ref('silver__atlas_nft_transactions') }} t
     ON t.day BETWEEN d.day - INTERVAL '29 day' AND d.day

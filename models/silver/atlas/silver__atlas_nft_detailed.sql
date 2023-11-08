@@ -3,7 +3,8 @@
 {{ config(
     materialized = 'incremental',
     unique_key = 'action_id',
-    incremental_strategy = 'delete+insert',
+    incremental_strategy = 'merge',
+    merge_exclude_columns = ["inserted_timestamp"],    
     tags = ['atlas']
 ) }}
 
@@ -31,7 +32,10 @@ select
     COUNT(CASE WHEN method_name = 'nft_transfer' then tx_hash end) AS all_transfers,
     COUNT(DISTINCT owner) AS owners,
     COUNT(*) AS transactions,
-    COUNT(CASE WHEN method_name != 'nft_transfer' then tx_hash end) AS mints
+    COUNT(CASE WHEN method_name != 'nft_transfer' then tx_hash end) AS mints,
+    SYSDATE() as inserted_timestamp,
+    SYSDATE() as modified_timestamp,
+    '{{ invocation_id }}' AS invocation_id
 FROM nft_data
 GROUP BY 1, 2, 3
 ORDER BY 4 DESC

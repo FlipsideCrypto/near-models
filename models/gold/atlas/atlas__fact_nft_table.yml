@@ -23,9 +23,15 @@ models:
 
       - name: owners
         description: "{{ doc('owner_count')}}"
-        
+
       - name: transactions
         description: "{{ doc('tx_count')}}"
 
       - name: mints
-        description: "{{ doc('mint_count')}
+        description: "{{ doc('mint_count')}}"
+
+      - name: inserted_timestamp
+        description: "{{ doc('inserted_timestamp')}}"
+
+      - name: modified_timestamp
+        description: "{{ doc('modified_timestamp')}}"

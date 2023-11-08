@@ -13,7 +13,9 @@ WITH nft_detailed AS (
         all_transfers,
         owners,
         transactions,
-        mints
+        mints,
+        inserted_timestamp,
+        modified_timestamp
     FROM {{ ref('silver__atlas_nft_detailed') }}
 )
 

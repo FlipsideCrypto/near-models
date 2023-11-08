@@ -9,12 +9,14 @@ WITH nft_data AS (
     SELECT
         receiver_id,
         tokens,
-        ransfers_24h,
+        transfers_24h,
         transfers_3d,
         all_transfers,
         owners,
         transactions,
-        mints
+        mints,
+        inserted_timestamp,
+        modified_timestamp
     FROM {{ ref('silver__atlas_nft_table') }}
 )
 

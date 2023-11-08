@@ -46,3 +46,18 @@ columns:
     description: "The count of transactions where the 'method_name' is not 'nft_transfer', indicating minting actions."
     tests:
       - not_null
+
+  - name: inserted_timestamp
+    description: "{{doc('inserted_timestamp')}}"
+    tests:
+      - not_null
+
+  - name: modified_timestamp
+    description: "{{doc('modified_timestamp')}}"
+    tests:
+      - not_null
+
+  - name: invocation_id
+    description: "{{doc('invocation_id')}}"
+    tests:
+      - not_null
