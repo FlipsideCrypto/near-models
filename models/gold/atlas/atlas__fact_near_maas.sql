@@ -9,7 +9,6 @@ SELECT
     new_maas,
     returning_maas,
     inserted_timestamp,
-    modified_timestamp,
-    invocation_id
+    modified_timestamp
 FROM
     {{ ref('silver__atlas_near_maa') }}

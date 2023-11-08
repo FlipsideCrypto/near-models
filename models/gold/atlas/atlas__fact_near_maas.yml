@@ -36,8 +36,3 @@ models:
         description: "{{ doc('modified_timestamp') }}"
         tests:
           - not_null
-
-      - name: invocation_id
-        description: "{{ doc('invocation_id') }}"
-        tests:
-          - not_null
