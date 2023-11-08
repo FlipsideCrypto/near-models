@@ -1,5 +1,7 @@
 {{ config(
     materialized = 'incremental',
+    incremental_stratege = 'merge',
+    merge_exclude_columns = ["inserted_timestamp"],
     unique_key = 'address',
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION",
     tags = ['atlas']
@@ -22,7 +24,7 @@ WITH txs AS (
         {% if var("MANUAL_FIX") %}
             {{ partition_load_manual('no_buffer') }}
         {% else %}
-             {{ incremental_load_filter('_inserted_timestamp') }}
+            {{ incremental_load_filter('_inserted_timestamp') }}
         {% endif %}
 ),
 FINAL AS (
@@ -37,7 +39,13 @@ FINAL AS (
         1
 )
 SELECT
-    *
+    address,
+    first_tx_timestamp,
+    first_tx_block_id,
+    _inserted_timestamp,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS invocation_id
 FROM
     FINAL qualify ROW_NUMBER() over (
         PARTITION BY address

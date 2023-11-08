@@ -27,7 +27,7 @@ WHERE
     AND date_day < SYSDATE() :: DATE
 {% else %}
 WHERE
-    date_day BETWEEN '2020-07-21'
+    date_day BETWEEN '2020-07-22'
     AND SYSDATE() :: DATE
 {% endif %}
 ),
