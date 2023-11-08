@@ -1,0 +1,31 @@
+version: 2
+
+models:
+  - name: atlas__fact_nft_detailed
+    description: |-
+      Oveeview of NFT transactions in NEAR.
+
+columns:
+  - name: action_id
+    description: "A unique identifier for the action, constructed as a concatenation of the day and receiver_id."
+
+  - name: day
+    description: "{{ doc('date')}}"
+
+  - name: receiver_id
+    description: "{{ doc('tx_receiver')}}"
+
+  - name: tokens
+    description: "{{ doc('tokens_count')}}"
+
+  - name: all_transfers
+    description: "{{ doc('all_transfers')}}"
+
+  - name: owners
+    description: "{{ doc('owner_count')}}"
+
+  - name: transactions
+    description: "{{ doc('tx_count')}}"
+
+  - name: mints
+    description: "{{ doc('mint_count')}}"
