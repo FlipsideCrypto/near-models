@@ -39,6 +39,9 @@ FINAL AS (
         1
 )
 SELECT
+    {{ dbt_utils.generate_surrogate_key(
+        ['address']
+    ) }} AS atlas_address_first_action_id,
     address,
     first_tx_timestamp,
     first_tx_block_id,

@@ -2,14 +2,14 @@
     materialized = 'incremental',
     incremental_stratege = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
-    unique_key = 'active_day',
+    unique_key = 'day',
     tags = ['atlas']
 ) }}
 
 WITH dates AS (
 
     SELECT
-        date_day AS active_day
+        date_day AS day
     FROM
         {{ source(
             'crosschain',
@@ -20,7 +20,7 @@ WITH dates AS (
 WHERE
     date_day > (
         SELECT
-            MAX(active_day)
+            MAX(day)
         FROM
             {{ this }}
     )
@@ -40,7 +40,7 @@ signer_first_date AS (
 ),
 txns AS (
     SELECT
-        block_timestamp :: DATE AS active_day,
+        block_timestamp :: DATE AS day,
         tx_signer,
         first_tx_timestamp,
         COALESCE(
@@ -62,7 +62,7 @@ txns AS (
 WHERE
     block_timestamp :: DATE >= (
         SELECT
-            MAX(active_day)
+            MAX(day)
         FROM
             {{ this }}
     ) - INTERVAL '30 days'
@@ -71,14 +71,14 @@ WHERE
 ),
 FINAL AS (
     SELECT
-        d.active_day,
+        d.day,
         COUNT(
             DISTINCT tx_signer
         ) AS maa,
         COUNT(
             DISTINCT IFF(
-                first_tx_timestamp >= d.active_day - INTERVAL '30 Days'
-                AND first_tx_timestamp < d.active_day,
+                first_tx_timestamp >= d.day - INTERVAL '30 Days'
+                AND first_tx_timestamp < d.day,
                 tx_signer,
                 NULL
             )
@@ -87,15 +87,18 @@ FINAL AS (
     FROM
         dates d
         LEFT JOIN txns t
-        ON t.active_day < d.active_day
-        AND t.active_day >= d.active_day - INTERVAL '30 days'
+        ON t.day < d.day
+        AND t.day >= d.day - INTERVAL '30 days'
     WHERE
-        d.active_day != SYSDATE() :: DATE
+        d.day != SYSDATE() :: DATE
     GROUP BY
         1
 )
 SELECT
-    active_day,
+    {{ dbt_utils.generate_surrogate_key(
+        ['day']
+    ) }} AS atlas_near_maa_id,
+    day,
     maa,
     new_maas,
     maa - new_maas AS returning_maas,

@@ -4,6 +4,7 @@
 ) }}
 
 SELECT
+    atlas_near_maa_id AS fact_near_maas_id,
     active_day,
     maa,
     new_maas,

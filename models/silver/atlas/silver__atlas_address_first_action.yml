@@ -6,6 +6,12 @@ models:
       Parses transactions table for the block number and timestamp of a wallets first signed transaction.
 
     columns:
+      - name: atlas_address_first_action_id
+        description: "{{ doc('id') }}"
+        tests:
+          - not_null
+          - unique
+
       - name: address
         description: "{{ doc('address') }}"
         tests:
