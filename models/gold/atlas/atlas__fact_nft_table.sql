@@ -7,6 +7,7 @@
 
 WITH nft_data AS (
     SELECT
+        id,
         receiver_id,
         tokens,
         transfers_24h,

@@ -7,6 +7,7 @@
 
 WITH trailing AS (
     SELECT
+        id,
         day,
         txns,
         inserted_timestamp,

@@ -6,8 +6,8 @@ models:
       Oveeview of NFT transactions in NEAR.
 
 columns:
-  - name: action_id
-    description: "A unique identifier for the action, constructed as a concatenation of the day and receiver_id."
+  - name: id
+    description: "{{ doc('id')}}"
 
   - name: day
     description: "{{ doc('date')}}"

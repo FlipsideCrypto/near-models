@@ -7,6 +7,7 @@
 
 WITH nft_detailed AS (
     SELECT
+        id,
         day,
         receiver_id,
         tokens,

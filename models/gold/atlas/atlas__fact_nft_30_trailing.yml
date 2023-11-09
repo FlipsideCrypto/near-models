@@ -6,6 +6,9 @@ models:
       Summary of NFT transactions from the 'silver__atlas_nft_transactions' table. It provides a daily count of transactions, accounting for a 29-day lookback period for each day within the specified date range.
 
     columns:
+      - name: id
+        description: "{{ doc('id')}}"
+
       - name: day
         description: "{{ doc('date')}}"
 

@@ -6,6 +6,9 @@ models:
       NFT transaction activities by receiver_id. It includes counts of unique tokens, transfers within the last 24 hours and 3 days, all transfers, unique owners, total transactions, and minting events.
 
     columns:
+      - name: id
+        description: "{ { doc('id')}}"
+
       - name: receiver_id
         description: "{ { doc('receiver_id')}}"
 
