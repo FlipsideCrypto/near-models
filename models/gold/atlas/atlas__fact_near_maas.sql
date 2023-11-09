@@ -5,7 +5,7 @@
 
 SELECT
     atlas_near_maa_id AS fact_near_maas_id,
-    active_day,
+    day,
     maa,
     new_maas,
     returning_maas,
