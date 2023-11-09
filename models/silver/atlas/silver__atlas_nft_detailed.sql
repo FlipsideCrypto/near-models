@@ -1,41 +1,48 @@
-
-
 {{ config(
-    materialized = 'incremental',
-    unique_key = 'action_id',
-    incremental_strategy = 'merge',
-    merge_exclude_columns = ["inserted_timestamp"],    
+    materialized = 'table',
+    unique_key = 'id',
     tags = ['atlas']
 ) }}
 
 WITH nft_data AS (
+
     SELECT
         *
-    FROM {{ ref('silver__atlas_nft_transactions') }}
-    WHERE
-        {% if var("MANUAL_FIX") %}
-            {{ partition_load_manual('no_buffer') }}
-        {% else %}
-            {{ incremental_last_x_days('_inserted_timestamp', 3) }}
-        {% endif %}
+    FROM
+        {{ ref('silver__atlas_nft_transactions') }}
 )
-
-select
-    concat_ws(
-        '-',
-        day,
-        receiver_id
-    ) AS action_id,
-    day,
+SELECT
+    {{ dbt_utils.generate_surrogate_key(
+        ['DAY', 'receiver_id']
+    ) }} AS id,
+    DAY,
     receiver_id,
-    COUNT(DISTINCT token_id) AS tokens,
-    COUNT(CASE WHEN method_name = 'nft_transfer' then tx_hash end) AS all_transfers,
-    COUNT(DISTINCT owner) AS owners,
+    COUNT(
+        DISTINCT token_id
+    ) AS tokens,
+    COUNT(
+        CASE
+            WHEN method_name = 'nft_transfer' THEN tx_hash
+        END
+    ) AS all_transfers,
+    COUNT(
+        DISTINCT owner
+    ) AS owners,
     COUNT(*) AS transactions,
-    COUNT(CASE WHEN method_name != 'nft_transfer' then tx_hash end) AS mints,
-    SYSDATE() as inserted_timestamp,
-    SYSDATE() as modified_timestamp,
-    '{{ invocation_id }}' AS invocation_id
-FROM nft_data
-GROUP BY 1, 2, 3
-ORDER BY 4 DESC
+    COUNT(
+        CASE
+            WHEN method_name != 'nft_transfer' THEN tx_hash
+        END
+    ) AS mints,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS invocation_id,
+    MAX(_inserted_timestamp) AS _inserted_timestamp
+FROM
+    nft_data
+GROUP BY
+    1,
+    2,
+    3
+ORDER BY
+    4 DESC

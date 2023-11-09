@@ -1,5 +1,5 @@
 {% docs invocation_id %}
 
-The unique identifier.
+A job ID to identify the run that last modified a record.
 
 {% enddocs %}

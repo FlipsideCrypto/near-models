@@ -1,5 +1,5 @@
 {% docs modified_timestamp %}
 
-The timestamp of when the data was last modified.
+The timestamp at which this record was last modified by an internal process.
 
 {% enddocs %}
