@@ -1,40 +1,40 @@
 version: 2
 
 models:
-  - name: atlas__fact_nft_table
+  - name: atlas__ez_nft_contract_metrics
     description: |-
       NFT transaction activities by receiver_id. It includes counts of unique tokens, transfers within the last 24 hours and 3 days, all transfers, unique owners, total transactions, and minting events.
 
     columns:
-      - name: id
+      - name: EZ_NFT_CONTRACT_METRICS_ID
         description: "{ { doc('id')}}"
 
-      - name: receiver_id
+      - name: RECEIVER_ID
         description: "{ { doc('receiver_id')}}"
 
-      - name: tokens
+      - name: TOKENS
         description: "{{ doc('tokens_count')}}"
 
-      - name: transfers_24h
+      - name: TRANSFERS_24H
         description: "The count of 'nft_transfer' transactions that occurred in the last 24 hours."
 
-      - name: transfers_3d
+      - name: TRANSFERS_3D
         description: "The count of 'nft_transfer' transactions that occurred in the last 3 days."
 
-      - name: all_transfers
+      - name: ALL_TRANSFERS
         description: "{{ doc('all_transfers')}}"
 
-      - name: owners
+      - name: OWNERS
         description: "{{ doc('owner_count')}}"
 
-      - name: transactions
+      - name: TRANSACTIONS
         description: "{{ doc('tx_count')}}"
 
-      - name: mints
+      - name: MINTS
         description: "{{ doc('mint_count')}}"
 
-      - name: inserted_timestamp
+      - name: INSERTED_TIMESTAMP
         description: "{{ doc('inserted_timestamp')}}"
 
-      - name: modified_timestamp
+      - name: MODIFIED_TIMESTAMP
         description: "{{ doc('modified_timestamp')}}"

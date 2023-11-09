@@ -1,22 +1,22 @@
 version: 2
 
 models:
-  - name: atlas__fact_nft_30_trailing
+  - name: atlas__fact_nft_monthly_txs
     description: |-
       Summary of NFT transactions from the 'silver__atlas_nft_transactions' table. It provides a daily count of transactions, accounting for a 29-day lookback period for each day within the specified date range.
 
     columns:
-      - name: id
+      - name: FACT_NFT_MONTHLY_TXS_ID
         description: "{{ doc('id')}}"
 
-      - name: day
+      - name: DAY
         description: "{{ doc('date')}}"
 
-      - name: txns
+      - name: TXNS
         description: "{{ doc('tx_count')}}"
 
-      - name: inserted_timestamp
+      - name: INSERTED_TIMESTAMP
         description: "{{ doc('inserted_timestamp')}}"
 
-      - name: modified_timestamp
+      - name: MODIFIED_TIMESTAMP
         description: "{{ doc('modified_timestamp')}}"

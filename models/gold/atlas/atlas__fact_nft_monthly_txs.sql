@@ -7,7 +7,7 @@
 
 WITH trailing AS (
     SELECT
-        id,
+        id as fact_nft_monthly_txs_id,
         day,
         txns,
         inserted_timestamp,

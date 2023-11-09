@@ -1,37 +1,37 @@
 version: 2
 
 models:
-  - name: atlas__fact_nft_detailed
+  - name: atlas__ez_nft_contract_metrics_daily
     description: |-
       Oveeview of NFT transactions in NEAR.
 
 columns:
-  - name: id
+  - name: EZ_NFT_CONTRACT_METRICS_DAILY_ID
     description: "{{ doc('id')}}"
 
-  - name: day
+  - name: DAY
     description: "{{ doc('date')}}"
 
-  - name: receiver_id
+  - name: RECEIVER_ID
     description: "{{ doc('tx_receiver')}}"
 
-  - name: tokens
+  - name: TOKENS
     description: "{{ doc('tokens_count')}}"
 
-  - name: all_transfers
+  - name: ALL_TRANSFERS
     description: "{{ doc('all_transfers')}}"
 
-  - name: owners
+  - name: OWNERS
     description: "{{ doc('owner_count')}}"
 
-  - name: transactions
+  - name: TRANSACTIONS
     description: "{{ doc('tx_count')}}"
 
-  - name: mints
+  - name: MINTS
     description: "{{ doc('mint_count')}}"
 
-  - name: inserted_timestamp
+  - name: INSERTED_TIMESTAMP
     description: "{{ doc('inserted_timestamp')}}"
 
-  - name: modified_timestamp
+  - name: MODIFIED_TIMESTAMP
     description: "{{ doc('modified_timestamp')}}"

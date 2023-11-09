@@ -7,7 +7,7 @@
 
 WITH nft_detailed AS (
     SELECT
-        id,
+        id as ez_nft_contract_metrics_daily_id,
         day,
         receiver_id,
         tokens,
