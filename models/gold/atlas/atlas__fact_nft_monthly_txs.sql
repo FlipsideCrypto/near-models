@@ -4,17 +4,18 @@
     tags = ['atlas']
 ) }}
 
+WITH TRAILING AS (
 
-WITH trailing AS (
     SELECT
-        id as fact_nft_monthly_txs_id,
-        day,
+        id AS fact_nft_monthly_txs_id,
+        DAY,
         txns,
         inserted_timestamp,
         modified_timestamp
-    FROM {{ ref('silver__atlas_nft_30_trailing') }}
+    FROM
+        {{ ref('silver__atlas_nft_30_trailing') }}
 )
-
-SELECT 
+SELECT
     *
-FROM trailing
+FROM
+    TRAILING

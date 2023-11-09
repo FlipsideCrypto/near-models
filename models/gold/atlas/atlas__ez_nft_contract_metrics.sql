@@ -1,4 +1,3 @@
-
 {{ config(
     materialized = 'view',
     secure = false,
@@ -6,8 +5,9 @@
 ) }}
 
 WITH nft_data AS (
+
     SELECT
-        id as ez_nft_contract_metrics_id,
+        id AS ez_nft_contract_metrics_id,
         receiver_id,
         tokens,
         transfers_24h,
@@ -18,9 +18,10 @@ WITH nft_data AS (
         mints,
         inserted_timestamp,
         modified_timestamp
-    FROM {{ ref('silver__atlas_nft_table') }}
+    FROM
+        {{ ref('silver__atlas_nft_table') }}
 )
-
-select
+SELECT
     *
-from nft_data
+FROM
+    nft_data
