@@ -1,4 +1,3 @@
-
 {{ config(
     materialized = 'view',
     secure = false,
@@ -6,16 +5,18 @@
 ) }}
 
 WITH nft_data AS (
+
     SELECT
         atlas_account_created_id,
-        day,
+        DAY,
         wallets_created,
         total_wallets,
         inserted_timestamp,
         updated_timestamp
-    FROM {{ ref('silver__atlas_accounts_created') }}
+    FROM
+        {{ ref('silver__atlas_accounts_created') }}
 )
-
-select
+SELECT
     *
-from nft_data
+FROM
+    nft_data

@@ -17,12 +17,12 @@ models:
           - not_null
 
       - name: wallets_created
-        description: "The number of wallets created on NEAR on the given day."
+        description: "{{ doc('wallets_created')}}"
         tests:
           - not_null
 
       - name: total_wallets
-        description: "Total number of wallets created on NEAR."
+        description: "{{ doc('total_wallets')}}"
         tests:
           - not_null
 
