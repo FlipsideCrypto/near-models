@@ -7,6 +7,7 @@
 
 WITH nft_data AS (
     SELECT
+        atlas_account_created_id,
         day,
         wallets_created,
         total_wallets,

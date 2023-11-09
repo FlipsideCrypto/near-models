@@ -5,11 +5,17 @@ models:
     description: |-
       Wallet creation on NEAR
     columns:
+      - name: atlas_account_created_id
+        description: "{{ doc('id')}}"
+        tests:
+          - not_null
+          - unique
+
       - name: day
         description: "{{ doc('date')}}"
         tests:
           - not_null
-          - unique
+
       - name: wallets_created
         description: "The number of wallets created on NEAR on the given day."
         tests:

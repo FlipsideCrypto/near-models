@@ -1,7 +1,7 @@
 
 {{ config(
     materialized = 'incremental',
-    unique_key = 'day',
+    unique_key = 'atlas_account_created_id',
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],    
     tags = ['atlas']
@@ -30,6 +30,9 @@ DAILY_TOTALS AS (
 )
 FINAL AS (
     SELECT
+        {{ dbt_utils.generate_surrogate_key(
+          ['receiver_id']
+        ) }} AS atlas_account_created_id,
         block_timestamp::date AS day,
         COUNT(*) AS wallets_created,
         SUM(count(*)) OVER (ORDER BY day) total_wallets,
