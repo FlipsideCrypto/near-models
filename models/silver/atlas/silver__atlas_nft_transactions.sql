@@ -1,7 +1,7 @@
 {{ config(
     materialized = "incremental",
     cluster_by = ["day"],
-    unique_key = "id",
+    unique_key = "atlas_nft_transactions_id",
     merge_exclude_columns = ["inserted_timestamp"],
     incremental_strategy = "merge",
     tags = ['atlas']
@@ -72,7 +72,7 @@ unioned_nft_data AS (
 SELECT
     {{ dbt_utils.generate_surrogate_key(
         ['receipt_object_id', 'method_name', 'token_id', 'owner']
-    ) }} AS id,
+    ) }} AS atlas_nft_transactions_id,
     DAY,
     tx_hash,
     method_name,
@@ -91,7 +91,7 @@ WHERE
     token_id IS NOT NULL
     AND owner IS NOT NULL 
 qualify ROW_NUMBER() over (
-    PARTITION BY id
+    PARTITION BY atlas_nft_transactions_id
     ORDER BY
         _inserted_timestamp DESC
 ) = 1

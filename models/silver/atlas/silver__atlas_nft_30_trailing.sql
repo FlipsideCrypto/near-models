@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'incremental',
-    unique_key = 'id',
+    unique_key = 'atlas_nft_30_trailing_id',
     incremental_strategy = "merge",
     merge_exclude_columns = ["inserted_timestamp"],
     tags = ['atlas']
@@ -39,7 +39,7 @@ FINAL AS (
 SELECT
     {{ dbt_utils.generate_surrogate_key(
         ['day']
-    ) }} AS id,
+    ) }} AS atlas_nft_30_trailing_id,
     DAY,
     txns,
     SYSDATE() AS inserted_timestamp,

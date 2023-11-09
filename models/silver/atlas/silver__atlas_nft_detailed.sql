@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'table',
-    unique_key = 'id',
+    unique_key = 'atlas_nft_detailed_id',
     tags = ['atlas']
 ) }}
 
@@ -14,7 +14,7 @@ WITH nft_data AS (
 SELECT
     {{ dbt_utils.generate_surrogate_key(
         ['DAY', 'receiver_id']
-    ) }} AS id,
+    ) }} AS atlas_nft_detailed_id,
     DAY,
     receiver_id,
     COUNT(

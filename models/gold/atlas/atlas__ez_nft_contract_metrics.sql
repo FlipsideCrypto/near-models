@@ -7,7 +7,7 @@
 WITH nft_data AS (
 
     SELECT
-        id AS ez_nft_contract_metrics_id,
+        atlas_nft_table_id AS ez_nft_contract_metrics_id,
         receiver_id,
         tokens,
         transfers_24h,

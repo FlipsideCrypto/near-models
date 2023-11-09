@@ -11,7 +11,7 @@ models:
           interval: 1
 
     columns:
-      - name: id
+      - name: atlas_nft_transactions_id
         description: "{{doc('id')}}"
         tests:
           - unique

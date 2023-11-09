@@ -6,7 +6,7 @@ models:
       This is an incremental dbt model that gives an overview of NFT transactions in NEAR.
 
 columns:
-  - name: id
+  - name: atlas_nft_detailed_id
     description: "{{ doc('id')}}"
     tests:
       - not_null

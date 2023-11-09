@@ -7,7 +7,7 @@
 WITH TRAILING AS (
 
     SELECT
-        id AS fact_nft_monthly_txs_id,
+        atlas_nft_30_trailing_id AS fact_nft_monthly_txs_id,
         DAY,
         txns,
         inserted_timestamp,
