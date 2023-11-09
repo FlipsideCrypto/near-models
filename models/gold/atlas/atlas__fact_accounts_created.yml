@@ -1,0 +1,24 @@
+version: 2
+
+models:
+  - name: atlas__fact_accounts_created
+    description: |-
+      Wallet creation on NEAR
+    columns:
+      - name: day
+        description: "{{ doc('date')}}"
+
+      - name: wallets_created
+        description: "The number of wallets created on NEAR on the given day."
+
+      - name: total_wallets
+        description: "Total number of wallets created on NEAR."
+
+      - name: inserted_timestamp
+        description: "{{doc('inserted_timestamp')}}"
+
+      - name: modified_timestamp
+        description: "{{doc('modified_timestamp')}}"
+
+      - name: invocation_id
+        description: "{{doc('invocation_id')}}"
