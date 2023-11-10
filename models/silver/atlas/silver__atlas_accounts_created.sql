@@ -36,10 +36,6 @@ FINAL AS (
             ['DAY']
         ) }} AS atlas_account_created_id,
         COUNT(*) AS wallets_created,
-        SUM(COUNT(*)) over (
-            ORDER BY
-                DAY
-        ) total_wallets,
         SYSDATE() AS inserted_timestamp,
         SYSDATE() AS modified_timestamp,
         '{{ invocation_id }}' AS invocation_id

@@ -5,7 +5,7 @@ models:
     description: |-
       Wallet creation on NEAR
     columns:
-      - name: fact_accounts_created_id
+      - name: FACT_ACCOUNTS_CREATED_ID
         description: "{ { doc('id')}}"
 
       - name: day
