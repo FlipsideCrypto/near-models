@@ -13,7 +13,7 @@ WITH accts AS (
     FROM
         {{ ref('silver__streamline_receipts_final') }}
     WHERE
-        status_value NOT LIKE '%Failure%'
+        receipt_succeeded = TRUE
         AND {% if var("MANUAL_FIX") %}
             {{ partition_load_manual('no_buffer') }}
         {% else %}
@@ -29,20 +29,12 @@ WITH accts AS (
                 block_timestamp
         ) = 1
 ),
-daily_totals AS (
+FINAL AS (
     SELECT
-        DAY,
-        COUNT(*) AS wallets_created
-    FROM
-        accts
-    GROUP BY
-        DAY
-) FINAL AS (
-    SELECT
+        block_timestamp :: DATE AS "DAY",
         {{ dbt_utils.generate_surrogate_key(
-            ['receiver_id']
+            ['DAY']
         ) }} AS atlas_account_created_id,
-        block_timestamp :: DATE AS DAY,
         COUNT(*) AS wallets_created,
         SUM(COUNT(*)) over (
             ORDER BY
@@ -54,7 +46,8 @@ daily_totals AS (
     FROM
         accts
     GROUP BY
-        1
+        1,
+        2
 )
 SELECT
     *

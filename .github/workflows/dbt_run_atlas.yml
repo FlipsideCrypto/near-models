@@ -4,8 +4,8 @@ run-name: dbt_run_atlas
 on:
   workflow_dispatch:
   schedule:
-    # Runs weekly at 0 UTC on Mondays (see https://crontab.guru)
-    - cron: "0 0 * * 1"
+    # Runs once per day at 0 UTC
+    - cron: "0 0 * * *"
 
 env:
   USE_VARS: "${{ vars.USE_VARS }}"

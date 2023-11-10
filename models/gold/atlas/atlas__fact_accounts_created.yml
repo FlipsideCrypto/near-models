@@ -5,7 +5,7 @@ models:
     description: |-
       Wallet creation on NEAR
     columns:
-      - name: atlas_account_created_id
+      - name: fact_accounts_created_id
         description: "{ { doc('id')}}"
 
       - name: day
