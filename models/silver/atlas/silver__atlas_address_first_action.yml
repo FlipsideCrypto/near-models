@@ -1,0 +1,50 @@
+version: 2
+
+models:
+  - name: silver__atlas_address_first_action
+    description: |-
+      Parses transactions table for the block number and timestamp of a wallets first signed transaction.
+
+    columns:
+      - name: atlas_address_first_action_id
+        description: "{{ doc('id') }}"
+        tests:
+          - not_null
+          - unique
+
+      - name: address
+        description: "{{ doc('address') }}"
+        tests:
+          - not_null
+          - unique
+
+      - name: first_tx_timestamp
+        description: "{{ doc('block_timestamp')}}"
+        tests:
+          - not_null
+
+      - name: first_tx_block_id
+        description: "{{ doc('block_id') }}"
+        tests:
+          - not_null
+
+      - name: _inserted_timestamp
+        description: "{{ doc('_inserted_timestamp') }}"
+        tests:
+          - name: not_null_silver__atlas_address_first_action_INSERTED_TIMESTAMP_
+            test_name: not_null
+
+      - name: inserted_timestamp
+        description: "{{ doc('inserted_timestamp') }}"
+        tests:
+          - not_null
+
+      - name: modified_timestamp
+        description: "{{ doc('modified_timestamp') }}"
+        tests:
+          - not_null
+
+      - name: invocation_id
+        description: "{{ doc('invocation_id') }}"
+        tests:
+          - not_null
