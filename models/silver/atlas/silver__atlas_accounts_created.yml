@@ -21,11 +21,6 @@ models:
         tests:
           - not_null
 
-      - name: total_wallets
-        description: "{{ doc('total_wallets')}}"
-        tests:
-          - not_null
-
       - name: inserted_timestamp
         description: "{{doc('inserted_timestamp')}}"
         tests:

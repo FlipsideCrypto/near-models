@@ -10,7 +10,6 @@ WITH nft_data AS (
         atlas_account_created_id AS fact_accounts_created_id,
         DAY,
         wallets_created,
-        total_wallets,
         inserted_timestamp,
         modified_timestamp
     FROM
