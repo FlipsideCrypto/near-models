@@ -1,0 +1,24 @@
+version: 2
+
+models:
+  - name: atlas__fact_accounts_created
+    description: |-
+      Daily count of accounts created on NEAR.
+    columns:
+      - name: FACT_ACCOUNTS_CREATED_ID
+        description: "{ { doc('id')}}"
+
+      - name: DAY
+        description: "{{ doc('date')}}"
+
+      - name: WALLETS_CREATED
+        description: "{{ doc('wallets_created')}}"
+
+      - name: INSERTED_TIMESTAMP
+        description: "{{doc('inserted_timestamp')}}"
+
+      - name: MODIFIED_TIMESTAMP
+        description: "{{doc('modified_timestamp')}}"
+
+      - name: INVOCATION_ID
+        description: "{{doc('invocation_id')}}"
