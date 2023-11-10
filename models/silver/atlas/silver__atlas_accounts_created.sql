@@ -49,3 +49,5 @@ SELECT
     *
 FROM
     FINAL
+WHERE
+    DAY IS NOT NULL

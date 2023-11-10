@@ -3,7 +3,7 @@ version: 2
 models:
   - name: atlas__fact_accounts_created
     description: |-
-      Wallet creation on NEAR
+      Daily count of accounts created on NEAR.
     columns:
       - name: FACT_ACCOUNTS_CREATED_ID
         description: "{ { doc('id')}}"
