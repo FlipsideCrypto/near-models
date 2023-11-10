@@ -8,20 +8,17 @@ models:
       - name: FACT_ACCOUNTS_CREATED_ID
         description: "{ { doc('id')}}"
 
-      - name: day
+      - name: DAY
         description: "{{ doc('date')}}"
 
-      - name: wallets_created
+      - name: WALLETS_CREATED
         description: "{{ doc('wallets_created')}}"
 
-      - name: total_wallets
-        description: "{{ doc('total_wallets')}}"
-
-      - name: inserted_timestamp
+      - name: INSERTED_TIMESTAMP
         description: "{{doc('inserted_timestamp')}}"
 
-      - name: modified_timestamp
+      - name: MODIFIED_TIMESTAMP
         description: "{{doc('modified_timestamp')}}"
 
-      - name: invocation_id
+      - name: INVOCATION_ID
         description: "{{doc('invocation_id')}}"
