@@ -97,7 +97,7 @@ FINAL AS (
 SELECT
     {{ dbt_utils.generate_surrogate_key(
         ['day']
-    ) }} AS atlas_near_maa_id,
+    ) }} AS atlas_maa_id,
     day,
     maa,
     new_maas,
