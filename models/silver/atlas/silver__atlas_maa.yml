@@ -1,12 +1,12 @@
 version: 2
 
 models:
-  - name: silver__atlas_near_maa
+  - name: silver__atlas_maa
     description: |-
       Monthly Active Accounts (wallets) on NEAR, including new and returning wallets, calculated over a rolling 30 day window. An active account, here, is defined as the signing of at least one transaction.
 
     columns:
-      - name: atlas_near_maa_id
+      - name: atlas_maa_id
         description: "{{ doc('id') }}"
         tests:
           - not_null
