@@ -3,7 +3,7 @@ version: 2
 models:
   - name: atlas__ez_nft_contract_metrics_daily
     description: |-
-      Oveeview of NFT transactions in NEAR.
+      Overview of NFT transactions in NEAR.
 
 columns:
   - name: EZ_NFT_CONTRACT_METRICS_DAILY_ID
