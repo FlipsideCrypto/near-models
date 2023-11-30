@@ -7,14 +7,19 @@
     tags = ['atlas']
 ) }}
 
-WITH 
-daily_lockup_locked_balances AS (
-    select * from {{ ref('silver__atlas_supply_daily_lockup_locked_balances')}}
+WITH daily_lockup_locked_balances AS (
+
+    SELECT
+        *
+    FROM
+        {{ ref('silver__atlas_supply_daily_lockup_locked_balances') }}
 ),
 daily_lockup_staking_balances AS (
-select * from {{ ref('silver__atlas_supply_daily_lockup_staking_balances')}}
+    SELECT
+        *
+    FROM
+        {{ ref('silver__atlas_supply_daily_lockup_staking_balances') }}
 ),
-
 daily_lockup_locked_and_staking_balances AS (
     SELECT
         l.lockup_account_id,
@@ -45,7 +50,10 @@ daily_locked_and_staked_supply AS (
         1
 ),
 daily_staked_supply AS (
-select * from {{ ref('silver__atlas_supply_daily_staked_supply')}}
+    SELECT
+        *
+    FROM
+        {{ ref('silver__atlas_supply_daily_staked_supply') }}
 ),
 daily_supply_stats AS (
     SELECT
