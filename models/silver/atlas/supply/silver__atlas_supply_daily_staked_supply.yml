@@ -1,0 +1,7 @@
+version: 2
+
+models:
+  - name: silver__atlas_supply_daily_staked_supply
+    description: |-
+      A currently disabled model. The CTE in the original SQL has been converted to dbt-jinja, before being deprecated in favor of another model that captures daily staked balance in a more efficient manner.
+      This is being retained for archive purposes.

@@ -435,7 +435,7 @@ SELECT
     unlocked_amount_today,
     _inserted_timestamp,
     _partition_by_block_number,
-    {{ dbt_utils.generate_surrogate_key(['lockup_account_id', 'utc_date']) }} AS atlas_daily_lockup_locked_balances_id,
+    {{ dbt_utils.generate_surrogate_key(['utc_date', 'lockup_account_id', 'lockup_index', 'owner_account_id']) }} AS atlas_daily_lockup_locked_balances_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS invocation_id

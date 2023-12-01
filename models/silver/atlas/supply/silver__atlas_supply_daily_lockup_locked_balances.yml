@@ -1,0 +1,103 @@
+version: 2
+
+models:
+  - name: silver__atlas_supply_daily_lockup_locked_balances
+    description: |-
+      Calculates daily balance of locked balance on a per lockup account-basis.
+
+    columns:
+      - name: lockup_account_id
+        description: "{{ doc('lockup_account_id') }}"
+        tests:
+          - not_null
+      - name: lockup_index
+        description: "{{ doc('lockup_index') }}"
+        tests:
+          - not_null
+      - name: owner_account_id
+        description: "{{ doc('owner_account_id') }}"
+        tests:
+          - not_null
+      - name: utc_date
+        description: "{{ doc('utc_date') }}"
+        tests:
+          - not_null
+      - name: block_timestamp
+        description: "{{ doc('block_timestamp') }}"
+        tests:
+          - not_null
+      - name: lockup_amount
+        description: "{{ doc('lockup_amount') }}"
+        tests:
+          - not_null
+      - name: deposit_timestamp
+        description: "{{ doc('deposit_timestamp') }}"
+        tests:
+          - not_null
+      - name: lockup_timestamp
+        description: "{{ doc('lockup_timestamp') }}"
+
+      - name: lockup_end_timestamp
+        description: "{{ doc('lockup_end_timestamp') }}"
+
+      - name: lockup_time_left_ns
+        description: "{{ doc('lockup_time_left_ns') }}"
+
+      - name: unreleased_amount
+        description: "{{ doc('unreleased_amount') }}"
+
+      - name: vesting_start_timestamp
+        description: "{{ doc('vesting_start_timestamp') }}"
+
+      - name: vesting_cliff_timestamp
+        description: "{{ doc('vesting_cliff_timestamp') }}"
+
+      - name: vesting_end_timestamp
+        description: "{{ doc('vesting_end_timestamp') }}"
+
+      - name: terminate_vesting_timestamp
+        description: "{{ doc('terminate_vesting_timestamp') }}"
+
+      - name: termination_unvested_amount
+        description: "{{ doc('termination_unvested_amount') }}"
+
+      - name: vesting_time_left_ns
+        description: "{{ doc('vesting_time_left_ns') }}"
+
+      - name: vesting_total_time_ns
+        description: "{{ doc('vesting_total_time_ns') }}"
+
+      - name: termination_withdrawn_amount
+        description: "{{ doc('termination_withdrawn_amount') }}"
+
+      - name: unvested_amount
+        description: "{{ doc('unvested_amount') }}"
+
+      - name: locked_amount
+        description: "{{ doc('locked_amount') }}"
+        tests:
+          - not_null
+      - name: unlocked_amount_today
+        description: "{{ doc('unlocked_amount_today') }}"
+        tests:
+          - not_null
+      - name: _inserted_timestamp
+        description: "{{ doc('_inserted_timestamp') }}"
+
+      - name: _partition_by_block_number
+        description: "{{ doc('_partition_by_block_number') }}"
+
+      - name: atlas_daily_lockup_locked_balances_id
+        description: "{{ doc('id') }}"
+        tests:
+          - not_null
+          - unique
+
+      - name: inserted_timestamp
+        description: "{{ doc('inserted_timestamp') }}"
+
+      - name: modified_timestamp
+        description: "{{ doc('modified_timestamp') }}"
+
+      - name: invocation_id
+        description: "{{ doc('invocation_id') }}"

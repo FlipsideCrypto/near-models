@@ -50,9 +50,11 @@ daily_locked_and_staked_supply AS (
 daily_staked_supply AS (
     SELECT
         date_day AS utc_date,
-        balance AS total_staked_supply
+        SUM(balance) AS total_staked_supply
     FROM
         {{ ref('silver__pool_balance_daily') }}
+    GROUP BY
+        1
 ),
 daily_total_supply AS (
     SELECT
@@ -95,29 +97,41 @@ daily_supply_stats AS (
 output AS (
     SELECT
         utc_date,
-        utc_date AS "Date",
-        total_supply AS "Total Supply - Actual",
-        total_staked_supply AS "Staked Supply",
-        total_nonstaked_supply AS "Non-staked Supply",
-        circulating_supply AS "Circulating Supply",
-        total_supply - circulating_supply AS "Total Supply",
-        total_locked_supply AS "Locked Supply",
-        nonlocked_and_nonstaked_supply AS "Liquid Supply",
-        total_supply - nonlocked_and_nonstaked_supply AS "Non-liquid Supply",
-        locked_and_staked_supply AS "Staked (Locked Supply)",
-        locked_and_nonstaked_supply AS "Non-staked (Locked Supply)",
-        nonlocked_and_staked_supply AS "Staked (Circulating Supply)",
-        nonlocked_and_nonstaked_supply AS "Non-staked (Circulating Supply)",
+        total_supply,
+        total_staked_supply,
+        total_nonstaked_supply,
+        circulating_supply,
+        total_locked_supply,
+        nonlocked_and_nonstaked_supply AS liquid_supply,
+        total_supply - nonlocked_and_nonstaked_supply AS nonliquid_supply,
+        locked_and_staked_supply AS staked_locked_supply,
+        locked_and_nonstaked_supply AS non_staked_locked_supply,
+        nonlocked_and_staked_supply AS staked_circulating_supply,
+        nonlocked_and_nonstaked_supply AS nonstaked_circulating_supply,
         total_locked_supply / total_supply AS perc_locked_supply,
         circulating_supply / total_supply AS perc_circulating_supply,
-        locked_and_staked_supply / total_locked_supply AS perc_staked__locked,
-        nonlocked_and_staked_supply / circulating_supply AS perc_staked__circulating,
-        1 AS dummy
+        locked_and_staked_supply / total_locked_supply AS perc_staked_locked,
+        nonlocked_and_staked_supply / circulating_supply AS perc_staked_circulating
     FROM
         daily_supply_stats
 )
 SELECT
-    *,
+    utc_date,
+    total_supply,
+    total_staked_supply,
+    total_nonstaked_supply,
+    circulating_supply,
+    total_locked_supply,
+    liquid_supply,
+    nonliquid_supply,
+    staked_locked_supply,
+    non_staked_locked_supply,
+    staked_circulating_supply,
+    nonstaked_circulating_supply,
+    perc_locked_supply,
+    perc_circulating_supply,
+    perc_staked_locked,
+    perc_staked_circulating,
     {{ dbt_utils.generate_surrogate_key(['utc_date']) }} AS atlas_supply_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
