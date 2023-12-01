@@ -1,9 +1,7 @@
 {{ config(
-    materialized = "incremental",
+    materialized = "table",
     cluster_by = ["utc_date"],
     unique_key = "atlas_supply_id",
-    merge_exclude_columns = ["inserted_timestamp"],
-    incremental_strategy = "merge",
     tags = ['atlas']
 ) }}
 
@@ -59,7 +57,7 @@ daily_staked_supply AS (
 daily_total_supply AS (
     SELECT
         end_time :: DATE AS utc_date,
-        total_near_supply
+        total_near_supply AS total_supply
     FROM
         {{ ref('silver__atlas_supply_epochs') }}
         qualify ROW_NUMBER() over (

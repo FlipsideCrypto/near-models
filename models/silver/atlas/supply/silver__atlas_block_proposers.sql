@@ -7,7 +7,7 @@
     tags = ['atlas', 'atlas_supply'],
     enabled = False
 ) }}
-{# Potential future table for staking / governance #}
+{# Potential future table for staking / governance. DISABLED MODEL, keeping as archive for down the line. #}
 WITH epochs AS (
 
     SELECT

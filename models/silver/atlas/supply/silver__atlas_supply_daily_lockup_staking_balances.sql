@@ -1,9 +1,7 @@
 {{ config(
-    materialized = "incremental",
+    materialized = "table",
     cluster_by = ["utc_date"],
     unique_key = "atlas_daily_lockup_staking_balances_id",
-    merge_exclude_columns = ["inserted_timestamp"],
-    incremental_strategy = "merge",
     tags = ['atlas', 'atlas_supply']
 ) }}
 
@@ -13,12 +11,6 @@ WITH lockup_receipts AS (
         *
     FROM
         {{ ref('silver__atlas_supply_lockup_receipts') }}
-    WHERE
-        {% if var("MANUAL_FIX") %}
-            {{ partition_load_manual('no_buffer') }}
-        {% else %}
-            {{ incremental_load_filter('_inserted_timestamp') }}
-        {% endif %}
 ),
 dates AS (
     SELECT
@@ -28,21 +20,6 @@ dates AS (
             'crosschain',
             'dim_dates'
         ) }}
-
-{% if is_incremental() %}
-WHERE
-    date_day > (
-        SELECT
-            MAX(DAY)
-        FROM
-            {{ this }}
-    )
-    AND date_day < SYSDATE() :: DATE
-{% else %}
-WHERE
-    date_day BETWEEN '2020-01-01'
-    AND SYSDATE() :: DATE
-{% endif %}
 ),
 lockup_staking_logs AS (
     SELECT

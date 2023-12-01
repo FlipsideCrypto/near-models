@@ -1,40 +1,22 @@
 {{ config(
-    materialized = "incremental",
+    materialized = "table",
     cluster_by = ["utc_date"],
     unique_key = "atlas_daily_lockup_locked_balances_id",
-    merge_exclude_columns = ["inserted_timestamp"],
-    incremental_strategy = "merge",
     tags = ['atlas', 'atlas_supply']
 ) }}
-{# 
-    Incr logic todo
-Model should scan lockup receipts for new lockup accounts and add to the table.
-Each day, model should process active lockup accounts to determine the balace on date.
- #}
+
 WITH lockup_receipts AS (
 
     SELECT
         *
     FROM
         {{ ref('silver__atlas_supply_lockup_receipts') }}
-    WHERE
-        {% if var("MANUAL_FIX") %}
-            {{ partition_load_manual('no_buffer') }}
-        {% else %}
-            {{ incremental_load_filter('_inserted_timestamp') }}
-        {% endif %}
 ),
 function_call AS (
     SELECT
         *
     FROM
         {{ ref('silver__actions_events_function_call_s3') }}
-    WHERE
-        {% if var("MANUAL_FIX") %}
-            {{ partition_load_manual('no_buffer') }}
-        {% else %}
-            {{ incremental_load_filter('_inserted_timestamp') }}
-        {% endif %}
 ),
 dates AS (
     SELECT
@@ -44,21 +26,6 @@ dates AS (
             'crosschain',
             'dim_dates'
         ) }}
-
-{% if is_incremental() %}
-WHERE
-    date_day > (
-        SELECT
-            MAX(DAY)
-        FROM
-            {{ this }}
-    )
-    AND date_day < SYSDATE() :: DATE
-{% else %}
-WHERE
-    date_day BETWEEN '2020-01-01'
-    AND SYSDATE() :: DATE
-{% endif %}
 ),
 new_lockup_txs AS (
     -- new lockup contract created

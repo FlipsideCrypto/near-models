@@ -8,11 +8,12 @@
 ) }}
 
 {# 
+DISABLED / archived 12/1/2023
 Note - seems like a more complicated way to get to the result in silver__pool_balances(_daily). Both look for logs that emit the updated staked total,
 but this query is calculating extra proposer and epoch stats and not using them.
 Unnecessary compute, possibly from a separate analytical process.
 The numbers do seem to differ, but individual pool balances in my silver table match near-staking exactly.
- #}
+#}
 
 WITH receipts AS (
 
