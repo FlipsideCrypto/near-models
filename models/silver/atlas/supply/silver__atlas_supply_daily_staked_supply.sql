@@ -1,10 +1,9 @@
 {{ config(
-    materialized = "incremental",
+    materialized = "table",
     cluster_by = ["utc_date"],
     unique_key = "atlas_daily_staked_supply_id",
     merge_exclude_columns = ["inserted_timestamp"],
-    incremental_strategy = "merge",
-    tags = ['atlas']
+    tags = ['atlas', 'atlas_supply']
 ) }}
 
 WITH receipts AS (

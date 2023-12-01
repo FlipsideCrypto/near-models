@@ -4,7 +4,7 @@
     unique_key = "atlas_daily_lockup_staking_balances_id",
     merge_exclude_columns = ["inserted_timestamp"],
     incremental_strategy = "merge",
-    tags = ['atlas']
+    tags = ['atlas', 'atlas_supply']
 ) }}
 
 WITH lockup_receipts AS (
@@ -205,7 +205,7 @@ SELECT
     utc_date,
     staked_balance,
     _inserted_timestamp,
-    {{ dbt_utils.generate_surrogate_key(['lockup_account_id']) }} AS atlas_daily_lockup_staking_balances_id,
+    {{ dbt_utils.generate_surrogate_key(['lockup_account_id', 'utc_date']) }} AS atlas_daily_lockup_staking_balances_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS invocation_id

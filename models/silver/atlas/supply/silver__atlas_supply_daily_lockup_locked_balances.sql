@@ -4,9 +4,13 @@
     unique_key = "atlas_daily_lockup_locked_balances_id",
     merge_exclude_columns = ["inserted_timestamp"],
     incremental_strategy = "merge",
-    tags = ['atlas']
+    tags = ['atlas', 'atlas_supply']
 ) }}
-
+{# 
+    Incr logic todo
+Model should scan lockup receipts for new lockup accounts and add to the table.
+Each day, model should process active lockup accounts to determine the balace on date.
+ #}
 WITH lockup_receipts AS (
 
     SELECT
@@ -326,6 +330,7 @@ lockup_contracts__parsed AS (
     FROM
         lockup_contracts
 ),
+{# TODO - above might be 1 table, and below aggregation another one. Below CTS is where the cross join with dates is happening, calculating the time remaining and resulting balance(s) #}
 lockup_contracts_daily_balance__prep_1 AS (
     SELECT
         lc.lockup_account_id,
@@ -439,8 +444,31 @@ lockup_contracts_daily_balance AS (
         lockup_contracts_daily_balance__prep_2 AS lc
 )
 SELECT
-    *,
-    {{ dbt_utils.generate_surrogate_key(['utc_date']) }} AS atlas_daily_lockup_locked_balances_id,
+    lockup_account_id,
+    lockup_index,
+    owner_account_id,
+    utc_date,
+    block_timestamp,
+    lockup_amount,
+    deposit_timestamp,
+    lockup_timestamp,
+    lockup_end_timestamp,
+    lockup_time_left_ns,
+    unreleased_amount,
+    vesting_start_timestamp,
+    vesting_cliff_timestamp,
+    vesting_end_timestamp,
+    terminate_vesting_timestamp,
+    termination_unvested_amount,
+    vesting_time_left_ns,
+    vesting_total_time_ns,
+    termination_withdrawn_amount,
+    unvested_amount,
+    locked_amount,
+    unlocked_amount_today,
+    _inserted_timestamp,
+    _partition_by_block_number,
+    {{ dbt_utils.generate_surrogate_key(['lockup_account_id', 'utc_date']) }} AS atlas_daily_lockup_locked_balances_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS invocation_id
