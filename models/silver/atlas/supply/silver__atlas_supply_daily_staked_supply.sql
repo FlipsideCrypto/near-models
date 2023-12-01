@@ -3,8 +3,16 @@
     cluster_by = ["utc_date"],
     unique_key = "atlas_daily_staked_supply_id",
     merge_exclude_columns = ["inserted_timestamp"],
-    tags = ['atlas', 'atlas_supply']
+    tags = ['atlas', 'atlas_supply'],
+    enabled = False
 ) }}
+
+{# 
+Note - seems like a more complicated way to get to the result in silver__pool_balances(_daily). Both look for logs that emit the updated staked total,
+but this query is calculating extra proposer and epoch stats and not using them.
+Unnecessary compute, possibly from a separate analytical process.
+The numbers do seem to differ, but individual pool balances in my silver table match near-staking exactly.
+ #}
 
 WITH receipts AS (
 
@@ -27,18 +35,26 @@ WHERE
 ),
 function_call AS (
     SELECT
-        *
+        distinct tx_hash
     FROM
         {{ ref('silver__actions_events_function_call_s3') }}
+    WHERE
+        method_name IN (
+            'ping',
+            'stake',
+            'unstake',
+            'stake_all',
+            'unstake_all',
+            'deposit_and_stake'
+        )
 
 {% if is_incremental() %}
-WHERE
-    _inserted_timestamp :: DATE >= (
-        SELECT
-            MAX(utc_date) - INTERVAL '2 days'
-        FROM
-            {{ this }}
-    )
+AND _inserted_timestamp :: DATE >= (
+    SELECT
+        MAX(utc_date) - INTERVAL '2 days'
+    FROM
+        {{ this }}
+)
 {% endif %}
 ),
 blocks AS (
@@ -96,15 +112,6 @@ staking_actions AS (
                 tx_hash
             FROM
                 function_call
-            WHERE
-                method_name IN (
-                    'ping',
-                    'stake',
-                    'unstake',
-                    'stake_all',
-                    'unstake_all',
-                    'deposit_and_stake'
-                )
         )
         AND LEFT(
             l.value :: STRING,
@@ -115,7 +122,8 @@ staking_actions AS (
             ORDER BY
                 block_timestamp DESC
         ) = 1
-),
+)
+,
 proposals AS (
     SELECT
         b.block_id,

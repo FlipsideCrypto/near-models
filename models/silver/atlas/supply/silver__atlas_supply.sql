@@ -51,16 +51,29 @@ daily_locked_and_staked_supply AS (
 ),
 daily_staked_supply AS (
     SELECT
-        *
+        date_day AS utc_date,
+        balance AS total_staked_supply
     FROM
-        {{ ref('silver__atlas_supply_daily_staked_supply') }}
+        {{ ref('silver__pool_balance_daily') }}
+),
+daily_total_supply AS (
+    SELECT
+        end_time :: DATE AS utc_date,
+        total_near_supply
+    FROM
+        {{ ref('silver__atlas_supply_epochs') }}
+        qualify ROW_NUMBER() over (
+            PARTITION BY end_time :: DATE
+            ORDER BY
+                end_time DESC
+        ) = 1
 ),
 daily_supply_stats AS (
     SELECT
         s.utc_date,
-        s.total_supply,
+        ts.total_supply,
         s.total_staked_supply,
-        s.total_supply - s.total_staked_supply AS total_nonstaked_supply,
+        ts.total_supply - s.total_staked_supply AS total_nonstaked_supply,
         ls.total_locked_supply,
         ls.locked_and_staked_supply,
         GREATEST(
@@ -78,6 +91,8 @@ daily_supply_stats AS (
         daily_staked_supply AS s
         LEFT JOIN daily_locked_and_staked_supply AS ls
         ON ls.utc_date = s.utc_date
+        LEFT JOIN daily_total_supply AS ts
+        ON ts.utc_date = s.utc_date
 ),
 output AS (
     SELECT
