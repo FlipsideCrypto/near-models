@@ -135,6 +135,7 @@ transactions AS (
 ),
 receipts AS (
   SELECT
+    block_id,
     tx_hash,
     receipt_succeeded AS success_or_fail,
     SUM(
@@ -179,7 +180,7 @@ FINAL AS (
     ) AS attached_gas,
     IFF(LAST_VALUE(r.success_or_fail) over (PARTITION BY r.tx_hash
   ORDER BY
-    r.block_id ASC) IS TRUE, 'SUCCESS', 'FAILURE') AS tx_status
+    r.block_id ASC) = TRUE, 'Success', 'Fail') AS tx_status
   FROM
     transactions AS t
     LEFT JOIN receipts AS r
