@@ -20,3 +20,4 @@ dbt_docs.sh
 .github/workflows/.dbt/.user.yml
 
 local*
+.user.yml
