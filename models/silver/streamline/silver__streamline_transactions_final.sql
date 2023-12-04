@@ -178,9 +178,18 @@ FINAL AS (
       actions.attached_gas,
       gas_used
     ) AS attached_gas,
-    IFF(LAST_VALUE(r.success_or_fail) over (PARTITION BY r.tx_hash
-  ORDER BY
-    r.block_id ASC) = TRUE, 'Success', 'Fail') AS tx_status
+    LAST_VALUE(
+      r.success_or_fail
+    ) over (
+      PARTITION BY r.tx_hash
+      ORDER BY
+        r.block_id ASC
+    ) = TRUE AS tx_succeeded,
+    IFF (
+      tx_succeeded,
+      'Success',
+      'Fail'
+    ) AS tx_status
   FROM
     transactions AS t
     LEFT JOIN receipts AS r
