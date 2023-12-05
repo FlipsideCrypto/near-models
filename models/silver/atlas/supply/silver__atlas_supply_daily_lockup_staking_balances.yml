@@ -1,0 +1,37 @@
+version: 2
+
+models:
+  - name: silver__atlas_supply_daily_lockup_staking_balances
+    description: |-
+      Calculates daily balance of staked balance on a per lockup account-basis.
+
+    columns:
+      - name: lockup_account_id
+        description: "{{ doc('lockup_account_id') }}"
+        tests:
+          - not_null
+      - name: utc_date
+        description: "{{ doc('utc_date') }}"
+        tests:
+          - not_null
+      - name: staked_balance
+        description: "{{ doc('staked_balance') }}"
+        tests:
+          - not_null
+      - name: _inserted_timestamp
+        description: "{{ doc('_inserted_timestamp') }}"
+
+      - name: atlas_daily_lockup_staking_balances_id
+        description: "{{ doc('id') }}"
+        tests:
+          - not_null
+          - unique
+
+      - name: inserted_timestamp
+        description: "{{ doc('inserted_timestamp') }}"
+
+      - name: modified_timestamp
+        description: "{{ doc('modified_timestamp') }}"
+
+      - name: invocation_id
+        description: "{{ doc('invocation_id') }}"

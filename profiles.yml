@@ -6,6 +6,7 @@ near:
       account: "{{ env_var('SF_ACCOUNT') }}"
       # User/password auth
       user: "{{ env_var('SF_USERNAME') }}"
+      authenticator: externalbrowser
       password: "{{ env_var('SF_PASSWORD') }}"
       role: "{{ env_var('SF_ROLE') }}"
       schema: "{{ env_var('SF_SCHEMA') }}"

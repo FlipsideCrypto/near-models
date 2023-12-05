@@ -1,6 +1,13 @@
 {{ config(
     materialized = 'view',
     secure = false,
+    meta={
+    'database_tags':{
+        'table': {
+            'PURPOSE': 'ATLAS'
+            }
+        }
+    },
     tags = ['atlas']
 ) }}
 

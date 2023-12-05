@@ -1,0 +1,84 @@
+version: 2
+
+models:
+  - name: silver__atlas_supply
+    description: |-
+      A table represeting calculations for the supply of NEAR across various categories, such as staked and locked.
+    columns:
+      - name: utc_date
+        description: "{{ doc('utc_date') }}"
+        tests:
+          - not_null
+      - name: total_supply
+        description: "{{ doc('total_supply') }}"
+        tests:
+          - not_null
+      - name: total_staked_supply
+        description: "{{ doc('total_staked_supply') }}"
+        tests:
+          - not_null
+      - name: total_nonstaked_supply
+        description: "{{ doc('total_nonstaked_supply') }}"
+        tests:
+          - not_null
+      - name: circulating_supply
+        description: "{{ doc('circulating_supply') }}"
+        tests:
+          - not_null
+      - name: total_locked_supply
+        description: "{{ doc('total_locked_supply') }}"
+        tests:
+          - not_null
+      - name: liquid_supply
+        description: "{{ doc('liquid_supply') }}"
+        tests:
+          - not_null
+      - name: nonliquid_supply
+        description: "{{ doc('nonliquid_supply') }}"
+        tests:
+          - not_null
+      - name: staked_locked_supply
+        description: "{{ doc('staked_locked_supply') }}"
+        tests:
+          - not_null
+      - name: non_staked_locked_supply
+        description: "{{ doc('non_staked_locked_supply') }}"
+        tests:
+          - not_null
+      - name: staked_circulating_supply
+        description: "{{ doc('staked_circulating_supply') }}"
+        tests:
+          - not_null
+      - name: nonstaked_circulating_supply
+        description: "{{ doc('nonstaked_circulating_supply') }}"
+        tests:
+          - not_null
+      - name: perc_locked_supply
+        description: "{{ doc('perc_locked_supply') }}"
+        tests:
+          - not_null
+      - name: perc_circulating_supply
+        description: "{{ doc('perc_circulating_supply') }}"
+        tests:
+          - not_null
+      - name: perc_staked_locked
+        description: "{{ doc('perc_staked_locked') }}"
+        tests:
+          - not_null
+      - name: perc_staked_circulating
+        description: "{{ doc('perc_staked_circulating') }}"
+        tests:
+          - not_null
+      - name: atlas_supply_id
+        description: "{{ doc('id') }}"
+        tests:
+          - not_null
+          - unique
+      - name: inserted_timestamp
+        description: "{{ doc('inserted_timestamp') }}"
+
+      - name: modified_timestamp
+        description: "{{ doc('modified_timestamp') }}"
+
+      - name: invocation_id
+        description: "{{ doc('invocation_id') }}"

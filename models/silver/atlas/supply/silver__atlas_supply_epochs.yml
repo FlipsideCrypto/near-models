@@ -1,0 +1,55 @@
+version: 2
+
+models:
+  - name: silver__atlas_supply_epochs
+    description: |-
+      Daily snapshot of each epoch on Near.
+
+    columns:
+      - name: epoch_id
+        description: "{{ doc('epoch_id') }}"
+        tests:
+          - not_null
+      - name: min_block_id
+        description: "{{ doc('min_block_id') }}"
+        tests:
+          - not_null
+      - name: max_block_id
+        description: "{{ doc('max_block_id') }}"
+        tests:
+          - not_null
+      - name: blocks
+        description: "{{ doc('blocks') }}"
+        tests:
+          - not_null
+      - name: block_producers
+        description: "{{ doc('block_producers') }}"
+        tests:
+          - not_null
+      - name: start_time
+        description: "{{ doc('start_time') }}"
+        tests:
+          - not_null
+      - name: end_time
+        description: "{{ doc('end_time') }}"
+        tests:
+          - not_null
+      - name: total_near_supply
+        description: "{{ doc('total_near_supply') }}"
+        tests:
+          - not_null
+      - name: epoch_num
+        description: "{{ doc('epoch_num') }}"
+        tests:
+          - not_null
+      - name: atlas_epochs_id
+        description: "{{ doc('id') }}"
+        tests:
+          - not_null
+          - unique
+      - name: inserted_timestamp  
+        description: "{{ doc('inserted_timestamp') }}"
+      - name: modified_timestamp
+        description: "{{ doc('modified_timestamp') }}"
+      - name: invocation_id
+        description: "{{ doc('invocation_id') }}"
