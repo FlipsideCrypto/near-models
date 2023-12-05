@@ -109,6 +109,13 @@ models:
                 - NUMBER
                 - FLOAT
 
+      - name: tx_succeeded
+        description: "{{ doc('tx_succeeded')}}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - BOOLEAN
+
       - name: TX_STATUS
         description: "{{ doc('tx_status')}}"
         tests:

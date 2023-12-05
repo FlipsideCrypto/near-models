@@ -152,7 +152,7 @@ receipts AS (
       ORDER BY
         tx_hash DESC
     ) AS receipt_tokens_burnt,
-    execution_outcome :outcome: tokens_burnt AS tokens_burnt
+    execution_outcome :outcome: tokens_burnt :: NUMBER AS tokens_burnt
   FROM
     int_receipts
   WHERE
