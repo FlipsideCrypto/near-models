@@ -212,6 +212,7 @@ SELECT
   _load_timestamp,
   _partition_by_block_number,
   attached_gas,
+  tx_succeeded,
   tx_status,
   _inserted_timestamp
 FROM
