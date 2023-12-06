@@ -2,7 +2,7 @@ version: 2
 
 models:
   - name: core__fact_transactions
-    description: Transactions on the NEAR blockchain.
+    description: Deprecation notice. The column `tx_status` (string, success or fail) is being replaced with `tx_succeeded` (bool). Please migrate work by 2/1/2024! Transactions on the NEAR blockchain.
 
     columns:
       - name: BLOCK_ID
@@ -108,6 +108,13 @@ models:
               column_type_list:
                 - NUMBER
                 - FLOAT
+
+      - name: TX_SUCCEEDED
+        description: "{{ doc('tx_succeeded')}}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - BOOLEAN
 
       - name: TX_STATUS
         description: "{{ doc('tx_status')}}"

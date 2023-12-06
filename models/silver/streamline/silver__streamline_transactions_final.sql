@@ -133,15 +133,11 @@ transactions AS (
   FROM
     base_transactions
 ),
--- TODO - refactor to use the receipt_succeeded field in receipts
 receipts AS (
   SELECT
+    block_id,
     tx_hash,
-    IFF(
-      execution_outcome :outcome :status :Failure IS NOT NULL,
-      'Fail',
-      'Success'
-    ) AS success_or_fail,
+    receipt_succeeded AS success_or_fail,
     SUM(
       gas_burnt
     ) over (
@@ -155,9 +151,12 @@ receipts AS (
       PARTITION BY tx_hash
       ORDER BY
         tx_hash DESC
-    ) AS receipt_tokens_burnt
+    ) AS receipt_tokens_burnt,
+    execution_outcome :outcome: tokens_burnt :: NUMBER AS tokens_burnt
   FROM
     int_receipts
+  WHERE
+    tokens_burnt != '0'
 ),
 FINAL AS (
   SELECT
@@ -184,7 +183,12 @@ FINAL AS (
     ) over (
       PARTITION BY r.tx_hash
       ORDER BY
-        r.success_or_fail DESC
+        r.block_id ASC
+    ) = TRUE AS tx_succeeded,
+    IFF (
+      tx_succeeded,
+      'Success',
+      'Fail'
     ) AS tx_status
   FROM
     transactions AS t
