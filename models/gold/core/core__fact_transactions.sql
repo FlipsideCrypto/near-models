@@ -24,7 +24,7 @@ SELECT
     gas_used,
     transaction_fee,
     attached_gas,
-    tx_succeeded,
+    tx_status AS tx_succeeded,
     tx_status
 FROM
     transactions
