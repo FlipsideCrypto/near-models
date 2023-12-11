@@ -1,13 +1,7 @@
 {{ config(
     materialized = 'view',
     secure = false,
-    meta={
-    'database_tags':{
-        'table': {
-            'PURPOSE': 'PRICE'
-            }
-        }
-    },
+    meta ={ 'database_tags':{ 'table':{ 'PURPOSE': 'PRICE' }}},
     tags = ['core', 'price']
 ) }}
 
@@ -20,17 +14,19 @@ WITH oracle_prices AS (
         token_contract,
         raw_price,
         price_usd,
-        source
+        source,
+        COALESCE(
+            prices_oracle_id,
+            {{ dbt_utils.generate_surrogate_key(
+                ['block_id', 'token_contract']
+            ) }}
+        ) AS fact_prices_id,
+        inserted_timestamp,
+        modified_timestamp
     FROM
         {{ ref('silver__prices_oracle_s3') }}
-),
-FINAL AS (
-    SELECT
-        *
-    FROM
-        oracle_prices
 )
 SELECT
     *
 FROM
-    FINAL
+    oracle_prices

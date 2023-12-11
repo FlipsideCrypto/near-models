@@ -7,35 +7,44 @@ models:
       Cleaned and curated widget deployments on Near Social.
 
     columns:
-      - name: action_id_social
+      - name: ACTION_ID_SOCIAL
         description: "{{ doc('block_id')}}"
 
-      - name: tx_hash
+      - name: TX_HASH
         description: "{{ doc('tx_hash')}}"
 
-      - name: block_id
+      - name: BLOCK_ID
         description: "{{ doc('block_id')}}"
 
-      - name: block_timestamp
+      - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp')}}"
 
-      - name: signer_id
+      - name: SIGNER_ID
         description: "{{ doc('signer_id')}}"
 
-      - name: widget_name
+      - name: WIDGET_NAME
         description: "{{ doc('widget_name')}}"
 
-      - name: source_code
+      - name: SOURCE_CODE
         description: "{{ doc('source_code')}}"
 
-      - name: metadata
+      - name: METADATA
         description: "{{ doc('metadata')}}"
 
-      - name: branch
+      - name: BRANCH
         description: "{{ doc('branch')}}"
 
-      - name: widget_modules_used
+      - name: WIDGET_MODULES_USED
         description: "{{ doc('widget_modules_used')}}"
 
-      - name: widget_url
+      - name: WIDGET_URL
         description: "{{ doc('widget_url')}}"
+
+      - name: FACT_WIDGET_DEPLOYMENTS_ID
+        description: "{{doc('id')}}"
+
+      - name: INSERTED_TIMESTAMP
+        description: "{{doc('inserted_timestamp')}}"
+
+      - name: MODIFIED_TIMESTAMP
+        description: "{{doc('modified_timestamp')}}"

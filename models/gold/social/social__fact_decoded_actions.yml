@@ -27,3 +27,12 @@ models:
 
       - name: NODE_DATA
         description: "{{ doc('node_data')}}"
+
+      - name: FACT_DECODED_ACTIONS_ID
+        description: "{{doc('id')}}"
+
+      - name: INSERTED_TIMESTAMP
+        description: "{{doc('inserted_timestamp')}}"
+
+      - name: MODIFIED_TIMESTAMP
+        description: "{{doc('modified_timestamp')}}"

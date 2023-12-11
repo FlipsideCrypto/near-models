@@ -14,6 +14,14 @@ SELECT
     metadata,
     branch,
     widget_modules_used,
-    widget_url
+    widget_url,
+    COALESCE(
+        social_widgets_id,
+        {{ dbt_utils.generate_surrogate_key(
+            ['action_id_social']
+        ) }}
+    ) AS fact_widget_deployments_id,
+    inserted_timestamp,
+    modified_timestamp
 FROM
     {{ ref('silver_social__widgets') }}
