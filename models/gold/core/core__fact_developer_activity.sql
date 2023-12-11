@@ -17,7 +17,7 @@ SELECT
     DATA,
     provider,
     endpoint_github,
-    _COALESCE(inserted_timestamp,'2000-01-01' :: TIMESTAMP_NTZ) AS inserted_timestamp AS snapshot_timestamp,
+    _inserted_timestamp AS snapshot_timestamp,
     COALESCE(
         github_data_id,
         {{ dbt_utils.generate_surrogate_key(
