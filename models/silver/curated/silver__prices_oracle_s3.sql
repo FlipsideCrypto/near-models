@@ -1,10 +1,13 @@
 {{ config(
     materialized = 'incremental',
+    merge_exclude_columns = ["inserted_timestamp"],
     unique_key = 'block_id',
     incremental_strategy = 'delete+insert',
     cluster_by = ['block_timestamp::DATE'],
     tags = ['curated']
 ) }}
+
+{# TODO NOTE 12/11/2023 - d+i on block_id to update timestamp when it comes in. Can be improved. Block id is not properly unique. #}
 
 WITH token_labels AS (
 
@@ -85,7 +88,13 @@ FINAL AS (
         LEFT JOIN token_labels l USING (token_contract)
 )
 SELECT
-    *
+    *,
+    {{ dbt_utils.generate_surrogate_key(
+        ['block_id', 'token_contract']
+    ) }} AS prices_oracle_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
 FROM
     FINAL
 WHERE

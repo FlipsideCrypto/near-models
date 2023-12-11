@@ -33,5 +33,5 @@ models:
       - name: modified_timestamp
         description: "{{ doc('modified_timestamp') }}"
 
-      - name: invocation_id
+      - name: _invocation_id
         description: "{{ doc('invocation_id') }}"

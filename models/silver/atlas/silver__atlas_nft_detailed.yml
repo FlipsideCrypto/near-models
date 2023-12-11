@@ -57,7 +57,5 @@ columns:
     tests:
       - not_null
 
-  - name: invocation_id
+  - name: _invocation_id
     description: "{{doc('invocation_id')}}"
-    tests:
-      - not_null

@@ -44,3 +44,15 @@ models:
 
       - name: _INSERTED_TIMESTAMP
         description: "{{ doc('_inserted_timestamp')}}"
+
+      - name: actions_events_addkey_id
+        description: "{{doc('id')}}"
+
+      - name: inserted_timestamp
+        description: "{{doc('inserted_timestamp')}}"
+
+      - name: modified_timestamp
+        description: "{{doc('modified_timestamp')}}"
+
+      - name: _invocation_id
+        description: "{{doc('invocation_id')}}"

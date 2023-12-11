@@ -1,6 +1,7 @@
 {{ config(
   materialized = 'incremental',
-  incremental_strategy = 'delete+insert',
+  incremental_strategy = 'merge',
+  merge_exclude_columns = ["inserted_timestamp"],
   cluster_by = ['block_timestamp::DATE', '_inserted_timestamp::DATE'],
   unique_key = 'action_id',
   tags = ['actions', 'curated']
@@ -61,6 +62,13 @@ function_calls AS (
     decoding
 )
 SELECT
-  *
+  *,
+  {{ dbt_utils.generate_surrogate_key(
+    ['action_id']
+  ) }} AS actions_events_function_call_id,
+  SYSDATE() AS inserted_timestamp,
+  SYSDATE() AS modified_timestamp,
+  '{{ invocation_id }}' AS _invocation_id
+
 FROM
   function_calls

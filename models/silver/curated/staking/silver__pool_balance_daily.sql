@@ -82,6 +82,12 @@ SELECT
         '-',
         date_day,
         address
-    ) AS _id
+    ) AS _id,
+    {{ dbt_utils.generate_surrogate_key(
+        ['date_day', 'address']
+    ) }} AS pool_balance_daily_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
 FROM
     imputed_balance

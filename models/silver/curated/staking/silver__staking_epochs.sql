@@ -1,7 +1,8 @@
 {{ config(
     materialized = 'table',
     unique_key = '_epoch_id',
-    incremental_strategy = 'delete+insert',
+    incremental_strategy = 'merge',
+    merge_exclude_columns = ["inserted_timestamp"],
     tags = ['curated'],
     cluster_by = ['block_id']
 ) }}
@@ -57,6 +58,10 @@ FINAL AS (
         pool_events
 )
 SELECT
-    *
+    *,
+    _epoch_id AS staking_epochs_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
 FROM
     FINAL
