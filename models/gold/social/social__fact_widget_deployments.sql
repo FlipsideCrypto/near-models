@@ -21,7 +21,7 @@ SELECT
             ['action_id_social']
         ) }}
     ) AS fact_widget_deployments_id,
-    inserted_timestamp,
-    modified_timestamp
+    COALESCE(inserted_timestamp,'2000-01-01' :: TIMESTAMP_NTZ) AS inserted_timestamp,
+    COALESCE(modified_timestamp,'2000-01-01' :: TIMESTAMP_NTZ) AS modified_timestamp
 FROM
     {{ ref('silver_social__widgets') }}

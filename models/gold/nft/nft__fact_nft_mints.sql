@@ -33,8 +33,8 @@ WITH nft_mints AS (
                 ['mint_action_id']
             ) }}
         ) AS fact_nft_mints_id,
-        inserted_timestamp,
-        modified_timestamp
+        COALESCE(inserted_timestamp,'2000-01-01' :: TIMESTAMP_NTZ) AS inserted_timestamp,
+        COALESCE(modified_timestamp,'2000-01-01' :: TIMESTAMP_NTZ) AS modified_timestamp
     FROM
         {{ ref('silver__standard_nft_mint_s3') }}
 )

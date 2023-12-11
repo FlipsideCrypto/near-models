@@ -22,8 +22,8 @@ WITH staking_actions AS (
                 ['tx_hash']
             ) }}
         ) AS fact_staking_actions_id,
-        inserted_timestamp,
-        modified_timestamp
+        COALESCE(inserted_timestamp,'2000-01-01' :: TIMESTAMP_NTZ) AS inserted_timestamp,
+        COALESCE(modified_timestamp,'2000-01-01' :: TIMESTAMP_NTZ) AS modified_timestamp
     FROM
         {{ ref('silver__staking_actions_v2') }}
 )

@@ -41,8 +41,8 @@ FINAL AS (
         amount_out_raw,
         amount_out,
         dex_swaps_id,
-        inserted_timestamp,
-        modified_timestamp
+        COALESCE(inserted_timestamp,'2000-01-01' :: TIMESTAMP_NTZ) AS inserted_timestamp,
+        COALESCE(modified_timestamp,'2000-01-01' :: TIMESTAMP_NTZ) AS modified_timestamp
     FROM
         dex_swaps
     WHERE
@@ -77,7 +77,7 @@ SELECT
             ['swap_id']
         ) }}
     ) AS ez_dex_swaps_id,
-    inserted_timestamp,
-    modified_timestamp
+    COALESCE(inserted_timestamp,'2000-01-01' :: TIMESTAMP_NTZ) AS inserted_timestamp,
+    COALESCE(modified_timestamp,'2000-01-01' :: TIMESTAMP_NTZ) AS modified_timestamp
 FROM
     FINAL

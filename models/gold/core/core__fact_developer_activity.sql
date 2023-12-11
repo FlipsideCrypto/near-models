@@ -17,14 +17,14 @@ SELECT
     DATA,
     provider,
     endpoint_github,
-    _inserted_timestamp AS snapshot_timestamp,
+    _COALESCE(inserted_timestamp,'2000-01-01' :: TIMESTAMP_NTZ) AS inserted_timestamp AS snapshot_timestamp,
     COALESCE(
         github_data_id,
         {{ dbt_utils.generate_surrogate_key(
             ['_res_id']
         ) }}
     ) AS fact_developer_activity_id,
-    inserted_timestamp,
-    modified_timestamp
+    COALESCE(inserted_timestamp,'2000-01-01' :: TIMESTAMP_NTZ) AS inserted_timestamp,
+    COALESCE(modified_timestamp,'2000-01-01' :: TIMESTAMP_NTZ) AS modified_timestamp
 FROM
     github_data
