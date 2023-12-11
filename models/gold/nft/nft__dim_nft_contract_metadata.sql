@@ -16,6 +16,14 @@ SELECT
     symbol,
     base_uri,
     icon,
-    tokens
+    tokens,
+    COALESCE(
+        nft_contract_metadata_id,
+        {{ dbt_utils.generate_surrogate_key(
+            ['contract_address']
+        ) }}
+    ) AS dim_nft_contract_metadata_id,
+    inserted_timestamp,
+    modified_timestamp
 FROM
     nft_contract_metadata

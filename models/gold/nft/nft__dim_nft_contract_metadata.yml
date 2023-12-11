@@ -23,3 +23,12 @@ models:
 
       - name: TOKENS
         description: "{{ doc('tokens')}}"
+
+      - name: DIM_NFT_CONTRACT_METADATA_ID
+        description: "{{doc('id')}}"
+
+      - name: INSERTED_TIMESTAMP
+        description: "{{doc('inserted_timestamp')}}"
+
+      - name: MODIFIED_TIMESTAMP
+        description: "{{doc('modified_timestamp')}}"

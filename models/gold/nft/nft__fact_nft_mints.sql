@@ -1,12 +1,6 @@
 {{ config(
     materialized = 'view',
-    meta={
-    'database_tags':{
-        'table': {
-            'PURPOSE': 'NFT'
-            }
-        }
-    },
+    meta ={ 'database_tags':{ 'table':{ 'PURPOSE': 'NFT' }}},
     tags = ['core', 'nft']
 ) }}
 
@@ -31,7 +25,16 @@ WITH nft_mints AS (
         gas_burnt,
         transaction_fee,
         implied_price,
-        tx_status
+        tx_status,
+        mint_action_id,
+        COALESCE(
+            standard_nft_mint_id,
+            {{ dbt_utils.generate_surrogate_key(
+                ['mint_action_id']
+            ) }}
+        ) AS fact_nft_mints_id,
+        inserted_timestamp,
+        modified_timestamp
     FROM
         {{ ref('silver__standard_nft_mint_s3') }}
 )

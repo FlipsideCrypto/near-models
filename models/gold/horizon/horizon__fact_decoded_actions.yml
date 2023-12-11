@@ -7,38 +7,47 @@ models:
       Decoded FunctionCall events for receipts where the contract nearhorizon.near was called.
 
     columns:
-      - name: action_id_horizon
+      - name: ACTION_ID_HORIZON
         description: "{{ doc('action_id')}}"
 
-      - name: tx_hash
-        description: "{{ doc('tx_hash')}}"
-
-      - name: receipt_object_id
+      - name: RECEIPT_OBJECT_ID
         description: "{{ doc('receipt_object_id')}}"
 
-      - name: block_id
+      - name: TX_HASH
+        description: "{{ doc('tx_hash')}}"
+
+      - name: BLOCK_ID
         description: "{{ doc('block_id')}}"
 
-      - name: block_timestamp
+      - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp')}}"
 
-      - name: method_name
+      - name: METHOD_NAME
         description: "{{ doc('method_name')}}"
 
-      - name: args
+      - name: ARGS
         description: "{{ doc('args')}}"
 
-      - name: deposit
+      - name: DEPOSIT
         description: "{{ doc('deposit')}}"
 
-      - name: attached_gas
+      - name: ATTACHED_GAS
         description: "{{ doc('attached_gas')}}"
 
-      - name: receiver_id
+      - name: RECEIVER_ID
         description: "{{ doc('receiver_id')}}"
       
-      - name: signer_id
+      - name: SIGNER_ID
         description: "{{ doc('signer_id')}}"
 
-      - name: receipt_succeeded
+      - name: RECEIPT_SUCCEEDED
         description: "{{ doc('receipt_succeeded')}}"
+
+      - name: FACT_DECODED_ACTIONS_ID
+        description: "{{doc('id')}}"
+
+      - name: INSERTED_TIMESTAMP
+        description: "{{doc('inserted_timestamp')}}"
+
+      - name: MODIFIED_TIMESTAMP
+        description: "{{doc('modified_timestamp')}}"
