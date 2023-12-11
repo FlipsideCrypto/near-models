@@ -61,3 +61,12 @@ models:
                 - VARCHAR
           - dbt_expectations.expect_column_values_to_be_in_set:
               value_set: ["Create", "Update"]
+
+      - name: DIM_STAKING_POOLS_ID
+        description: "{{doc('id')}}"
+
+      - name: INSERTED_TIMESTAMP
+        description: "{{doc('inserted_timestamp')}}"
+
+      - name: MODIFIED_TIMESTAMP
+        description: "{{doc('modified_timestamp')}}"

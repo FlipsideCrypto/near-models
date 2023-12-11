@@ -14,3 +14,12 @@ models:
 
       - name: BALANCE
         description: "{{ doc('balance') }}"
+
+      - name: FACT_STAKING_POOL_DAILY_BALANCES_ID
+        description: "{{doc('id')}}"
+
+      - name: INSERTED_TIMESTAMP
+        description: "{{doc('inserted_timestamp')}}"
+
+      - name: MODIFIED_TIMESTAMP
+        description: "{{doc('modified_timestamp')}}"

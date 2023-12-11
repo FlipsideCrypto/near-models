@@ -1,17 +1,12 @@
 {{ config(
     materialized = 'view',
     secure = false,
-    meta={
-    'database_tags':{
-        'table': {
-            'PURPOSE': 'DEFI, SWAPS'
-            }
-        }
-    },
+    meta ={ 'database_tags':{ 'table':{ 'PURPOSE': 'DEFI, SWAPS' }}},
     tags = ['core']
 ) }}
 
 WITH dex_swaps AS (
+
     SELECT
         *
     FROM
@@ -44,7 +39,10 @@ FINAL AS (
         token_out_symbol AS token_out,
         token_out AS token_out_contract,
         amount_out_raw,
-        amount_out
+        amount_out,
+        dex_swaps_id,
+        inserted_timestamp,
+        modified_timestamp
     FROM
         dex_swaps
     WHERE
@@ -72,6 +70,14 @@ SELECT
     token_out,
     token_out_contract,
     amount_out_raw,
-    amount_out
+    amount_out,
+    COALESCE(
+        dex_swaps_id,
+        {{ dbt_utils.generate_surrogate_key(
+            ['swap_id']
+        ) }}
+    ) AS ez_dex_swaps_id,
+    inserted_timestamp,
+    modified_timestamp
 FROM
     FINAL

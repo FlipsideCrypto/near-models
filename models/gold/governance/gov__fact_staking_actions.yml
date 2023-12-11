@@ -31,3 +31,12 @@ models:
 
       - name: AMOUNT
         description: "{{ doc('amount') }}"
+
+      - name: FACT_STAKING_ACTIONS_ID
+        description: "{{doc('id')}}"
+
+      - name: INSERTED_TIMESTAMP
+        description: "{{doc('inserted_timestamp')}}"
+
+      - name: MODIFIED_TIMESTAMP
+        description: "{{doc('modified_timestamp')}}"

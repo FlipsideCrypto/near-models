@@ -2,13 +2,7 @@
     materialized = 'view',
     secure = false,
     tags = ['core', 'governance'],
-    meta={
-        'database_tags':{
-            'table': {
-                'PURPOSE': 'STAKING, GOVERNANCE'
-            }
-        }
-    }
+    meta ={ 'database_tags':{ 'table':{ 'PURPOSE': 'STAKING, GOVERNANCE' }}}
 ) }}
 
 WITH staking_actions AS (
@@ -21,7 +15,15 @@ WITH staking_actions AS (
         receiver_id AS address,
         signer_id,
         action,
-        amount_adj AS amount
+        amount_adj AS amount,
+        COALESCE(
+            staking_actions_v2_id,
+            {{ dbt_utils.generate_surrogate_key(
+                ['tx_hash']
+            ) }}
+        ) AS fact_staking_actions_id,
+        inserted_timestamp,
+        modified_timestamp
     FROM
         {{ ref('silver__staking_actions_v2') }}
 )

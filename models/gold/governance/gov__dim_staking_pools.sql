@@ -2,13 +2,7 @@
     materialized = 'view',
     secure = false,
     tags = ['core', 'governance'],
-    meta={
-        'database_tags':{
-            'table': {
-                'PURPOSE': 'STAKING, GOVERNANCE'
-            }
-        }
-    }
+    meta ={ 'database_tags':{ 'table':{ 'PURPOSE': 'STAKING, GOVERNANCE' }}}
 ) }}
 
 WITH staking_pools AS (
@@ -24,6 +18,14 @@ SELECT
     owner,
     address,
     reward_fee_fraction,
-    tx_type
+    tx_type,
+    COALESCE(
+        staking_pools_id,
+        {{ dbt_utils.generate_surrogate_key(
+            ['tx_hash']
+        ) }}
+    ) AS dim_staking_pools_id,
+    inserted_timestamp,
+    modified_timestamp
 FROM
     staking_pools
