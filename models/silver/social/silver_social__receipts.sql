@@ -1,5 +1,6 @@
 {{ config(
     materialized = 'incremental',
+    merge_exclude_columns = ["inserted_timestamp"],
     unique_key = 'receipt_object_id',
     cluster_by = ['_inserted_timestamp::date', '_partition_by_block_number'],
     tags = ['curated', 'social']
@@ -39,6 +40,12 @@ WITH all_social_receipts AS (
         metadata,
         _load_timestamp,
         _partition_by_block_number,
-        _inserted_timestamp
+        _inserted_timestamp,
+        {{ dbt_utils.generate_surrogate_key(
+            ['receipt_object_id']
+        ) }} AS social_receipts_id,
+        SYSDATE() AS inserted_timestamp,
+        SYSDATE() AS modified_timestamp,
+        '{{ invocation_id }}' AS _invocation_id
     FROM
         all_social_receipts

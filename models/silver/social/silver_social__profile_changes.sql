@@ -1,5 +1,6 @@
 {{ config(
     materialized = 'incremental',
+    merge_exclude_columns = ["inserted_timestamp"],
     unique_key = 'action_id_profile',
     cluster_by = ['block_timestamp::date', 'signer_id'],
     tags = ['curated', 'social']
@@ -52,6 +53,12 @@ SELECT
     profile_data,
     _load_timestamp,
     _partition_by_block_number,
-    _inserted_timestamp
+    _inserted_timestamp,
+    {{ dbt_utils.generate_surrogate_key(
+        ['action_id_profile']
+    ) }} AS social_profile_changes_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
 FROM
     flatten_profile_json

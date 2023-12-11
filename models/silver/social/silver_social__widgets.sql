@@ -1,5 +1,6 @@
 {{ config(
     materialized = 'incremental',
+    merge_exclude_columns = ["inserted_timestamp"],
     unique_key = 'action_id_social',
     cluster_by = ['_inserted_timestamp::date', '_partition_by_block_number'],
     tags = ['curated', 'social']
@@ -28,7 +29,9 @@ widgets AS (
         signer_id,
         node_data,
         object_keys(TRY_PARSE_JSON(node_data)) [0] :: STRING AS widget_name,
-        try_parse_json(node_data [widget_name]) AS source_data,
+        TRY_PARSE_JSON(
+            node_data [widget_name]
+        ) AS source_data,
         CONCAT(
             'https://near.social/#/',
             signer_id,
@@ -59,10 +62,16 @@ SELECT
         source_data :widgetModulesUsed
     ) AS widget_modules_used,
     widget_url,
-    source_data as _source_data,
-    node_data as _node_data,
+    source_data AS _source_data,
+    node_data AS _node_data,
     _partition_by_block_number,
     _load_timestamp,
-    _inserted_timestamp
+    _inserted_timestamp,
+    {{ dbt_utils.generate_surrogate_key(
+        ['action_id_social']
+    ) }} AS social_widgets_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
 FROM
     widgets

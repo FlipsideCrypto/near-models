@@ -7,6 +7,8 @@
   tags = ['actions', 'curated']
 ) }}
 
+{# NOTE - used downstream in Social models, no longer a gold view on just this #}
+
 WITH action_events AS (
 
   SELECT
