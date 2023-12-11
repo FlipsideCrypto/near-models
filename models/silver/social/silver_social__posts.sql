@@ -1,5 +1,6 @@
 {{ config(
     materialized = 'incremental',
+    merge_exclude_columns = ["inserted_timestamp"],
     unique_key = 'action_id_social',
     cluster_by = ['_inserted_timestamp::date', '_partition_by_block_number'],
     tags = ['curated', 'social']
@@ -53,6 +54,12 @@ SELECT
     post_image,
     _partition_by_block_number,
     _load_timestamp,
-    _inserted_timestamp
+    _inserted_timestamp,
+    {{ dbt_utils.generate_surrogate_key(
+        ['action_id_social']
+    ) }} AS social_posts_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
 FROM
     posts

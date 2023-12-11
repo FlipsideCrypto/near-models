@@ -1,5 +1,6 @@
 {{ config(
     materialized = 'incremental',
+    merge_exclude_columns = ["inserted_timestamp"],
     unique_key = 'address',
     cluster_by = 'address',
     tags = ['labels']
@@ -38,6 +39,12 @@ SELECT
     label_type AS l1_label,
     label_subtype AS l2_label,
     _load_timestamp,
-    _inserted_timestamp
+    _inserted_timestamp,
+    {{ dbt_utils.generate_surrogate_key(
+        ['address']
+    ) }} AS address_labels_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
 FROM
     address_labels

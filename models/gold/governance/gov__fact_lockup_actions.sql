@@ -2,13 +2,7 @@
     materialized = 'view',
     secure = false,
     tags = ['core', 'governance'],
-    meta={
-        'database_tags':{
-            'table': {
-                'PURPOSE': 'STAKING, GOVERNANCE'
-            }
-        }
-    }
+    meta ={ 'database_tags':{ 'table':{ 'PURPOSE': 'STAKING, GOVERNANCE' }}}
 ) }}
 
 WITH lockup_actions AS (
@@ -25,7 +19,15 @@ WITH lockup_actions AS (
         lockup_timestamp_ntz,
         release_duration,
         vesting_schedule,
-        transfers_information
+        transfers_information,
+        COALESCE(
+            lockup_actions_id,
+            {{ dbt_utils.generate_surrogate_key(
+                ['tx_hash']
+            ) }}
+        ) AS fact_lockup_actions_id,
+        COALESCE(inserted_timestamp, _inserted_timestamp, '2000-01-01' :: TIMESTAMP_NTZ) AS inserted_timestamp,
+        COALESCE(modified_timestamp, _inserted_timestamp, '2000-01-01' :: TIMESTAMP_NTZ) AS modified_timestamp
     FROM
         {{ ref('silver__lockup_actions') }}
 )

@@ -1,5 +1,6 @@
 {{ config(
     materialized = 'incremental',
+    merge_exclude_columns = ["inserted_timestamp"],
     unique_key = 'action_id',
     cluster_by = ['block_timestamp::date'],
     tags = ['curated', 'social']
@@ -122,6 +123,12 @@ FINAL AS (
         ON receipt_id_from_action = r.receipt_object_id
 )
 SELECT
-    *
+    *,
+    {{ dbt_utils.generate_surrogate_key(
+        ['action_id']
+    ) }} AS social_addkey_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
 FROM
     FINAL

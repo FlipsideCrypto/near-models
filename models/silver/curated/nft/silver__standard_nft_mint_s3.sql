@@ -2,7 +2,8 @@
     materialized = "incremental",
     cluster_by = ["block_timestamp::DATE"],
     unique_key = "mint_action_id",
-    incremental_strategy = "delete+insert",
+    incremental_strategy = "merge",
+    merge_exclude_columns = ["inserted_timestamp"],
     tags = ['curated']
 ) }}
 
@@ -50,7 +51,11 @@ function_call AS (
 standard_logs AS (
     SELECT
         action_id AS logs_id,
-        concat_ws('-', receipt_object_id, '0') as action_id,
+        concat_ws(
+            '-',
+            receipt_object_id,
+            '0'
+        ) AS action_id,
         tx_hash,
         receipt_object_id,
         block_id,
@@ -62,7 +67,9 @@ standard_logs AS (
         _PARTITION_BY_BLOCK_NUMBER,
         _inserted_timestamp,
         TRY_PARSE_JSON(clean_log) AS clean_log,
-        COUNT(*) OVER (PARTITION BY tx_hash) AS log_counter
+        COUNT(*) over (
+            PARTITION BY tx_hash
+        ) AS log_counter
     FROM
         logs
     WHERE
@@ -81,7 +88,7 @@ nft_events AS (
     FROM
         standard_logs
         LEFT JOIN function_call
-    ON standard_logs.ACTION_ID = function_call.ACTION_ID
+        ON standard_logs.action_id = function_call.action_id
     WHERE
         STANDARD = 'nep171' -- nep171 nft STANDARD, version  nep245 IS multitoken STANDARD,  nep141 IS fungible token STANDARD
         AND event = 'nft_mint'
@@ -146,9 +153,18 @@ mint_events AS (
         concat_ws(
             '-',
             action_id,
-            COALESCE(batch_index, '0'),
-            COALESCE(token_index, '0'),
-            COALESCE(token_id, '0')
+            COALESCE(
+                batch_index,
+                '0'
+            ),
+            COALESCE(
+                token_index,
+                '0'
+            ),
+            COALESCE(
+                token_id,
+                '0'
+            )
         ) AS mint_action_id,
         log_counter
     FROM
@@ -173,36 +189,51 @@ mint_tx AS (
             FROM
                 mint_events
         )
+),
+FINAL AS (
+    SELECT
+        mint_events.action_id,
+        mint_events.mint_action_id,
+        mint_events.tx_hash,
+        mint_events.block_id,
+        mint_events.block_timestamp,
+        mint_events.method_name,
+        mint_events.args_json AS args,
+        mint_events.deposit,
+        mint_tx.tx_signer AS tx_signer,
+        mint_tx.tx_receiver AS tx_receiver,
+        mint_tx.tx_status AS tx_status,
+        mint_events.receipt_object_id,
+        mint_events.receiver_id,
+        mint_events.signer_id,
+        mint_events.owner_id,
+        mint_events.token_id,
+        mint_events.memo,
+        mint_events.owner_per_tx,
+        mint_events.mint_per_tx,
+        mint_events.gas_burnt,
+        -- gas burnt during receipt processing
+        mint_tx.transaction_fee,
+        -- gas burnt during entire transaction processing
+        mint_events._LOAD_TIMESTAMP,
+        mint_events._PARTITION_BY_BLOCK_NUMBER,
+        mint_events.log_counter,
+        (
+            mint_events.deposit / mint_events.log_counter
+        ) :: FLOAT AS implied_price,
+        mint_events._inserted_timestamp
+    FROM
+        mint_events
+        LEFT JOIN mint_tx
+        ON mint_events.tx_hash = mint_tx.tx_hash
 )
-
 SELECT
-    mint_events.action_id,
-    mint_events.mint_action_id,
-    mint_events.tx_hash,
-    mint_events.block_id,
-    mint_events.block_timestamp,
-    mint_events.method_name,
-    mint_events.args_json as args,
-    mint_events.deposit,
-    mint_tx.tx_signer AS tx_signer,
-    mint_tx.tx_receiver AS tx_receiver,
-    mint_tx.tx_status AS tx_status,
-    mint_events.receipt_object_id,
-    mint_events.receiver_id,
-    mint_events.signer_id,
-    mint_events.owner_id,
-    mint_events.token_id,
-    mint_events.memo,
-    mint_events.owner_per_tx,
-    mint_events.mint_per_tx,
-    mint_events.gas_burnt, -- gas burnt during receipt processing
-    mint_tx.transaction_fee, -- gas burnt during entire transaction processing
-    mint_events._LOAD_TIMESTAMP,
-    mint_events._PARTITION_BY_BLOCK_NUMBER,
-    mint_events.log_counter,
-    (mint_events.deposit / mint_events.log_counter) :: FLOAT as implied_price,
-    mint_events._inserted_timestamp
+    *,
+    {{ dbt_utils.generate_surrogate_key(
+        ['mint_action_id']
+    ) }} AS standard_nft_mint_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
 FROM
-    mint_events
-    LEFT JOIN mint_tx
-    ON mint_events.tx_hash = mint_tx.tx_hash
+    FINAL

@@ -1,6 +1,7 @@
 {{ config(
     materialized = 'incremental',
-    incremental_strategy = 'delete+insert',
+    incremental_strategy = 'merge',
+    merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = ['block_timestamp::DATE', '_inserted_timestamp::DATE'],
     unique_key = 'action_id',
     tags = ['actions', 'curated']
@@ -83,6 +84,12 @@ SELECT
     action_data,
     _load_timestamp,
     _partition_by_block_number,
-    _inserted_timestamp
+    _inserted_timestamp,
+    {{ dbt_utils.generate_surrogate_key(
+        ['receipt_object_id', 'action_index']
+    ) }} AS actions_events_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
 FROM
     FINAL

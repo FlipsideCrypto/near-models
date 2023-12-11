@@ -3,6 +3,7 @@
     cluster_by = ['block_timestamp'],
     unique_key = 'tx_hash',
     incremental_strategy = 'merge',
+    merge_exclude_columns = ["inserted_timestamp"],
     tags = ['curated']
 ) }}
 
@@ -51,8 +52,7 @@ function_calls AS (
             'create_staking_pool',
             'update_reward_fee_fraction',
             'new'
-        ) 
-        {% if var("MANUAL_FIX") %}
+        ) {% if var("MANUAL_FIX") %}
             AND {{ partition_load_manual('no_buffer') }}
         {% else %}
             AND {{ incremental_load_filter('_inserted_timestamp') }}
@@ -127,14 +127,20 @@ FINAL AS (
         *
     FROM
         new_pools
-    UNION ALL 
+    UNION ALL
     SELECT
         *
     FROM
         updated_pools
 )
 SELECT
-    *
+    *,
+    {{ dbt_utils.generate_surrogate_key(
+        ['tx_hash']
+    ) }} AS staking_pools_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
 FROM
     FINAL
 WHERE

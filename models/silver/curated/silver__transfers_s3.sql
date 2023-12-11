@@ -1,8 +1,9 @@
 {{ config(
   materialized = 'incremental',
+  merge_exclude_columns = ["inserted_timestamp"],
   cluster_by = ['block_timestamp::DATE'],
   unique_key = 'action_id',
-  incremental_strategy = 'delete+insert',
+  incremental_strategy = 'merge',
   tags = ['curated']
 ) }}
 
@@ -18,8 +19,7 @@ WITH action_events AS(
   FROM
     {{ ref('silver__actions_events_s3') }}
   WHERE
-    action_name = 'Transfer' 
-    {% if var("MANUAL_FIX") %}
+    action_name = 'Transfer' {% if var("MANUAL_FIX") %}
       AND {{ partition_load_manual('no_buffer') }}
     {% else %}
       AND {{ incremental_load_filter("_inserted_timestamp") }}
@@ -110,6 +110,12 @@ FINAL AS (
     actions
 )
 SELECT
-  *
+  *,
+  {{ dbt_utils.generate_surrogate_key(
+    ['action_id']
+  ) }} AS transfers_id,
+  SYSDATE() AS inserted_timestamp,
+  SYSDATE() AS modified_timestamp,
+  '{{ invocation_id }}' AS _invocation_id
 FROM
   FINAL

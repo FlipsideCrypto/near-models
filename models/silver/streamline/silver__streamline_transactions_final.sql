@@ -214,7 +214,13 @@ SELECT
   attached_gas,
   tx_succeeded,
   tx_status,
-  _inserted_timestamp
+  _inserted_timestamp,
+  {{ dbt_utils.generate_surrogate_key(
+    ['tx_hash']
+  ) }} AS streamline_transactions_final_id,
+  SYSDATE() AS inserted_timestamp,
+  SYSDATE() AS modified_timestamp,
+  '{{ invocation_id }}' AS _invocation_id
 FROM
   FINAL qualify ROW_NUMBER() over (
     PARTITION BY tx_hash

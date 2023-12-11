@@ -44,3 +44,15 @@ models:
 
       - name: _REQUEST_TIMESTAMP
         description: "{{ doc('_request_timestamp')}}"
+
+      - name: NFT_SERIES_METADATA_ID
+        description: "{{doc('id')}}"
+
+      - name: INSERTED_TIMESTAMP
+        description: "{{doc('inserted_timestamp')}}"
+
+      - name: MODIFIED_TIMESTAMP
+        description: "{{doc('modified_timestamp')}}"
+
+      - name: _INVOCATION_ID
+        description: "{{doc('invocation_id')}}"

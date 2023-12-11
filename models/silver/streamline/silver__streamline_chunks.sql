@@ -1,6 +1,7 @@
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'merge',
+    merge_exclude_columns = ["inserted_timestamp"],
     unique_key = 'chunk_hash',
     cluster_by = ['_inserted_timestamp::date'],
     tags = ['load', 'load_shards']
@@ -35,6 +36,12 @@ FINAL AS (
         shards
 )
 SELECT
-    *
+    *,
+    {{ dbt_utils.generate_surrogate_key(
+        ['chunk_hash']
+    ) }} AS streamline_chunks_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
 FROM
     FINAL

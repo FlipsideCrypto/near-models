@@ -42,3 +42,12 @@ models:
                 - VARCHAR
                 - OBJECT
                 - ARRAY
+
+      - name: FACT_LOGS_ID
+        description: "{{doc('id')}}"
+
+      - name: INSERTED_TIMESTAMP
+        description: "{{doc('inserted_timestamp')}}"
+
+      - name: MODIFIED_TIMESTAMP
+        description: "{{doc('modified_timestamp')}}"

@@ -1,6 +1,7 @@
 {{ config(
     materialized = 'incremental',
     incremental = 'merge',
+    merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = ['block_timestamp'],
     unique_key = 'tx_hash',
     tags = ['curated']
@@ -21,8 +22,7 @@ WITH actions_events_function_call AS (
             'stake',
             'unstake',
             'unstake_all'
-        ) 
-        {% if var("MANUAL_FIX") %}
+        ) {% if var("MANUAL_FIX") %}
             AND {{ partition_load_manual('no_buffer') }}
         {% else %}
             AND {{ incremental_load_filter('_inserted_timestamp') }}
@@ -215,6 +215,12 @@ FINAL AS (
         unstake_all_txs
 )
 SELECT
-    *
+    *,
+    {{ dbt_utils.generate_surrogate_key(
+        ['tx_hash']
+    ) }} AS staking_actions_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
 FROM
     FINAL

@@ -1,13 +1,13 @@
 {{ config(
     materialized = 'incremental',
+    merge_exclude_columns = ["inserted_timestamp"],
     unique_key = '_res_id',
     incremental_strategy = 'merge',
     cluster_by = ['_inserted_timestamp::date', 'token_contract'],
     tags = ['api', 'labels']
 ) }}
-
-{# Deprecated 9/25/2023, TODO disable via config #}
-
+{# Deprecated 9/25/2023, TODO disable via config.
+12 / 11 / 2023 note - DATA IN bronze still used IN gold VIEW.#}
 WITH nearblocks_token_api AS (
 
     SELECT
@@ -36,7 +36,13 @@ FINAL AS (
         token_data :symbol :: STRING AS symbol,
         provider,
         _inserted_timestamp,
-        _res_id
+        _res_id,
+        {{ dbt_utils.generate_surrogate_key(
+            ['_res_id']
+        ) }} AS api_nearblocks_fts_id,
+        SYSDATE() AS inserted_timestamp,
+        SYSDATE() AS modified_timestamp,
+        '{{ invocation_id }}' AS _invocation_id
     FROM
         nearblocks_token_api
 )

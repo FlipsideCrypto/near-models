@@ -1,8 +1,9 @@
 {{ config(
     materialized = "incremental",
+    merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = ["_inserted_timestamp::DATE","block_timestamp::DATE"],
     unique_key = "action_id",
-    incremental_strategy = "delete+insert",
+    incremental_strategy = "merge",
     tags = ['curated']
 ) }}
 
@@ -59,6 +60,12 @@ SELECT
     block_timestamp,
     _load_timestamp,
     _partition_by_block_number,
-    _inserted_timestamp
+    _inserted_timestamp,
+    {{ dbt_utils.generate_surrogate_key(
+        ['action_id']
+    ) }} AS logs_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
 FROM
     FINAL

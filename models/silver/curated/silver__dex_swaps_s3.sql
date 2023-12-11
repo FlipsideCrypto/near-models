@@ -1,7 +1,8 @@
 {{ config(
     materialized = "incremental",
     unique_key = "swap_id",
-    incremental_strategy = "delete+insert",
+    incremental_strategy = "merge",
+    merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = ["block_timestamp::DATE"],
     tags = ['curated']
 ) }}
@@ -23,8 +24,7 @@ WITH base_swap_calls AS (
         method_name IN (
             'swap',
             'ft_transfer_call'
-        ) 
-        {% if var("MANUAL_FIX") %}
+        ) {% if var("MANUAL_FIX") %}
             AND {{ partition_load_manual('no_buffer') }}
         {% else %}
             AND {{ incremental_load_filter('_inserted_timestamp') }}
@@ -59,7 +59,7 @@ agg_swaps AS (
                 action.index
         ) AS action_list,
         ANY_VALUE(_load_timestamp) AS _load_timestamp,
-        ANY_VALUE(_inserted_timestamp) as _inserted_timestamp
+        ANY_VALUE(_inserted_timestamp) AS _inserted_timestamp
     FROM
         base_swaps,
         LATERAL FLATTEN(
@@ -252,6 +252,12 @@ FINAL AS (
         AND log_data IS NOT NULL
 )
 SELECT
-    *
+    *,
+    {{ dbt_utils.generate_surrogate_key(
+        ['swap_id']
+    ) }} AS dex_swaps_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
 FROM
     FINAL

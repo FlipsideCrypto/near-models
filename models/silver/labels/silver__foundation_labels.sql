@@ -21,6 +21,12 @@ SELECT
     category,
     wallet_address,
     enabled,
-    'Near Foundation' AS creator
+    'Near Foundation' AS creator,
+    {{ dbt_utils.generate_surrogate_key(
+        ['wallet_address']
+    ) }} AS foundation_labels_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
 FROM
     labels

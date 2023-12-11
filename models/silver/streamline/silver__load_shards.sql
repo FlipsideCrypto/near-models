@@ -12,7 +12,7 @@ WITH {% if var("MANUAL_FIX") %}
 
         SELECT
             _partition_by_block_number,
-            bblock_id as block_id
+            bblock_id AS block_id
         FROM
             {{ target.database }}.tests.chunk_gaps
     ),
@@ -69,6 +69,12 @@ shards_json AS (
     {% endif %}
 )
 SELECT
-    *
+    *,
+    {{ dbt_utils.generate_surrogate_key(
+        ['shard_id']
+    ) }} AS load_shards_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
 FROM
     shards_json

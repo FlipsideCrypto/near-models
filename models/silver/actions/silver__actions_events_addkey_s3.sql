@@ -1,10 +1,13 @@
 {{ config(
   materialized = 'incremental',
-  incremental_strategy = 'delete+insert',
+  incremental_strategy = 'merge',
+  merge_exclude_columns = ["inserted_timestamp"],
   unique_key = 'action_id',
   cluster_by = ['block_timestamp::DATE', '_inserted_timestamp::DATE'],
   tags = ['actions', 'curated']
 ) }}
+
+{# NOTE - used downstream in Social models, no longer a gold view on just this #}
 
 WITH action_events AS (
 
@@ -13,8 +16,7 @@ WITH action_events AS (
   FROM
     {{ ref('silver__actions_events_s3') }}
   WHERE
-    action_name = 'AddKey' 
-    {% if var("MANUAL_FIX") %}
+    action_name = 'AddKey' {% if var("MANUAL_FIX") %}
       AND {{ partition_load_manual('no_buffer') }}
     {% else %}
       AND {{ incremental_load_filter('_inserted_timestamp') }}
@@ -39,6 +41,12 @@ addkey_events AS (
     action_events
 )
 SELECT
-  *
+  *,
+  {{ dbt_utils.generate_surrogate_key(
+    ['action_id']
+  ) }} AS actions_events_addkey_id,
+  SYSDATE() AS inserted_timestamp,
+  SYSDATE() AS modified_timestamp,
+  '{{ invocation_id }}' AS _invocation_id
 FROM
   addkey_events

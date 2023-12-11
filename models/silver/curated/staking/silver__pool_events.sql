@@ -1,7 +1,6 @@
 {{ config(
     materialized = 'table',
     unique_key = 'tx_hash',
-    incremental_strategy = 'delete+insert',
     tags = ['curated'],
     cluster_by = ['_partition_by_block_number', 'block_timestamp::date']
 ) }}
@@ -42,6 +41,12 @@ FINAL AS (
         AND receiver_id ILIKE '%.pool%.near'
 )
 SELECT
-    *
+    *,
+    {{ dbt_utils.generate_surrogate_key(
+        ['tx_hash']
+    ) }} AS pool_events_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
 FROM
     FINAL

@@ -1,7 +1,8 @@
 {{ config(
     materialized = 'incremental',
+    merge_exclude_columns = ["inserted_timestamp"],
     unique_key = 'metadata_id',
-    incremental_strategy = 'delete+insert',
+    incremental_strategy = 'merge',
     tags = ['livequery', 'pagoda']
 ) }}
 
@@ -36,7 +37,17 @@ FINAL AS (
         livequery_response
 )
 SELECT
-    *
+    *,
+    {{ dbt_utils.generate_surrogate_key(
+        ['metadata_id']
+    ) }} AS nft_series_metadata_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
 FROM
-    FINAL
-qualify row_number() over (partition by metadata_id order by _request_timestamp desc) = 1
+    FINAL 
+    qualify ROW_NUMBER() over (
+        PARTITION BY metadata_id
+        ORDER BY
+            _request_timestamp DESC
+    ) = 1

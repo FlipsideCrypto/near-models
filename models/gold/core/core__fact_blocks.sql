@@ -44,7 +44,14 @@ SELECT
     header :signature :: STRING AS signature,
     total_supply,
     validator_proposals,
-    validator_reward
+    validator_reward,
+    COALESCE(
+        streamline_blocks_id,
+        {{ dbt_utils.generate_surrogate_key(
+            ['block_id']
+        ) }}
+    ) AS fact_blocks_id,
+    COALESCE(inserted_timestamp, _inserted_timestamp, '2000-01-01' :: TIMESTAMP_NTZ) AS inserted_timestamp,
+    COALESCE(modified_timestamp, _inserted_timestamp, '2000-01-01' :: TIMESTAMP_NTZ) AS modified_timestamp
 FROM
     blocks
-
