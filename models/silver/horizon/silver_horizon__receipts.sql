@@ -1,5 +1,6 @@
 {{ config(
     materialized = 'incremental',
+    merge_exclude_columns = ["inserted_timestamp"],
     unique_key = 'receipt_object_id',
     cluster_by = ['_inserted_timestamp::date', 'block_timestamp::DATE'],
     tags = ['curated', 'horizon']
@@ -17,10 +18,8 @@ WITH all_horizon_receipts AS (
         {% else %}
             {{ incremental_load_filter('_inserted_timestamp') }}
         {% endif %}
-        AND (
-            LOWER(signer_id) = 'nearhorizon.near'
-            OR LOWER(receiver_id) = 'nearhorizon.near'
-        )
+        AND (LOWER(signer_id) = 'nearhorizon.near'
+        OR LOWER(receiver_id) = 'nearhorizon.near')
         AND _partition_by_block_number >= 86000000)
     SELECT
         tx_hash,
@@ -43,6 +42,12 @@ WITH all_horizon_receipts AS (
         metadata,
         _load_timestamp,
         _partition_by_block_number,
-        _inserted_timestamp
+        _inserted_timestamp,
+        {{ dbt_utils.generate_surrogate_key(
+            ['receipt_object_id']
+        ) }} AS horizon_receipts_id,
+        SYSDATE() AS inserted_timestamp,
+        SYSDATE() AS modified_timestamp,
+        '{{ invocation_id }}' AS _invocation_id
     FROM
         all_horizon_receipts

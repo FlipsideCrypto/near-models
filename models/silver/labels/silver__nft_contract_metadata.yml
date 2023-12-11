@@ -50,3 +50,15 @@ models:
 
       - name: _RES_ID
         description: "{{ doc('_res_id')}}"
+
+      - name: NFT_CONTRACT_METADATA_ID
+        description: "{{doc('id')}}"
+
+      - name: INSERTED_TIMESTAMP
+        description: "{{doc('inserted_timestamp')}}"
+
+      - name: MODIFIED_TIMESTAMP
+        description: "{{doc('modified_timestamp')}}"
+
+      - name: _INVOCATION_ID
+        description: "{{doc('invocation_id')}}"

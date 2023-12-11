@@ -1,7 +1,8 @@
 {{ config(
     materialized = 'incremental',
+    merge_exclude_columns = ["inserted_timestamp"],
     unique_key = 'contract_address',
-    incremental_strategy = 'delete+insert',
+    incremental_strategy = 'merge',
     tags = ['livequery', 'nearblocks'],
 ) }}
 
@@ -30,15 +31,40 @@ flatten_results AS (
         VALUE :name :: STRING AS NAME,
         VALUE :symbol :: STRING AS symbol,
         VALUE :tokens :: INT AS tokens,
-        VALUE as data,
+        VALUE AS DATA,
         _inserted_timestamp,
         _res_id
     FROM
         livequery_results,
-        LATERAL FLATTEN(input => DATA :data :tokens)
+        LATERAL FLATTEN(
+            input => DATA :data :tokens
+        )
+),
+FINAL AS (
+    SELECT
+        base_uri,
+        contract_address,
+        icon,
+        NAME,
+        symbol,
+        tokens,
+        DATA,
+        _inserted_timestamp,
+        _res_id
+    FROM
+        flatten_results qualify ROW_NUMBER() over (
+            PARTITION BY contract_address
+            ORDER BY
+                _inserted_timestamp DESC
+        ) = 1
 )
 SELECT
-    *
+    *,
+    {{ dbt_utils.generate_surrogate_key(
+        ['contract_address']
+    ) }} AS nft_contract_metadata_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
 FROM
-    flatten_results
-qualify row_number() over (partition by contract_address order by _inserted_timestamp desc) = 1
+    FINAL
