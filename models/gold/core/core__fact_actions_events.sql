@@ -21,6 +21,14 @@ SELECT
     block_timestamp,
     action_index,
     action_name,
-    action_data
+    action_data,
+    COALESCE(
+        actions_events_id,
+        {{ dbt_utils.generate_surrogate_key(
+            ['receipt_object_id', 'action_index']
+        ) }}
+    ) AS fact_actions_events_id,
+    inserted_timestamp,
+    modified_timestamp
 FROM
     actions

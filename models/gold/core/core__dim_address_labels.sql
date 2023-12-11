@@ -16,7 +16,15 @@ WITH flipside_labels AS (
         label_subtype,
         l1_label,
         l2_label,
-        creator
+        creator,
+        COALESCE(
+            address_labels_id,
+            {{ dbt_utils.generate_surrogate_key(
+                ['address']
+            ) }}
+        ) AS dim_address_labels_id,
+        inserted_timestamp,
+        modified_timestamp
     FROM
         {{ ref('silver__address_labels') }}
 )

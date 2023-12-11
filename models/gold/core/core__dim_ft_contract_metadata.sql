@@ -15,6 +15,14 @@ SELECT
     NAME,
     symbol,
     decimals,
-    icon
+    icon,
+    COALESCE(
+        ft_contract_metadata_id,
+        {{ dbt_utils.generate_surrogate_key(
+            ['contract_address']
+        ) }}
+    ) AS dim_ft_contract_metadata_id,
+    inserted_timestamp,
+    modified_timestamp
 FROM
     ft_contract_metadata

@@ -22,6 +22,14 @@ SELECT
     method_name,
     args,
     deposit,
-    attached_gas
+    attached_gas,
+    COALESCE(
+        actions_events_function_call_id,
+        {{ dbt_utils.generate_surrogate_key(
+            ['action_id']
+        ) }}
+    ) AS fact_actions_events_function_call_id,
+    inserted_timestamp,
+    modified_timestamp
 FROM
     actions_events_function_call

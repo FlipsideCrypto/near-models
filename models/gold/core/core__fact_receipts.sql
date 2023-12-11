@@ -24,6 +24,14 @@ SELECT
     status_value,
     logs,
     proof,
-    metadata
+    metadata,
+    COALESCE(
+        streamline_receipts_final_id,
+        {{ dbt_utils.generate_surrogate_key(
+            ['receipt_object_id']
+        ) }}
+    ) AS fact_receipts_id,
+    inserted_timestamp,
+    modified_timestamp
 FROM
     receipts

@@ -22,7 +22,14 @@ SELECT
     receipt_object_id,
     transaction_fee,
     gas_used,
-    status
+    status,
+    COALESCE(
+        transfers_id,
+        {{ dbt_utils.generate_surrogate_key(
+            ['action_id']
+        ) }}
+    ) AS fact_transfers_id,
+    inserted_timestamp,
+    modified_timestamp
 FROM
     transfers
-

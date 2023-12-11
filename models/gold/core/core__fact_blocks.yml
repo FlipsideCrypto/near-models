@@ -296,3 +296,12 @@ models:
               column_type_list:
                 - NUMBER
                 - FLOAT
+
+      - name: FACT_BLOCKS_ID
+        description: "{{doc('id')}}"
+
+      - name: INSERTED_TIMESTAMP
+        description: "{{doc('inserted_timestamp')}}"
+
+      - name: MODIFIED_TIMESTAMP
+        description: "{{doc('modified_timestamp')}}"

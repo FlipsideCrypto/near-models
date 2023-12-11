@@ -19,6 +19,14 @@ SELECT
     signer_id,
     clean_log,
     receipt_object_id,
-    gas_burnt
+    gas_burnt,
+    COALESCE(
+        logs_id,
+        {{ dbt_utils.generate_surrogate_key(
+            ['action_id']
+        ) }}
+    ) AS fact_logs_id,
+    inserted_timestamp,
+    modified_timestamp
 FROM
     logs
