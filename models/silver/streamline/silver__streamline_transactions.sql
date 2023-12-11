@@ -1,6 +1,7 @@
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'merge',
+    merge_exclude_columns = ["inserted_timestamp"],
     unique_key = 'tx_hash',
     cluster_by = ['_inserted_timestamp::date', 'block_id', 'tx_hash'],
     tags = ['load', 'load_shards']
@@ -80,11 +81,19 @@ FINAL AS (
         _partition_by_block_number,
         _inserted_timestamp
     FROM
-        txs
-    qualify
-        row_number() over (partition by tx_hash order by _inserted_timestamp desc) = 1
+        txs qualify ROW_NUMBER() over (
+            PARTITION BY tx_hash
+            ORDER BY
+                _inserted_timestamp DESC
+        ) = 1
 )
 SELECT
-    *
+    *,
+    {{ dbt_utils.generate_surrogate_key(
+        ['tx_hash']
+    ) }} AS streamline_transactions_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
 FROM
     FINAL

@@ -1,12 +1,13 @@
 {{ config(
     materialized = 'incremental',
-    incremental_strategy = 'delete+insert',
+    incremental_strategy = 'merge',
+    merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = ['_partition_by_block_number', '_inserted_timestamp::DATE'],
     unique_key = ['shard_id'],
     tags = ['load', 'load_shards']
 ) }}
 
-WITH shardsjson AS (
+WITH shards_json AS (
 
     SELECT
         *
@@ -32,9 +33,15 @@ shards AS (
         _load_timestamp,
         _inserted_timestamp
     FROM
-        shardsjson
+        shards_json
 )
 SELECT
-    *
+    *,
+    {{ dbt_utils.generate_surrogate_key(
+        ['shard_id']
+    ) }} AS streamline_shards_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
 FROM
     shards

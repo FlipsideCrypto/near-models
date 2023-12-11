@@ -87,6 +87,12 @@ FINAL AS (
         LEFT JOIN blocks b USING (block_id)
 )
 SELECT
-    *
+    *,
+    {{ dbt_utils.generate_surrogate_key(
+        ['receipt_object_id']
+    ) }} AS streamline_receipts_final_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
 FROM
     FINAL
