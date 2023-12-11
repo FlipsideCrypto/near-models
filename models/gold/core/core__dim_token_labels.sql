@@ -12,8 +12,8 @@ WITH token_labels AS (
         token_contract,
         decimals,
         token_labels_id AS dim_token_labels_id,
-        COALESCE(inserted_timestamp,'2000-01-01' :: TIMESTAMP_NTZ) AS inserted_timestamp,
-        COALESCE(modified_timestamp,'2000-01-01' :: TIMESTAMP_NTZ) AS modified_timestamp
+        COALESCE(inserted_timestamp, '2000-01-01' :: TIMESTAMP_NTZ) AS inserted_timestamp,
+        COALESCE(modified_timestamp, '2000-01-01' :: TIMESTAMP_NTZ) AS modified_timestamp
     FROM
         {{ ref('silver__token_labels') }}
 ),
@@ -30,8 +30,8 @@ nearblocks_fts_api AS (
                 ['token_contract']
             ) }}
         ) AS dim_token_labels_id,
-        COALESCE(inserted_timestamp,'2000-01-01' :: TIMESTAMP_NTZ) AS inserted_timestamp,
-        COALESCE(modified_timestamp,'2000-01-01' :: TIMESTAMP_NTZ) AS modified_timestamp
+        COALESCE(inserted_timestamp, _inserted_timestamp, '2000-01-01' :: TIMESTAMP_NTZ) AS inserted_timestamp,
+        COALESCE(modified_timestamp, _inserted_timestamp, '2000-01-01' :: TIMESTAMP_NTZ) AS modified_timestamp
     FROM
         {{ ref('silver__api_nearblocks_fts') }}
 ),

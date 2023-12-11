@@ -21,8 +21,8 @@ WITH oracle_prices AS (
                 ['block_id', 'token_contract']
             ) }}
         ) AS fact_prices_id,
-        COALESCE(inserted_timestamp,'2000-01-01' :: TIMESTAMP_NTZ) AS inserted_timestamp,
-        COALESCE(modified_timestamp,'2000-01-01' :: TIMESTAMP_NTZ) AS modified_timestamp
+        COALESCE(inserted_timestamp, _inserted_timestamp, '2000-01-01' :: TIMESTAMP_NTZ) AS inserted_timestamp,
+        COALESCE(modified_timestamp, _inserted_timestamp, '2000-01-01' :: TIMESTAMP_NTZ) AS modified_timestamp
     FROM
         {{ ref('silver__prices_oracle_s3') }}
 )
