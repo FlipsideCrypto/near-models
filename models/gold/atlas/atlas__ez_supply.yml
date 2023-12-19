@@ -69,7 +69,7 @@ models:
         description: "{{ doc('perc_staked_circulating') }}"
         tests:
           - not_null
-      - name: atlas_supply_id
+      - name: ez_supply_id
         description: "{{ doc('id') }}"
         tests:
           - not_null
