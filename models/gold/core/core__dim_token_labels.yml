@@ -3,7 +3,7 @@ version: 2
 models:
   - name: core__dim_token_labels
     description: |-
-      This table contains symbol, contract address and decimal information about tokens on NEAR in a referential table.
+      Deprecating Soon! The data in this table is now available, and kept up to date in, the view dim_ft_contract_metadata. Please migrate work to use that view by the end of February 2024.
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
