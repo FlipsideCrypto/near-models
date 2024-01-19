@@ -19,6 +19,10 @@ env:
   WAREHOUSE: "${{ vars.SYNC_WAREHOUSE }}"
   SCHEMA: "${{ vars.SCHEMA }}"
 
+concurrency:
+  group: ${{ github.workflow }}
+
+
 jobs:
   called_workflow_template:
     uses: FlipsideCrypto/analytics-workflow-templates/.github/workflows/dbt_run_template.yml@main
