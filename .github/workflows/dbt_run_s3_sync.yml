@@ -3,8 +3,8 @@ name: dbt_run_s3_sync
 on:
   workflow_dispatch:
   schedule:
-    # Runs "every hour" (see https://crontab.guru)
-    - cron: '0 */1 * * *'
+    # Runs "every other hour" (see https://crontab.guru)
+    - cron: '0 */2 * * *'
 
 env:
   USE_VARS: "${{ vars.USE_VARS }}"
