@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'incremental',
-    incremental_strategy='merge',
+    incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
     unique_key = 'dex_swaps_v2_id',
     tags = ['curated'],
@@ -67,7 +67,10 @@ swap_outcome AS (
             '\\1'
         ) :: STRING AS token_in,
         _partition_by_block_number,
-        _inserted_timestamp,
+        COALESCE(
+            _inserted_timestamp,
+            _load_timestamp
+        ) AS _inserted_timestamp,
         {{ dbt_utils.generate_surrogate_key(
             ['receipt_object_id', 'log_index']
         ) }} AS dex_swaps_v2_id,
@@ -93,14 +96,27 @@ FINAL AS (
         token_in,
         ARRAY_SIZE(
             receipt_actions :receipt :Action :actions
-        ) AS num_actions,
+        ) AS action_ct,
+        receipt_actions :receipt :Action :actions :: variant AS actions, -- TODO drop col
         TRY_PARSE_JSON(
-            TRY_PARSE_JSON(
-                TRY_BASE64_DECODE_STRING(
+            TRY_BASE64_DECODE_STRING(
+                IFF(
+                    receipt_actions :receipt :Action :actions [1] :FunctionCall :method_name = 'swap', -- early Ref and some Ref v2 use a deposit or auth fn call in index 0
+                    receipt_actions :receipt :Action :actions [1] :FunctionCall :args,
                     receipt_actions :receipt :Action :actions [0] :FunctionCall :args
                 )
-            ) :msg
-        ) :actions [swap_index] AS swap_input_data,
+            )
+        ) AS decoded_action,
+        TRY_PARSE_JSON(
+            COALESCE(
+                COALESCE(
+                    decoded_action :msg,
+                    decoded_action :operation: Swap, -- Swap must be capitalized! Autoformat may change to "swap"
+                    decoded_action
+                ) :actions [swap_index],
+                decoded_action :msg
+            )
+        ) AS swap_input_data,
         r.receiver_id AS receipt_receiver_id,
         r.signer_id AS receipt_signer_id,
         _partition_by_block_number,
