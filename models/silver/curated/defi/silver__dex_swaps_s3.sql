@@ -6,7 +6,7 @@
     cluster_by = ["block_timestamp::DATE"],
     tags = ['curated']
 ) }}
-
+{# DEPRECATED JANUARY 2024 #}
 WITH base_swap_calls AS (
 
     SELECT

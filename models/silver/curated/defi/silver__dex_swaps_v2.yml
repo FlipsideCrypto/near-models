@@ -1,0 +1,89 @@
+version: 2
+
+models:
+  - name: silver__dex_swaps_v2
+    description: |-
+      Parses log output data for swap information. It was determined logs must be used over inputs in a FunctionCall as only the output contains actual swap information. See tx AfvgkUxP8taJNBLaZYvFumFrrePpJujb2gjQJz7YbRiM as an example.
+
+    columns:
+      - name: TX_HASH
+        description: "{{ doc('tx_hash')}}"
+        tests:
+          - not_null:
+              where: _inserted_timestamp <= CURRENT_TIMESTAMP - interval '1 hour'
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: RECEIPT_OBJECT_ID
+        description: "{{ doc('receipt_object_id')}}"
+        tests:
+          - not_null
+
+      - name: BLOCK_ID
+        description: "{{ doc('block_id')}}"
+
+      - name: BLOCK_TIMESTAMP
+        description: "{{ doc('block_timestamp')}}"
+        tests:
+          - not_null:
+              where: _inserted_timestamp <= CURRENT_TIMESTAMP - interval '1 hour'
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
+
+      - name: RECEIVER_ID
+        description: "{{ doc('receiver_id')}}"
+
+      - name: SIGNER_ID
+        description: "{{ doc('signer_id')}}"
+      
+      - name: SWAP_INDEX
+        description: "{{ doc('index')}}"
+
+      - name: LOG
+        description: "{{ doc('clean_log')}}"
+
+      - name: AMOUNT_OUT_RAW
+        description: "{{ doc('amount_out_raw')}}"
+        tests:
+          - not_null
+
+      - name: TOKEN_OUT
+        description: "{{ doc('token_out')}}"
+        tests:
+          - not_null
+
+      - name: AMOUNT_IN_RAW
+        description: "{{ doc('amount_in_raw')}}"
+        tests:
+          - not_null
+
+      - name: TOKEN_IN
+        description: "{{ doc('token_in')}}"
+        tests:
+          - not_null
+
+      - name: SWAP_INPUT_DATA
+        description: "{{ doc('swap_input_data')}}"
+
+      - name: _PARTITION_BY_BLOCK_NUMBER
+        description: "{{doc('_partition_by_block_number')}}"
+
+      - name: _INSERTED_TIMESTAMP
+        description: "{{doc('_inserted_timestamp')}}"
+
+      - name: DEX_SWAPS_V2_ID
+        description: "{{doc('id')}}"
+        tests:
+          - unique
+
+      - name: INSERTED_TIMESTAMP
+        description: "{{doc('inserted_timestamp')}}"
+
+      - name: MODIFIED_TIMESTAMP
+        description: "{{doc('modified_timestamp')}}"
+
+      - name: _INVOCATION_ID
+        description: "{{doc('invocation_id')}}"

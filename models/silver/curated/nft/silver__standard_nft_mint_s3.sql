@@ -50,7 +50,7 @@ function_call AS (
 ),
 standard_logs AS (
     SELECT
-        action_id AS logs_id,
+        logs_id,
         concat_ws(
             '-',
             receipt_object_id,

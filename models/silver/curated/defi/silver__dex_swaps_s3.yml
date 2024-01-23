@@ -3,7 +3,8 @@ version: 2
 models:
   - name: silver__dex_swaps_s3
     description: |-
-      This table records all the swap transactions occurring in NEAR.
+      This table records all the swap transactions occurring in NEAR. This model is being deprecated as of January 2024. It will remain live through February for users to migrate to the new model.
+      This logic is outdated / inaccurate.
 
     columns:
       - name: BLOCK_ID

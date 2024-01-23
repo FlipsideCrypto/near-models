@@ -2,7 +2,7 @@
     materialized = "incremental",
     merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = ["_inserted_timestamp::DATE","block_timestamp::DATE"],
-    unique_key = "action_id",
+    unique_key = "log_id",
     incremental_strategy = "merge",
     tags = ['curated']
 ) }}
@@ -24,20 +24,34 @@ WITH receipts AS (
 ),
 FINAL AS (
     SELECT
-        tx_hash,
-        receipt_object_id,
         block_id,
         block_timestamp,
+        tx_hash,
+        receipt_object_id,
+        concat_ws(
+            '-',
+            receipt_object_id,
+            INDEX
+        ) AS log_id,
+        INDEX AS log_index,
         receiver_id,
         signer_id,
-        _load_timestamp,
-        _partition_by_block_number,
-        _inserted_timestamp,
+        COALESCE(TRY_PARSE_JSON(VALUE), TRY_PARSE_JSON(SPLIT(VALUE, 'EVENT_JSON:') [1]), VALUE :: STRING) AS clean_log,
+        VALUE ILIKE 'event_json:%' AS is_standard,
         gas_burnt,
         receipt_succeeded,
-        INDEX AS action_index,
-        COALESCE(TRY_PARSE_JSON(VALUE), TRY_PARSE_JSON(SPLIT(VALUE, 'EVENT_JSON:') [1]), VALUE :: STRING) AS clean_log,
-        VALUE ILIKE 'event_json:%' AS is_standard
+        _partition_by_block_number,
+        COALESCE(
+            _inserted_timestamp,
+            _load_timestamp
+        ) AS _inserted_timestamp,
+        _load_timestamp,
+        {{ dbt_utils.generate_surrogate_key(
+            ['log_id']
+        ) }} AS logs_id,
+        SYSDATE() AS inserted_timestamp,
+        SYSDATE() AS modified_timestamp,
+        '{{ invocation_id }}' AS _invocation_id
     FROM
         receipts,
         LATERAL FLATTEN(
@@ -45,29 +59,6 @@ FINAL AS (
         )
 )
 SELECT
-    concat_ws(
-        '-',
-        receipt_object_id,
-        action_index
-    ) AS action_id,
-    receiver_id,
-    signer_id,
-    clean_log,
-    is_standard,
-    tx_hash,
-    receipt_object_id,
-    block_id,
-    gas_burnt,
-    block_timestamp,
-    receipt_succeeded,
-    _load_timestamp,
-    _partition_by_block_number,
-    _inserted_timestamp,
-    {{ dbt_utils.generate_surrogate_key(
-        ['action_id']
-    ) }} AS logs_id,
-    SYSDATE() AS inserted_timestamp,
-    SYSDATE() AS modified_timestamp,
-    '{{ invocation_id }}' AS _invocation_id
+    *
 FROM
     FINAL

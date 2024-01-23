@@ -31,9 +31,13 @@ flatten_actions AS (
         block_id,
         block_timestamp,
         chunk_hash,
-        _load_timestamp,
+        logs,
         _partition_by_block_number,
-        _inserted_timestamp,
+        COALESCE(
+            _inserted_timestamp,
+            _load_timestamp
+        ) AS _inserted_timestamp,
+        _load_timestamp,
         receipt_actions,
         execution_outcome,
         VALUE AS action_object,
@@ -46,20 +50,31 @@ flatten_actions AS (
 ),
 FINAL AS (
     SELECT
-        tx_hash,
-        receipt_object_id,
+        concat_ws(
+            '-',
+            receipt_object_id,
+            action_index
+        ) AS action_id,
         receiver_id,
         signer_id,
+        chunk_hash,
+        tx_hash,
+        receipt_object_id,
         block_id,
         block_timestamp,
-        chunk_hash,
-        _load_timestamp,
-        _partition_by_block_number,
-        _inserted_timestamp,
-        this,
+        action_index,
         key AS action_name,
         TRY_PARSE_JSON(VALUE) AS action_data,
-        action_index
+        logs,
+        _partition_by_block_number,
+        _inserted_timestamp,
+        _load_timestamp,
+        {{ dbt_utils.generate_surrogate_key(
+            ['receipt_object_id', 'action_index']
+        ) }} AS actions_events_id,
+        SYSDATE() AS inserted_timestamp,
+        SYSDATE() AS modified_timestamp,
+        '{{ invocation_id }}' AS _invocation_id
     FROM
         flatten_actions,
         LATERAL FLATTEN(
@@ -67,29 +82,6 @@ FINAL AS (
         )
 )
 SELECT
-    concat_ws(
-        '-',
-        receipt_object_id,
-        action_index
-    ) AS action_id,
-    receiver_id,
-    signer_id,
-    chunk_hash,
-    tx_hash,
-    receipt_object_id,
-    block_id,
-    block_timestamp,
-    action_index,
-    action_name,
-    action_data,
-    _load_timestamp,
-    _partition_by_block_number,
-    _inserted_timestamp,
-    {{ dbt_utils.generate_surrogate_key(
-        ['receipt_object_id', 'action_index']
-    ) }} AS actions_events_id,
-    SYSDATE() AS inserted_timestamp,
-    SYSDATE() AS modified_timestamp,
-    '{{ invocation_id }}' AS _invocation_id
+    *
 FROM
     FINAL
