@@ -100,21 +100,29 @@ FINAL AS (
         receipt_actions :receipt :Action :actions :: variant AS actions, -- TODO drop col
         TRY_PARSE_JSON(
             TRY_BASE64_DECODE_STRING(
-                IFF(
-                    receipt_actions :receipt :Action :actions [1] :FunctionCall :method_name = 'swap', -- early Ref and some Ref v2 use a deposit or auth fn call in index 0
-                    receipt_actions :receipt :Action :actions [1] :FunctionCall :args,
-                    receipt_actions :receipt :Action :actions [0] :FunctionCall :args
-                )
+                CASE
+                    -- Some swaps first have a register or storage action, then swap in final action (some may have both, so could be 2 or 3 actions)
+                    WHEN receipt_actions :receipt :Action :actions [0] :FunctionCall :method_name in ('register_tokens', 'storage_deposit') THEN receipt_actions :receipt :Action :actions [action_ct - 1] :FunctionCall :args
+                    -- <3,000 swaps across Ref and Refv2 execute multiple swaps in 1 receipt, with inputs spread across multiple action entities
+                    WHEN action_ct > 1 THEN receipt_actions :receipt :Action :actions [action_ct - 1] :FunctionCall :args
+                    -- most all other swaps execute multiswaps in 1 receipt, with 1 log and 1 action (that may contain an array of inputs for multiswap, per below)
+                    ELSE receipt_actions :receipt :Action :actions [0] :FunctionCall :args
+                END
             )
         ) AS decoded_action,
         TRY_PARSE_JSON(
             COALESCE(
                 COALESCE(
+                    -- input data is stored in the decoded action
+                    -- for multi-swaps, there is (often) one action with an array of input dicts that correspond with the swap index
                     decoded_action :msg,
                     decoded_action :operation: Swap, -- Swap must be capitalized! Autoformat may change to "swap"
                     decoded_action
-                ) :actions [swap_index],
-                decoded_action :msg
+                ) :actions [swap_index], 
+                -- may also be stored directly in msg key, rather than within an array of size 1
+                decoded_action :msg,
+                -- signer test_near.near executed multistep swaps, with separate actions, and one encoded input per action
+                decoded_action :actions [0]
             )
         ) AS swap_input_data,
         r.receiver_id AS receipt_receiver_id,
