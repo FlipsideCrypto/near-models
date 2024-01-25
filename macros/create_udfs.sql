@@ -11,6 +11,7 @@
                 {{ create_udf_s3_copy_objects_overwrite() }}
                 {{ create_UDTF_CALL_CONTRACT_FUNCTION() }}
                 {{ create_UDTF_CALL_CONTRACT_FUNCTION_BY_HEIGHT() }}
+                {{ create_UDF_GET_CHAINHEAD() }}
             {% endset %}
             {% do run_query(sql) %}
         {{- fsc_utils.create_udfs() -}}
