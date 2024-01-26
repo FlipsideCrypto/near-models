@@ -4,6 +4,11 @@ models:
   - name: silver__dex_swaps_v2
     description: |-
       Parses log output data for swap information. It was determined logs must be used over inputs in a FunctionCall as only the output contains actual swap information. See tx AfvgkUxP8taJNBLaZYvFumFrrePpJujb2gjQJz7YbRiM as an example.
+    tests:
+      - dbt_utils.recency:
+          datepart: day
+          field: block_timestamp
+          interval: 1
 
     columns:
       - name: TX_HASH
