@@ -26,7 +26,7 @@
     ),
     call_function AS (
         SELECT
-        NEAR.LIVE.udf_api(
+        {{ target.database }}.live.udf_api(
             'POST',
             'https://rpc.mainnet.near.org',
             { 

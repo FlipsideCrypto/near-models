@@ -30,7 +30,7 @@ WITH params AS (
 call_function AS (
     SELECT
         block_id,
-        NEAR.LIVE.udf_api(
+        {{ target.database }}.live.udf_api(
             'POST',
             'https://archival-rpc.mainnet.near.org',
             { 
