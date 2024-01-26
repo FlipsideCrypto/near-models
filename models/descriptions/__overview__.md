@@ -39,7 +39,7 @@ There is more information on how to use dbt docs in the last section of this doc
 
 ### DeFi Tables (`NEAR`.`DEFI`.`<table_name>`)
 
-- [ez_swaps](#!/model/model.near.defi__ez_dex_swaps)
+- [fact_dex_swaps](#!/model/model.near.defi__fact_dex_swaps)
 
 ### Governance Tables (`NEAR`.`GOV`.`<table_name>`)
 
@@ -103,7 +103,7 @@ SELECT
     *
 FROM
     TABLE(
-        near.core.udtf_call_contract_function(
+        near.streamline.udtf_call_contract_function(
             'social.near',
             'get_accounts',
             OBJECT_CONSTRUCT(
@@ -134,7 +134,7 @@ SELECT
     ) AS unstaked_balance
 FROM
     TABLE(
-        near.core.udtf_call_contract_function(
+        near.streamline.udtf_call_contract_function(
             'staked.poolv1.near',
             'get_accounts',
             {
@@ -146,6 +146,17 @@ FROM
     ),
     LATERAL FLATTEN(decoded_result)
 ```
+
+- [udf_get_chainhead](#!/macro/macro.near.create_UDF_GET_CHAINHEAD)
+
+Calls the `status` method on Near RPC and returns the block height of chainhead.
+
+```sql
+SELECT
+    NEAR.STREAMLINE.UDF_GET_CHAINHEAD()
+```
+
+
 
 ## **Data Model Overview**
 

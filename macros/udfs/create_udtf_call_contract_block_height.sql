@@ -6,7 +6,7 @@
     Signature STRING, STRING, OBJECT, NUMBER 
  #}
 CREATE OR REPLACE FUNCTION
-    {{ target.database }}.CORE.UDTF_CALL_CONTRACT_FUNCTION(
+    {{ target.database }}.STREAMLINE.UDTF_CALL_CONTRACT_FUNCTION(
         contract_address STRING,
         method_name STRING,
         args OBJECT,
@@ -30,7 +30,7 @@ WITH params AS (
 call_function AS (
     SELECT
         block_id,
-        ethereum.streamline.udf_api(
+        NEAR.LIVE.udf_api(
             'POST',
             'https://archival-rpc.mainnet.near.org',
             { 

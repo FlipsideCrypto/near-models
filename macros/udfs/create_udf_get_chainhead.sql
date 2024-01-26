@@ -1,7 +1,7 @@
 {% macro create_UDF_GET_CHAINHEAD() %}
     {% set sql %}
         CREATE
-        OR REPLACE FUNCTION {{ target.database }}.CORE.UDF_GET_CHAINHEAD(
+        OR REPLACE FUNCTION {{ target.database }}.STREAMLINE.UDF_GET_CHAINHEAD(
         ) returns INTEGER 
         AS $$ 
             SELECT
