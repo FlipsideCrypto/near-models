@@ -1,0 +1,55 @@
+version: 2
+
+models:
+  - name: defi__fact_dex_swaps
+    description: |-
+      Parses log output data for swap information. It was determined logs must be used over inputs in a FunctionCall as only the output contains actual swap information. See tx AfvgkUxP8taJNBLaZYvFumFrrePpJujb2gjQJz7YbRiM as an example.
+
+    columns:
+      - name: TX_HASH
+        description: "{{ doc('tx_hash')}}"
+
+      - name: RECEIPT_OBJECT_ID
+        description: "{{ doc('receipt_object_id')}}"
+
+      - name: BLOCK_ID
+        description: "{{ doc('block_id')}}"
+
+      - name: BLOCK_TIMESTAMP
+        description: "{{ doc('block_timestamp')}}"
+
+      - name: RECEIVER_ID
+        description: "{{ doc('receiver_id')}}"
+
+      - name: SIGNER_ID
+        description: "{{ doc('signer_id')}}"
+      
+      - name: SWAP_INDEX
+        description: "{{ doc('index')}}"
+
+      - name: AMOUNT_OUT_RAW
+        description: "{{ doc('amount_out_raw')}}"
+
+      - name: TOKEN_OUT
+        description: "{{ doc('token_out')}}"
+
+      - name: AMOUNT_IN_RAW
+        description: "{{ doc('amount_in_raw')}}"
+
+      - name: TOKEN_IN
+        description: "{{ doc('token_in')}}"
+
+      - name: SWAP_INPUT_DATA
+        description: "{{ doc('swap_input_data')}}"
+
+      - name: LOG
+        description: "{{ doc('clean_log')}}"
+
+      - name: FACT_DEX_SWAPS_ID
+        description: "{{doc('id')}}"
+
+      - name: INSERTED_TIMESTAMP
+        description: "{{doc('inserted_timestamp')}}"
+
+      - name: MODIFIED_TIMESTAMP
+        description: "{{doc('modified_timestamp')}}"

@@ -23,7 +23,7 @@ SELECT
     COALESCE(
         logs_id,
         {{ dbt_utils.generate_surrogate_key(
-            ['action_id']
+            ['log_id']
         ) }}
     ) AS fact_logs_id,
     COALESCE(inserted_timestamp, _inserted_timestamp, '2000-01-01' :: TIMESTAMP_NTZ) AS inserted_timestamp,

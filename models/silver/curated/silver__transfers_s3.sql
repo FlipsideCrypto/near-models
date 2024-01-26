@@ -13,7 +13,6 @@ WITH action_events AS(
     tx_hash,
     action_id,
     action_data :deposit :: INT AS deposit,
-    _load_timestamp,
     _partition_by_block_number,
     _inserted_timestamp
   FROM
