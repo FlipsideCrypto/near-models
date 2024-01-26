@@ -34,7 +34,7 @@ models:
         description: "{{ doc('l2_label')}}"
 
       - name: DIM_ADDRESS_LABELS_ID
-        description: "{{doc('id')}}"
+        description: "{{doc('table_dim_labels')}}"
 
       - name: INSERTED_TIMESTAMP
         description: "{{doc('inserted_timestamp')}}"
