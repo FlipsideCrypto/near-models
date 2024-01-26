@@ -6,7 +6,7 @@
     STRING,
     OBJECT #}
     CREATE
-    OR REPLACE FUNCTION {{ target.database }}.CORE.UDTF_CALL_CONTRACT_FUNCTION(
+    OR REPLACE FUNCTION {{ target.database }}.STREAMLINE.UDTF_CALL_CONTRACT_FUNCTION(
         contract_address STRING,
         method_name STRING,
         args OBJECT
@@ -26,7 +26,7 @@
     ),
     call_function AS (
         SELECT
-        ethereum.streamline.udf_api(
+        {{ target.database }}.live.udf_api(
             'POST',
             'https://rpc.mainnet.near.org',
             { 
