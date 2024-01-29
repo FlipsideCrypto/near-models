@@ -15,13 +15,11 @@ WITH swap_logs AS (
     WHERE
         receipt_succeeded
         AND clean_log LIKE 'Swapped%'
-    {% if var("MANUAL_FIX") %}
-        AND
-            {{ partition_load_manual('no_buffer') }}
-    {% else %}
-        AND
-            {{ incremental_load_filter('_inserted_timestamp') }}
-    {% endif %}
+        AND receiver_id NOT LIKE '%dragon_bot.near' {% if var("MANUAL_FIX") %}
+            AND {{ partition_load_manual('no_buffer') }}
+        {% else %}
+            AND {{ incremental_load_filter('_inserted_timestamp') }}
+        {% endif %}
 ),
 receipts AS (
     SELECT
@@ -37,14 +35,11 @@ receipts AS (
                 receipt_object_id
             FROM
                 swap_logs
-        )
-    {% if var("MANUAL_FIX") %}
-        AND
-            {{ partition_load_manual('no_buffer') }}
-    {% else %}
-        AND
-            {{ incremental_load_filter('_inserted_timestamp') }}
-    {% endif %}
+        ) {% if var("MANUAL_FIX") %}
+            AND {{ partition_load_manual('no_buffer') }}
+        {% else %}
+            AND {{ incremental_load_filter('_inserted_timestamp') }}
+        {% endif %}
 ),
 swap_outcome AS (
     SELECT
@@ -59,7 +54,7 @@ swap_outcome AS (
             ORDER BY
                 log_index ASC
         ) - 1 AS swap_index,
-        clean_log AS LOG,
+        COALESCE(SPLIT(clean_log, ',') [0], clean_log) AS LOG,
         REGEXP_REPLACE(
             LOG,
             '.*Swapped (\\d+) (.*) for (\\d+) (.*)',
