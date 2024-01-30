@@ -15,7 +15,8 @@ WITH swap_logs AS (
     WHERE
         receipt_succeeded
         AND clean_log LIKE 'Swapped%'
-        AND receiver_id NOT LIKE '%dragon_bot.near' {% if var("MANUAL_FIX") %}
+        AND receiver_id NOT LIKE '%dragon_bot.near' 
+        {% if var("MANUAL_FIX") %}
             AND {{ partition_load_manual('no_buffer') }}
         {% else %}
             AND {{ incremental_load_filter('_inserted_timestamp') }}
@@ -35,7 +36,8 @@ receipts AS (
                 receipt_object_id
             FROM
                 swap_logs
-        ) {% if var("MANUAL_FIX") %}
+        ) 
+        {% if var("MANUAL_FIX") %}
             AND {{ partition_load_manual('no_buffer') }}
         {% else %}
             AND {{ incremental_load_filter('_inserted_timestamp') }}
@@ -121,7 +123,7 @@ parse_actions AS (
                         -- for multi-swaps, there is (often) one action with an array of input dicts that correspond with the swap index
                         decoded_action :msg,
                         -- Swap must be capitalized! Autoformat may change to "swap"
-                        decoded_action :operation: swap,
+                        decoded_action :operation: Swap,
                         decoded_action
                     )
                 ) :actions [swap_index],
