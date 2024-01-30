@@ -296,13 +296,13 @@ FINAL AS (
         block_id,
         block_timestamp,
         tx_hash,
-        token_address,
+        token_address AS token_contract, -- NOTE we use token_contract in prices but xchain bridging uses token_address
         amount_raw,
         memo,
         destination_address,
         source_address,
         bridge,
-        destination_chain,
+        destination_chain, -- TODO use ID instead of chain str?
         source_chain,
         _inserted_timestamp,
         _partition_by_block_number
