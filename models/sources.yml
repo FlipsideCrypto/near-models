@@ -12,7 +12,6 @@ sources:
     schema: core
     database: crosschain
     tables:
-      - name: dim_labels
       - name: dim_dates
 
   - name: crosschain_silver
