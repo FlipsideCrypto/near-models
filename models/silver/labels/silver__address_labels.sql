@@ -25,7 +25,7 @@ WITH address_labels AS (
 
 {% if is_incremental() %}
 WHERE
-    {{ incremental_load_filter('_inserted_timestamp') }}
+    {{ incremental_load_filter('modified_timestamp') }}
 {% endif %}
 )
 SELECT

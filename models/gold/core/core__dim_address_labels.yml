@@ -3,7 +3,7 @@ version: 2
 models:
   - name: core__dim_address_labels
     description: |-
-      This table contains address labels as compiled by the Flipside team.
+      "{{doc('table_dim_labels')}}"
 
     columns:
       - name: SYSTEM_CREATED_AT
@@ -34,7 +34,7 @@ models:
         description: "{{ doc('l2_label')}}"
 
       - name: DIM_ADDRESS_LABELS_ID
-        description: "{{doc('table_dim_labels')}}"
+        description: "{{doc('id')}}"
 
       - name: INSERTED_TIMESTAMP
         description: "{{doc('inserted_timestamp')}}"
