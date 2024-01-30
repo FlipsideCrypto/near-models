@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   schedule:
     # Runs "every other hour" (see https://crontab.guru)
-    - cron: '0 */2 * * *'
+    - cron: "0 */2 * * *"
 
 env:
   USE_VARS: "${{ vars.USE_VARS }}"
@@ -22,10 +22,9 @@ env:
 concurrency:
   group: ${{ github.workflow }}
 
-
 jobs:
   called_workflow_template:
-    uses: FlipsideCrypto/analytics-workflow-templates/.github/workflows/dbt_run_template.yml@main
+    uses: FlipsideCrypto/analytics-workflow-templates/.github/workflows/dbt_run_template.yml@AN-4374/upgrade-dbt-1.7
     with:
       dbt_command: >
         dbt run --vars {"S3_LOOKBACK_HOURS":-6} -m models/silver/streamline/streamline__s3_sync.sql
