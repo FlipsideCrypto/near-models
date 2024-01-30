@@ -13,6 +13,18 @@ WITH functioncall AS (
     FROM
         {{ ref('silver__actions_events_function_call_s3') }}
     WHERE
+        TRUE {% if var("MANUAL_FIX") %}
+            AND {{ partition_load_manual('no_buffer') }}
+        {% else %}
+            AND {{ incremental_load_filter('_inserted_timestamp') }}
+        {% endif %}
+),
+aurora_functioncall AS (
+    SELECT
+        *
+    FROM
+        functioncall
+    WHERE
         (
             (
                 receiver_id IN (
@@ -29,10 +41,14 @@ WITH functioncall AS (
             )
         )
         AND method_name IN (
-            'submit',
+            'deposit',
+            'finish_deposit',
+            'finish_withdraw',
+            'ft_on_transfer',
+            'ft_resolve_transfer',
             'ft_transfer',
             'ft_transfer_call',
-            'finish_withdraw',
+            'submit',
             'withdraw'
         )
 ),
@@ -56,7 +72,7 @@ outbound_near_to_aurora AS (
         _inserted_timestamp,
         _partition_by_block_number
     FROM
-        functioncall
+        aurora_functioncall
     WHERE
         method_name = 'ft_transfer_call'
         AND args :receiver_id :: STRING = 'aurora'
@@ -77,9 +93,9 @@ inbound_aurora_to_near AS (
         _partition_by_block_number,
         args
     FROM
-        functioncall
+        aurora_functioncall
     WHERE
-        method_name = 'ft_transfer'
+        method_name = 'ft_transfer' -- AND signer_id
 ),
 inbound_a2n_src_address AS (
     SELECT
@@ -93,14 +109,14 @@ inbound_a2n_src_address AS (
             42
         ) AS source_address
     FROM
-        functioncall
+        aurora_functioncall
     WHERE
         tx_hash IN (
             SELECT
                 tx_hash
             FROM
                 inbound_aurora_to_near
-        )
+        ) -- AND some method / signer filter
 ),
 inbound_a2n_final AS (
     SELECT
@@ -137,7 +153,7 @@ outbound_near_to_eth AS (
         ) AS destination_address,
         signer_id AS source_address,
         'rainbow' AS bridge,
-        'eth' AS destination_chain,
+        'ethereum' AS destination_chain,
         'near' AS source_chain,
         _inserted_timestamp,
         _partition_by_block_number
@@ -148,12 +164,81 @@ outbound_near_to_eth AS (
             SELECT
                 DISTINCT tx_hash
             FROM
-                functioncall
+                aurora_functioncall
             WHERE
                 receiver_id = 'factory.bridge.near'
                 AND method_name = 'finish_withdraw'
         )
         AND method_name = 'withdraw'
+),
+inbound_eth_to_near AS (
+    SELECT
+        tx_hash,
+        MIN(block_id) AS block_id,
+        MIN(block_timestamp) AS block_timestamp,
+        OBJECT_AGG(
+            method_name,
+            OBJECT_CONSTRUCT(
+                'args',
+                args,
+                'logs',
+                logs,
+                'receiver_id',
+                receiver_id,
+                'signer_id',
+                signer_id
+            )
+        ) AS actions,
+        MIN(_inserted_timestamp) AS _inserted_timestamp,
+        MIN(_partition_by_block_number) AS _partition_by_block_number
+    FROM
+        functioncall
+    WHERE
+        tx_hash IN (
+            SELECT
+                DISTINCT tx_hash
+            FROM
+                aurora_functioncall
+            WHERE
+                receiver_id = 'factory.bridge.near'
+                AND method_name = 'finish_deposit'
+        )
+        AND method_name IN (
+            'mint',
+            'ft_transfer_call'
+        )
+    GROUP BY
+        1
+),
+inbound_e2n_final AS (
+    SELECT
+        block_id,
+        block_timestamp,
+        tx_hash,
+        actions :mint :receiver_id :: STRING AS token_address,
+        actions :mint :args :amount :: STRING AS amount_raw,
+        actions :ft_transfer_call :args :memo :: STRING AS memo,
+        LPAD(
+            actions :ft_transfer_call :args :msg :: STRING,
+            42,
+            '0x'
+        ) AS source_address,
+        IFF(
+            actions :mint :args :account_id :: STRING = 'aurora',
+            source_address,
+            actions :ft_transfer_call :args :receiver_id :: STRING
+        ) AS destination_address,
+        'rainbow' AS bridge,
+        IFF(
+            actions :mint :args :account_id :: STRING = 'aurora',
+            'aurora',
+            'near'
+        ) AS destination_chain,
+        'ethereum' AS source_chain,
+        _inserted_timestamp,
+        _partition_by_block_number
+    FROM
+        inbound_eth_to_near
 ),
 FINAL AS (
     SELECT
@@ -206,6 +291,23 @@ FINAL AS (
         _partition_by_block_number
     FROM
         outbound_near_to_eth
+    UNION ALL
+    SELECT
+        block_id,
+        block_timestamp,
+        tx_hash,
+        token_address,
+        amount_raw,
+        memo,
+        destination_address,
+        source_address,
+        bridge,
+        destination_chain,
+        source_chain,
+        _inserted_timestamp,
+        _partition_by_block_number
+    FROM
+        inbound_e2n_final
 )
 SELECT
     *,
