@@ -15,7 +15,7 @@ WITH swap_logs AS (
     WHERE
         receipt_succeeded
         AND clean_log LIKE 'Swapped%'
-        AND receiver_id NOT LIKE '%dragon_bot.near' 
+        AND receiver_id NOT LIKE '%dragon_bot.near'
         {% if var("MANUAL_FIX") %}
             AND {{ partition_load_manual('no_buffer') }}
         {% else %}
@@ -36,7 +36,7 @@ receipts AS (
                 receipt_object_id
             FROM
                 swap_logs
-        ) 
+        )
         {% if var("MANUAL_FIX") %}
             AND {{ partition_load_manual('no_buffer') }}
         {% else %}
@@ -158,16 +158,16 @@ FINAL AS (
         LOG,
         _partition_by_block_number,
         _inserted_timestamp,
-        {{ dbt_utils.generate_surrogate_key(
-            ['receipt_object_id', 'log_index']
-        ) }} AS dex_swaps_v2_id,,
-        SYSDATE() AS inserted_timestamp,
-        SYSDATE() AS modified_timestamp,
-        '{{ invocation_id }}' AS _invocation_id
-    FROM
         parse_actions
 )
 SELECT
-    *
+    *,
+    {{ dbt_utils.generate_surrogate_key(
+        ['receipt_object_id', 'log_index']
+    ) }} AS dex_swaps_v2_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
+FROM
 FROM
     FINAL
