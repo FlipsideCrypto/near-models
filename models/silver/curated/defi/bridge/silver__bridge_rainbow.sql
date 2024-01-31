@@ -35,8 +35,8 @@ outbound_near_to_aurora AS (
             '0x'
         ) AS destination_address,
         signer_id AS source_address,
-        9 AS destination_chain_id,
-        15 AS source_chain_id,
+        'aurora' AS destination_chain_id,
+        'near' AS source_chain_id,
         receipt_succeeded,
         _inserted_timestamp,
         _partition_by_block_number,
@@ -63,8 +63,8 @@ inbound_aurora_to_near AS (
         args :amount :: INT AS amount_raw,
         args :memo :: STRING AS memo,
         args :receiver_id :: STRING AS destination_address,
-        15 AS destination_chain_id,
-        9 AS source_chain_id,
+        'near' AS destination_chain_id,
+        'aurora' AS source_chain_id,
         receipt_succeeded,
         _inserted_timestamp,
         _partition_by_block_number,
@@ -139,8 +139,8 @@ outbound_near_to_eth AS (
         2 AS destination_chain_id,
         IFF(
             is_aurora,
-            9,
-            15
+            'aurora',
+            'near'
         ) AS source_chain_id,
         receipt_succeeded,
         _inserted_timestamp,
@@ -230,8 +230,8 @@ inbound_e2n_final AS (
         ) AS destination_address,
         IFF(
             is_aurora,
-            9,
-            15
+            'aurora',
+            'near'
         ) AS destination_chain_id,
         2 AS source_chain_id,
         receipt_succeeded,
