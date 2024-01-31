@@ -18,6 +18,8 @@ WITH address_labels AS (
         label_subtype,
         address_name,
         project_name,
+        labels_combined_id,
+        _is_deleted,
         _load_timestamp,
         _inserted_timestamp
     FROM
@@ -42,7 +44,7 @@ SELECT
     _load_timestamp,
     _inserted_timestamp,
     _is_deleted,
-    labels_combined_id,
+    labels_combined_id  as address_labels_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
