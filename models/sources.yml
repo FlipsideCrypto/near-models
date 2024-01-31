@@ -12,7 +12,6 @@ sources:
     schema: core
     database: crosschain
     tables:
-      - name: dim_labels
       - name: dim_dates
 
   - name: crosschain_silver
@@ -21,3 +20,4 @@ sources:
     tables:
       - name: number_sequence
       - name: github_activity
+      - name: labels_combined
