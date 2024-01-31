@@ -42,6 +42,7 @@ outbound_near AS (
     WHERE
         method_name = 'vaa_withdraw' -- all the burns or withdraws are followed by a  publish_message in contract contract.w...to.near with the result
         -- example D35BNkK4gfPuuoWMGGJ6RNA3rjDoK66gPYASmfRy7rER (near)
+        -- we can make sure that this is happening by checking that publish_message exists and is successful
 ),
 inbound_to_near AS (
     -- mint
