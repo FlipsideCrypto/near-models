@@ -1,12 +1,12 @@
 version: 2
 
 models:
-  - name: silver__bridge_wormhole
+  - name: silver__bridge_allbridge
     description: |-
-      Extracts data from actions table to build a view of bridge activity through the Wormhople Portal Bridge.
+      Extracts data from actions table to build a view of bridge activity through the Allbridge.
     tests:
       - dbt_utils.recency:
-          datepart: month
+          datepart: week
           field: block_timestamp
           interval: 1
 
@@ -47,6 +47,16 @@ models:
                 - INTEGER
                 - NUMBER
 
+      - name: AMOUNT_FEE_RAW
+        description: "{{ doc('amount_raw')}}"
+        tests:
+          - not_null:
+              where: _inserted_timestamp <= CURRENT_TIMESTAMP - interval '1 hour' AND receipt_succeeded
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - INTEGER
+                - NUMBER
+
       - name: MEMO
         description: "{{ doc('memo')}}"
 
@@ -68,23 +78,12 @@ models:
 
       - name: DESTINATION_CHAIN_ID
         description: "{{ doc('chain_id')}}"
-        tests:
-          - not_null:
-              where: _inserted_timestamp <= CURRENT_TIMESTAMP - interval '1 hour' AND receipt_succeeded
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - NUMBER
-                - INTEGER
 
       - name: SOURCE_CHAIN_ID
         description: "{{ doc('chain_id')}}"
-        tests:
-          - not_null:
-              where: _inserted_timestamp <= CURRENT_TIMESTAMP - interval '1 hour' AND receipt_succeeded
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - NUMBER
-                - INTEGER
+
+      - name: ARGS
+        description: "{{ doc('args')}}"
 
       - name: _INSERTED_TIMESTAMP
         description: "{{ doc('_inserted_timestamp')}}"
@@ -92,7 +91,7 @@ models:
       - name: _PARTITION_BY_BLOCK_NUMBER
         description: "{{ doc('_partition_by_block_number')}}"
 
-      - name: BRIDGE_WORMHOLE_ID
+      - name: BRIDGE_ALLBRIDGE_ID
         description: "{{ doc('id')}}"
         tests:
           - unique

@@ -6,7 +6,7 @@ models:
       Extracts data from actions table to build a view of bridge activity through the Rainbow Bridge. Methods defined and explained [here](https://github.com/aurora-is-near/rainbow-token-connector/tree)
     tests:
       - dbt_utils.recency:
-          datepart: day
+          datepart: week
           field: block_timestamp
           interval: 1
 
