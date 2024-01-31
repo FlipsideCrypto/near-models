@@ -136,7 +136,7 @@ outbound_near_to_eth AS (
             destination_address,
             signer_id
         ) AS source_address,
-        2 AS destination_chain_id,
+        'ethereum' AS destination_chain_id,
         IFF(
             is_aurora,
             'aurora',
@@ -233,7 +233,7 @@ inbound_e2n_final AS (
             'aurora',
             'near'
         ) AS destination_chain_id,
-        2 AS source_chain_id,
+        'ethereum' AS source_chain_id,
         receipt_succeeded,
         _inserted_timestamp,
         _partition_by_block_number,
