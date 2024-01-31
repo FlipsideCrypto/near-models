@@ -5,7 +5,8 @@
     tags = ['core']
 ) }}
 
-WITH rainbow AS (
+WITH 
+rainbow AS (
 
     SELECT
         block_id,
@@ -97,6 +98,11 @@ FINAL AS (
         *
     FROM
         multichain
+    UNION ALL
+    SELECT
+        *
+    FROM
+        allbridge
 )
 SELECT
     *
