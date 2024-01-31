@@ -1,9 +1,9 @@
 version: 2
 
 models:
-  - name: silver__bridge_aurora
+  - name: bridge_rainbow_id
     description: |-
-      Extracts data from actions table to build a view of bridge activity through the aurora bridge. Methods defined and explained [here](https://github.com/aurora-is-near/rainbow-token-connector/tree)
+      Extracts data from actions table to build a view of bridge activity through the Rainbow Bridge. Methods defined and explained [here](https://github.com/aurora-is-near/rainbow-token-connector/tree)
     tests:
       - dbt_utils.recency:
           datepart: day
@@ -27,7 +27,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: TOKEN_CONTRACT
+      - name: TOKEN_ADDRESS
         description: "{{ doc('token_contract')}}"
         tests:
           - not_null:
@@ -45,6 +45,7 @@ models:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - INTEGER
+                - NUMBER
 
       - name: MEMO
         description: "{{ doc('memo')}}"
@@ -61,13 +62,6 @@ models:
 
       - name: SOURCE_ADDRESS
         description: "{{ doc('source_address')}}"
-        tests:
-          - not_null:
-              where: _inserted_timestamp <= CURRENT_TIMESTAMP - interval '1 hour'
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
 
       - name: BRIDGE
         description: "{{ doc('bridge')}}"

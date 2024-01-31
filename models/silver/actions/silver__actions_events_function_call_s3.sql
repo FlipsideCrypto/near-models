@@ -38,6 +38,7 @@ FINAL AS (
     action_data :deposit :: NUMBER AS deposit,
     action_data :gas :: NUMBER AS attached_gas,
     logs,
+    receipt_succeeded,
     _partition_by_block_number,
     _inserted_timestamp,
     _load_timestamp,

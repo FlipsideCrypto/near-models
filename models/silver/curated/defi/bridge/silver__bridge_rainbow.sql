@@ -2,7 +2,7 @@
     materialized = 'incremental',
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
-    unique_key = 'bridge_aurora_id',
+    unique_key = 'bridge_rainbow_id',
     tags = ['curated'],
 ) }}
 
@@ -13,52 +13,22 @@ WITH functioncall AS (
     FROM
         {{ ref('silver__actions_events_function_call_s3') }}
     WHERE
-        TRUE {% if var("MANUAL_FIX") %}
+        receipt_succeeded
+        {% if var("MANUAL_FIX") %}
             AND {{ partition_load_manual('no_buffer') }}
         {% else %}
-            AND {{ incremental_load_filter('_inserted_timestamp') }}
+            AND {{ incremental_load_filter('modified_timestamp') }}
         {% endif %}
 ),
-aurora_functioncall AS (
-    SELECT
-        *
-    FROM
-        functioncall
-    WHERE
-        (
-            (
-                receiver_id IN (
-                    'aurora',
-                    'relay.aurora',
-                    'factory.bridge.near'
-                )
-                OR receiver_id LIKE '%.factory.bridge.near'
-            )
-            OR signer_id IN (
-                'aurora',
-                'relay.aurora',
-                'factory.bridge.near'
-            )
-        )
-        AND method_name IN (
-            'deposit',
-            'finish_deposit',
-            'finish_withdraw',
-            'ft_on_transfer',
-            'ft_resolve_transfer',
-            'ft_transfer',
-            'ft_transfer_call',
-            'submit',
-            'withdraw'
-        )
-),
 outbound_near_to_aurora AS (
+    -- ft_transfer_call sends token to aurora
+    -- EVM address logged in method action under msg
     SELECT
         block_id,
         block_timestamp,
         tx_hash,
         receiver_id AS token_address,
-        args :amount :: STRING AS amount_raw,
+        args :amount :: INT AS amount_raw,
         args :memo :: STRING AS memo,
         LPAD(
             IFF(len(SPLIT(args :msg :: STRING, ':') [1]) = 104, SUBSTR(args :msg :: STRING, -40), args :msg :: STRING),
@@ -72,18 +42,25 @@ outbound_near_to_aurora AS (
         _inserted_timestamp,
         _partition_by_block_number
     FROM
-        aurora_functioncall
+        functioncall
     WHERE
         method_name = 'ft_transfer_call'
         AND args :receiver_id :: STRING = 'aurora'
+        AND (
+            receiver_id = 'aurora'
+            OR receiver_id LIKE '%.factory.bridge.near'
+        )
 ),
 inbound_aurora_to_near AS (
+    -- ft_transfer called on token contract, signed by relay.aurora
+    -- recipient in actions JSON of ft_transfer, signer evm address in log of "submit" method
+    -- no explicit mention of bridge method / contract
     SELECT
         block_id,
         block_timestamp,
         tx_hash,
         receiver_id AS token_address,
-        args :amount :: STRING AS amount_raw,
+        args :amount :: INT AS amount_raw,
         args :memo :: STRING AS memo,
         args :receiver_id :: STRING AS destination_address,
         'rainbow' AS bridge,
@@ -93,30 +70,28 @@ inbound_aurora_to_near AS (
         _partition_by_block_number,
         args
     FROM
-        aurora_functioncall
+        functioncall
     WHERE
-        method_name = 'ft_transfer' -- AND signer_id
+        method_name = 'ft_transfer'
+        AND signer_id = 'relay.aurora'
 ),
 inbound_a2n_src_address AS (
     SELECT
         tx_hash,
-        SUBSTRING(
-            REGEXP_SUBSTR(
-                logs [0] :: STRING,
-                '\\(0x[0-9a-fA-F]{40}\\)'
-            ),
-            2,
-            42
+        REGEXP_SUBSTR(
+            logs [0] :: STRING,
+            '0x[0-9a-fA-F]{40}'
         ) AS source_address
     FROM
-        aurora_functioncall
+        functioncall
     WHERE
         tx_hash IN (
             SELECT
                 tx_hash
             FROM
                 inbound_aurora_to_near
-        ) -- AND some method / signer filter
+        )
+        AND method_name = 'submit'
 ),
 inbound_a2n_final AS (
     SELECT
@@ -139,22 +114,33 @@ inbound_a2n_final AS (
         ON A.tx_hash = b.tx_hash
 ),
 outbound_near_to_eth AS (
+    -- determined by finish_withdraw method call on factory.bridge.near
+    -- if signed by aurora relayer, likely aurora<->eth bridge
     SELECT
         block_id,
         block_timestamp,
         tx_hash,
+        signer_id = 'relay.aurora' AS is_aurora,
         receiver_id AS token_address,
-        args :amount :: STRING AS amount_raw,
+        args :amount :: INT AS amount_raw,
         NULL AS memo,
         LPAD(
             args :recipient :: STRING,
             42,
             '0x'
         ) AS destination_address,
-        signer_id AS source_address,
+        IFF(
+            is_aurora,
+            destination_address,
+            signer_id
+        ) AS source_address,
         'rainbow' AS bridge,
         'ethereum' AS destination_chain,
-        'near' AS source_chain,
+        IFF(
+            is_aurora,
+            'aurora',
+            'near' 
+        ) AS source_chain,
         _inserted_timestamp,
         _partition_by_block_number
     FROM
@@ -164,7 +150,7 @@ outbound_near_to_eth AS (
             SELECT
                 DISTINCT tx_hash
             FROM
-                aurora_functioncall
+                functioncall
             WHERE
                 receiver_id = 'factory.bridge.near'
                 AND method_name = 'finish_withdraw'
@@ -172,6 +158,7 @@ outbound_near_to_eth AS (
         AND method_name = 'withdraw'
 ),
 inbound_eth_to_near AS (
+    -- determined by finish_deposit method call on factory.bridge.near
     SELECT
         tx_hash,
         MIN(block_id) AS block_id,
@@ -198,39 +185,47 @@ inbound_eth_to_near AS (
             SELECT
                 DISTINCT tx_hash
             FROM
-                aurora_functioncall
+                functioncall
             WHERE
                 receiver_id = 'factory.bridge.near'
                 AND method_name = 'finish_deposit'
         )
         AND method_name IN (
             'mint',
-            'ft_transfer_call'
+            'ft_transfer_call',
+            'finish_deposit'
         )
     GROUP BY
         1
 ),
 inbound_e2n_final AS (
+    -- inbound token is minted on chain, take contract and amt from mint event
     SELECT
         block_id,
         block_timestamp,
         tx_hash,
+        actions:ft_transfer_call:args:receiver_id::string = 'aurora' as is_aurora,
         actions :mint :receiver_id :: STRING AS token_address,
-        actions :mint :args :amount :: STRING AS amount_raw,
+        actions :mint :args :amount :: INT AS amount_raw,
         actions :ft_transfer_call :args :memo :: STRING AS memo,
         LPAD(
             actions :ft_transfer_call :args :msg :: STRING,
             42,
             '0x'
         ) AS source_address,
+        -- if minted by aurora contract, token is minted on near and bridged to aurora via xfer
+        -- otherwise destination addr is the recipient of the transfer call
         IFF(
-            actions :mint :args :account_id :: STRING = 'aurora',
+            is_aurora,
             source_address,
-            actions :ft_transfer_call :args :receiver_id :: STRING
+            COALESCE(
+                actions :ft_transfer_call :args :receiver_id :: STRING,
+                actions :mint :args :account_id :: STRING
+            )
         ) AS destination_address,
         'rainbow' AS bridge,
         IFF(
-            actions :mint :args :account_id :: STRING = 'aurora',
+            is_aurora,
             'aurora',
             'near'
         ) AS destination_chain,
@@ -296,13 +291,15 @@ FINAL AS (
         block_id,
         block_timestamp,
         tx_hash,
-        token_address AS token_contract, -- NOTE we use token_contract in prices but xchain bridging uses token_address
+        token_address,
+        -- NOTE we use token_contract in prices but xchain bridging uses token_address
         amount_raw,
         memo,
         destination_address,
         source_address,
         bridge,
-        destination_chain, -- TODO use ID instead of chain str?
+        destination_chain,
+        -- TODO use ID instead of chain str?
         source_chain,
         _inserted_timestamp,
         _partition_by_block_number
@@ -312,8 +309,8 @@ FINAL AS (
 SELECT
     *,
     {{ dbt_utils.generate_surrogate_key(
-        ['tx_hash', 'token_address', 'amount_raw', 'destination_address']
-    ) }} AS bridge_aurora_id,
+        ['tx_hash', 'token_address', 'amount_raw', 'source_chain', 'destination_address']
+    ) }} AS bridge_rainbow_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
