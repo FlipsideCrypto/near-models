@@ -21,13 +21,15 @@ WITH address_labels AS (
         labels_combined_id,
         _is_deleted,
         _load_timestamp,
-        _inserted_timestamp
+        _inserted_timestamp,
+        _modified_timestamp
+        
     FROM
         {{ ref('bronze__address_labels') }}
 
 {% if is_incremental() %}
 WHERE
-    {{ incremental_load_filter('modified_timestamp') }}
+    {{ incremental_load_filter('_modified_timestamp') }}
 {% endif %}
 )
 SELECT
@@ -43,6 +45,7 @@ SELECT
     label_subtype AS l2_label,
     _load_timestamp,
     _inserted_timestamp,
+    _modified_timestamp,
     _is_deleted,
     labels_combined_id  as address_labels_id,
     SYSDATE() AS inserted_timestamp,
