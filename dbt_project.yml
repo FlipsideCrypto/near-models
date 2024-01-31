@@ -7,6 +7,7 @@ config-version: 2
 
 # This setting configures which "profile" dbt uses for this project.
 profile: "near"
+require-dbt-version: ">=1.7.0"
 
 # These configurations specify where dbt should look for different types of files.
 # The `source-paths` config, for example, states that models in this project can be
@@ -68,6 +69,6 @@ dispatch:
       - dbt
 
 query-comment:
-  comment: '{{ dbt_snowflake_query_tags.get_query_comment(node) }}'
+  comment: "{{ dbt_snowflake_query_tags.get_query_comment(node) }}"
   append: true # Snowflake removes prefixed comments.
 

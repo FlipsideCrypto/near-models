@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
   schedule:
     # Runs 0800 daily (see https://crontab.guru)
-    - cron: '0 8 * * *'
+    - cron: "0 8 * * *"
 
 env:
   USE_VARS: "${{ vars.USE_VARS }}"
@@ -25,10 +25,10 @@ concurrency:
 
 jobs:
   called_workflow_template:
-    uses: FlipsideCrypto/analytics-workflow-templates/.github/workflows/dbt_run_template.yml@main
+    uses: FlipsideCrypto/analytics-workflow-templates/.github/workflows/dbt_run_template.yml@AN-4374/upgrade-dbt-1.7
     with:
       dbt_command: >
         dbt run-operation run_sp_create_prod_clone
       environment: workflow_prod
       warehouse: ${{ vars.WAREHOUSE }}
-    secrets: inherit 
+    secrets: inherit
