@@ -16,16 +16,46 @@ WITH rainbow AS (
         destination_address,
         source_address,
         bridge,
-        destination_chain,
-        source_chain,
+        destination_chain_id,
+        source_chain_id,
         receipt_succeeded,
         bridge_rainbow_id AS fact_bridge_activity_id,
         inserted_timestamp,
         modified_timestamp
     FROM
         {{ ref('silver__bridge_rainbow') }}
+),
+wormhole AS (
+    SELECT
+        block_id,
+        block_timestamp,
+        tx_hash,
+        token_address,
+        amount_raw,
+        destination_address,
+        source_address,
+        bridge,
+        destination_chain_id,
+        source_chain_id,
+        receipt_succeeded,
+        bridge_wormhole_id AS fact_bridge_activity_id,
+        inserted_timestamp,
+        modified_timestamp
+    FROM
+        {{ ref('silver__bridge_wormhole') }}
+),
+FINAL AS (
+    SELECT
+        *
+    FROM
+        rainbow
+    UNION ALL
+    SELECT
+        *
+    FROM
+        wormhole
 )
 SELECT
     *
 FROM
-    rainbow
+    FINAL

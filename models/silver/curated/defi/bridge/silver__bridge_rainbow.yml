@@ -66,11 +66,11 @@ models:
       - name: BRIDGE
         description: "{{ doc('bridge')}}"
 
-      - name: DESTINATION_CHAIN
-        description: "{{ doc('destination_chain')}}"
+      - name: DESTINATION_CHAIN_ID
+        description: "{{ doc('wormhole_chain_id')}}"
 
-      - name: SOURCE_CHAIN
-        description: "{{ doc('source_chain')}}"
+      - name: SOURCE_CHAIN_ID
+        description: "{{ doc('wormhole_chain_id')}}"
 
       - name: _INSERTED_TIMESTAMP
         description: "{{ doc('_inserted_timestamp')}}"

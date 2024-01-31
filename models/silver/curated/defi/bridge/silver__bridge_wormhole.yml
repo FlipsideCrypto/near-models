@@ -67,7 +67,7 @@ models:
         description: "{{ doc('bridge')}}"
 
       - name: DESTINATION_CHAIN_ID
-        description: "{{ doc('destination_chain')}}"
+        description: "{{ doc('wormhole_chain_id')}}"
         tests:
           - not_null:
               where: _inserted_timestamp <= CURRENT_TIMESTAMP - interval '1 hour' AND receipt_succeeded
@@ -77,7 +77,7 @@ models:
                 - INTEGER
 
       - name: SOURCE_CHAIN_ID
-        description: "{{ doc('source_chain')}}"
+        description: "{{ doc('wormhole_chain_id')}}"
         tests:
           - not_null:
               where: _inserted_timestamp <= CURRENT_TIMESTAMP - interval '1 hour' AND receipt_succeeded

@@ -36,8 +36,8 @@ outbound_near_to_aurora AS (
         ) AS destination_address,
         signer_id AS source_address,
         'rainbow' AS bridge,
-        'aurora' AS destination_chain,
-        'near' AS source_chain,
+        9 AS destination_chain_id,
+        15 AS source_chain_id,
         receipt_succeeded,
         _inserted_timestamp,
         _partition_by_block_number
@@ -64,8 +64,8 @@ inbound_aurora_to_near AS (
         args :memo :: STRING AS memo,
         args :receiver_id :: STRING AS destination_address,
         'rainbow' AS bridge,
-        'near' AS destination_chain,
-        'aurora' AS source_chain,
+        15 AS destination_chain_id,
+        9 AS source_chain_id,
         receipt_succeeded,
         _inserted_timestamp,
         _partition_by_block_number,
@@ -105,8 +105,8 @@ inbound_a2n_final AS (
         A.destination_address,
         b.source_address,
         A.bridge,
-        A.destination_chain,
-        A.source_chain,
+        A.destination_chain_id,
+        A.source_chain_id,
         A.receipt_succeeded,
         A._inserted_timestamp,
         A._partition_by_block_number
@@ -137,12 +137,12 @@ outbound_near_to_eth AS (
             signer_id
         ) AS source_address,
         'rainbow' AS bridge,
-        'ethereum' AS destination_chain,
+        2 AS destination_chain_id,
         IFF(
             is_aurora,
-            'aurora',
-            'near'
-        ) AS source_chain,
+            9,
+            15
+        ) AS source_chain_id,
         receipt_succeeded,
         _inserted_timestamp,
         _partition_by_block_number
@@ -230,10 +230,10 @@ inbound_e2n_final AS (
         'rainbow' AS bridge,
         IFF(
             is_aurora,
-            'aurora',
-            'near'
-        ) AS destination_chain,
-        'ethereum' AS source_chain,
+            9,
+            15
+        ) AS destination_chain_id,
+        2 AS source_chain_id,
         receipt_succeeded,
         _inserted_timestamp,
         _partition_by_block_number
@@ -251,8 +251,8 @@ FINAL AS (
         destination_address,
         source_address,
         bridge,
-        destination_chain,
-        source_chain,
+        destination_chain_id,
+        source_chain_id,
         receipt_succeeded,
         _inserted_timestamp,
         _partition_by_block_number
@@ -269,8 +269,8 @@ FINAL AS (
         destination_address,
         source_address,
         bridge,
-        destination_chain,
-        source_chain,
+        destination_chain_id,
+        source_chain_id,
         receipt_succeeded,
         _inserted_timestamp,
         _partition_by_block_number
@@ -287,8 +287,8 @@ FINAL AS (
         destination_address,
         source_address,
         bridge,
-        destination_chain,
-        source_chain,
+        destination_chain_id,
+        source_chain_id,
         receipt_succeeded,
         _inserted_timestamp,
         _partition_by_block_number
@@ -305,8 +305,8 @@ FINAL AS (
         destination_address,
         source_address,
         bridge,
-        destination_chain,
-        source_chain,
+        destination_chain_id,
+        source_chain_id,
         receipt_succeeded,
         _inserted_timestamp,
         _partition_by_block_number
@@ -316,7 +316,7 @@ FINAL AS (
 SELECT
     *,
     {{ dbt_utils.generate_surrogate_key(
-        ['tx_hash', 'token_address', 'amount_raw', 'source_chain', 'destination_address']
+        ['tx_hash', 'token_address', 'amount_raw', 'source_chain_id', 'destination_address']
     ) }} AS bridge_rainbow_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
