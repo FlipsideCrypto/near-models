@@ -13,8 +13,7 @@ WITH functioncall AS (
     FROM
         {{ ref('silver__actions_events_function_call_s3') }}
     WHERE
-        receipt_succeeded
-        {% if var("MANUAL_FIX") %}
+        TRUE {% if var("MANUAL_FIX") %}
             AND {{ partition_load_manual('no_buffer') }}
         {% else %}
             AND {{ incremental_load_filter('modified_timestamp') }}
@@ -39,6 +38,7 @@ outbound_near_to_aurora AS (
         'rainbow' AS bridge,
         'aurora' AS destination_chain,
         'near' AS source_chain,
+        receipt_succeeded,
         _inserted_timestamp,
         _partition_by_block_number
     FROM
@@ -66,6 +66,7 @@ inbound_aurora_to_near AS (
         'rainbow' AS bridge,
         'near' AS destination_chain,
         'aurora' AS source_chain,
+        receipt_succeeded,
         _inserted_timestamp,
         _partition_by_block_number,
         args
@@ -106,6 +107,7 @@ inbound_a2n_final AS (
         A.bridge,
         A.destination_chain,
         A.source_chain,
+        A.receipt_succeeded,
         A._inserted_timestamp,
         A._partition_by_block_number
     FROM
@@ -139,8 +141,9 @@ outbound_near_to_eth AS (
         IFF(
             is_aurora,
             'aurora',
-            'near' 
+            'near'
         ) AS source_chain,
+        receipt_succeeded,
         _inserted_timestamp,
         _partition_by_block_number
     FROM
@@ -176,6 +179,7 @@ inbound_eth_to_near AS (
                 signer_id
             )
         ) AS actions,
+        BOOLAND_AGG(receipt_succeeded) AS receipt_succeeded,
         MIN(_inserted_timestamp) AS _inserted_timestamp,
         MIN(_partition_by_block_number) AS _partition_by_block_number
     FROM
@@ -204,7 +208,7 @@ inbound_e2n_final AS (
         block_id,
         block_timestamp,
         tx_hash,
-        actions:ft_transfer_call:args:receiver_id::string = 'aurora' as is_aurora,
+        actions :ft_transfer_call :args :receiver_id :: STRING = 'aurora' AS is_aurora,
         actions :mint :receiver_id :: STRING AS token_address,
         actions :mint :args :amount :: INT AS amount_raw,
         actions :ft_transfer_call :args :memo :: STRING AS memo,
@@ -230,6 +234,7 @@ inbound_e2n_final AS (
             'near'
         ) AS destination_chain,
         'ethereum' AS source_chain,
+        receipt_succeeded,
         _inserted_timestamp,
         _partition_by_block_number
     FROM
@@ -248,6 +253,7 @@ FINAL AS (
         bridge,
         destination_chain,
         source_chain,
+        receipt_succeeded,
         _inserted_timestamp,
         _partition_by_block_number
     FROM
@@ -265,6 +271,7 @@ FINAL AS (
         bridge,
         destination_chain,
         source_chain,
+        receipt_succeeded,
         _inserted_timestamp,
         _partition_by_block_number
     FROM
@@ -282,6 +289,7 @@ FINAL AS (
         bridge,
         destination_chain,
         source_chain,
+        receipt_succeeded,
         _inserted_timestamp,
         _partition_by_block_number
     FROM
@@ -292,15 +300,14 @@ FINAL AS (
         block_timestamp,
         tx_hash,
         token_address,
-        -- NOTE we use token_contract in prices but xchain bridging uses token_address
         amount_raw,
         memo,
         destination_address,
         source_address,
         bridge,
         destination_chain,
-        -- TODO use ID instead of chain str?
         source_chain,
+        receipt_succeeded,
         _inserted_timestamp,
         _partition_by_block_number
     FROM

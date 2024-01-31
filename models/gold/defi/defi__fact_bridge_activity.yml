@@ -1,0 +1,49 @@
+version: 2
+
+models:
+  - name: defi__fact_bridge_activity
+    description: |-
+      Modeled bridge activity, tracking tokens through the NEAR Ecosystem.
+
+    columns:
+      - name: BLOCK_ID
+        description: "{{ doc('block_id')}}"
+
+      - name: BLOCK_TIMESTAMP
+        description: "{{ doc('block_timestamp')}}"
+
+      - name: TX_HASH
+        description: "{{ doc('tx_hash')}}"
+
+      - name: TOKEN_ADDRESS
+        description: "{{ doc('token_contract')}}"
+
+      - name: AMOUNT_RAW
+        description: "{{ doc('amount_raw')}}"
+
+      - name: DESTINATION_ADDRESS
+        description: "{{ doc('destination_address')}}"
+
+      - name: SOURCE_ADDRESS
+        description: "{{ doc('source_address')}}"
+
+      - name: BRIDGE
+        description: "{{ doc('bridge')}}"
+
+      - name: DESTINATION_CHAIN
+        description: "{{ doc('destination_chain')}}"
+
+      - name: SOURCE_CHAIN
+        description: "{{ doc('source_chain')}}"
+
+      - name: RECEIPT_SUCCEEDED
+        description: "{{ doc('receipt_succeeded')}}"
+
+      - name: FACT_BRIDGE_ACTIVITY_ID
+        description: "{{ doc('id')}}"
+
+      - name: INSERTED_TIMESTAMP
+        description: "{{ doc('inserted_timestamp')}}"
+
+      - name: MODIFIED_TIMESTAMP
+        description: "{{ doc('modified_timestamp')}}"
