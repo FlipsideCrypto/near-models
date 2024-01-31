@@ -41,7 +41,8 @@ flatten_actions AS (
         receipt_actions,
         execution_outcome,
         VALUE AS action_object,
-        INDEX AS action_index
+        INDEX AS action_index,
+        receipt_succeeded
     FROM
         receipts,
         LATERAL FLATTEN(
@@ -66,6 +67,7 @@ FINAL AS (
         key AS action_name,
         TRY_PARSE_JSON(VALUE) AS action_data,
         logs,
+        receipt_succeeded,
         _partition_by_block_number,
         _inserted_timestamp,
         _load_timestamp,
