@@ -38,7 +38,8 @@ outbound_near AS (
         15 AS source_chain_id,
         receipt_succeeded,
         _inserted_timestamp,
-        _partition_by_block_number
+        _partition_by_block_number,
+        modified_timestamp AS _modified_timestamp
     FROM
         functioncall
     WHERE
@@ -64,7 +65,8 @@ inbound_to_near AS (
         args: recipient_chain :: INT AS destination_chain_id,
         receipt_succeeded,
         _inserted_timestamp,
-        _partition_by_block_number
+        _partition_by_block_number,
+        modified_timestamp AS _modified_timestamp
     FROM
         functioncall
     WHERE
@@ -105,7 +107,8 @@ inbound_final AS (
         src.wormhole_chain_id AS source_chain_id,
         receipt_succeeded,
         _inserted_timestamp,
-        _partition_by_block_number
+        _partition_by_block_number,
+        i._modified_timestamp
     FROM
         inbound_to_near i
         LEFT JOIN inbound_src_id src
@@ -125,7 +128,8 @@ FINAL AS (
         source_chain_id,
         receipt_succeeded,
         _inserted_timestamp,
-        _partition_by_block_number
+        _partition_by_block_number,
+        _modified_timestamp
     FROM
         outbound_near
     UNION ALL
@@ -142,7 +146,8 @@ FINAL AS (
         source_chain_id,
         receipt_succeeded,
         _inserted_timestamp,
-        _partition_by_block_number
+        _partition_by_block_number,
+        _modified_timestamp
     FROM
         inbound_final
 )

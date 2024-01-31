@@ -44,6 +44,25 @@ wormhole AS (
     FROM
         {{ ref('silver__bridge_wormhole') }}
 ),
+multichain as (
+    SELECT
+        block_id,
+        block_timestamp,
+        tx_hash,
+        token_address,
+        amount_raw,
+        destination_address,
+        source_address,
+        platform,
+        destination_chain_id,
+        source_chain_id,
+        receipt_succeeded,
+        fact_bridge_activity_id,
+        inserted_timestamp,
+        modified_timestamp
+    FROM
+        {{ ref('silver__bridge_multichain') }}
+),
 FINAL AS (
     SELECT
         *
@@ -54,6 +73,11 @@ FINAL AS (
         *
     FROM
         wormhole
+    UNION ALL
+    SELECT
+        *
+    FROM
+        multichain
 )
 SELECT
     *

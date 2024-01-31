@@ -1,0 +1,60 @@
+version: 2
+
+models:
+  - name: silver__bridge_multichain
+    description: |-
+      Extracts data from actions table to build a view of historical bridge activity through the Multichain Bridge.
+
+    columns:
+      - name: BLOCK_ID
+        description: "{{ doc('block_id')}}"
+
+      - name: BLOCK_TIMESTAMP
+        description: "{{ doc('block_timestamp')}}"
+
+      - name: TX_HASH
+        description: "{{ doc('tx_hash')}}"
+
+      - name: TOKEN_ADDRESS
+        description: "{{ doc('token_contract')}}"
+
+      - name: AMOUNT_RAW
+        description: "{{ doc('amount_raw')}}"
+
+      - name: MEMO
+        description: "{{ doc('memo')}}"
+
+      - name: DESTINATION_ADDRESS
+        description: "{{ doc('destination_address')}}"
+
+      - name: SOURCE_ADDRESS
+        description: "{{ doc('source_address')}}"
+
+      - name: PLATFORM
+        description: "{{ doc('platform')}}"
+
+      - name: DESTINATION_CHAIN_ID
+        description: "{{ doc('chain_id')}}"
+
+      - name: SOURCE_CHAIN_ID
+        description: "{{ doc('chain_id')}}"
+
+      - name: _INSERTED_TIMESTAMP
+        description: "{{ doc('_inserted_timestamp')}}"
+        
+      - name: _PARTITION_BY_BLOCK_NUMBER
+        description: "{{ doc('_partition_by_block_number')}}"
+
+      - name: BRIDGE_MULTICHAIN_ID
+        description: "{{ doc('id')}}"
+        tests:
+          - unique
+
+      - name: INSERTED_TIMESTAMP
+        description: "{{ doc('inserted_timestamp')}}"
+
+      - name: MODIFIED_TIMESTAMP
+        description: "{{ doc('modified_timestamp')}}"
+
+      - name: _INVOCATION_ID
+        description: "{{ doc('invocation_id')}}"

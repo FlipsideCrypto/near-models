@@ -16,7 +16,7 @@ WITH functioncall AS (
         TRUE {% if var("MANUAL_FIX") %}
             AND {{ partition_load_manual('no_buffer') }}
         {% else %}
-            AND {{ incremental_load_filter('modified_timestamp') }}
+            AND {{ incremental_load_filter('_modified_timestamp') }}
         {% endif %}
 ),
 outbound_near_to_aurora AS (
@@ -39,7 +39,8 @@ outbound_near_to_aurora AS (
         15 AS source_chain_id,
         receipt_succeeded,
         _inserted_timestamp,
-        _partition_by_block_number
+        _partition_by_block_number,
+        modified_timestamp AS _modified_timestamp
     FROM
         functioncall
     WHERE
@@ -67,7 +68,8 @@ inbound_aurora_to_near AS (
         receipt_succeeded,
         _inserted_timestamp,
         _partition_by_block_number,
-        args
+        args,
+        modified_timestamp AS _modified_timestamp
     FROM
         functioncall
     WHERE
@@ -106,7 +108,8 @@ inbound_a2n_final AS (
         A.source_chain_id,
         A.receipt_succeeded,
         A._inserted_timestamp,
-        A._partition_by_block_number
+        A._partition_by_block_number,
+        A._modified_timestamp
     FROM
         inbound_aurora_to_near A
         LEFT JOIN inbound_a2n_src_address b
@@ -141,7 +144,8 @@ outbound_near_to_eth AS (
         ) AS source_chain_id,
         receipt_succeeded,
         _inserted_timestamp,
-        _partition_by_block_number
+        _partition_by_block_number,
+        modified_timestamp AS _modified_timestamp
     FROM
         functioncall
     WHERE
@@ -177,7 +181,8 @@ inbound_eth_to_near AS (
         ) AS actions,
         BOOLAND_AGG(receipt_succeeded) AS receipt_succeeded,
         MIN(_inserted_timestamp) AS _inserted_timestamp,
-        MIN(_partition_by_block_number) AS _partition_by_block_number
+        MIN(_partition_by_block_number) AS _partition_by_block_number,
+        MIN(modified_timestamp) AS _modified_timestamp
     FROM
         functioncall
     WHERE
@@ -231,7 +236,8 @@ inbound_e2n_final AS (
         2 AS source_chain_id,
         receipt_succeeded,
         _inserted_timestamp,
-        _partition_by_block_number
+        _partition_by_block_number,
+        _modified_timestamp
     FROM
         inbound_eth_to_near
 ),
@@ -249,7 +255,8 @@ FINAL AS (
         source_chain_id,
         receipt_succeeded,
         _inserted_timestamp,
-        _partition_by_block_number
+        _partition_by_block_number,
+        _modified_timestamp
     FROM
         outbound_near_to_aurora
     UNION ALL
@@ -266,7 +273,8 @@ FINAL AS (
         source_chain_id,
         receipt_succeeded,
         _inserted_timestamp,
-        _partition_by_block_number
+        _partition_by_block_number,
+        _modified_timestamp
     FROM
         inbound_a2n_final
     UNION ALL
@@ -283,7 +291,8 @@ FINAL AS (
         source_chain_id,
         receipt_succeeded,
         _inserted_timestamp,
-        _partition_by_block_number
+        _partition_by_block_number,
+        _modified_timestamp
     FROM
         outbound_near_to_eth
     UNION ALL
@@ -300,7 +309,8 @@ FINAL AS (
         source_chain_id,
         receipt_succeeded,
         _inserted_timestamp,
-        _partition_by_block_number
+        _partition_by_block_number,
+        _modified_timestamp
     FROM
         inbound_e2n_final
 )

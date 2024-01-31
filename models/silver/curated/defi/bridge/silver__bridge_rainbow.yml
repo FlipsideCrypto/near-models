@@ -67,10 +67,10 @@ models:
         description: "{{ doc('platform')}}"
 
       - name: DESTINATION_CHAIN_ID
-        description: "{{ doc('wormhole_chain_id')}}"
+        description: "{{ doc('chain_id')}}"
 
       - name: SOURCE_CHAIN_ID
-        description: "{{ doc('wormhole_chain_id')}}"
+        description: "{{ doc('chain_id')}}"
 
       - name: _INSERTED_TIMESTAMP
         description: "{{ doc('_inserted_timestamp')}}"
