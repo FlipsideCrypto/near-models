@@ -1,5 +1,5 @@
 {% docs platform %}
 
-The trading platform at which the swap was executed.
+The protocol utilized for the operation, likely a swap or bridge.
 
 {% enddocs %}

@@ -63,8 +63,8 @@ models:
       - name: SOURCE_ADDRESS
         description: "{{ doc('source_address')}}"
 
-      - name: BRIDGE
-        description: "{{ doc('bridge')}}"
+      - name: PLATFORM
+        description: "{{ doc('platform')}}"
 
       - name: DESTINATION_CHAIN_ID
         description: "{{ doc('wormhole_chain_id')}}"

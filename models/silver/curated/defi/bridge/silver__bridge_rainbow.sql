@@ -35,7 +35,6 @@ outbound_near_to_aurora AS (
             '0x'
         ) AS destination_address,
         signer_id AS source_address,
-        'rainbow' AS bridge,
         9 AS destination_chain_id,
         15 AS source_chain_id,
         receipt_succeeded,
@@ -63,7 +62,6 @@ inbound_aurora_to_near AS (
         args :amount :: INT AS amount_raw,
         args :memo :: STRING AS memo,
         args :receiver_id :: STRING AS destination_address,
-        'rainbow' AS bridge,
         15 AS destination_chain_id,
         9 AS source_chain_id,
         receipt_succeeded,
@@ -104,7 +102,6 @@ inbound_a2n_final AS (
         A.memo,
         A.destination_address,
         b.source_address,
-        A.bridge,
         A.destination_chain_id,
         A.source_chain_id,
         A.receipt_succeeded,
@@ -136,7 +133,6 @@ outbound_near_to_eth AS (
             destination_address,
             signer_id
         ) AS source_address,
-        'rainbow' AS bridge,
         2 AS destination_chain_id,
         IFF(
             is_aurora,
@@ -227,7 +223,6 @@ inbound_e2n_final AS (
                 actions :mint :args :account_id :: STRING
             )
         ) AS destination_address,
-        'rainbow' AS bridge,
         IFF(
             is_aurora,
             9,
@@ -250,7 +245,6 @@ FINAL AS (
         memo,
         destination_address,
         source_address,
-        bridge,
         destination_chain_id,
         source_chain_id,
         receipt_succeeded,
@@ -268,7 +262,6 @@ FINAL AS (
         memo,
         destination_address,
         source_address,
-        bridge,
         destination_chain_id,
         source_chain_id,
         receipt_succeeded,
@@ -286,7 +279,6 @@ FINAL AS (
         memo,
         destination_address,
         source_address,
-        bridge,
         destination_chain_id,
         source_chain_id,
         receipt_succeeded,
@@ -304,7 +296,6 @@ FINAL AS (
         memo,
         destination_address,
         source_address,
-        bridge,
         destination_chain_id,
         source_chain_id,
         receipt_succeeded,
@@ -315,6 +306,7 @@ FINAL AS (
 )
 SELECT
     *,
+    'rainbow' AS platform,
     {{ dbt_utils.generate_surrogate_key(
         ['tx_hash', 'token_address', 'amount_raw', 'source_chain_id', 'destination_address']
     ) }} AS bridge_rainbow_id,

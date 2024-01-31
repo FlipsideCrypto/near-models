@@ -34,7 +34,6 @@ outbound_near AS (
         args :memo :: STRING AS memo,
         args :receiver :: STRING AS destination_address,
         signer_id AS source_address,
-        'wormhole' AS bridge,
         args :chain :: INT AS destination_chain_id,
         15 AS source_chain_id,
         receipt_succeeded,
@@ -62,7 +61,6 @@ inbound_to_near AS (
         args :account_id :: STRING AS destination_address,
         NULL AS source_address,
         -- "In eth is Weth contract -- jum"
-        'wormhole' AS bridge,
         args: recipient_chain :: INT AS destination_chain_id,
         receipt_succeeded,
         _inserted_timestamp,
@@ -103,7 +101,6 @@ inbound_final AS (
         memo,
         destination_address,
         source_address,
-        bridge,
         destination_chain_id,
         src.wormhole_chain_id AS source_chain_id,
         receipt_succeeded,
@@ -124,7 +121,6 @@ FINAL AS (
         memo,
         destination_address,
         source_address,
-        bridge,
         destination_chain_id,
         source_chain_id,
         receipt_succeeded,
@@ -142,7 +138,6 @@ FINAL AS (
         memo,
         destination_address,
         source_address,
-        bridge,
         destination_chain_id,
         source_chain_id,
         receipt_succeeded,
@@ -153,6 +148,7 @@ FINAL AS (
 )
 SELECT
     *,
+    'wormhole' AS platform,
     {{ dbt_utils.generate_surrogate_key(
         ['tx_hash', 'token_address', 'amount_raw', 'source_chain_id', 'destination_address']
     ) }} AS bridge_wormhole_id,
