@@ -3,7 +3,7 @@
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
     unique_key = 'bridge_wormhole_id',
-    cluster_by = ['_modified_timestamp::DATE'],
+    cluster_by = ['block_timestamp::DATE', '_modified_timestamp::DATE'],
     tags = ['curated'],
 ) }}
 
