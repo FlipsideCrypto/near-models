@@ -110,7 +110,7 @@ FINAL AS (
 )
 SELECT
     *,
-    'bridge.a11bd.near' AS platform_address,
+    'bridge.a11bd.near' AS bridge_address,
     'allbridge' AS platform,
     {{ dbt_utils.generate_surrogate_key(
         ['tx_hash']
