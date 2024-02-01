@@ -76,6 +76,9 @@ models:
       - name: PLATFORM
         description: "{{ doc('platform')}}"
 
+      - name: PLATFORM_ADDRESS
+        description: "{{ doc('contract_address')}}"
+
       - name: DESTINATION_CHAIN_ID
         description: "{{ doc('chain_id')}}"
 
@@ -84,6 +87,17 @@ models:
 
       - name: ARGS
         description: "{{ doc('args')}}"
+
+      - name: RECEIPT_SUCCEEDED
+        description: "{{ doc('receipt_succeeded')}}"
+        tests:
+          - not_null
+
+      - name: METHOD_NAME
+        description: "{{ doc('method_name')}}"
+
+      - name: DIRECTION
+        description: "{{ doc('direction')}}"
 
       - name: _INSERTED_TIMESTAMP
         description: "{{ doc('_inserted_timestamp')}}"

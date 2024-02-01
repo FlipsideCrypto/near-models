@@ -17,8 +17,11 @@ rainbow AS (
         destination_address,
         source_address,
         platform,
-        destination_chain_id,
-        source_chain_id,
+        platform_address,
+        destination_chain_id AS destination_chain,
+        source_chain_id AS source_chain,
+        method_name,
+        direction,
         receipt_succeeded,
         bridge_rainbow_id AS fact_bridge_activity_id,
         inserted_timestamp,
@@ -36,14 +39,19 @@ wormhole AS (
         destination_address,
         source_address,
         platform,
-        destination_chain_id,
-        source_chain_id,
+        platform_address,
+        id.blockchain AS destination_chain,
+        id2.blockchain AS source_chain,
+        method_name,
+        direction,
         receipt_succeeded,
         bridge_wormhole_id AS fact_bridge_activity_id,
         inserted_timestamp,
         modified_timestamp
     FROM
-        {{ ref('silver__bridge_wormhole') }}
+        {{ ref('silver__bridge_wormhole') }} b
+    LEFT JOIN {{ ref('seeds__wormhole_ids') }} id ON b.destination_chain_id = id.id
+    LEFT JOIN {{ ref('seeds__wormhole_ids') }} id2 ON b.source_chain_id = id2.id
 ),
 multichain AS (
     SELECT
@@ -55,14 +63,19 @@ multichain AS (
         destination_address,
         source_address,
         platform,
-        destination_chain_id,
-        source_chain_id,
+        platform_address,
+        id.blockchain AS destination_chain,
+        id2.blockchain AS source_chain,
+        method_name,
+        direction,
         receipt_succeeded,
         bridge_multichain_id AS fact_bridge_activity_id,
         inserted_timestamp,
         modified_timestamp
     FROM
-        {{ ref('silver__bridge_multichain') }}
+        {{ ref('silver__bridge_multichain') }} b
+    LEFT JOIN {{ ref('seeds__multichain_ids') }} id ON b.destination_chain_id = id.id
+    LEFT JOIN {{ ref('seeds__multichain_ids') }} id2 ON b.source_chain_id = id2.id
 ),
 allbridge AS (
     SELECT
@@ -74,14 +87,19 @@ allbridge AS (
         destination_address,
         source_address,
         platform,
-        destination_chain_id,
-        source_chain_id,
+        platform_address,
+        id.blockchain AS destination_chain,
+        id2.blockchain AS source_chain,
+        method_name,
+        direction,
         receipt_succeeded,
         bridge_allbridge_id AS fact_bridge_activity_id,
         inserted_timestamp,
         modified_timestamp
     FROM
-        {{ ref('silver__bridge_allbridge') }}
+        {{ ref('silver__bridge_allbridge') }} b
+    LEFT JOIN {{ ref('seeds__allbridge_ids') }} id ON b.destination_chain_id = id.id
+    LEFT JOIN {{ ref('seeds__allbridge_ids') }} id2 ON b.source_chain_id = id2.id
 ),
 FINAL AS (
     SELECT
@@ -105,6 +123,22 @@ FINAL AS (
         allbridge
 )
 SELECT
-    *
+        block_id,
+        block_timestamp,
+        tx_hash,
+        token_address,
+        amount_raw AS amount_unadj,
+        destination_address,
+        source_address,
+        platform,
+        platform_address,
+        destination_chain,
+        source_chain,
+        method_name,
+        direction,
+        receipt_succeeded,
+        fact_bridge_activity_id,
+        inserted_timestamp,
+        modified_timestamp
 FROM
     FINAL

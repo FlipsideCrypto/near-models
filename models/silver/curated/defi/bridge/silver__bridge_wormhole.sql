@@ -3,13 +3,25 @@
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
     unique_key = 'bridge_wormhole_id',
+    cluster_by = ['block_timestamp::DATE', 'block_id'],
     tags = ['curated'],
 ) }}
 
 WITH functioncall AS (
 
     SELECT
-        *
+        block_id,
+        block_timestamp,
+        tx_hash,
+        method_name,
+        args,
+        logs,
+        receiver_id,
+        signer_id,
+        receipt_succeeded,
+        _inserted_timestamp,
+        _partition_by_block_number,
+        modified_timestamp
     FROM
         {{ ref('silver__actions_events_function_call_s3') }}
     WHERE
@@ -18,7 +30,15 @@ WITH functioncall AS (
         {% if var("MANUAL_FIX") %}
             AND {{ partition_load_manual('no_buffer') }}
         {% else %}
-            AND {{ incremental_load_filter('modified_timestamp') }}
+            {% if is_incremental() %}
+
+                AND 
+                    modified_timestamp >= (
+                        SELECT MAX(_modified_timestamp) FROM {{ this }}
+                        )
+
+            {% endif %}
+
         {% endif %}
 ),
 outbound_near AS (
@@ -37,6 +57,8 @@ outbound_near AS (
         args :chain :: INT AS destination_chain_id,
         15 AS source_chain_id,
         receipt_succeeded,
+        method_name,
+        'outbound' AS direction,
         _inserted_timestamp,
         _partition_by_block_number,
         modified_timestamp AS _modified_timestamp
@@ -64,6 +86,8 @@ inbound_to_near AS (
         -- "In eth is Weth contract -- jum"
         args: recipient_chain :: INT AS destination_chain_id,
         receipt_succeeded,
+        method_name,
+        'inbound' AS direction,
         _inserted_timestamp,
         _partition_by_block_number,
         modified_timestamp AS _modified_timestamp
@@ -106,6 +130,8 @@ inbound_final AS (
         destination_chain_id,
         src.wormhole_chain_id AS source_chain_id,
         receipt_succeeded,
+        method_name,
+        direction,
         _inserted_timestamp,
         _partition_by_block_number,
         i._modified_timestamp
@@ -127,6 +153,8 @@ FINAL AS (
         destination_chain_id,
         source_chain_id,
         receipt_succeeded,
+        method_name,
+        direction,
         _inserted_timestamp,
         _partition_by_block_number,
         _modified_timestamp
@@ -145,6 +173,8 @@ FINAL AS (
         destination_chain_id,
         source_chain_id,
         receipt_succeeded,
+        method_name,
+        direction,
         _inserted_timestamp,
         _partition_by_block_number,
         _modified_timestamp
@@ -153,9 +183,10 @@ FINAL AS (
 )
 SELECT
     *,
+    'portalbridge.near' AS platform_address,
     'wormhole' AS platform,
     {{ dbt_utils.generate_surrogate_key(
-        ['tx_hash', 'token_address', 'amount_raw', 'source_chain_id', 'destination_address']
+        ['tx_hash']
     ) }} AS bridge_wormhole_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,

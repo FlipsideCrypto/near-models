@@ -3,21 +3,41 @@
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
     unique_key = 'bridge_rainbow_id',
+    cluster_by = ['block_timestamp::DATE', 'block_id'],
     tags = ['curated'],
 ) }}
 
 WITH functioncall AS (
 
     SELECT
-        *
+        block_id,
+        block_timestamp,
+        tx_hash,
+        method_name,
+        args,
+        logs,
+        receiver_id,
+        signer_id,
+        receipt_succeeded,
+        _inserted_timestamp,
+        _partition_by_block_number,
+        modified_timestamp
     FROM
         {{ ref('silver__actions_events_function_call_s3') }}
     WHERE
         TRUE {% if var("MANUAL_FIX") %}
             AND {{ partition_load_manual('no_buffer') }}
         {% else %}
-            AND {{ incremental_load_filter('_modified_timestamp') }}
-        {% endif %}
+
+{% if is_incremental() %}
+AND modified_timestamp >= (
+    SELECT
+        MAX(_modified_timestamp)
+    FROM
+        {{ this }}
+)
+{% endif %}
+{% endif %}
 ),
 outbound_near_to_aurora AS (
     -- ft_transfer_call sends token to aurora
@@ -35,9 +55,12 @@ outbound_near_to_aurora AS (
             '0x'
         ) AS destination_address,
         signer_id AS source_address,
-        'aurora' AS destination_chain_id,
-        'near' AS source_chain_id,
+        'Aurora' AS destination_chain_id,
+        'Near' AS source_chain_id,
         receipt_succeeded,
+        method_name,
+        'aurora' AS platform_address,
+        'outbound' AS direction,
         _inserted_timestamp,
         _partition_by_block_number,
         modified_timestamp AS _modified_timestamp
@@ -63,9 +86,12 @@ inbound_aurora_to_near AS (
         args :amount :: INT AS amount_raw,
         args :memo :: STRING AS memo,
         args :receiver_id :: STRING AS destination_address,
-        'near' AS destination_chain_id,
-        'aurora' AS source_chain_id,
+        'Near' AS destination_chain_id,
+        'Aurora' AS source_chain_id,
         receipt_succeeded,
+        method_name,
+        'aurora' AS platform_address,
+        'inbound' AS direction,
         _inserted_timestamp,
         _partition_by_block_number,
         args,
@@ -75,6 +101,16 @@ inbound_aurora_to_near AS (
     WHERE
         method_name = 'ft_transfer'
         AND signer_id = 'relay.aurora'
+        AND NOT (
+            -- Exclude 1 NEAR fee for fast bridge
+            signer_id = 'relay.aurora'
+            AND receiver_id = 'wrap.near'
+            AND args :receiver_id :: STRING IN (
+                '74abd625a1132b9b3258313a99828315b10ef864.aurora',
+                '055707c67977e8217f98f19cfa8aca18b2282d0c.aurora',
+                'e0302be5963b1f13003ab3a4798d2853bae731a7.aurora'
+            )
+        )
 ),
 inbound_a2n_src_address AS (
     SELECT
@@ -107,6 +143,9 @@ inbound_a2n_final AS (
         A.destination_chain_id,
         A.source_chain_id,
         A.receipt_succeeded,
+        A.method_name,
+        A.platform_address,
+        A.direction,
         A._inserted_timestamp,
         A._partition_by_block_number,
         A._modified_timestamp
@@ -136,13 +175,16 @@ outbound_near_to_eth AS (
             destination_address,
             signer_id
         ) AS source_address,
-        'ethereum' AS destination_chain_id,
+        'Ethereum' AS destination_chain_id,
         IFF(
             is_aurora,
-            'aurora',
-            'near'
+            'Aurora',
+            'Near'
         ) AS source_chain_id,
         receipt_succeeded,
+        method_name,
+        'factory.bridge.near' AS platform_address,
+        'outbound' AS direction,
         _inserted_timestamp,
         _partition_by_block_number,
         modified_timestamp AS _modified_timestamp
@@ -179,7 +221,7 @@ inbound_eth_to_near AS (
                 signer_id
             )
         ) AS actions,
-        BOOLAND_AGG(receipt_succeeded) AS receipt_succeeded,
+        booland_agg(receipt_succeeded) AS receipt_succeeded,
         MIN(_inserted_timestamp) AS _inserted_timestamp,
         MIN(_partition_by_block_number) AS _partition_by_block_number,
         MIN(modified_timestamp) AS _modified_timestamp
@@ -230,11 +272,18 @@ inbound_e2n_final AS (
         ) AS destination_address,
         IFF(
             is_aurora,
-            'aurora',
-            'near'
+            'Aurora',
+            'Near'
         ) AS destination_chain_id,
-        'ethereum' AS source_chain_id,
+        'Ethereum' AS source_chain_id,
         receipt_succeeded,
+        IFF(
+            is_aurora,
+            'ft_transfer_call',
+            'mint'
+        ) AS method_name,
+        'factory.bridge.near' AS platform_address,
+        'inbound' AS direction,
         _inserted_timestamp,
         _partition_by_block_number,
         _modified_timestamp
@@ -254,6 +303,9 @@ FINAL AS (
         destination_chain_id,
         source_chain_id,
         receipt_succeeded,
+        method_name,
+        platform_address,
+        direction,
         _inserted_timestamp,
         _partition_by_block_number,
         _modified_timestamp
@@ -272,6 +324,9 @@ FINAL AS (
         destination_chain_id,
         source_chain_id,
         receipt_succeeded,
+        method_name,
+        platform_address,
+        direction,
         _inserted_timestamp,
         _partition_by_block_number,
         _modified_timestamp
@@ -290,6 +345,9 @@ FINAL AS (
         destination_chain_id,
         source_chain_id,
         receipt_succeeded,
+        method_name,
+        platform_address,
+        direction,
         _inserted_timestamp,
         _partition_by_block_number,
         _modified_timestamp
@@ -308,6 +366,9 @@ FINAL AS (
         destination_chain_id,
         source_chain_id,
         receipt_succeeded,
+        method_name,
+        platform_address,
+        direction,
         _inserted_timestamp,
         _partition_by_block_number,
         _modified_timestamp
@@ -318,7 +379,7 @@ SELECT
     *,
     'rainbow' AS platform,
     {{ dbt_utils.generate_surrogate_key(
-        ['tx_hash', 'token_address', 'amount_raw', 'source_chain_id', 'destination_address']
+        ['tx_hash', 'source_chain_id', 'destination_address']
     ) }} AS bridge_rainbow_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,

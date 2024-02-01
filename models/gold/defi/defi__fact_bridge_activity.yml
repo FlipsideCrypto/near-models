@@ -18,7 +18,7 @@ models:
       - name: TOKEN_ADDRESS
         description: "{{ doc('token_contract')}}"
 
-      - name: AMOUNT_RAW
+      - name: AMOUNT_UNADJ
         description: "{{ doc('amount_raw')}}"
 
       - name: DESTINATION_ADDRESS
@@ -30,11 +30,20 @@ models:
       - name: PLATFORM
         description: "{{ doc('platform')}}"
 
+      - name: PLATFORM_ADDRESS
+        description: "{{ doc('contract_address')}}"
+
       - name: DESTINATION_CHAIN
         description: "{{ doc('destination_chain')}}"
 
       - name: SOURCE_CHAIN
         description: "{{ doc('source_chain')}}"
+
+      - name: METHOD_NAME
+        description: "{{ doc('method_name')}}"
+
+      - name: DIRECTION
+        description: "{{ doc('direction')}}"
 
       - name: RECEIPT_SUCCEEDED
         description: "{{ doc('receipt_succeeded')}}"
