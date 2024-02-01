@@ -1,9 +1,11 @@
 {{ config(
     materialized = 'incremental',
-    incremental_strategy = 'delete+insert',
+    incremental_strategy = 'merge',
+    merge_exclude_columns = ['inserted_timestamp'],
     unique_key = 'receipt_object_id',
     cluster_by = ['_inserted_timestamp::date', 'block_id'],
-    tags = ['receipt_map']
+    tags = ['receipt_map'],
+    post_hook = 'ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash);'
 ) }}
 
 WITH base_receipts AS (
@@ -13,6 +15,12 @@ WITH base_receipts AS (
     FROM
         {{ ref('silver__streamline_receipts') }}
 
+        {#
+            TODO - rethink incr load and make sure there's a lookback / re-run for late receipts
+            Revise this whole incremental load that's used throughout the models
+            If standard, factor whole thing into a new macro
+         #}
+         
         {% if var("MANUAL_FIX") %}
         WHERE
             {{ partition_load_manual('no_buffer') }}
@@ -27,6 +35,7 @@ blocks AS (
         block_timestamp
     FROM
         {{ ref('silver__streamline_blocks') }}
+    {# TODO - limit scan with where clause #}
 ),
 append_tx_hash AS (
     SELECT

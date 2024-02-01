@@ -1,25 +1,31 @@
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'merge',
-    merge_exclude_columns = ["inserted_timestamp"],
-    cluster_by = ['_partition_by_block_number', '_inserted_timestamp::DATE'],
-    unique_key = ['shard_id'],
+    merge_exclude_columns = ['inserted_timestamp'],
+    cluster_by = ['_inserted_timestamp::DATE'],
+    unique_key = 'shard_id',
     tags = ['load', 'load_shards']
 ) }}
 
-WITH shards_json AS (
-
+WITH 
+load_shards AS (
     SELECT
-        *
+        block_id,
+        concat_ws(
+            '-',
+            block_id :: STRING,
+            _shard_number :: STRING
+        ) AS shard_id,
+        _shard_number,
+        VALUE,
+        _filename,
+        _load_timestamp,
+        _partition_by_block_number,
+        _inserted_timestamp
     FROM
-        {{ ref('silver__load_shards') }}
+        {{ ref('bronze__streamline_shards') }}
     WHERE
         {{ incremental_load_filter('_inserted_timestamp') }}
-        qualify ROW_NUMBER() over (
-            PARTITION BY shard_id
-            ORDER BY
-                _inserted_timestamp DESC
-        ) = 1
 ),
 shards AS (
     SELECT
@@ -33,7 +39,7 @@ shards AS (
         _load_timestamp,
         _inserted_timestamp
     FROM
-        shards_json
+        load_shards
 )
 SELECT
     *,
@@ -45,3 +51,8 @@ SELECT
     '{{ invocation_id }}' AS _invocation_id
 FROM
     shards
+        qualify ROW_NUMBER() over (
+            PARTITION BY shard_id
+            ORDER BY
+                _inserted_timestamp DESC
+        ) = 1

@@ -1,9 +1,9 @@
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'merge',
-    merge_exclude_columns = ["inserted_timestamp"],
+    merge_exclude_columns = ['inserted_timestamp'],
     unique_key = 'tx_hash',
-    cluster_by = ['_inserted_timestamp::date', 'block_id', 'tx_hash'],
+    cluster_by = ['_inserted_timestamp::date', 'block_id'],
     tags = ['load', 'load_shards']
 ) }}
 

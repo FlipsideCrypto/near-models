@@ -1,25 +1,26 @@
 {{ config(
     materialized = 'incremental',
-    incremental_strategy = 'delete+insert',
-    cluster_by = ['_partition_by_block_number', '_inserted_timestamp::DATE'],
+    incremental_strategy = 'merge',
+    merge_exclude_columns = ['inserted_timestamp'],
+    cluster_by = ['_inserted_timestamp::DATE'],
     unique_key = 'block_id',
     tags = ['load', 'load_blocks']
 ) }}
 
-WITH blocks_json AS (
+WITH load_blocks AS (
 
     SELECT
-        *
+        block_id,
+        VALUE,
+        _filename,
+        _load_timestamp,
+        _partition_by_block_number,
+        _inserted_timestamp
     FROM
-        {{ ref('silver__load_blocks') }}
-        {# Note - no partition load as blocks is lightweight enough #}
+        {{ ref('bronze__streamline_blocks') }}
     WHERE
+        TRUE 
         {{ incremental_load_filter('_inserted_timestamp') }}
-        qualify ROW_NUMBER() over (
-            PARTITION BY block_id
-            ORDER BY
-                _inserted_timestamp DESC
-        ) = 1
 ),
 blocks AS (
     SELECT
@@ -38,7 +39,7 @@ blocks AS (
         VALUE :header :epoch_id :: STRING AS epoch_id,
         VALUE :header :next_epoch_id :: STRING AS next_epoch_id,
         NULL AS tx_count,
-        -- TODO tx_count not included in the data, may count manually and append in view
+        -- tx_count is legacy field, deprecate from core view
         [] AS events,
         -- events does not exist, Figment created this
         VALUE :chunks :: ARRAY AS chunks,
@@ -47,7 +48,7 @@ blocks AS (
         _load_timestamp,
         _inserted_timestamp
     FROM
-        blocks_json
+        load_blocks
 ),
 FINAL AS (
     SELECT
@@ -66,7 +67,6 @@ FINAL AS (
         tx_count,
         events,
         chunks,
-        {# the core view contains a number of columns that are found in the header #}
         header,
         _partition_by_block_number,
         _load_timestamp,
@@ -83,4 +83,9 @@ SELECT
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
 FROM
-    FINAL
+    FINAL 
+    qualify ROW_NUMBER() over (
+        PARTITION BY block_id
+        ORDER BY
+            _inserted_timestamp DESC
+    ) = 1

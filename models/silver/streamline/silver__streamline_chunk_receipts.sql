@@ -4,9 +4,10 @@
     merge_exclude_columns = ["inserted_timestamp"],
     unique_key = 'receipt_id',
     cluster_by = ['_inserted_timestamp::date', 'block_id'],
-    tags = ['load', 'load_shards']
+    tags = ['load', 'load_shards'],
+    enabled = False
 ) }}
-
+{# Disabled February 2024, no downstream usage #}
 WITH chunks AS (
 
     SELECT

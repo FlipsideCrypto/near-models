@@ -11,13 +11,13 @@ WITH external_shards AS (
             _filename,
             '/'
         ) [0] :: NUMBER AS block_id,
-        CURRENT_TIMESTAMP :: timestamp_ntz AS _load_timestamp,
+        SYSDATE() AS _load_timestamp,
         RIGHT(SPLIT(_filename, '.') [0], 1) :: NUMBER AS _shard_number,
         VALUE,
         _partition_by_block_number
     FROM
         {{ source(
-            "streamline_dev",
+            "streamline",
             "shards"
         ) }}
 ),
@@ -28,26 +28,26 @@ meta AS (
     FROM
         TABLE(
             information_schema.external_table_file_registration_history(
-                start_time => DATEADD('day', -2, CURRENT_TIMESTAMP()),
-                table_name => '{{ source( 'streamline_dev', 'shards' ) }}')
+                start_time => DATEADD('day', -2, SYSDATE()),
+                table_name => '{{ source( 'streamline', 'shards' ) }}')
             ) A
-        ),
-        FINAL AS (
-            SELECT
-                e._filename,
-                e.block_id,
-                e._load_timestamp,
-                e._shard_number,
-                e.value,
-                e._partition_by_block_number,
-                m._inserted_timestamp
-            FROM
-                external_shards e
-                LEFT JOIN meta m USING (
-                    _filename
-                )
-        )
+),
+FINAL AS (
     SELECT
-        *
+        e._filename,
+        e.block_id,
+        e._load_timestamp,
+        e._shard_number,
+        e.value,
+        e._partition_by_block_number,
+        m._inserted_timestamp
     FROM
-        FINAL
+        external_shards e
+        LEFT JOIN meta m USING (
+            _filename
+        )
+)
+SELECT
+    *
+FROM
+    FINAL

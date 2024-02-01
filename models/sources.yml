@@ -21,3 +21,10 @@ sources:
       - name: number_sequence
       - name: github_activity
       - name: labels_combined
+
+  - name: streamline
+    database: streamline
+    schema: near_lake
+    tables:
+      - name: blocks
+      - name: shards

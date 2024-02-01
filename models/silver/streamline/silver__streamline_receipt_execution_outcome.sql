@@ -1,7 +1,7 @@
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'merge',
-    merge_exclude_columns = ["inserted_timestamp"],
+    merge_exclude_columns = ['inserted_timestamp'],
     unique_key = 'receipt_execution_outcome_id',
     cluster_by = ['_inserted_timestamp::date'],
     tags = ['load', 'load_shards']
