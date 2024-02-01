@@ -3,7 +3,7 @@
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
     unique_key = 'bridge_rainbow_id',
-    cluster_by = ['block_timestamp::DATE', 'block_id'],
+    cluster_by = ['_modified_timestamp::DATE'],
     tags = ['curated'],
 ) }}
 
