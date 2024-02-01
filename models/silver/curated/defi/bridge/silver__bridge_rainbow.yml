@@ -63,7 +63,7 @@ models:
       - name: SOURCE_ADDRESS
         description: "{{ doc('source_address')}}"
 
-      - name: PLATFORM_ADDRESS
+      - name: BRIDGE_ADDRESS
         description: "{{ doc('contract_address')}}"
 
       - name: PLATFORM

@@ -33,7 +33,7 @@ models:
       - name: PLATFORM
         description: "{{ doc('platform')}}"
 
-      - name: PLATFORM_ADDRESS
+      - name: BRIDGE_ADDRESS
         description: "{{ doc('contract_address')}}"
 
       - name: DESTINATION_CHAIN_ID

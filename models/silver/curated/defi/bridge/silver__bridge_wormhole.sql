@@ -183,7 +183,7 @@ FINAL AS (
 )
 SELECT
     *,
-    'portalbridge.near' AS platform_address,
+    'portalbridge.near' AS bridge_address,
     'wormhole' AS platform,
     {{ dbt_utils.generate_surrogate_key(
         ['tx_hash']

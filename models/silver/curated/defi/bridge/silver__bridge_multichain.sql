@@ -110,7 +110,7 @@ FINAL AS (
 )
 SELECT
     *,
-    'mpc-multichain.near' AS platform_address,
+    'mpc-multichain.near' AS bridge_address,
     'multichain' AS platform,
     {{ dbt_utils.generate_surrogate_key(
         ['tx_hash']
