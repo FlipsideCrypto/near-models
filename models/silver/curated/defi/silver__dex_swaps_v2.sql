@@ -19,7 +19,15 @@ WITH swap_logs AS (
         {% if var("MANUAL_FIX") %}
             AND {{ partition_load_manual('no_buffer') }}
         {% else %}
-            AND {{ incremental_load_filter('_inserted_timestamp') }}
+            {% if is_incremental() %}
+
+                AND 
+                    _inserted_timestamp >= (
+                        SELECT MAX(_inserted_timestamp) FROM {{ this }}
+                        )
+
+            {% endif %}
+
         {% endif %}
 ),
 receipts AS (
@@ -81,7 +89,8 @@ swap_outcome AS (
         COALESCE(
             _inserted_timestamp,
             _load_timestamp
-        ) AS _inserted_timestamp
+        ) AS _inserted_timestamp,
+        modified_timestamp AS _modified_timestamp
     FROM
         swap_logs
 ),
@@ -136,7 +145,8 @@ parse_actions AS (
         r.receiver_id AS receipt_receiver_id,
         r.signer_id AS receipt_signer_id,
         _partition_by_block_number,
-        _inserted_timestamp
+        _inserted_timestamp,
+        o._modified_timestamp
     FROM
         swap_outcome o
         LEFT JOIN receipts r USING (receipt_object_id)
@@ -157,14 +167,15 @@ FINAL AS (
         swap_input_data,
         LOG,
         _partition_by_block_number,
-        _inserted_timestamp
+        _inserted_timestamp,
+        _modified_timestamp
     FROM
         parse_actions
 )
 SELECT
     *,
     {{ dbt_utils.generate_surrogate_key(
-        ['receipt_object_id', 'log_index']
+        ['receipt_object_id', 'swap_index']
     ) }} AS dex_swaps_v2_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
