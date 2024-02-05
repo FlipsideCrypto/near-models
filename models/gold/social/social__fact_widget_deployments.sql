@@ -15,13 +15,8 @@ SELECT
     branch,
     widget_modules_used,
     widget_url,
-    COALESCE(
-        social_widgets_id,
-        {{ dbt_utils.generate_surrogate_key(
-            ['action_id_social']
-        ) }}
-    ) AS fact_widget_deployments_id,
-    COALESCE(inserted_timestamp, _inserted_timestamp, '2000-01-01' :: TIMESTAMP_NTZ) AS inserted_timestamp,
-    COALESCE(modified_timestamp, _inserted_timestamp, '2000-01-01' :: TIMESTAMP_NTZ) AS modified_timestamp
+    social_widgets_id AS fact_widget_deployments_id,
+    inserted_timestamp AS inserted_timestamp,
+    modified_timestamp AS modified_timestamp
 FROM
     {{ ref('silver_social__widgets') }}
