@@ -6,6 +6,9 @@ models:
       Cleaned and curated widget data on Near Social.
 
     columns:
+      - name: social_widgets_id
+        description: "{{ doc('id')}}"
+
       - name: tx_hash
         description: "{{ doc('tx_hash')}}"
         tests:
