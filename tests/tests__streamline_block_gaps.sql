@@ -18,14 +18,17 @@ WITH silver_blocks AS (
     ) AS prior_hash,
     _partition_by_block_number,
     _inserted_timestamp,
-    CURRENT_TIMESTAMP AS _test_timestamp
+    SYSDATE() AS _test_timestamp
   FROM
     {{ ref('silver__streamline_blocks') }}
+  WHERE
+    _inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
 )
 SELECT
   *
 FROM
   silver_blocks
 WHERE
-  prior_hash <> prev_hash
-  AND _inserted_timestamp <= CURRENT_TIMESTAMP - INTERVAL '1 hour'
+  prior_hash <> prev_hash 
+  {# Buffer for potential out of order blocks #}
+  AND _inserted_timestamp <= SYSDATE() - INTERVAL '1 hour'

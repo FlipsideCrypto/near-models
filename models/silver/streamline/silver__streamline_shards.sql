@@ -2,57 +2,85 @@
     materialized = 'incremental',
     incremental_strategy = 'merge',
     merge_exclude_columns = ['inserted_timestamp'],
-    cluster_by = ['_inserted_timestamp::DATE'],
+    cluster_by = ['_inserted_timestamp::DATE', '_partition_by_block_number'],
     unique_key = 'shard_id',
-    tags = ['load', 'load_shards']
+    tags = ['load', 'load_shards'],
+    full_refresh = False
 ) }}
 
-WITH 
-load_shards AS (
+WITH external_shards AS (
+
     SELECT
-        block_id,
+        metadata$filename AS _filename,
+        VALUE,
+        _partition_by_block_number
+    FROM
+        {{ source(
+            "streamline",
+            "shards"
+        ) }}
+    WHERE
+        _partition_by_block_number >= (
+            SELECT
+                MAX(_partition_by_block_number) - (3000 * {{ var('STREAMLINE_LOAD_LOOKBACK_HOURS', 6) }})
+            FROM
+                {{ this }}
+        )
+),
+meta AS (
+    SELECT
+        job_created_time AS _inserted_timestamp,
+        file_name AS _filename
+    FROM
+        TABLE(
+            information_schema.external_table_file_registration_history(
+                start_time => DATEADD(
+                    'hour', 
+                    -{{ var('STREAMLINE_LOAD_LOOKBACK_HOURS', 6) }},
+                    SYSDATE()
+                ),
+                table_name => '{{ source( 'streamline', 'shards' ) }}'
+            )
+        ) A
+),
+shards AS (
+    SELECT
+        e._filename,
+        SPLIT(
+            e._filename,
+            '/'
+        ) [0] :: NUMBER AS block_id,
+        RIGHT(SPLIT(e._filename, '.') [0], 1) :: NUMBER AS _shard_number,
         concat_ws(
             '-',
             block_id :: STRING,
             _shard_number :: STRING
         ) AS shard_id,
-        _shard_number,
-        VALUE,
-        _filename,
-        _load_timestamp,
-        _partition_by_block_number,
-        _inserted_timestamp
+        e.value :chunk :: variant AS chunk,
+        e.value :receipt_execution_outcomes :: variant AS receipt_execution_outcomes,
+        e.value :shard_id :: NUMBER AS shard_number,
+        e.value :state_changes :: variant AS state_changes,
+        e._partition_by_block_number,
+        m._inserted_timestamp
     FROM
-        {{ ref('bronze__streamline_shards') }}
+        external_shards e
+        LEFT JOIN meta m USING (_filename)
     WHERE
         {{ incremental_load_filter('_inserted_timestamp') }}
-),
-shards AS (
-    SELECT
-        block_id,
-        shard_id,
-        VALUE :chunk :: variant AS chunk,
-        VALUE :receipt_execution_outcomes :: variant AS receipt_execution_outcomes,
-        VALUE :shard_id :: NUMBER AS shard_number,
-        VALUE :state_changes :: variant AS state_changes,
-        _partition_by_block_number,
-        _load_timestamp,
-        _inserted_timestamp
-    FROM
-        load_shards
 )
 SELECT
     *,
     {{ dbt_utils.generate_surrogate_key(
         ['shard_id']
     ) }} AS streamline_shards_id,
+    SYSDATE() AS _load_timestamp,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
 FROM
-    shards
-        qualify ROW_NUMBER() over (
-            PARTITION BY shard_id
-            ORDER BY
-                _inserted_timestamp DESC
-        ) = 1
+    shards 
+    qualify ROW_NUMBER() over (
+        PARTITION BY shard_id
+        ORDER BY
+            _inserted_timestamp DESC
+    ) = 1

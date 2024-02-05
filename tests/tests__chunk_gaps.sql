@@ -50,8 +50,8 @@ missing AS (
             OR cblock_id IS NULL
             OR chunks_included != chunk_ct
         )
-        AND b_inserted_timestamp <= CURRENT_TIMESTAMP - INTERVAL '1 hour'
-        AND c_inserted_timestamp <= CURRENT_TIMESTAMP - INTERVAL '1 hour'
+        AND b_inserted_timestamp <= SYSDATE() - INTERVAL '1 hour'
+        AND c_inserted_timestamp <= SYSDATE() - INTERVAL '1 hour'
     ORDER BY
         1
 )
