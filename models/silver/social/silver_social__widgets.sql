@@ -1,7 +1,7 @@
 {{ config(
     materialized = 'incremental',
     merge_exclude_columns = ["inserted_timestamp"],
-    unique_key = 'action_id_social',
+    unique_key = 'social_widgets_id',
     cluster_by = ['_inserted_timestamp::date', '_partition_by_block_number'],
     tags = ['curated', 'social']
 ) }}
@@ -28,9 +28,9 @@ widgets AS (
         block_timestamp,
         signer_id,
         node_data,
-        object_keys(TRY_PARSE_JSON(node_data)) [0] :: STRING AS widget_name,
+        KEY :: STRING AS widget_name,
         TRY_PARSE_JSON(
-            node_data [widget_name]
+            value
         ) AS source_data,
         CONCAT(
             'https://near.social/#/',
@@ -42,7 +42,10 @@ widgets AS (
         _load_timestamp,
         _inserted_timestamp
     FROM
-        decoded_actions
+        decoded_actions,
+    LATERAL FLATTEN(
+    input => node_data
+    )
 )
 SELECT
     tx_hash,
@@ -68,7 +71,7 @@ SELECT
     _load_timestamp,
     _inserted_timestamp,
     {{ dbt_utils.generate_surrogate_key(
-        ['action_id_social']
+        ['action_id_social', 'widget_name']
     ) }} AS social_widgets_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
