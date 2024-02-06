@@ -4,7 +4,8 @@
     tags = ['helper', 'receipt_map']
 ) }}
 
-WITH recursive ancestrytree AS (
+WITH 
+recursive ancestrytree AS (
 
     SELECT
         item,
@@ -25,7 +26,9 @@ WITH recursive ancestrytree AS (
 ),
 txs AS (
     SELECT
-        *
+        tx_hash,
+        outcome_receipts,
+        _partition_by_block_number
     FROM
         {{ ref('silver__streamline_transactions') }}
 
@@ -36,16 +39,10 @@ txs AS (
         WHERE
             _partition_by_block_number >= (
                 SELECT
-                    MAX(_partition_by_block_number)
+                    MIN(_partition_by_block_number) - (3000 * {{ var('RECEIPT_MAP_LOOKBACK_HOURS') }})
                 FROM
-                    {{ target.database }}.silver.streamline_receipts_final
-            ) - 20000
-            AND _partition_by_block_number <= (
-                SELECT
-                    MAX(_partition_by_block_number)
-                FROM
-                    {{ target.database }}.silver.streamline_receipts_final
-            ) + 220000
+                    {{ ref('_retry_range')}}
+            )
         {% endif %}
 ),
 FINAL AS (

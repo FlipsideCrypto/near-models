@@ -1,6 +1,6 @@
 {{ config(
-    error_if = '>=25',
-    warn_if = 'BETWEEN 1 AND 24'
+    error_if = '>=10',
+    warn_if = 'BETWEEN 1 AND 9'
 ) }}
 
 WITH blocks AS (
@@ -73,6 +73,9 @@ FROM
     comp
 WHERE
     chunk_ct_expected > 0
-    AND is_missing
+    AND is_missing 
+    {# Filter out false positive from blocks at start of window #}
+    AND _inserted_timestamp_blocks > SYSDATE() - INTERVAL '7 days' + INTERVAL '1 hour'
+    AND _inserted_timestamp_shards > SYSDATE() - INTERVAL '7 days' + INTERVAL '1 hour'
 ORDER BY
     1

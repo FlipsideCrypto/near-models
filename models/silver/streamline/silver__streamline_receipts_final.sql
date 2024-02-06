@@ -7,36 +7,18 @@
     tags = ['receipt_map'],
     full_refresh = False
 ) }}
-{# TODO - check clustering. Add SO? #}
+{# 
+    TODO - check clustering. Gold view on this table, add block_ts?
+    Add SO? Probably
+#}
 
 WITH retry_range AS (
 
     SELECT
-        receipt_object_id,
-        block_id,
-        _partition_by_block_number,
-        _inserted_timestamp
-        {% if not var('IS_MIGRATION') %}
-        , _modified_timestamp
-        {% endif %}
+        *
     FROM
-        {{ this }}
+        {{ ref('_retry_range')}}
 
-    {% if var('IS_MIGRATION') %}
-    WHERE
-        _inserted_timestamp >= SYSDATE() - INTERVAL '1 day'
-        AND (
-            tx_hash IS NULL
-            OR block_timestamp IS NULL
-        )
-    {% else %}
-    WHERE
-        _modified_timestamp >= SYSDATE() - INTERVAL '1 day'
-        AND (
-            tx_hash IS NULL
-            OR block_timestamp IS NULL
-        )
-    {% endif %}
 ),
 base_receipts AS (
     SELECT
@@ -60,23 +42,36 @@ base_receipts AS (
         _inserted_timestamp,
         modified_timestamp AS _modified_timestamp
     FROM
-        {{ ref('silver__streamline_receipts') }}
-    WHERE
-        _partition_by_block_number >= (
-            SELECT
-                MIN(_partition_by_block_number)
-            FROM
-                retry_range
-        )
-        AND (
-            {{ incremental_load_filter('_inserted_timestamp') }}
-            OR receipt_id IN (
+        {{ ref('silver__streamline_receipts') }} r
+
+    {% if var('MANUAL_FIX') %}
+
+        WHERE
+            {{ partition_load_manual('no_buffer') }}
+            
+    {% else %}
+
+        WHERE
+            _partition_by_block_number >= (
                 SELECT
-                    receipt_object_id
+                    MIN(_partition_by_block_number) - (3000 * {{ var('RECEIPT_MAP_LOOKBACK_HOURS') }})
                 FROM
                     retry_range
             )
-        )
+            AND (
+                {% if var('IS_MIGRATION') %}
+                    {{ incremental_load_filter('_inserted_timestamp') }}
+                {% else %}
+                    {{ incremental_load_filter('_modified_timestamp') }}
+                {% endif %}
+                OR receipt_id IN (
+                    SELECT
+                        DISTINCT receipt_object_id
+                    FROM
+                        retry_range
+                )
+            )
+    {% endif %}
 ),
 blocks AS (
     SELECT
@@ -84,15 +79,24 @@ blocks AS (
         block_timestamp,
         _partition_by_block_number,
         _inserted_timestamp
+        {% if not var('IS_MIGRATION') %}
+        , modified_timestamp AS _modified_timestamp
+        {% endif %}
     FROM
         {{ ref('silver__streamline_blocks') }}
-    WHERE
-        _partition_by_block_number >= (
-            SELECT
-                MIN(_partition_by_block_number)
-            FROM
-                retry_range
-        )
+
+    {% if var('MANUAL_FIX') %}
+        WHERE
+            {{ partition_load_manual('no_buffer') }}
+    {% else %}
+        WHERE
+            _partition_by_block_number >= (
+                SELECT
+                    MIN(_partition_by_block_number) - (3000 * {{ var('RECEIPT_MAP_LOOKBACK_HOURS') }})
+                FROM
+                    retry_range
+            )
+    {% endif %}
 ),
 append_tx_hash AS (
     SELECT

@@ -31,10 +31,8 @@ models:
         tests:
           - not_null
 
-      - name: _LOAD_TIMESTAMP
-        description: "{{ doc('_load_timestamp')}}"
-        tests:
-          - not_null
+      - name: _MODIFIED_TIMESTAMP
+        description: "{{ doc('_modified_timestamp')}}"
 
       - name: CHUNK_HASH
         description: "{{ doc('chunk_hash')}}"

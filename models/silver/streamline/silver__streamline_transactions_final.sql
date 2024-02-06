@@ -1,17 +1,36 @@
 {{ config(
   materialized = 'incremental',
+  incremental_strategy = 'merge',
+  merge_exclude_columns = ['inserted_timestamp'],
   unique_key = 'tx_hash',
-  incremental_strategy = 'delete+insert',
   cluster_by = ['_inserted_timestamp::date', '_modified_timestamp::DATE', '_partition_by_block_number'],
-  tags = ['receipt_map']
+
 ) }}
-{# TODO - upd * to col selection #}
+
 {# TODO - add _modified_timestamp column #}
 {# TODO - check clustering. Add SO? #}
+{# TODO - clean up the model and joins #}
+
 WITH int_txs AS (
 
   SELECT
-    *
+    block_id,
+    tx_hash,
+    shard_id,
+    transactions_index,
+    chunk_hash,
+    outcome_receipts,
+    _actions,
+    _hash,
+    _nonce,
+    _outcome,
+    _public_key,
+    _receiver_id,
+    _signature,
+    _signer_id,
+    _partition_by_block_number,
+    _inserted_timestamp,
+    modified_timestamp AS _modified_timestamp
   FROM
     {{ ref('silver__streamline_transactions') }}
 
@@ -29,7 +48,15 @@ WITH int_txs AS (
 ),
 int_receipts AS (
   SELECT
-    *
+    block_id,
+    block_timestamp,
+    tx_hash,
+    execution_outcome,
+    receipt_succeeded,
+    gas_burnt,
+    _partition_by_block_number,
+    _inserted_timestamp,
+    modified_timestamp AS _modified_timestamp
   FROM
     {{ ref('silver__streamline_receipts_final') }}
 
@@ -48,7 +75,12 @@ int_receipts AS (
 ),
 int_blocks AS (
   SELECT
-    *
+    block_id,
+    block_hash,
+    block_timestamp,
+    _partition_by_block_number,
+    _inserted_timestamp,
+    modified_timestamp AS _modified_timestamp
   FROM
     {{ ref('silver__streamline_blocks') }}
     {# TODO add WHERE #}
@@ -95,7 +127,6 @@ base_transactions AS (
       'signer_id',
       _signer_id
     ) AS tx,
-    _load_timestamp,
     _partition_by_block_number,
     t._inserted_timestamp
   FROM
@@ -108,7 +139,7 @@ actions AS (
   SELECT
     tx_hash,
     SUM(
-      VALUE :FunctionCall :gas
+      VALUE :FunctionCall :gas :: NUMBER
     ) AS attached_gas
   FROM
     base_transactions,
@@ -131,7 +162,6 @@ transactions AS (
     tx,
     tx :outcome :outcome :gas_burnt :: NUMBER AS transaction_gas_burnt,
     tx :outcome :outcome :tokens_burnt :: NUMBER AS transaction_tokens_burnt,
-    _load_timestamp,
     _partition_by_block_number,
     _inserted_timestamp
   FROM
@@ -141,7 +171,7 @@ receipts AS (
   SELECT
     block_id,
     tx_hash,
-    receipt_succeeded AS success_or_fail,
+    receipt_succeeded,
     SUM(
       gas_burnt
     ) over (
@@ -160,7 +190,7 @@ receipts AS (
   FROM
     int_receipts
   WHERE
-    tokens_burnt != '0'
+    tokens_burnt != 0 -- TODO is this a str? cast to INT 
 ),
 FINAL AS (
   SELECT
@@ -175,7 +205,6 @@ FINAL AS (
     t.tx,
     t.transaction_gas_burnt + r.receipt_gas_burnt AS gas_used,
     t.transaction_tokens_burnt + r.receipt_tokens_burnt AS transaction_fee,
-    _load_timestamp,
     _partition_by_block_number,
     _inserted_timestamp,
     COALESCE(
@@ -183,7 +212,7 @@ FINAL AS (
       gas_used
     ) AS attached_gas,
     LAST_VALUE(
-      r.success_or_fail
+      r.receipt_succeeded
     ) over (
       PARTITION BY r.tx_hash
       ORDER BY
@@ -213,12 +242,12 @@ SELECT
   tx,
   gas_used,
   transaction_fee,
-  _load_timestamp,
   _partition_by_block_number,
   attached_gas,
   tx_succeeded,
   tx_status,
   _inserted_timestamp,
+  {# TODO add _modified_timestamp #}
   {{ dbt_utils.generate_surrogate_key(
     ['tx_hash']
   ) }} AS streamline_transactions_final_id,

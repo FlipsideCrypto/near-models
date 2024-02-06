@@ -26,16 +26,10 @@ WITH receipts AS (
     WHERE
         _partition_by_block_number >= (
             SELECT
-                MAX(_partition_by_block_number)
+                MIN(_partition_by_block_number) - (3000 * {{ var('RECEIPT_MAP_LOOKBACK_HOURS') }})
             FROM
-                {{ target.database }}.silver.streamline_receipts_final
-        ) - 20000
-        AND _partition_by_block_number <= (
-            SELECT
-                MAX(_partition_by_block_number)
-            FROM
-                {{ target.database }}.silver.streamline_receipts_final
-        ) + 220000
+                {{ ref('_retry_range')}}
+        )
     {% endif %}
 )
 SELECT
