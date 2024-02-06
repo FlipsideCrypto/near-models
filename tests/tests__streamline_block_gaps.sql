@@ -37,3 +37,5 @@ FROM
   silver_blocks
 WHERE
   prior_hash <> prev_hash
+  {# Filter out false positive from blocks at start of window (whose parent hash was cut off) #}
+  AND (_inserted_timestamp > SYSDATE() - INTERVAL '7 days' + INTERVAL '1 hour')
