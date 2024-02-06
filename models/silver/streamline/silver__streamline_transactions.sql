@@ -19,8 +19,14 @@ WITH chunks AS (
     FROM
         {{ ref('silver__streamline_shards') }}
     WHERE
-        {{ incremental_load_filter('_inserted_timestamp') }}
-        AND chunk != 'null'
+        chunk != 'null'
+    {% if var('IS_MIGRATION') %}
+        AND 
+            {{ incremental_load_filter('_inserted_timestamp') }}
+    {% else %}
+        AND 
+            {{ incremental_load_filter('_modified_timestamp') }}
+    {% endif %}
 ),
 flatten_transactions AS (
     SELECT
@@ -86,10 +92,15 @@ FINAL AS (
         _inserted_timestamp,
         _modified_timestamp
     FROM
-        txs qualify ROW_NUMBER() over (
+        txs 
+        qualify ROW_NUMBER() over (
             PARTITION BY tx_hash
             ORDER BY
+            {% if var('IS_MIGRATION') %}
                 _inserted_timestamp DESC
+            {% else %}
+                _modified_timestamp DESC
+            {% endif %}
         ) = 1
 )
 SELECT

@@ -3,10 +3,11 @@
     incremental_strategy = 'merge',
     merge_exclude_columns = ['inserted_timestamp'],
     unique_key = 'receipt_object_id',
-    cluster_by = ['_inserted_timestamp::date', '_partition_by_block_number'],
+    cluster_by = ['_inserted_timestamp::date', '_modified_timestamp::DATE', '_partition_by_block_number'],
     tags = ['receipt_map'],
     full_refresh = False
 ) }}
+{# TODO - check clustering. Add SO? #}
 
 WITH retry_range AS (
 
@@ -14,16 +15,28 @@ WITH retry_range AS (
         receipt_object_id,
         block_id,
         _partition_by_block_number,
-        _inserted_timestamp,
-        _modified_timestamp
+        _inserted_timestamp
+        {% if not var('IS_MIGRATION') %}
+        , _modified_timestamp
+        {% endif %}
     FROM
         {{ this }}
+
+    {% if var('IS_MIGRATION') %}
+    WHERE
+        _inserted_timestamp >= SYSDATE() - INTERVAL '1 day'
+        AND (
+            tx_hash IS NULL
+            OR block_timestamp IS NULL
+        )
+    {% else %}
     WHERE
         _modified_timestamp >= SYSDATE() - INTERVAL '1 day'
         AND (
             tx_hash IS NULL
             OR block_timestamp IS NULL
         )
+    {% endif %}
 ),
 base_receipts AS (
     SELECT

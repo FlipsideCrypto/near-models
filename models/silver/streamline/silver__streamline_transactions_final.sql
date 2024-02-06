@@ -2,10 +2,12 @@
   materialized = 'incremental',
   unique_key = 'tx_hash',
   incremental_strategy = 'delete+insert',
-  cluster_by = ['_inserted_timestamp::date', 'block_timestamp::date'],
+  cluster_by = ['_inserted_timestamp::date', '_modified_timestamp::DATE', '_partition_by_block_number'],
   tags = ['receipt_map']
 ) }}
-
+{# TODO - upd * to col selection #}
+{# TODO - add _modified_timestamp column #}
+{# TODO - check clustering. Add SO? #}
 WITH int_txs AS (
 
   SELECT
@@ -13,16 +15,16 @@ WITH int_txs AS (
   FROM
     {{ ref('silver__streamline_transactions') }}
 
-    {% if var("MANUAL_FIX") %}
-    WHERE
-      {{ partition_load_manual('no_buffer') }}
-    {% else %}
+    {% if var('IS_MIGRATION') %}
     WHERE
       {{ partition_incremental_load(
         150000,
         10000,
         0
       ) }}
+    {% else %}
+        WHERE 
+            {{ incremental_load_filter('_modified_timestamp') }}
     {% endif %}
 ),
 int_receipts AS (
@@ -31,23 +33,25 @@ int_receipts AS (
   FROM
     {{ ref('silver__streamline_receipts_final') }}
 
-    {% if var("MANUAL_FIX") %}
-    WHERE
-      {{ partition_load_manual('end') }}
-    {% else %}
+    {% if var('IS_MIGRATION') %}
     WHERE
       {{ partition_incremental_load(
         150000,
         10000,
         0
       ) }}
+    {% else %}
+        WHERE 
+            {{ incremental_load_filter('_modified_timestamp') }}
     {% endif %}
+
 ),
 int_blocks AS (
   SELECT
     *
   FROM
     {{ ref('silver__streamline_blocks') }}
+    {# TODO add WHERE #}
 ),
 receipt_array AS (
   SELECT

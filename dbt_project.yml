@@ -62,6 +62,7 @@ vars:
   OBSERV_FULL_TEST: False
   DBT_FULL_TEST: False
   STREAMLINE_LOAD_LOOKBACK_HOURS: 3
+  IS_MIGRATION: False
 
 dispatch:
   - macro_namespace: dbt
