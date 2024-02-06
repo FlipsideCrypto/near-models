@@ -1,6 +1,6 @@
 {{ config(
-  error_if = '>=25',
-  warn_if = 'BETWEEN 1 AND 24'
+  error_if = '>=10',
+  warn_if = 'BETWEEN 1 AND 9'
 ) }}
 
 WITH silver_blocks AS (
@@ -21,14 +21,19 @@ WITH silver_blocks AS (
     SYSDATE() AS _test_timestamp
   FROM
     {{ ref('silver__streamline_blocks') }}
-  WHERE
-    _inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
+
+    {% if var('DBT_FULL_TEST') %}
+    WHERE
+      _inserted_timestamp < SYSDATE() - INTERVAL '1 hour'
+    {% else %}
+    WHERE
+      _inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days'
+      AND SYSDATE() - INTERVAL '1 hour'
+    {% endif %}
 )
 SELECT
   *
 FROM
   silver_blocks
 WHERE
-  prior_hash <> prev_hash 
-  {# Buffer for potential out of order blocks #}
-  AND _inserted_timestamp <= SYSDATE() - INTERVAL '1 hour'
+  prior_hash <> prev_hash

@@ -12,9 +12,15 @@ WITH blocks AS (
         _inserted_timestamp
     FROM
         {{ ref('silver__streamline_blocks') }}
-    WHERE
-        _inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days'
-        AND SYSDATE() - INTERVAL '1 hour'
+
+        {% if var('DBT_FULL_TEST') %}
+        WHERE
+            _inserted_timestamp < SYSDATE() - INTERVAL '1 hour'
+        {% else %}
+        WHERE
+            _inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days'
+            AND SYSDATE() - INTERVAL '1 hour'
+        {% endif %}
 ),
 shards AS (
     SELECT
@@ -25,9 +31,15 @@ shards AS (
         ) AS chunk_ct_actual
     FROM
         {{ ref('silver__streamline_shards') }}
-    WHERE
-        _inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days'
-        AND SYSDATE() - INTERVAL '1 hour'
+
+        {% if var('DBT_FULL_TEST') %}
+        WHERE
+            _inserted_timestamp < SYSDATE() - INTERVAL '1 hour'
+        {% else %}
+        WHERE
+            _inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days'
+            AND SYSDATE() - INTERVAL '1 hour'
+        {% endif %}
     GROUP BY
         1
 ),
