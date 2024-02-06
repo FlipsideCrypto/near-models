@@ -65,8 +65,19 @@ shards AS (
     FROM
         external_shards e
         LEFT JOIN meta m USING (_filename)
+    {% if var('IS_MIGRATION', False) %}
+    {# Can quickly delete after migration. But, data in other tables is older blocks 
+    ingested more recently. So, simply doing >= inserted timestamp will cause a large gap. #}
+    WHERE
+        _inserted_timestamp >= (
+            SELECT 
+                MAX(_inserted_timestamp) - INTERVAL '6 hours'
+            FROM {{ this }}
+        )
+    {% else %}
     WHERE
         {{ incremental_load_filter('_inserted_timestamp') }}
+    {% endif %}
 )
 SELECT
     *,

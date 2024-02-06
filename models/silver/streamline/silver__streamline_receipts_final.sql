@@ -3,39 +3,83 @@
     incremental_strategy = 'merge',
     merge_exclude_columns = ['inserted_timestamp'],
     unique_key = 'receipt_object_id',
-    cluster_by = ['_inserted_timestamp::date', 'block_id'],
+    cluster_by = ['_inserted_timestamp::date', '_partition_by_block_number'],
     tags = ['receipt_map'],
-    post_hook = 'ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash);'
+    full_refresh = False
 ) }}
 
-WITH base_receipts AS (
+WITH retry_range AS (
 
     SELECT
-        *
+        receipt_object_id,
+        block_id,
+        _partition_by_block_number,
+        _inserted_timestamp,
+        _modified_timestamp
+    FROM
+        {{ this }}
+    WHERE
+        _modified_timestamp >= SYSDATE() - INTERVAL '1 day'
+        AND (
+            tx_hash IS NULL
+            OR block_timestamp IS NULL
+        )
+),
+base_receipts AS (
+    SELECT
+        receipt_id,
+        block_id,
+        shard_id,
+        receipt_index,
+        chunk_hash,
+        receipt,
+        execution_outcome,
+        outcome_receipts,
+        receiver_id,
+        signer_id,
+        receipt_type,
+        receipt_succeeded,
+        error_type_0,
+        error_type_1,
+        error_type_2,
+        error_message,
+        _partition_by_block_number,
+        _inserted_timestamp,
+        modified_timestamp AS _modified_timestamp
     FROM
         {{ ref('silver__streamline_receipts') }}
-
-        {#
-            TODO - rethink incr load and make sure there's a lookback / re-run for late receipts
-            Revise this whole incremental load that's used throughout the models
-            If standard, factor whole thing into a new macro
-         #}
-         
-        {% if var("MANUAL_FIX") %}
-        WHERE
-            {{ partition_load_manual('no_buffer') }}
-        {% else %}
-        WHERE
+    WHERE
+        _partition_by_block_number >= (
+            SELECT
+                MIN(_partition_by_block_number)
+            FROM
+                retry_range
+        )
+        AND (
             {{ incremental_load_filter('_inserted_timestamp') }}
-        {% endif %}
+            OR receipt_id IN (
+                SELECT
+                    receipt_object_id
+                FROM
+                    retry_range
+            )
+        )
 ),
 blocks AS (
     SELECT
         block_id,
-        block_timestamp
+        block_timestamp,
+        _partition_by_block_number,
+        _inserted_timestamp
     FROM
         {{ ref('silver__streamline_blocks') }}
-    {# TODO - limit scan with where clause #}
+    WHERE
+        _partition_by_block_number >= (
+            SELECT
+                MIN(_partition_by_block_number)
+            FROM
+                retry_range
+        )
 ),
 append_tx_hash AS (
     SELECT
@@ -56,9 +100,9 @@ append_tx_hash AS (
         r.error_type_1,
         r.error_type_2,
         r.error_message,
-        r._load_timestamp,
         r._partition_by_block_number,
-        r._inserted_timestamp
+        r._inserted_timestamp,
+        r._modified_timestamp
     FROM
         base_receipts r
         LEFT JOIN {{ ref('silver__receipt_tx_hash_mapping') }}
@@ -88,9 +132,9 @@ FINAL AS (
         error_type_1,
         error_type_2,
         error_message,
-        _load_timestamp,
         _partition_by_block_number,
-        _inserted_timestamp
+        _inserted_timestamp,
+        _modified_timestamp
     FROM
         append_tx_hash r
         LEFT JOIN blocks b USING (block_id)

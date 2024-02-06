@@ -12,7 +12,7 @@ WITH block_chunks_included AS (
     SELECT
         block_id,
         block_timestamp,
-        header :chunks_included AS chunks_included,
+        header :chunks_included :: INT AS chunks_included,
         _partition_by_block_number,
         _inserted_timestamp
     FROM
@@ -73,10 +73,10 @@ chunks_per_block AS (
         block_id,
         MAX(_inserted_timestamp) AS _inserted_timestamp,
         COUNT(
-            DISTINCT chunk_hash
+            DISTINCT chunk :header :chunk_hash :: STRING
         ) AS chunk_ct
     FROM
-        {{ ref('silver__streamline_transactions') }}
+        {{ ref('silver__streamline_shards') }}
     WHERE 
         block_id >= (SELECT min_block FROM summary_stats) 
     AND
