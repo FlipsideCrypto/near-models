@@ -31,4 +31,4 @@ FROM
 WHERE
   prior_hash <> prev_hash 
   {# Buffer for potential out of order blocks #}
-  AND _inserted_timestamp <= SYSDATE() - INTERVAL '1 hour'
+  {# AND _inserted_timestamp <= SYSDATE() - INTERVAL '1 hour' #}

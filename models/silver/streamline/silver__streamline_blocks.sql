@@ -22,7 +22,7 @@ WITH external_blocks AS (
     WHERE
         _partition_by_block_number >= (
             SELECT
-                MAX(_partition_by_block_number) - (3000 * {{ var('STREAMLINE_LOAD_LOOKBACK_HOURS', 6) }})
+                MAX(_partition_by_block_number) - (3000 * {{ var('STREAMLINE_LOAD_LOOKBACK_HOURS') }})
             FROM
                 {{ this }}
         )
@@ -36,7 +36,7 @@ meta AS (
             information_schema.external_table_file_registration_history(
                 start_time => DATEADD(
                     'hour', 
-                    -{{ var('STREAMLINE_LOAD_LOOKBACK_HOURS', 6) }},
+                    -{{ var('STREAMLINE_LOAD_LOOKBACK_HOURS') }},
                     SYSDATE()
                 ),
                 table_name => '{{ source( 'streamline', 'blocks' ) }}'
@@ -80,7 +80,6 @@ SELECT
     {{ dbt_utils.generate_surrogate_key(
         ['block_id']
     ) }} AS streamline_blocks_id,
-    SYSDATE() AS _load_timestamp,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id

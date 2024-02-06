@@ -76,7 +76,7 @@ chunks_per_block AS (
             DISTINCT chunk_hash
         ) AS chunk_ct
     FROM
-        {{ ref('silver__streamline_chunks') }}
+        {{ ref('silver__streamline_transactions') }}
     WHERE 
         block_id >= (SELECT min_block FROM summary_stats) 
     AND

@@ -3,18 +3,50 @@
     incremental_strategy = 'merge',
     merge_exclude_columns = ['inserted_timestamp'],
     unique_key = 'receipt_id',
-    cluster_by = ['_inserted_timestamp::date', 'block_id'],
+    cluster_by = ['_inserted_timestamp::date', '_partition_by_block_number'],
     tags = ['load', 'load_shards']
 ) }}
 
-WITH receipt_execution_outcomes AS (
+WITH shards AS (
 
     SELECT
-        *
+        block_id,
+        shard_id,
+        receipt_execution_outcomes,
+        chunk :header :chunk_hash :: STRING AS chunk_hash,
+        _partition_by_block_number,
+        _inserted_timestamp,
+        modified_timestamp AS _modified_timestamp
     FROM
-        {{ ref('silver__streamline_receipt_execution_outcome') }}
+        {{ ref('silver__streamline_shards') }}
     WHERE
-        {{ incremental_load_filter('_inserted_timestamp ') }}
+        ARRAY_SIZE(receipt_execution_outcomes) > 0
+        AND {{ incremental_load_filter('_inserted_timestamp') }}
+),
+receipt_execution_outcomes AS (
+
+    SELECT
+        concat_ws(
+            '-',
+            shard_id,
+            INDEX
+        ) AS receipt_execution_outcome_id,
+        block_id,
+        shard_id,
+        chunk_hash,
+        INDEX AS receipt_outcome_execution_index,
+        VALUE :execution_outcome :: OBJECT AS execution_outcome,
+        VALUE :receipt :: OBJECT AS receipt,
+        VALUE :receipt :receipt_id :: STRING AS receipt_id,
+        VALUE :execution_outcome :id :: STRING AS receipt_outcome_id,
+        _partition_by_block_number,
+        _inserted_timestamp,
+        _modified_timestamp
+    FROM
+        shards,
+        LATERAL FLATTEN(
+            input => receipt_execution_outcomes
+        )
 ),
 FINAL AS (
     SELECT
@@ -57,9 +89,9 @@ FINAL AS (
                 receipt :receipt
             ) [0] :: STRING
         ) AS receipt_type,
-        _load_timestamp,
         _partition_by_block_number,
-        _inserted_timestamp
+        _inserted_timestamp,
+        _modified_timestamp
     FROM
         receipt_execution_outcomes
 )

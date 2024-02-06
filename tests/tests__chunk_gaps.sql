@@ -12,6 +12,8 @@ WITH block_chunks_included AS (
         _inserted_timestamp
     FROM
         {{ ref('silver__streamline_blocks') }}
+    WHERE
+        _inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
 ),
 chunks_per_block AS (
     SELECT
@@ -21,7 +23,9 @@ chunks_per_block AS (
             DISTINCT chunk_hash
         ) AS chunk_ct
     FROM
-        {{ ref('silver__streamline_chunks') }}
+        {{ ref('silver__streamline_transactions') }}
+    WHERE
+        _inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
     GROUP BY
         1
 ),
@@ -50,8 +54,8 @@ missing AS (
             OR cblock_id IS NULL
             OR chunks_included != chunk_ct
         )
-        AND b_inserted_timestamp <= SYSDATE() - INTERVAL '1 hour'
-        AND c_inserted_timestamp <= SYSDATE() - INTERVAL '1 hour'
+        {# AND b_inserted_timestamp <= SYSDATE() - INTERVAL '1 hour' #}
+        {# AND c_inserted_timestamp <= SYSDATE() - INTERVAL '1 hour' #}
     ORDER BY
         1
 )
