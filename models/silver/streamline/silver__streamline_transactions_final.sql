@@ -7,9 +7,7 @@
 
 ) }}
 
-{# TODO - add _modified_timestamp column #}
-{# TODO - check clustering. Add SO? #}
-{# TODO - clean up the model and joins #}
+{# TODO - need help thinking thru if incr loading should be changed #}
 
 WITH int_txs AS (
 
@@ -42,8 +40,12 @@ WITH int_txs AS (
         0
       ) }}
     {% else %}
-        WHERE 
-            {{ incremental_load_filter('_modified_timestamp') }}
+    WHERE
+      {{ partition_incremental_load(
+        2000,
+        1000,
+        0
+      ) }}
     {% endif %}
 ),
 int_receipts AS (
@@ -68,8 +70,11 @@ int_receipts AS (
         0
       ) }}
     {% else %}
-        WHERE 
-            {{ incremental_load_filter('_modified_timestamp') }}
+      {{ partition_incremental_load(
+        2000,
+        1000,
+        0
+      ) }}
     {% endif %}
 
 ),
@@ -83,7 +88,10 @@ int_blocks AS (
     modified_timestamp AS _modified_timestamp
   FROM
     {{ ref('silver__streamline_blocks') }}
-    {# TODO add WHERE #}
+  WHERE
+    _partition_by_block_number >= (
+      SELECT MIN(_partition_by_block_number) FROM int_txs
+    )
 ),
 receipt_array AS (
   SELECT
@@ -128,7 +136,8 @@ base_transactions AS (
       _signer_id
     ) AS tx,
     _partition_by_block_number,
-    t._inserted_timestamp
+    t._inserted_timestamp,
+    t._modified_timestamp
   FROM
     int_txs t
     LEFT JOIN receipt_array r USING (tx_hash)
@@ -163,7 +172,8 @@ transactions AS (
     tx :outcome :outcome :gas_burnt :: NUMBER AS transaction_gas_burnt,
     tx :outcome :outcome :tokens_burnt :: NUMBER AS transaction_tokens_burnt,
     _partition_by_block_number,
-    _inserted_timestamp
+    _inserted_timestamp,
+    _modified_timestamp
   FROM
     base_transactions
 ),
@@ -186,11 +196,12 @@ receipts AS (
       ORDER BY
         tx_hash DESC
     ) AS receipt_tokens_burnt,
-    execution_outcome :outcome: tokens_burnt :: NUMBER AS tokens_burnt
+    execution_outcome :outcome: tokens_burnt :: NUMBER AS tokens_burnt,
+    _modified_timestamp
   FROM
     int_receipts
   WHERE
-    tokens_burnt != 0 -- TODO is this a str? cast to INT 
+    tokens_burnt != 0
 ),
 FINAL AS (
   SELECT
@@ -205,8 +216,6 @@ FINAL AS (
     t.tx,
     t.transaction_gas_burnt + r.receipt_gas_burnt AS gas_used,
     t.transaction_tokens_burnt + r.receipt_tokens_burnt AS transaction_fee,
-    _partition_by_block_number,
-    _inserted_timestamp,
     COALESCE(
       actions.attached_gas,
       gas_used
@@ -222,7 +231,14 @@ FINAL AS (
       tx_succeeded,
       'Success',
       'Fail'
-    ) AS tx_status
+    ) AS tx_status, -- DEPRECATE TX_STATUS IN GOLD
+      _partition_by_block_number,
+    _inserted_timestamp,
+    GREATEST(
+      t._modified_timestamp,
+      r._modified_timestamp,
+      b._modified_timestamp
+    ) AS _modified_timestamp -- TODO - confirm use greatest? Migrating incr logic to modified??
   FROM
     transactions AS t
     LEFT JOIN receipts AS r
@@ -242,12 +258,12 @@ SELECT
   tx,
   gas_used,
   transaction_fee,
-  _partition_by_block_number,
   attached_gas,
   tx_succeeded,
   tx_status,
+  _partition_by_block_number,
   _inserted_timestamp,
-  {# TODO add _modified_timestamp #}
+  _modified_timestamp,
   {{ dbt_utils.generate_surrogate_key(
     ['tx_hash']
   ) }} AS streamline_transactions_final_id,
@@ -255,8 +271,5 @@ SELECT
   SYSDATE() AS modified_timestamp,
   '{{ invocation_id }}' AS _invocation_id
 FROM
-  FINAL qualify ROW_NUMBER() over (
-    PARTITION BY tx_hash
-    ORDER BY
-      _inserted_timestamp DESC
-  ) = 1
+  FINAL 
+
