@@ -10,14 +10,29 @@
 WITH pool_events AS (
 
     SELECT
-        *
+        tx_hash,
+        block_id,
+        block_timestamp,
+        receipt_object_id,
+        receiver_id,
+        signer_id,
+        status_value,
+        logs,
+        LOG,
+        _partition_by_block_number,
+        _inserted_timestamp,
+        modified_timestamp AS _modified_timestamp
     FROM
         {{ ref('silver__pool_events') }}
     WHERE
         {% if var("MANUAL_FIX") %}
             {{ partition_load_manual('no_buffer') }}
         {% else %}
-            {{ incremental_load_filter('_inserted_timestamp') }}
+            {% if var('IS_MIGRATION') %}
+                {{ incremental_load_filter('_inserted_timestamp') }}
+            {% else %}
+                {{ incremental_load_filter('_modified_timestamp') }}
+            {% endif %}
         {% endif %}
 ),
 staking_actions AS (
@@ -52,9 +67,9 @@ staking_actions AS (
             amount_raw :: STRING
         ) AS decimals,
         signer_id = log_signer_id AS _log_signer_id_match,
-        _load_timestamp,
         _partition_by_block_number,
-        _inserted_timestamp
+        _inserted_timestamp,
+        _modified_timestamp
     FROM
         pool_events
     WHERE
@@ -79,9 +94,9 @@ FINAL AS (
         amount_adj,
         decimals,
         _log_signer_id_match,
-        _load_timestamp,
         _partition_by_block_number,
-        _inserted_timestamp
+        _inserted_timestamp,
+        _modified_timestamp
     FROM
         staking_actions
 )

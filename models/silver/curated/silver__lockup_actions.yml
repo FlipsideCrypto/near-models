@@ -48,14 +48,14 @@ models:
       - name: TRANSFERS_INFORMATION
         description: "{{ doc('transfers_information')}}"
         
-      - name: _LOAD_TIMESTAMP
-        description: "{{ doc('_load_timestamp')}}"
-
       - name: _PARTITION_BY_BLOCK_NUMBER
         description: "{{ doc('_partition_by_block_number')}}"
 
       - name: _INSERTED_TIMESTAMP
         description: "{{ doc('_inserted_timestamp')}}"
+
+      - name: _MODIFIED_TIMESTAMP
+        description: "{{ doc('_modified_timestamp')}}"
 
       - name: LOCKUP_ACTIONS_ID
         description: "{{doc('id')}}"

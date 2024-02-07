@@ -6,7 +6,7 @@
   incremental_strategy = 'merge',
   tags = ['curated']
 ) }}
-
+{# TODO - time for a v2 #}
 WITH action_events AS(
 
   SELECT
@@ -14,20 +14,25 @@ WITH action_events AS(
     action_id,
     action_data :deposit :: INT AS deposit,
     _partition_by_block_number,
-    _inserted_timestamp
+    _inserted_timestamp,
+    modified_timestamp AS _modified_timestamp
   FROM
     {{ ref('silver__actions_events_s3') }}
   WHERE
     action_name = 'Transfer' {% if var("MANUAL_FIX") %}
       AND {{ partition_load_manual('no_buffer') }}
     {% else %}
-      AND {{ incremental_load_filter("_inserted_timestamp") }}
+      {% if var('IS_MIGRATION') %}
+          AND {{ incremental_load_filter('_inserted_timestamp') }}
+      {% else %}
+          AND {{ incremental_load_filter('_modified_timestamp') }}
+      {% endif %}
     {% endif %}
 ),
 txs AS (
   SELECT
     tx_hash,
-    tx :receipt AS tx_receipt,
+    tx :receipt ::ARRAY AS tx_receipt,
     block_id,
     block_timestamp,
     tx_receiver,
@@ -38,9 +43,9 @@ txs AS (
       WHEN tx :receipt [0] :outcome :status :: STRING = '{"SuccessValue":""}' THEN TRUE
       ELSE FALSE
     END AS status,
-    _load_timestamp,
     _partition_by_block_number,
-    _inserted_timestamp
+    _inserted_timestamp,
+    modified_timestamp AS _modified_timestamp
   FROM
     {{ ref('silver__streamline_transactions_final') }}
 
@@ -48,15 +53,18 @@ txs AS (
     WHERE
       {{ partition_load_manual('no_buffer') }}
     {% else %}
-    WHERE
-      {{ incremental_load_filter("_inserted_timestamp") }}
+      {% if var('IS_MIGRATION') %}
+          WHERE {{ incremental_load_filter('_inserted_timestamp') }}
+      {% else %}
+          WHERE {{ incremental_load_filter('_modified_timestamp') }}
+      {% endif %}
     {% endif %}
 ),
 receipts AS (
   SELECT
     tx_hash,
     ARRAY_AGG(
-      VALUE :id
+      VALUE :id :: STRING
     ) AS receipt_object_id
   FROM
     txs,
@@ -79,9 +87,9 @@ actions AS (
     t.transaction_fee,
     t.gas_used,
     t.status,
-    t._load_timestamp,
     t._partition_by_block_number,
-    t._inserted_timestamp
+    t._inserted_timestamp,
+    t._modified_timestamp
   FROM
     txs AS t
     INNER JOIN receipts AS r
@@ -102,9 +110,9 @@ FINAL AS (
     transaction_fee,
     gas_used,
     status,
-    _load_timestamp,
     _partition_by_block_number,
-    _inserted_timestamp
+    _inserted_timestamp,
+    _modified_timestamp
   FROM
     actions
 )

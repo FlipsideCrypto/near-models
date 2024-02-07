@@ -8,7 +8,11 @@
 WITH txs AS (
 
     SELECT
-        *
+        tx_hash,
+        tx_succeeded,
+        _partition_by_block_number,
+        _inserted_timestamp,
+        modified_timestamp AS _modified_timestamp
     FROM
         {{ ref('silver__streamline_transactions_final') }}
 
@@ -16,13 +20,27 @@ WITH txs AS (
         WHERE
             {{ partition_load_manual('no_buffer') }}
         {% else %}
-        WHERE
-            {{ incremental_load_filter('_inserted_timestamp') }}
+            {% if var('IS_MIGRATION') %}
+                WHERE {{ incremental_load_filter('_inserted_timestamp') }}
+            {% else %}
+                WHERE {{ incremental_load_filter('_modified_timestamp') }}
+            {% endif %}
         {% endif %}
 ),
 function_calls AS (
     SELECT
-        *
+        tx_hash,
+        action_id,
+        block_timestamp,
+        block_id,
+        signer_id,
+        receiver_id,
+        args,
+        deposit,
+        method_name,
+        _partition_by_block_number,
+        _inserted_timestamp,
+        modified_timestamp AS _modified_timestamp
     FROM
         {{ ref('silver__actions_events_function_call_s3') }}
 
@@ -30,13 +48,23 @@ function_calls AS (
         WHERE
             {{ partition_load_manual('no_buffer') }}
         {% else %}
-        WHERE
-            {{ incremental_load_filter('_inserted_timestamp') }}
+            {% if var('IS_MIGRATION') %}
+                WHERE {{ incremental_load_filter('_inserted_timestamp') }}
+            {% else %}
+                WHERE {{ incremental_load_filter('_modified_timestamp') }}
+            {% endif %}
         {% endif %}
 ),
 xfers AS (
     SELECT
-        *
+        tx_hash,
+        action_id,
+        block_timestamp,
+        block_id,
+        deposit,
+        _partition_by_block_number,
+        _inserted_timestamp,
+        modified_timestamp AS _modified_timestamp
     FROM
         {{ ref('silver__transfers_s3') }}
 
@@ -44,8 +72,11 @@ xfers AS (
         WHERE
             {{ partition_load_manual('no_buffer') }}
         {% else %}
-        WHERE
-            {{ incremental_load_filter('_inserted_timestamp') }}
+            {% if var('IS_MIGRATION') %}
+                WHERE {{ incremental_load_filter('_inserted_timestamp') }}
+            {% else %}
+                WHERE {{ incremental_load_filter('_modified_timestamp') }}
+            {% endif %}
         {% endif %}
 ),
 lockup_actions AS (
@@ -63,9 +94,9 @@ lockup_actions AS (
         args,
         deposit,
         method_name,
-        _load_timestamp,
         _partition_by_block_number,
-        _inserted_timestamp
+        _inserted_timestamp,
+        _modified_timestamp
     FROM
         function_calls
     WHERE
@@ -105,9 +136,9 @@ agg_arguments AS (
         COUNT(
             DISTINCT method_name
         ) AS method_count,
-        MIN(_load_timestamp) AS _load_timestamp,
         MIN(_partition_by_block_number) AS _partition_by_block_number,
-        MIN(_inserted_timestamp) AS _inserted_timestamp
+        MIN(_inserted_timestamp) AS _inserted_timestamp,
+        MIN(_modified_timestamp) AS _modified_timestamp
     FROM
         lockup_actions
     GROUP BY
@@ -124,9 +155,9 @@ lockup_xfers AS (
         block_timestamp,
         block_id,
         deposit,
-        _load_timestamp,
         _partition_by_block_number,
-        _inserted_timestamp
+        _inserted_timestamp,
+        _modified_timestamp
     FROM
         xfers
     WHERE
@@ -173,9 +204,9 @@ parse_args_json AS (
         ) AS vesting_schedule,
         args_all :new :transfers_information :: STRING AS transfers_information,
         args_all,
-        A._load_timestamp,
         A._partition_by_block_number,
-        A._inserted_timestamp
+        A._inserted_timestamp,
+        A._modified_timestamp
     FROM
         agg_arguments A
         LEFT JOIN lockup_xfers x
@@ -197,14 +228,14 @@ FINAL AS (
         vesting_schedule,
         transfers_information,
         args_all,
-        f._load_timestamp,
         f._partition_by_block_number,
-        f._inserted_timestamp
+        f._inserted_timestamp,
+        f._modified_timestamp
     FROM
         parse_args_json f
         LEFT JOIN txs USING (tx_hash)
     WHERE
-        tx_status != 'Fail'
+        tx_succeeded
 )
 SELECT
     *,
