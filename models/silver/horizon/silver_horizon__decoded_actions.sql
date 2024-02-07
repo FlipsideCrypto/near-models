@@ -9,31 +9,58 @@
 WITH all_horizon_receipts AS (
 
     SELECT
-        *
+        tx_hash,
+        receipt_object_id,
+        receiver_id,
+        signer_id,
+        receipt_succeeded,
+        logs,
+        _partition_by_block_number,
+        _inserted_timestamp,
+        modified_timestamp AS _modified_timestamp
     FROM
         {{ ref('silver_horizon__receipts') }}
     WHERE
         {% if var("MANUAL_FIX") %}
             {{ partition_load_manual('no_buffer') }}
         {% else %}
-            {{ incremental_load_filter('_inserted_timestamp') }}
+            {% if var('IS_MIGRATION') %}
+                {{ incremental_load_filter('_inserted_timestamp') }}
+            {% else %}
+                {{ incremental_load_filter('_modified_timestamp') }}
+            {% endif %}
         {% endif %}
 ),
 decoded_function_calls AS (
     SELECT
-        *,
         SPLIT(
             action_id,
             '-'
-        ) [0] :: STRING AS receipt_object_id
+        ) [0] :: STRING AS receipt_object_id,
+        action_id,
+        tx_hash,
+        block_id,
+        block_timestamp,
+        method_name,
+        args,
+        deposit,
+        attached_gas,
+        _partition_by_block_number,
+        _inserted_timestamp,
+        modified_timestamp AS _modified_timestamp
     FROM
         {{ ref('silver__actions_events_function_call_s3') }}
     WHERE
         {% if var("MANUAL_FIX") %}
             {{ partition_load_manual('no_buffer') }}
         {% else %}
-            {{ incremental_load_filter('_inserted_timestamp') }}
+            {% if var('IS_MIGRATION') %}
+                {{ incremental_load_filter('_inserted_timestamp') }}
+            {% else %}
+                {{ incremental_load_filter('_modified_timestamp') }}
+            {% endif %}
         {% endif %}
+
         AND _partition_by_block_number >= 85000000
         AND SPLIT(
             action_id,
@@ -60,9 +87,9 @@ FINAL AS (
         r.signer_id,
         r.receipt_succeeded,
         r.logs,
-        fc._load_timestamp,
         fc._partition_by_block_number,
-        fc._inserted_timestamp
+        fc._inserted_timestamp,
+        fc._modified_timestamp
     FROM
         decoded_function_calls fc
         LEFT JOIN all_horizon_receipts r USING (receipt_object_id)
@@ -80,9 +107,9 @@ SELECT
     receiver_id,
     signer_id,
     receipt_succeeded,
-    _load_timestamp,
     _partition_by_block_number,
     _inserted_timestamp,
+    _modified_timestamp,
     {{ dbt_utils.generate_surrogate_key(
         ['action_id_horizon']
     ) }} AS horizon_decoded_actions_id,
