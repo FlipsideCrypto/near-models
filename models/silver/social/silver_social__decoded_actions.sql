@@ -9,14 +9,24 @@
 WITH all_social_receipts AS (
 
     SELECT
-        *
+        receipt_object_id,
+        receiver_id,
+        signer_id,
+        execution_outcome,
+        _partition_by_block_number,
+        _inserted_timestamp,
+        modified_timestamp AS _modified_timestamp
     FROM
         {{ ref('silver_social__receipts') }}
     WHERE
         {% if var("MANUAL_FIX") %}
             {{ partition_load_manual('no_buffer') }}
         {% else %}
-            {{ incremental_load_filter('_inserted_timestamp') }}
+            {% if var('IS_MIGRATION') %}
+                {{ incremental_load_filter('_inserted_timestamp') }}
+            {% else %}
+                {{ incremental_load_filter('_modified_timestamp') }}
+            {% endif %}
         {% endif %}
 
         {# NOTE - 5 "maintenance" receipts prior to 75mm that create/add/revoke keys, etc. Largely irrelevant to the platform. #}
@@ -24,18 +34,32 @@ WITH all_social_receipts AS (
 ),
 decoded_function_calls AS (
     SELECT
-        *,
         SPLIT(
             action_id,
             '-'
-        ) [0] :: STRING AS receipt_object_id
+        ) [0] :: STRING AS receipt_object_id,
+        action_id,
+        tx_hash,
+        block_id,
+        block_timestamp,
+        method_name,
+        args,
+        deposit,
+        attached_gas,
+        _partition_by_block_number,
+        _inserted_timestamp,
+        modified_timestamp AS _modified_timestamp
     FROM
         {{ ref('silver__actions_events_function_call_s3') }}
     WHERE
         {% if var("MANUAL_FIX") %}
             {{ partition_load_manual('no_buffer') }}
         {% else %}
-            {{ incremental_load_filter('_inserted_timestamp') }}
+            {% if var('IS_MIGRATION') %}
+                {{ incremental_load_filter('_inserted_timestamp') }}
+            {% else %}
+                {{ incremental_load_filter('_modified_timestamp') }}
+            {% endif %}
         {% endif %}
         AND _partition_by_block_number >= 75000000
         AND SPLIT(
@@ -61,9 +85,9 @@ join_wallet_ids AS (
         r.receiver_id,
         r.signer_id,
         r.execution_outcome,
-        fc._load_timestamp,
         fc._partition_by_block_number,
-        fc._inserted_timestamp
+        fc._inserted_timestamp,
+        fc._modified_timestamp
     FROM
         decoded_function_calls fc
         LEFT JOIN all_social_receipts r USING (receipt_object_id)
@@ -83,9 +107,9 @@ action_data AS (
         attached_gas,
         receiver_id,
         signer_id,
-        _load_timestamp,
         _partition_by_block_number,
-        _inserted_timestamp
+        _inserted_timestamp,
+        _modified_timestamp
     FROM
         join_wallet_ids
 ),
@@ -102,9 +126,9 @@ flattened_actions AS (
         signer_id,
         key AS node,
         VALUE AS node_data,
-        _load_timestamp,
         _partition_by_block_number,
-        _inserted_timestamp
+        _inserted_timestamp,
+        _modified_timestamp
     FROM
         action_data,
         LATERAL FLATTEN (

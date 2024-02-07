@@ -9,14 +9,22 @@
 WITH receipts AS (
 
     SELECT
-        *
+        receipt_object_id,
+        signer_id,
+        _partition_by_block_number,
+        _inserted_timestamp,
+        modified_timestamp AS _modified_timestamp
     FROM
         {{ ref('silver__streamline_receipts_final') }}
     WHERE
         {% if var("MANUAL_FIX") %}
             {{ partition_load_manual('no_buffer') }}
         {% else %}
-            {{ incremental_load_filter('_inserted_timestamp') }}
+            {% if var('IS_MIGRATION') %}
+                {{ incremental_load_filter('_inserted_timestamp') }}
+            {% else %}
+                {{ incremental_load_filter('_modified_timestamp') }}
+            {% endif %}
         {% endif %}
         AND _partition_by_block_number >= 59670000
 ),
@@ -31,15 +39,19 @@ from_addkey_event AS (
         receiver_id,
         'AddKey' AS _source,
         _partition_by_block_number,
-        _load_timestamp,
-        _inserted_timestamp
+        _inserted_timestamp,
+        modified_timestamp AS _modified_timestamp
     FROM
         {{ ref('silver__actions_events_addkey_s3') }}
     WHERE
         {% if var("MANUAL_FIX") %}
             {{ partition_load_manual('no_buffer') }}
         {% else %}
-            {{ incremental_load_filter('_inserted_timestamp') }}
+            {% if var('IS_MIGRATION') %}
+                {{ incremental_load_filter('_inserted_timestamp') }}
+            {% else %}
+                {{ incremental_load_filter('_modified_timestamp') }}
+            {% endif %}
         {% endif %}
         AND receiver_id = 'social.near'
 ),
@@ -56,15 +68,19 @@ nested_in_functioncall AS (
         ) AS receiver_id,
         'FunctionCall' AS _source,
         _partition_by_block_number,
-        _load_timestamp,
-        _inserted_timestamp
+        _inserted_timestamp,
+        modified_timestamp AS _modified_timestamp
     FROM
         {{ ref('silver__actions_events_function_call_s3') }}
     WHERE
         {% if var("MANUAL_FIX") %}
             {{ partition_load_manual('no_buffer') }}
         {% else %}
-            {{ incremental_load_filter('_inserted_timestamp') }}
+            {% if var('IS_MIGRATION') %}
+                {{ incremental_load_filter('_inserted_timestamp') }}
+            {% else %}
+                {{ incremental_load_filter('_modified_timestamp') }}
+            {% endif %}
         {% endif %}
         AND method_name = 'add_request_and_confirm'
         AND receiver_id = 'social.near'
@@ -82,8 +98,8 @@ combine AS (
         allowance,
         _source,
         _partition_by_block_number,
-        _load_timestamp,
-        _inserted_timestamp
+        _inserted_timestamp,
+        _modified_timestamp
     FROM
         from_addkey_event
     UNION
@@ -99,8 +115,8 @@ combine AS (
         allowance,
         _source,
         _partition_by_block_number,
-        _load_timestamp,
-        _inserted_timestamp
+        _inserted_timestamp,
+        _modified_timestamp
     FROM
         nested_in_functioncall
 ),
@@ -115,8 +131,8 @@ FINAL AS (
         r.signer_id,
         A._source,
         A._partition_by_block_number,
-        A._load_timestamp,
-        A._inserted_timestamp
+        A._inserted_timestamp,
+        A._modified_timestamp
     FROM
         combine A
         LEFT JOIN receipts r
