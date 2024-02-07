@@ -4,7 +4,7 @@
   merge_exclude_columns = ['inserted_timestamp'],
   unique_key = 'tx_hash',
   cluster_by = ['_inserted_timestamp::date', '_modified_timestamp::DATE', '_partition_by_block_number'],
-
+  tags = ['receipt_map']
 ) }}
 
 {# TODO - need help thinking thru if incr loading should be changed #}
