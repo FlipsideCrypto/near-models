@@ -25,7 +25,7 @@ SELECT
     transaction_fee,
     attached_gas,
     tx_succeeded,
-    tx_status,
+    tx_status, -- TO DEPRECATE
     COALESCE(
         streamline_transactions_final_id,
         {{ dbt_utils.generate_surrogate_key(

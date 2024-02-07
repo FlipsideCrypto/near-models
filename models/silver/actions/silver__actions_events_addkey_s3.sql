@@ -12,14 +12,26 @@
 WITH action_events AS (
 
   SELECT
-    *
+    action_id,
+    tx_hash,
+    block_id,
+    block_timestamp,
+    action_data,
+    _partition_by_block_number,
+    _inserted_timestamp,
+    modified_timestamp AS _modified_timestamp
   FROM
     {{ ref('silver__actions_events_s3') }}
   WHERE
-    action_name = 'AddKey' {% if var("MANUAL_FIX") %}
+    action_name = 'AddKey' 
+    {% if var("MANUAL_FIX") %}
       AND {{ partition_load_manual('no_buffer') }}
     {% else %}
-      AND {{ incremental_load_filter('_inserted_timestamp') }}
+      {% if var('IS_MIGRATION') %}
+        AND {{ incremental_load_filter('_inserted_timestamp') }}
+      {% else %}
+        AND {{ incremental_load_filter('_modified_timestamp') }}
+      {% endif %}
     {% endif %}
 ),
 addkey_events AS (
@@ -35,8 +47,8 @@ addkey_events AS (
     action_data :access_key :permission :FunctionCall :method_names :: ARRAY AS method_name,
     action_data :access_key :permission :FunctionCall :receiver_id :: STRING AS receiver_id,
     _partition_by_block_number,
-    _load_timestamp,
-    _inserted_timestamp
+    _inserted_timestamp,
+    _modified_timestamp
   FROM
     action_events
 )

@@ -10,7 +10,20 @@
 WITH receipts AS (
 
     SELECT
-        *
+        tx_hash,
+        receipt_object_id,
+        receiver_id,
+        signer_id,
+        block_id,
+        block_timestamp,
+        chunk_hash,
+        logs,
+        receipt_actions,
+        execution_outcome,
+        receipt_succeeded,
+        _partition_by_block_number,
+        _inserted_timestamp,
+        modified_timestamp AS _modified_timestamp
     FROM
         {{ ref('silver__streamline_receipts_final') }}
 
@@ -18,8 +31,11 @@ WITH receipts AS (
         WHERE
             {{ partition_load_manual('no_buffer') }}
         {% else %}
-        WHERE
-            {{ incremental_load_filter('_inserted_timestamp') }}
+            {% if var('IS_MIGRATION') %}
+                WHERE {{ incremental_load_filter('_inserted_timestamp') }}
+            {% else %}
+                WHERE {{ incremental_load_filter('_modified_timestamp') }}
+            {% endif %}
         {% endif %}
 ),
 flatten_actions AS (
@@ -32,17 +48,14 @@ flatten_actions AS (
         block_timestamp,
         chunk_hash,
         logs,
-        _partition_by_block_number,
-        COALESCE(
-            _inserted_timestamp,
-            _load_timestamp
-        ) AS _inserted_timestamp,
-        _load_timestamp,
         receipt_actions,
         execution_outcome,
         VALUE AS action_object,
         INDEX AS action_index,
-        receipt_succeeded
+        receipt_succeeded,
+        _partition_by_block_number,
+        _inserted_timestamp,
+        _modified_timestamp
     FROM
         receipts,
         LATERAL FLATTEN(
@@ -56,13 +69,13 @@ FINAL AS (
             receipt_object_id,
             action_index
         ) AS action_id,
-        receiver_id,
-        signer_id,
-        chunk_hash,
-        tx_hash,
-        receipt_object_id,
         block_id,
         block_timestamp,
+        tx_hash,
+        receipt_object_id,
+        chunk_hash,
+        receiver_id,
+        signer_id,
         action_index,
         key AS action_name,
         TRY_PARSE_JSON(VALUE) AS action_data,
@@ -70,13 +83,7 @@ FINAL AS (
         receipt_succeeded,
         _partition_by_block_number,
         _inserted_timestamp,
-        _load_timestamp,
-        {{ dbt_utils.generate_surrogate_key(
-            ['receipt_object_id', 'action_index']
-        ) }} AS actions_events_id,
-        SYSDATE() AS inserted_timestamp,
-        SYSDATE() AS modified_timestamp,
-        '{{ invocation_id }}' AS _invocation_id
+        _modified_timestamp
     FROM
         flatten_actions,
         LATERAL FLATTEN(
@@ -84,6 +91,12 @@ FINAL AS (
         )
 )
 SELECT
-    *
+    *,
+    {{ dbt_utils.generate_surrogate_key(
+        ['receipt_object_id', 'action_index']
+    ) }} AS actions_events_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
 FROM
     FINAL
