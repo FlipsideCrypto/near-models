@@ -21,7 +21,6 @@ WITH shards AS (
         {{ ref('silver__streamline_shards') }}
     WHERE
         ARRAY_SIZE(receipt_execution_outcomes) > 0
-        AND {{ incremental_load_filter('_inserted_timestamp') }}
     {% if var('IS_MIGRATION') %}
         AND
             _inserted_timestamp >= (
