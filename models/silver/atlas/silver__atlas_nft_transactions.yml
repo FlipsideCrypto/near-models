@@ -52,11 +52,6 @@ models:
         tests:
           - not_null
 
-      - name: _inserted_timestamp
-        description: "{{doc('_inserted_timestamp')}}"
-        tests:
-          - not_null
-
       - name: inserted_timestamp
         description: "{{doc('inserted_timestamp')}}"
         tests:
@@ -69,3 +64,14 @@ models:
 
       - name: _invocation_id
         description: "{{doc('invocation_id')}}"
+
+      - name: _partition_by_block_number
+        description: "{{doc('_partition_by_block_number')}}"
+
+      - name: _inserted_timestamp
+        description: "{{doc('_inserted_timestamp')}}"
+        tests:
+          - not_null
+
+      - name: _modified_timestamp
+        description: "{{doc('_modified_timestamp')}}"
