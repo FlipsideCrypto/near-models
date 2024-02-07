@@ -54,7 +54,7 @@ receipts AS (
                 receipt_object_id
             FROM
                 swap_logs
-        ) 
+        )
         {% if var("MANUAL_FIX") %}
             AND {{ partition_load_manual('no_buffer') }}
         {% else %}
