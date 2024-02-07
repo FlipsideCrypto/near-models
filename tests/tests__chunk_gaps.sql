@@ -1,6 +1,7 @@
 {{ config(
     error_if = '>=10',
-    warn_if = 'BETWEEN 1 AND 9'
+    warn_if = 'BETWEEN 1 AND 9',
+    tags = ['gap_test']
 ) }}
 
 WITH blocks AS (

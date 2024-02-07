@@ -59,11 +59,7 @@ base_receipts AS (
                     retry_range
             )
             AND (
-                {% if var('IS_MIGRATION') %}
-                    {{ incremental_load_filter('_inserted_timestamp') }}
-                {% else %}
-                    {{ incremental_load_filter('_modified_timestamp') }}
-                {% endif %}
+                {{ incremental_load_filter('_inserted_timestamp') }}
                 OR receipt_id IN (
                     SELECT
                         DISTINCT receipt_object_id

@@ -65,7 +65,7 @@ shards AS (
     FROM
         external_shards e
         LEFT JOIN meta m USING (_filename)
-    {% if var('IS_MIGRATION', False) %}
+    {% if var('IS_MIGRATION') %}
     {# Can quickly delete after migration. But, data in other tables is older blocks 
     ingested more recently. So, simply doing >= inserted timestamp will cause a large gap.
     Lookback, here, should probably be min 4 hours.

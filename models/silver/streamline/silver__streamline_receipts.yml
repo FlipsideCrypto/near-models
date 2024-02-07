@@ -63,6 +63,7 @@ models:
         description: "{{ doc('receipt_id')}}"
         tests:
           - not_null
+          - unique
 
       - name: RECEIVER_ID
         description: "{{ doc('receiver_id')}}"
@@ -90,6 +91,8 @@ models:
 
       - name: STREAMLINE_RECEIPTS_ID
         description: "{{doc('id')}}"
+        tests:
+          - unique
 
       - name: INSERTED_TIMESTAMP
         description: "{{doc('inserted_timestamp')}}"

@@ -22,8 +22,18 @@ WITH shards AS (
     WHERE
         ARRAY_SIZE(receipt_execution_outcomes) > 0
         AND {{ incremental_load_filter('_inserted_timestamp') }}
+    {% if var('IS_MIGRATION') %}
+        AND
+            _inserted_timestamp >= (
+                SELECT 
+                    MAX(_inserted_timestamp) - INTERVAL '{{ var('STREAMLINE_LOAD_LOOKBACK_HOURS') }} hours'
+                FROM {{ this }}
+            )
+    {% else %}
+        AND {{ incremental_load_filter('_inserted_timestamp') }}
+    {% endif %}
 ),
-receipt_execution_outcomes AS (
+flatten_receipts AS (
 
     SELECT
         concat_ws(
@@ -93,7 +103,7 @@ FINAL AS (
         _inserted_timestamp,
         _modified_timestamp
     FROM
-        receipt_execution_outcomes
+        flatten_receipts
 )
 SELECT
     *,

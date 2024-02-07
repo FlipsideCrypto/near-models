@@ -21,11 +21,14 @@ WITH chunks AS (
     WHERE
         chunk != 'null'
     {% if var('IS_MIGRATION') %}
-        AND 
-            {{ incremental_load_filter('_inserted_timestamp') }}
+        AND
+            _inserted_timestamp >= (
+                SELECT 
+                    MAX(_inserted_timestamp) - INTERVAL '{{ var('STREAMLINE_LOAD_LOOKBACK_HOURS') }} hours'
+                FROM {{ this }}
+            )
     {% else %}
-        AND 
-            {{ incremental_load_filter('_modified_timestamp') }}
+        AND {{ incremental_load_filter('_inserted_timestamp') }}
     {% endif %}
 ),
 flatten_transactions AS (
@@ -92,16 +95,7 @@ FINAL AS (
         _inserted_timestamp,
         _modified_timestamp
     FROM
-        txs 
-        qualify ROW_NUMBER() over (
-            PARTITION BY tx_hash
-            ORDER BY
-            {% if var('IS_MIGRATION') %}
-                _inserted_timestamp DESC
-            {% else %}
-                _modified_timestamp DESC
-            {% endif %}
-        ) = 1
+        txs
 )
 SELECT
     *,

@@ -1,6 +1,7 @@
 {{ config(
-  error_if = '>=10',
-  warn_if = 'BETWEEN 1 AND 9'
+    error_if = '>=10',
+    warn_if = 'BETWEEN 1 AND 9',
+    tags = ['gap_test']
 ) }}
 
 WITH silver_blocks AS (
@@ -36,6 +37,5 @@ SELECT
 FROM
   silver_blocks
 WHERE
-  prior_hash <> prev_hash
-  {# Filter out false positive from blocks at start of window (whose parent hash was cut off) #}
+  prior_hash <> prev_hash {# Filter out false positive from blocks at start of window (whose parent hash was cut off) #}
   AND (_inserted_timestamp > SYSDATE() - INTERVAL '7 days' + INTERVAL '1 hour')
