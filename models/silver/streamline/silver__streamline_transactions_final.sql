@@ -7,8 +7,6 @@
   tags = ['receipt_map']
 ) }}
 
-{# TODO - need help thinking thru if incr loading should be changed #}
-
 WITH int_txs AS (
 
   SELECT
@@ -70,6 +68,7 @@ int_receipts AS (
         0
       ) }}
     {% else %}
+    WHERE
       {{ partition_incremental_load(
         2000,
         1000,
