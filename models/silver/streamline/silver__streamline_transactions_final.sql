@@ -40,8 +40,8 @@ WITH int_txs AS (
     {% else %}
     WHERE
       {{ partition_incremental_load(
-        2000,
-        1000,
+        6000,
+        3000,
         0
       ) }}
     {% endif %}
@@ -71,8 +71,8 @@ int_receipts AS (
     {% else %}
     WHERE
       {{ partition_incremental_load(
-        2000,
-        1000,
+        6000,
+        3000,
         0
       ) }}
     {% endif %}

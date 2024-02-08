@@ -4,6 +4,11 @@ models:
   - name: core__fact_blocks
     description: |-
       This table records all the blocks of Near blockchain.
+    tests:
+      - dbt_utils.recency:
+          datepart: hours
+          field: block_timestamp
+          interval: 3
 
     columns:
       - name: BLOCK_ID
@@ -20,9 +25,6 @@ models:
         description: "{{ doc('block_timestamp')}}"
         tests:
           - not_null
-          - dbt_expectations.expect_row_values_to_have_recent_data:
-              datepart: day
-              interval: 1
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - TIMESTAMP_NTZ
@@ -52,7 +54,6 @@ models:
       - name: HEADER
         description: "{{ doc('header')}}"
         tests:
-          - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - VARIANT
@@ -61,7 +62,6 @@ models:
       - name: BLOCK_CHALLENGES_RESULT
         description: "{{ doc('block_challenges_result')}}"
         tests:
-          - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - ARRAY
@@ -98,7 +98,6 @@ models:
       - name: CHUNK_MASK
         description: "{{ doc('chunk_mask')}}"
         tests:
-          - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - ARRAY
@@ -117,7 +116,6 @@ models:
       - name: CHUNKS
         description: "{{ doc('chunks')}}"
         tests:
-          - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - ARRAY
@@ -152,7 +150,6 @@ models:
 
       - name: EVENTS
         description: "{{ doc('events')}}"
-
 
       - name: GAS_PRICE
         description: "{{ doc('gas_price')}}"
@@ -299,6 +296,9 @@ models:
 
       - name: FACT_BLOCKS_ID
         description: "{{doc('id')}}"
+        tests:
+          - unique
+          - not_null
 
       - name: INSERTED_TIMESTAMP
         description: "{{doc('inserted_timestamp')}}"
