@@ -9,25 +9,32 @@
 WITH swap_logs AS (
 
     SELECT
-        *
+        tx_hash,
+        receipt_object_id,
+        block_id,
+        block_timestamp,
+        receiver_id,
+        signer_id,
+        log_index,
+        clean_log,
+        _partition_by_block_number,
+        _inserted_timestamp,
+        modified_timestamp AS _modified_timestamp
     FROM
         {{ ref('silver__logs_s3') }}
     WHERE
         receipt_succeeded
         AND clean_log LIKE 'Swapped%'
-        AND receiver_id NOT LIKE '%dragon_bot.near'
+        AND receiver_id NOT LIKE '%dragon_bot.near' 
+
         {% if var("MANUAL_FIX") %}
             AND {{ partition_load_manual('no_buffer') }}
         {% else %}
-            {% if is_incremental() %}
-
-                AND 
-                    _inserted_timestamp >= (
-                        SELECT MAX(_inserted_timestamp) FROM {{ this }}
-                        )
-
+            {% if var('IS_MIGRATION') %}
+                AND {{ incremental_load_filter('_inserted_timestamp') }}
+            {% else %}
+                AND {{ incremental_load_filter('_modified_timestamp') }}
             {% endif %}
-
         {% endif %}
 ),
 receipts AS (
@@ -35,7 +42,10 @@ receipts AS (
         receipt_object_id,
         receipt_actions,
         receiver_id,
-        signer_id
+        signer_id,
+        _partition_by_block_number,
+        _inserted_timestamp,
+        modified_timestamp AS _modified_timestamp
     FROM
         {{ ref('silver__streamline_receipts_final') }}
     WHERE
@@ -48,7 +58,11 @@ receipts AS (
         {% if var("MANUAL_FIX") %}
             AND {{ partition_load_manual('no_buffer') }}
         {% else %}
-            AND {{ incremental_load_filter('_inserted_timestamp') }}
+            {% if var('IS_MIGRATION') %}
+                AND {{ incremental_load_filter('_inserted_timestamp') }}
+            {% else %}
+                AND {{ incremental_load_filter('_modified_timestamp') }}
+            {% endif %}
         {% endif %}
 ),
 swap_outcome AS (
@@ -86,11 +100,8 @@ swap_outcome AS (
             '\\1'
         ) :: STRING AS token_in,
         _partition_by_block_number,
-        COALESCE(
-            _inserted_timestamp,
-            _load_timestamp
-        ) AS _inserted_timestamp,
-        modified_timestamp AS _modified_timestamp
+        _inserted_timestamp,
+        _modified_timestamp
     FROM
         swap_logs
 ),
@@ -144,8 +155,8 @@ parse_actions AS (
         ) AS swap_input_data,
         r.receiver_id AS receipt_receiver_id,
         r.signer_id AS receipt_signer_id,
-        _partition_by_block_number,
-        _inserted_timestamp,
+        o._partition_by_block_number,
+        o._inserted_timestamp,
         o._modified_timestamp
     FROM
         swap_outcome o

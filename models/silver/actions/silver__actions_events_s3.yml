@@ -12,27 +12,6 @@ models:
           - unique:
               where: tx_hash != 'J4CZZQrZK6kYPVLkrdbTEpcqhUNZiRxktbMzHviqeGgf'
           - not_null
-
-      - name: RECEIVER_ID
-        description: "{{ doc('receiver_id')}}"
-
-      - name: SIGNER_ID
-        description: "{{ doc('signer_id')}}"
-
-      - name: CHUNK_HASH
-        description: "{{ doc('chunk_hash')}}"
-        tests:
-          - not_null:
-              where: "block_id not in (34691244, 34691277)"
-
-      - name: TX_HASH
-        description: "{{ doc('tx_hash')}}"
-        tests:
-          - not_null:
-              where: _inserted_timestamp <= current_timestamp - interval '1 hour'
-               
-      - name: RECEIPT_OBJECT_ID
-        description: "{{ doc('receipt_object_id')}}"
           
       - name: BLOCK_ID
         description: "{{ doc('block_id')}}"
@@ -42,6 +21,27 @@ models:
         tests:
           - not_null:
               where: _inserted_timestamp <= current_timestamp - interval '1 hour'
+
+      - name: TX_HASH
+        description: "{{ doc('tx_hash')}}"
+        tests:
+          - not_null:
+              where: _inserted_timestamp <= current_timestamp - interval '1 hour'
+               
+      - name: RECEIPT_OBJECT_ID
+        description: "{{ doc('receipt_object_id')}}"
+
+      - name: CHUNK_HASH
+        description: "{{ doc('chunk_hash')}}"
+        tests:
+          - not_null:
+              where: "block_id not in (34691244, 34691277)"
+  
+      - name: RECEIVER_ID
+        description: "{{ doc('receiver_id')}}"
+
+      - name: SIGNER_ID
+        description: "{{ doc('signer_id')}}"
 
       - name: ACTION_INDEX
         description: "{{ doc('action_index')}}"
@@ -63,6 +63,9 @@ models:
 
       - name: _INSERTED_TIMESTAMP
         description: "{{ doc('_inserted_timestamp')}}"
+
+      - name: _MODIFIED_TIMESTAMP
+        description: "{{ doc('_modified_timestamp')}}"
 
       - name: ACTIONS_EVENTS_ID
         description: "{{doc('id')}}"

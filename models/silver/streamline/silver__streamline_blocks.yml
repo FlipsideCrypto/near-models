@@ -57,16 +57,8 @@ models:
       - name: _partition_by_block_number
         description: "{{ doc('_partition_by_block_number')}}"
 
-      - name: _load_timestamp
-        description: "{{ doc('_load_timestamp')}}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - TIMESTAMP_NTZ
-          - dbt_expectations.expect_row_values_to_have_recent_data:
-              datepart: day
-              interval: 1
+      - name: _MODIFIED_TIMESTAMP
+        description: "{{ doc('_modified_timestamp')}}"
 
       - name: _INSERTED_TIMESTAMP
         description: "{{ doc('_inserted_timestamp')}}"

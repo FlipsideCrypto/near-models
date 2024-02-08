@@ -9,14 +9,26 @@
 WITH decoded_actions AS (
 
     SELECT
-        *
+        action_id_social,
+        tx_hash,
+        block_id,
+        block_timestamp,
+        signer_id,
+        node_data,
+        _partition_by_block_number,
+        _inserted_timestamp,
+        modified_timestamp AS _modified_timestamp
     FROM
         {{ ref('silver_social__decoded_actions') }}
     WHERE
         {% if var("MANUAL_FIX") %}
             {{ partition_load_manual('no_buffer') }}
         {% else %}
-            {{ incremental_load_filter('_inserted_timestamp') }}
+            {% if var('IS_MIGRATION') %}
+                {{ incremental_load_filter('_inserted_timestamp') }}
+            {% else %}
+                {{ incremental_load_filter('_modified_timestamp') }}
+            {% endif %}
         {% endif %}
         AND node = 'profile'
 ),
@@ -35,9 +47,9 @@ flatten_profile_json AS (
         key AS profile_section,
         VALUE :: STRING AS profile_data,
         -- must store as string due to various possible inputs
-        _load_timestamp,
         _partition_by_block_number,
-        _inserted_timestamp
+        _inserted_timestamp,
+        _modified_timestamp
     FROM
         decoded_actions,
         LATERAL FLATTEN(node_data)
@@ -51,9 +63,9 @@ SELECT
     signer_id,
     profile_section,
     profile_data,
-    _load_timestamp,
     _partition_by_block_number,
     _inserted_timestamp,
+    _modified_timestamp,
     {{ dbt_utils.generate_surrogate_key(
         ['action_id_profile']
     ) }} AS social_profile_changes_id,

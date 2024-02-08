@@ -1,39 +1,85 @@
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'merge',
-    merge_exclude_columns = ["inserted_timestamp"],
-    cluster_by = ['_partition_by_block_number', '_inserted_timestamp::DATE'],
-    unique_key = ['shard_id'],
-    tags = ['load', 'load_shards']
+    merge_exclude_columns = ['inserted_timestamp'],
+    cluster_by = ['_inserted_timestamp::DATE', '_partition_by_block_number'],
+    unique_key = 'shard_id',
+    tags = ['load', 'load_shards'],
+    full_refresh = False
 ) }}
 
-WITH shards_json AS (
+WITH external_shards AS (
 
     SELECT
-        *
+        metadata$filename AS _filename,
+        VALUE,
+        _partition_by_block_number
     FROM
-        {{ ref('silver__load_shards') }}
+        {{ source(
+            "streamline",
+            "shards"
+        ) }}
     WHERE
-        {{ incremental_load_filter('_inserted_timestamp') }}
-        qualify ROW_NUMBER() over (
-            PARTITION BY shard_id
-            ORDER BY
-                _inserted_timestamp DESC
-        ) = 1
+        _partition_by_block_number >= (
+            SELECT
+                MAX(_partition_by_block_number) - (3000 * {{ var('STREAMLINE_LOAD_LOOKBACK_HOURS') }})
+            FROM
+                {{ this }}
+        )
+),
+meta AS (
+    SELECT
+        job_created_time AS _inserted_timestamp,
+        file_name AS _filename
+    FROM
+        TABLE(
+            information_schema.external_table_file_registration_history(
+                start_time => DATEADD(
+                    'hour', 
+                    -{{ var('STREAMLINE_LOAD_LOOKBACK_HOURS') }},
+                    SYSDATE()
+                ),
+                table_name => '{{ source( 'streamline', 'shards' ) }}'
+            )
+        ) A
 ),
 shards AS (
     SELECT
-        block_id,
-        shard_id,
-        VALUE :chunk :: variant AS chunk,
-        VALUE :receipt_execution_outcomes :: variant AS receipt_execution_outcomes,
-        VALUE :shard_id :: NUMBER AS shard_number,
-        VALUE :state_changes :: variant AS state_changes,
-        _partition_by_block_number,
-        _load_timestamp,
-        _inserted_timestamp
+        e._filename,
+        SPLIT(
+            e._filename,
+            '/'
+        ) [0] :: NUMBER AS block_id,
+        RIGHT(SPLIT(e._filename, '.') [0], 1) :: NUMBER AS _shard_number,
+        concat_ws(
+            '-',
+            block_id :: STRING,
+            _shard_number :: STRING
+        ) AS shard_id,
+        e.value :chunk :: variant AS chunk,
+        e.value :receipt_execution_outcomes :: variant AS receipt_execution_outcomes,
+        e.value :shard_id :: NUMBER AS shard_number,
+        e.value :state_changes :: variant AS state_changes,
+        e._partition_by_block_number,
+        m._inserted_timestamp
     FROM
-        shards_json
+        external_shards e
+        LEFT JOIN meta m USING (_filename)
+    {% if var('IS_MIGRATION') %}
+    {# Can quickly delete after migration. But, data in other tables is older blocks 
+    ingested more recently. So, simply doing >= inserted timestamp will cause a large gap.
+    Lookback, here, should probably be min 4 hours.
+     #}
+    WHERE
+        _inserted_timestamp >= (
+            SELECT 
+                MAX(_inserted_timestamp) - INTERVAL '{{ var('STREAMLINE_LOAD_LOOKBACK_HOURS') }} hours'
+            FROM {{ this }}
+        )
+    {% else %}
+    WHERE
+        {{ incremental_load_filter('_inserted_timestamp') }}
+    {% endif %}
 )
 SELECT
     *,
@@ -44,4 +90,9 @@ SELECT
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
 FROM
-    shards
+    shards 
+    qualify ROW_NUMBER() over (
+        PARTITION BY shard_id
+        ORDER BY
+            _inserted_timestamp DESC
+    ) = 1

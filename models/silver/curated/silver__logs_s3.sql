@@ -10,7 +10,18 @@
 WITH receipts AS (
 
     SELECT
-        *
+        block_id,
+        block_timestamp,
+        tx_hash,
+        receipt_object_id,
+        logs,
+        receiver_id,
+        signer_id,
+        gas_burnt,
+        receipt_succeeded,
+        _partition_by_block_number,
+        _inserted_timestamp,
+        modified_timestamp AS _modified_timestamp
     FROM
         {{ ref('silver__streamline_receipts_final') }}
 
@@ -18,8 +29,11 @@ WITH receipts AS (
         WHERE
             {{ partition_load_manual('no_buffer') }}
         {% else %}
-        WHERE
-            {{ incremental_load_filter('_inserted_timestamp') }}
+            {% if var('IS_MIGRATION') %}
+                WHERE {{ incremental_load_filter('_inserted_timestamp') }}
+            {% else %}
+                WHERE {{ incremental_load_filter('_modified_timestamp') }}
+            {% endif %}
         {% endif %}
 ),
 FINAL AS (
@@ -41,17 +55,8 @@ FINAL AS (
         gas_burnt,
         receipt_succeeded,
         _partition_by_block_number,
-        COALESCE(
-            _inserted_timestamp,
-            _load_timestamp
-        ) AS _inserted_timestamp,
-        _load_timestamp,
-        {{ dbt_utils.generate_surrogate_key(
-            ['log_id']
-        ) }} AS logs_id,
-        SYSDATE() AS inserted_timestamp,
-        SYSDATE() AS modified_timestamp,
-        '{{ invocation_id }}' AS _invocation_id
+        _inserted_timestamp,
+        _modified_timestamp
     FROM
         receipts,
         LATERAL FLATTEN(
@@ -59,6 +64,12 @@ FINAL AS (
         )
 )
 SELECT
-    *
+    *,
+    {{ dbt_utils.generate_surrogate_key(
+        ['log_id']
+    ) }} AS logs_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
 FROM
     FINAL

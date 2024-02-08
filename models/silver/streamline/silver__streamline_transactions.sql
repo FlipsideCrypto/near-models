@@ -1,21 +1,35 @@
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'merge',
-    merge_exclude_columns = ["inserted_timestamp"],
+    merge_exclude_columns = ['inserted_timestamp'],
     unique_key = 'tx_hash',
-    cluster_by = ['_inserted_timestamp::date', 'block_id', 'tx_hash'],
+    cluster_by = ['_inserted_timestamp::date', '_partition_by_block_number'],
     tags = ['load', 'load_shards']
 ) }}
 
 WITH chunks AS (
 
     SELECT
-        *
+        block_id,
+        shard_id,
+        chunk,
+        _partition_by_block_number,
+        _inserted_timestamp,
+        modified_timestamp AS _modified_timestamp
     FROM
-        {{ ref('silver__streamline_chunks') }}
+        {{ ref('silver__streamline_shards') }}
     WHERE
-        ARRAY_SIZE(chunk_transactions) > 0
+        chunk != 'null'
+    {% if var('IS_MIGRATION') %}
+        AND
+            _inserted_timestamp >= (
+                SELECT 
+                    MAX(_inserted_timestamp) - INTERVAL '{{ var('STREAMLINE_LOAD_LOOKBACK_HOURS') }} hours'
+                FROM {{ this }}
+            )
+    {% else %}
         AND {{ incremental_load_filter('_inserted_timestamp') }}
+    {% endif %}
 ),
 flatten_transactions AS (
     SELECT
@@ -23,16 +37,16 @@ flatten_transactions AS (
         block_id,
         shard_id,
         INDEX AS transactions_index,
-        _load_timestamp,
-        _partition_by_block_number,
-        _inserted_timestamp,
         chunk :header :chunk_hash :: STRING AS chunk_hash,
         VALUE :outcome :execution_outcome :outcome :receipt_ids :: ARRAY AS outcome_receipts,
-        VALUE AS tx
+        VALUE AS tx,
+        _partition_by_block_number,
+        _inserted_timestamp,
+        _modified_timestamp
     FROM
         chunks,
         LATERAL FLATTEN(
-            input => chunk_transactions
+            input => chunk :transactions :: ARRAY
         )
 ),
 txs AS (
@@ -41,9 +55,6 @@ txs AS (
         block_id,
         shard_id,
         transactions_index,
-        _load_timestamp,
-        _partition_by_block_number,
-        _inserted_timestamp,
         chunk_hash,
         outcome_receipts,
         tx,
@@ -55,7 +66,10 @@ txs AS (
         [] AS _receipt,
         tx :transaction :receiver_id :: STRING AS _receiver_id,
         tx :transaction :signature :: STRING AS _signature,
-        tx :transaction :signer_id :: STRING AS _signer_id
+        tx :transaction :signer_id :: STRING AS _signer_id,
+        _partition_by_block_number,
+        _inserted_timestamp,
+        _modified_timestamp
     FROM
         flatten_transactions
 ),
@@ -77,15 +91,11 @@ FINAL AS (
         _receiver_id,
         _signature,
         _signer_id,
-        _load_timestamp,
         _partition_by_block_number,
-        _inserted_timestamp
+        _inserted_timestamp,
+        _modified_timestamp
     FROM
-        txs qualify ROW_NUMBER() over (
-            PARTITION BY tx_hash
-            ORDER BY
-                _inserted_timestamp DESC
-        ) = 1
+        txs
 )
 SELECT
     *,

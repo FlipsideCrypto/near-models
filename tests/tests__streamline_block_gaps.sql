@@ -1,6 +1,7 @@
 {{ config(
-  error_if = '>=25',
-  warn_if = 'BETWEEN 1 AND 24'
+    error_if = '>=10',
+    warn_if = 'BETWEEN 1 AND 9',
+    tags = ['gap_test']
 ) }}
 
 WITH silver_blocks AS (
@@ -18,14 +19,23 @@ WITH silver_blocks AS (
     ) AS prior_hash,
     _partition_by_block_number,
     _inserted_timestamp,
-    CURRENT_TIMESTAMP AS _test_timestamp
+    SYSDATE() AS _test_timestamp
   FROM
     {{ ref('silver__streamline_blocks') }}
+
+    {% if var('DBT_FULL_TEST') %}
+    WHERE
+      _inserted_timestamp < SYSDATE() - INTERVAL '1 hour'
+    {% else %}
+    WHERE
+      _inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days'
+      AND SYSDATE() - INTERVAL '1 hour'
+    {% endif %}
 )
 SELECT
   *
 FROM
   silver_blocks
 WHERE
-  prior_hash <> prev_hash
-  AND _inserted_timestamp <= CURRENT_TIMESTAMP - INTERVAL '1 hour'
+  prior_hash <> prev_hash {# Filter out false positive from blocks at start of window (whose parent hash was cut off) #}
+  AND (_inserted_timestamp > SYSDATE() - INTERVAL '7 days' + INTERVAL '1 hour')

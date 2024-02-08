@@ -10,26 +10,51 @@
 WITH logs AS (
 
     SELECT
-        *
+        log_id,
+        receipt_object_id,
+        tx_hash,
+        block_id,
+        block_timestamp,
+        receiver_id,
+        signer_id,
+        gas_burnt,
+        clean_log,
+        is_standard,
+        _partition_by_block_number,
+        _inserted_timestamp,
+        modified_timestamp AS _modified_timestamp
     FROM
         {{ ref('silver__logs_s3') }}
     WHERE
         {% if var("MANUAL_FIX") %}
             {{ partition_load_manual('no_buffer') }}
         {% else %}
-            {{ incremental_load_filter('_inserted_timestamp') }}
+            {% if var('IS_MIGRATION') %}
+                {{ incremental_load_filter('_inserted_timestamp') }}
+            {% else %}
+                {{ incremental_load_filter('_modified_timestamp') }}
+            {% endif %}
         {% endif %}
 ),
 tx AS (
     SELECT
-        *
+        tx_hash,
+        tx_signer,
+        tx_receiver,
+        tx_succeeded,
+        tx_status, -- TODO deprecate col
+        transaction_fee
     FROM
         {{ ref('silver__streamline_transactions_final') }}
     WHERE
         {% if var("MANUAL_FIX") %}
             {{ partition_load_manual('no_buffer') }}
         {% else %}
-            {{ incremental_load_filter('_inserted_timestamp') }}
+            {% if var('IS_MIGRATION') %}
+                {{ incremental_load_filter('_inserted_timestamp') }}
+            {% else %}
+                {{ incremental_load_filter('_modified_timestamp') }}
+            {% endif %}
         {% endif %}
 ),
 function_call AS (
@@ -45,7 +70,11 @@ function_call AS (
         {% if var("MANUAL_FIX") %}
             {{ partition_load_manual('no_buffer') }}
         {% else %}
-            {{ incremental_load_filter('_inserted_timestamp') }}
+            {% if var('IS_MIGRATION') %}
+                {{ incremental_load_filter('_inserted_timestamp') }}
+            {% else %}
+                {{ incremental_load_filter('_modified_timestamp') }}
+            {% endif %}
         {% endif %}
 ),
 standard_logs AS (
@@ -63,17 +92,17 @@ standard_logs AS (
         receiver_id,
         signer_id,
         gas_burnt,
-        _LOAD_TIMESTAMP,
-        _PARTITION_BY_BLOCK_NUMBER,
-        _inserted_timestamp,
         TRY_PARSE_JSON(clean_log) AS clean_log,
         COUNT(*) over (
             PARTITION BY tx_hash
-        ) AS log_counter
+        ) AS log_counter,
+        _partition_by_block_number,
+        _inserted_timestamp,
+        _modified_timestamp
     FROM
         logs
     WHERE
-        is_standard = TRUE
+        is_standard
 ),
 nft_events AS (
     SELECT
@@ -103,9 +132,6 @@ raw_mint_events AS (
         receiver_id,
         signer_id,
         gas_burnt,
-        _LOAD_TIMESTAMP,
-        _PARTITION_BY_BLOCK_NUMBER,
-        _inserted_timestamp,
         INDEX AS batch_index,
         args_json,
         method_name,
@@ -118,7 +144,10 @@ raw_mint_events AS (
         TRY_PARSE_JSON(
             VALUE :memo
         ) AS memo,
-        log_counter
+        log_counter,
+        _partition_by_block_number,
+        _inserted_timestamp,
+        _modified_timestamp
     FROM
         nft_events,
         LATERAL FLATTEN(
@@ -134,9 +163,6 @@ mint_events AS (
         block_timestamp,
         receiver_id,
         signer_id,
-        _LOAD_TIMESTAMP,
-        _PARTITION_BY_BLOCK_NUMBER,
-        _inserted_timestamp,
         args_json,
         method_name,
         deposit,
@@ -166,7 +192,10 @@ mint_events AS (
                 '0'
             )
         ) AS mint_action_id,
-        log_counter
+        log_counter,
+        _partition_by_block_number,
+        _inserted_timestamp,
+        _modified_timestamp
     FROM
         raw_mint_events,
         LATERAL FLATTEN(
@@ -178,6 +207,7 @@ mint_tx AS (
         tx_hash,
         tx_signer,
         tx_receiver,
+        tx_succeeded,
         tx_status,
         transaction_fee
     FROM
@@ -202,6 +232,7 @@ FINAL AS (
         mint_events.deposit,
         mint_tx.tx_signer AS tx_signer,
         mint_tx.tx_receiver AS tx_receiver,
+        mint_tx.tx_succeeded AS tx_succeeded,
         mint_tx.tx_status AS tx_status,
         mint_events.receipt_object_id,
         mint_events.receiver_id,
@@ -215,13 +246,13 @@ FINAL AS (
         -- gas burnt during receipt processing
         mint_tx.transaction_fee,
         -- gas burnt during entire transaction processing
-        mint_events._LOAD_TIMESTAMP,
-        mint_events._PARTITION_BY_BLOCK_NUMBER,
         mint_events.log_counter,
         (
             mint_events.deposit / mint_events.log_counter
         ) :: FLOAT AS implied_price,
-        mint_events._inserted_timestamp
+        mint_events._partition_by_block_number,
+        mint_events._inserted_timestamp,
+        mint_events._modified_timestamp
     FROM
         mint_events
         LEFT JOIN mint_tx

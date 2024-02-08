@@ -17,8 +17,9 @@ WITH txs AS (
         tx_receiver,
         tx,
         tx_status,
-        _load_timestamp,
-        _inserted_timestamp
+        _partition_by_block_number,
+        _inserted_timestamp,
+        modified_timestamp AS _modified_timestamp
     FROM
         {{ ref('silver__streamline_transactions_final') }}
 
@@ -26,8 +27,11 @@ WITH txs AS (
         WHERE
             {{ partition_load_manual('no_buffer') }}
         {% else %}
-        WHERE
-            {{ incremental_load_filter('_inserted_timestamp') }}
+            {% if var('IS_MIGRATION') %}
+                WHERE {{ incremental_load_filter('_inserted_timestamp') }}
+            {% else %}
+                WHERE {{ incremental_load_filter('_modified_timestamp') }}
+            {% endif %}
         {% endif %}
 ),
 function_calls AS (
@@ -43,8 +47,9 @@ function_calls AS (
         signer_id,
         method_name,
         args,
-        _load_timestamp,
-        _inserted_timestamp
+        _partition_by_block_number,
+        _inserted_timestamp,
+        modified_timestamp AS _modified_timestamp
     FROM
         {{ ref('silver__actions_events_function_call_s3') }}
     WHERE
@@ -52,10 +57,15 @@ function_calls AS (
             'create_staking_pool',
             'update_reward_fee_fraction',
             'new'
-        ) {% if var("MANUAL_FIX") %}
+        ) 
+        {% if var("MANUAL_FIX") %}
             AND {{ partition_load_manual('no_buffer') }}
         {% else %}
-            AND {{ incremental_load_filter('_inserted_timestamp') }}
+            {% if var('IS_MIGRATION') %}
+                AND {{ incremental_load_filter('_inserted_timestamp') }}
+            {% else %}
+                AND {{ incremental_load_filter('_modified_timestamp') }}
+            {% endif %}
         {% endif %}
 ),
 add_addresses_from_tx AS (
@@ -71,8 +81,9 @@ add_addresses_from_tx AS (
         method_name,
         args,
         tx_status,
-        _load_timestamp,
-        _inserted_timestamp
+        txs._partition_by_block_number,
+        txs._inserted_timestamp,
+        txs._modified_timestamp
     FROM
         function_calls fc
         LEFT JOIN txs USING (tx_hash)
@@ -88,8 +99,9 @@ new_pools AS (
             args :reward_fee_fraction
         ) AS reward_fee_fraction,
         'Create' AS tx_type,
-        _load_timestamp,
-        _inserted_timestamp
+        _partition_by_block_number,
+        _inserted_timestamp,
+        _modified_timestamp
     FROM
         add_addresses_from_tx
     WHERE
@@ -114,8 +126,9 @@ updated_pools AS (
             args :reward_fee_fraction
         ) AS reward_fee_fraction,
         'Update' AS tx_type,
-        _load_timestamp,
-        _inserted_timestamp
+        _partition_by_block_number,
+        _inserted_timestamp,
+        _modified_timestamp
     FROM
         add_addresses_from_tx
     WHERE

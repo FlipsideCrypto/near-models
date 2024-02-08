@@ -62,15 +62,11 @@ models:
       - name: _partition_by_block_number
         description: "{{ doc('_partition_by_block_number')}}"
 
-      - name: _load_timestamp
-        description: "{{ doc('_load_timestamp')}}"
-        tests:
-          - dbt_expectations.expect_row_values_to_have_recent_data:
-              datepart: day
-              interval: 5
-
       - name: _INSERTED_TIMESTAMP
         description: "{{ doc('_inserted_timestamp')}}"
+
+      - name: _MODIFIED_TIMESTAMP
+        description: "{{ doc('_modified_timestamp')}}"
 
       - name: HORIZON_DECODED_ACTIONS_ID
         description: "{{doc('id')}}"

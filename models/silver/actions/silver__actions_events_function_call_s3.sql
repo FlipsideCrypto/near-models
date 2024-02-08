@@ -10,7 +10,19 @@
 WITH action_events AS (
 
   SELECT
-    *
+    action_id,
+    tx_hash,
+    receiver_id,
+    signer_id,
+    block_id,
+    block_timestamp,
+    action_name,
+    action_data,
+    logs,
+    receipt_succeeded,
+    _partition_by_block_number,
+    _inserted_timestamp,
+    modified_timestamp AS _modified_timestamp
   FROM
     {{ ref('silver__actions_events_s3') }}
   WHERE
@@ -18,7 +30,11 @@ WITH action_events AS (
     {% if var("MANUAL_FIX") %}
       AND {{ partition_load_manual('no_buffer') }}
     {% else %}
-      AND {{ incremental_load_filter('_inserted_timestamp') }}
+      {% if var('IS_MIGRATION') %}
+        AND {{ incremental_load_filter('_inserted_timestamp') }}
+      {% else %}
+        AND {{ incremental_load_filter('_modified_timestamp') }}
+      {% endif %}
     {% endif %}
 ),
 FINAL AS (
@@ -41,17 +57,17 @@ FINAL AS (
     receipt_succeeded,
     _partition_by_block_number,
     _inserted_timestamp,
-    _load_timestamp,
-    {{ dbt_utils.generate_surrogate_key(
-      ['action_id']
-    ) }} AS actions_events_function_call_id,
-    SYSDATE() AS inserted_timestamp,
-    SYSDATE() AS modified_timestamp,
-    '{{ invocation_id }}' AS _invocation_id
+    _modified_timestamp
   FROM
     action_events
 )
 SELECT
-  *
+  *,
+  {{ dbt_utils.generate_surrogate_key(
+    ['action_id']
+  ) }} AS actions_events_function_call_id,
+  SYSDATE() AS inserted_timestamp,
+  SYSDATE() AS modified_timestamp,
+  '{{ invocation_id }}' AS _invocation_id
 FROM
   FINAL

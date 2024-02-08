@@ -9,19 +9,6 @@
 WITH all_horizon_receipts AS (
 
     SELECT
-        *
-    FROM
-        {{ ref('silver__streamline_receipts_final') }}
-    WHERE
-        {% if var("MANUAL_FIX") %}
-            {{ partition_load_manual('no_buffer') }}
-        {% else %}
-            {{ incremental_load_filter('_inserted_timestamp') }}
-        {% endif %}
-        AND (LOWER(signer_id) = 'nearhorizon.near'
-        OR LOWER(receiver_id) = 'nearhorizon.near')
-        AND _partition_by_block_number >= 86000000)
-    SELECT
         tx_hash,
         receipt_object_id,
         block_id,
@@ -40,9 +27,29 @@ WITH all_horizon_receipts AS (
         logs,
         proof,
         metadata,
-        _load_timestamp,
         _partition_by_block_number,
         _inserted_timestamp,
+        modified_timestamp AS _modified_timestamp
+    FROM
+        {{ ref('silver__streamline_receipts_final') }}
+    WHERE
+        {% if var("MANUAL_FIX") %}
+            {{ partition_load_manual('no_buffer') }}
+        {% else %}
+            {% if var('IS_MIGRATION') %}
+                {{ incremental_load_filter('_inserted_timestamp') }}
+            {% else %}
+                {{ incremental_load_filter('_modified_timestamp') }}
+            {% endif %}
+        {% endif %}
+
+        AND (LOWER(signer_id) = 'nearhorizon.near'
+        OR LOWER(receiver_id) = 'nearhorizon.near')
+        AND _partition_by_block_number >= 86000000
+)
+
+    SELECT
+        *,
         {{ dbt_utils.generate_surrogate_key(
             ['receipt_object_id']
         ) }} AS horizon_receipts_id,

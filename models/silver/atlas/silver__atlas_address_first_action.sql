@@ -14,17 +14,20 @@ WITH txs AS (
         block_id,
         block_timestamp,
         tx_hash,
-        COALESCE(
-            _load_timestamp,
-            _inserted_timestamp
-        ) AS _inserted_timestamp
+        _partition_by_block_number,
+        _inserted_timestamp,
+        modified_timestamp AS _modified_timestamp
     FROM
         {{ ref('silver__streamline_transactions_final') }}
     WHERE
         {% if var("MANUAL_FIX") %}
             {{ partition_load_manual('no_buffer') }}
         {% else %}
-            {{ incremental_load_filter('_inserted_timestamp') }}
+            {% if var('IS_MIGRATION') %}
+                {{ incremental_load_filter('_inserted_timestamp') }}
+            {% else %}
+                {{ incremental_load_filter('_modified_timestamp') }}
+            {% endif %}
         {% endif %}
 ),
 FINAL AS (
@@ -32,7 +35,9 @@ FINAL AS (
         address,
         MIN(block_timestamp) AS first_tx_timestamp,
         MIN(block_id) AS first_tx_block_id,
-        MIN(_inserted_timestamp) AS _inserted_timestamp
+        MIN(_partition_by_block_number) AS _partition_by_block_number,
+        MIN(_inserted_timestamp) AS _inserted_timestamp,
+        MIN(_modified_timestamp) AS _modified_timestamp
     FROM
         txs
     GROUP BY
@@ -45,7 +50,9 @@ SELECT
     address,
     first_tx_timestamp,
     first_tx_block_id,
+    _partition_by_block_number,
     _inserted_timestamp,
+    _modified_timestamp,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id

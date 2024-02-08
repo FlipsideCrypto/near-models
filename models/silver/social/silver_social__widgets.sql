@@ -9,14 +9,26 @@
 WITH decoded_actions AS (
 
     SELECT
-        *
+        tx_hash,
+        action_id_social,
+        block_id,
+        block_timestamp,
+        signer_id,
+        node_data,
+        _partition_by_block_number,
+        _inserted_timestamp,
+        modified_timestamp AS _modified_timestamp
     FROM
         {{ ref('silver_social__decoded_actions') }}
     WHERE
         {% if var("MANUAL_FIX") %}
             {{ partition_load_manual('no_buffer') }}
         {% else %}
-            {{ incremental_load_filter('_inserted_timestamp') }}
+            {% if var('IS_MIGRATION') %}
+                {{ incremental_load_filter('_inserted_timestamp') }}
+            {% else %}
+                {{ incremental_load_filter('_modified_timestamp') }}
+            {% endif %}
         {% endif %}
         AND node = 'widget'
 ),
@@ -39,8 +51,8 @@ widgets AS (
             widget_name
         ) AS widget_url,
         _partition_by_block_number,
-        _load_timestamp,
-        _inserted_timestamp
+        _inserted_timestamp,
+        _modified_timestamp
     FROM
         decoded_actions,
     LATERAL FLATTEN(
@@ -68,8 +80,8 @@ SELECT
     source_data AS _source_data,
     node_data AS _node_data,
     _partition_by_block_number,
-    _load_timestamp,
     _inserted_timestamp,
+    _modified_timestamp,
     {{ dbt_utils.generate_surrogate_key(
         ['action_id_social', 'widget_name']
     ) }} AS social_widgets_id,

@@ -1,78 +1,92 @@
 {{ config(
     materialized = 'incremental',
-    incremental_strategy = 'delete+insert',
-    cluster_by = ['_partition_by_block_number', '_inserted_timestamp::DATE'],
+    incremental_strategy = 'merge',
+    merge_exclude_columns = ['inserted_timestamp'],
+    cluster_by = ['_inserted_timestamp::DATE', '_partition_by_block_number'],
     unique_key = 'block_id',
-    tags = ['load', 'load_blocks']
+    tags = ['load', 'load_blocks'],
+    full_refresh = False
 ) }}
 
-WITH blocks_json AS (
+WITH external_blocks AS (
 
     SELECT
-        *
+        metadata$filename AS _filename,
+        VALUE,
+        _partition_by_block_number
     FROM
-        {{ ref('silver__load_blocks') }}
-        {# Note - no partition load as blocks is lightweight enough #}
+        {{ source(
+            "streamline",
+            "blocks"
+        ) }}
     WHERE
-        {{ incremental_load_filter('_inserted_timestamp') }}
-        qualify ROW_NUMBER() over (
-            PARTITION BY block_id
-            ORDER BY
-                _inserted_timestamp DESC
-        ) = 1
+        _partition_by_block_number >= (
+            SELECT
+                MAX(_partition_by_block_number) - (3000 * {{ var('STREAMLINE_LOAD_LOOKBACK_HOURS') }})
+            FROM
+                {{ this }}
+        )
+),
+meta AS (
+    SELECT
+        job_created_time AS _inserted_timestamp,
+        file_name AS _filename
+    FROM
+        TABLE(
+            information_schema.external_table_file_registration_history(
+                start_time => DATEADD(
+                    'hour', 
+                    -{{ var('STREAMLINE_LOAD_LOOKBACK_HOURS') }},
+                    SYSDATE()
+                ),
+                table_name => '{{ source( 'streamline', 'blocks' ) }}'
+            )
+        ) A
 ),
 blocks AS (
     SELECT
-        VALUE :header :height :: NUMBER AS block_id,
+        e.value :header :height :: NUMBER AS block_id,
         TO_TIMESTAMP_NTZ(
-            VALUE :header :timestamp :: STRING
+            e.value :header :timestamp :: STRING
         ) AS block_timestamp,
-        VALUE :header :hash :: STRING AS block_hash,
-        VALUE :header :prev_hash :: STRING AS prev_hash,
-        VALUE :author :: STRING AS block_author,
-        VALUE :header :gas_price :: NUMBER AS gas_price,
-        VALUE :header :total_supply :: NUMBER AS total_supply,
-        VALUE :header :validator_proposals :: ARRAY AS validator_proposals,
-        VALUE :header :validator_reward :: NUMBER AS validator_reward,
-        VALUE :header :latest_protocol_version :: NUMBER AS latest_protocol_version,
-        VALUE :header :epoch_id :: STRING AS epoch_id,
-        VALUE :header :next_epoch_id :: STRING AS next_epoch_id,
+        e.value :header :hash :: STRING AS block_hash,
+        e.value :header :prev_hash :: STRING AS prev_hash,
+        e.value :author :: STRING AS block_author,
+        e.value :header :gas_price :: NUMBER AS gas_price,
+        e.value :header :total_supply :: NUMBER AS total_supply,
+        e.value :header :validator_proposals :: ARRAY AS validator_proposals,
+        e.value :header :validator_reward :: NUMBER AS validator_reward,
+        e.value :header :latest_protocol_version :: NUMBER AS latest_protocol_version,
+        e.value :header :epoch_id :: STRING AS epoch_id,
+        e.value :header :next_epoch_id :: STRING AS next_epoch_id,
         NULL AS tx_count,
-        -- TODO tx_count not included in the data, may count manually and append in view
+        -- tx_count is legacy field, deprecate from core view
         [] AS events,
         -- events does not exist, Figment created this
-        VALUE :chunks :: ARRAY AS chunks,
-        VALUE :header :: OBJECT AS header,
-        _partition_by_block_number,
-        _load_timestamp,
-        _inserted_timestamp
+        e.value :chunks :: ARRAY AS chunks,
+        e.value :header :: OBJECT AS header,
+        e._partition_by_block_number,
+        m._inserted_timestamp
     FROM
-        blocks_json
-),
-FINAL AS (
-    SELECT
-        block_id,
-        block_timestamp,
-        block_hash,
-        prev_hash,
-        block_author,
-        gas_price,
-        total_supply,
-        validator_proposals,
-        validator_reward,
-        latest_protocol_version,
-        epoch_id,
-        next_epoch_id,
-        tx_count,
-        events,
-        chunks,
-        {# the core view contains a number of columns that are found in the header #}
-        header,
-        _partition_by_block_number,
-        _load_timestamp,
-        _inserted_timestamp
-    FROM
-        blocks
+        external_blocks e
+        LEFT JOIN meta m USING (
+            _filename
+        )
+    {% if var('IS_MIGRATION') %}
+    {# Can quickly delete after migration. But, data in other tables is older blocks 
+    ingested more recently. So, simply doing >= inserted timestamp will cause a large gap.
+    Lookback, here, should probably be min 4 hours.
+     #}
+    WHERE
+        _inserted_timestamp >= (
+            SELECT 
+                MAX(_inserted_timestamp) - INTERVAL '{{ var('STREAMLINE_LOAD_LOOKBACK_HOURS') }} hours'
+            FROM {{ this }}
+        )
+    {% else %}
+    WHERE
+        {{ incremental_load_filter('_inserted_timestamp') }}
+    {% endif %}
 )
 SELECT
     *,
@@ -83,4 +97,9 @@ SELECT
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
 FROM
-    FINAL
+    blocks 
+    qualify ROW_NUMBER() over (
+        PARTITION BY block_id
+        ORDER BY
+            _inserted_timestamp DESC
+    ) = 1

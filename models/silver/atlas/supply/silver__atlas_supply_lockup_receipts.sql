@@ -10,14 +10,27 @@
 WITH receipts AS (
 
     SELECT
-        *
+        receipt_object_id,
+        tx_hash,
+        block_timestamp,
+        receipt_actions,
+        receiver_id,
+        status_value,
+        logs,
+        _partition_by_block_number,
+        _inserted_timestamp,
+        modified_timestamp AS _modified_timestamp
     FROM
         {{ ref('silver__streamline_receipts_final') }}
     WHERE
         {% if var("MANUAL_FIX") %}
             {{ partition_load_manual('no_buffer') }}
         {% else %}
-            {{ incremental_load_filter('_inserted_timestamp') }}
+            {% if var('IS_MIGRATION') %}
+                {{ incremental_load_filter('_inserted_timestamp') }}
+            {% else %}
+                {{ incremental_load_filter('_modified_timestamp') }}
+            {% endif %}
         {% endif %}
 ),
 FINAL AS (
@@ -32,15 +45,9 @@ FINAL AS (
             status_value
         ) [0] :: STRING AS status,
         logs,
-        COALESCE(
-            _inserted_timestamp,
-            _load_timestamp
-        ) AS _inserted_timestamp,
         _partition_by_block_number,
-        {{ dbt_utils.generate_surrogate_key(['receipt_object_id']) }} AS atlas_supply_lockup_receipts_id,
-        SYSDATE() AS inserted_timestamp,
-        SYSDATE() AS modified_timestamp,
-        '{{ invocation_id }}' AS _invocation_id
+        _inserted_timestamp,
+        _modified_timestamp
     FROM
         receipts
     WHERE
@@ -48,6 +55,10 @@ FINAL AS (
         AND status != 'Failure'
 )
 SELECT
-    *
+    *,
+    {{ dbt_utils.generate_surrogate_key(['receipt_object_id']) }} AS atlas_supply_lockup_receipts_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
 FROM
     FINAL

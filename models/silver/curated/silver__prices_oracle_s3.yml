@@ -61,16 +61,14 @@ models:
       - name: SOURCE
         description: "{{ doc('source')}}"
 
-      - name: _LOAD_TIMESTAMP
-        description: "{{ doc('_load_timestamp')}}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - TIMESTAMP_NTZ
+      - name: _PARTITION_BY_BLOCK_NUMBER
+        description: "{{ doc('_partition_by_block_number')}}"
 
       - name: _INSERTED_TIMESTAMP
         description: "{{ doc('_inserted_timestamp')}}"
+
+      - name: _MODIFIED_TIMESTAMP
+        description: "{{ doc('_modified_timestamp')}}"
 
       - name: PRICES_ORACLE_ID
         description: "{{doc('id')}}"

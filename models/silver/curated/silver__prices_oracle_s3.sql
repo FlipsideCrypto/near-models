@@ -18,7 +18,15 @@ WITH token_labels AS (
 ),
 events_function_call AS (
     SELECT
-        *
+        block_id,
+        tx_hash,
+        block_timestamp,
+        receiver_id,
+        method_name,
+        args,
+        _partition_by_block_number,
+        _inserted_timestamp,
+        modified_timestamp AS _modified_timestamp
     FROM
         {{ ref('silver__actions_events_function_call_s3') }}
 
@@ -26,8 +34,11 @@ events_function_call AS (
         WHERE
             {{ partition_load_manual('no_buffer') }}
         {% else %}
-        WHERE
-            {{ incremental_load_filter('_inserted_timestamp') }}
+            {% if var('IS_MIGRATION') %}
+                WHERE {{ incremental_load_filter('_inserted_timestamp') }}
+            {% else %}
+                WHERE {{ incremental_load_filter('_modified_timestamp') }}
+            {% endif %}
         {% endif %}
 ),
 prices AS (
@@ -59,8 +70,9 @@ prices AS (
             10,
             decimals
         ) AS price_usd,
-        _load_timestamp,
-        _inserted_timestamp
+        _partition_by_block_number,
+        _inserted_timestamp,
+        _modified_timestamp
     FROM
         events_function_call,
         LATERAL FLATTEN(
@@ -81,8 +93,9 @@ FINAL AS (
         p.raw_price,
         p.price_usd,
         p.receiver_id AS source,
-        p._load_timestamp,
-        p._inserted_timestamp
+        p._partition_by_block_number,
+        p._inserted_timestamp,
+        p._modified_timestamp
     FROM
         prices p
         LEFT JOIN token_labels l USING (token_contract)
