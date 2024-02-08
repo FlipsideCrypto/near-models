@@ -7,7 +7,6 @@
     tags = ['curated']
 ) }}
 
-{# TODO NOTE 12/11/2023 - d+i on block_id to update timestamp when it comes in. Can be improved. Block id is not properly unique. #}
 
 WITH token_labels AS (
 
@@ -103,7 +102,7 @@ FINAL AS (
 SELECT
     *,
     {{ dbt_utils.generate_surrogate_key(
-        ['block_id', 'token_contract']
+        ['tx_hash', 'block_id', 'token_contract']
     ) }} AS prices_oracle_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
