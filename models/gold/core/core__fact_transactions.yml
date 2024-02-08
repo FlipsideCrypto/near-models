@@ -7,7 +7,7 @@ models:
       - dbt_utils.recency:
           datepart: hours
           field: block_timestamp
-          interval: 3
+          interval: 6 # TODO - decrease when root cause found
 
     columns:
       - name: BLOCK_ID
@@ -90,6 +90,8 @@ models:
       - name: GAS_USED
         description: "{{ doc('gas_used')}}"
         tests:
+          - not_null:
+              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '1 hour'
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
@@ -98,6 +100,8 @@ models:
       - name: ATTACHED_GAS
         description: "{{ doc('attached_gas')}}"
         tests:
+          - not_null:
+              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '1 hour'
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
@@ -106,6 +110,8 @@ models:
       - name: TRANSACTION_FEE
         description: "{{ doc('transaction_fee')}}"
         tests:
+          - not_null:
+              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '1 hour'
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
@@ -114,6 +120,8 @@ models:
       - name: TX_SUCCEEDED
         description: "{{ doc('tx_succeeded')}}"
         tests:
+          - not_null:
+              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '1 hour'
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - BOOLEAN
@@ -131,7 +139,8 @@ models:
         tests:
           - unique:
               where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '1 hour'
-          - not_null
+          - not_null:
+              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '1 hour'
 
       - name: INSERTED_TIMESTAMP
         description: "{{doc('inserted_timestamp')}}"

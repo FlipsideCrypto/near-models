@@ -44,6 +44,9 @@ WITH int_txs AS (
         3000,
         0
       ) }}
+      OR _modified_timestamp >= (
+        SELECT MAX(_modified_timestamp) FROM {{ this }}
+      )
     {% endif %}
 ),
 int_receipts AS (
@@ -75,6 +78,9 @@ int_receipts AS (
         3000,
         0
       ) }}
+      OR _modified_timestamp >= (
+        SELECT MAX(_modified_timestamp) FROM {{ this }}
+      )
     {% endif %}
 
 ),
@@ -91,6 +97,9 @@ int_blocks AS (
   WHERE
     _partition_by_block_number >= (
       SELECT MIN(_partition_by_block_number) FROM int_txs
+    )
+    OR _modified_timestamp >= (
+      SELECT MAX(_modified_timestamp) FROM {{ this }}
     )
 ),
 receipt_array AS (
