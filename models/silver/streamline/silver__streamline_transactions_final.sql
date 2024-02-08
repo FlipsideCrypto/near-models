@@ -3,7 +3,7 @@
   incremental_strategy = 'merge',
   merge_exclude_columns = ['inserted_timestamp'],
   unique_key = 'tx_hash',
-  cluster_by = ['_inserted_timestamp::date', '_modified_timestamp::DATE', '_partition_by_block_number'],
+  cluster_by = ['_modified_timestamp::DATE', '_partition_by_block_number'],
   tags = ['receipt_map']
 ) }}
 
