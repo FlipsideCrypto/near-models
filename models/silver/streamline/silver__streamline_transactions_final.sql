@@ -7,8 +7,6 @@
   tags = ['receipt_map']
 ) }}
 
-{# TODO - need help thinking thru if incr loading should be changed #}
-
 WITH int_txs AS (
 
   SELECT
@@ -70,6 +68,7 @@ int_receipts AS (
         0
       ) }}
     {% else %}
+    WHERE
       {{ partition_incremental_load(
         2000,
         1000,
@@ -137,7 +136,9 @@ base_transactions AS (
     ) AS tx,
     _partition_by_block_number,
     t._inserted_timestamp,
-    t._modified_timestamp
+    GREATEST(
+      t._modified_timestamp,
+      b._modified_timestamp) AS _modified_timestamp
   FROM
     int_txs t
     LEFT JOIN receipt_array r USING (tx_hash)
@@ -236,9 +237,8 @@ FINAL AS (
     _inserted_timestamp,
     GREATEST(
       t._modified_timestamp,
-      r._modified_timestamp,
-      b._modified_timestamp
-    ) AS _modified_timestamp -- TODO - confirm use greatest? Migrating incr logic to modified??
+      r._modified_timestamp
+    ) AS _modified_timestamp
   FROM
     transactions AS t
     LEFT JOIN receipts AS r
