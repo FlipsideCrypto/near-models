@@ -29,10 +29,7 @@ WITH nfts_minted AS (
         MD5(
             receiver_id || series_id
         ) AS metadata_id,
-        COALESCE(
-            _inserted_timestamp,
-            _load_timestamp
-        ) AS _inserted_timestamp
+        _inserted_timestamp
     FROM
         {{ ref('silver__standard_nft_mint_s3') }}
     WHERE
