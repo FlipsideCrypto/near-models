@@ -1,6 +1,7 @@
 {{ config(
   materialized = 'incremental',
-  incremental_strategy = 'delete+insert',
+  incremental_strategy = 'merge',
+    merge_exclude_columns = ['inserted_timestamp'],
   unique_key = 'tx_hash',
   cluster_by = ['_modified_timestamp::DATE', '_partition_by_block_number'],
   tags = ['receipt_map']
@@ -50,6 +51,7 @@ int_receipts AS (
     block_id,
     block_timestamp,
     tx_hash,
+    receipt_object_id,
     execution_outcome,
     receipt_succeeded,
     gas_burnt,
@@ -177,73 +179,69 @@ transactions AS (
   FROM
     base_transactions
 ),
-receipts AS (
+gas_burnt AS (
   SELECT
-    block_id,
     tx_hash,
-    receipt_succeeded,
-    SUM(
-      gas_burnt
-    ) over (
-      PARTITION BY tx_hash
-      ORDER BY
-        tx_hash DESC
-    ) AS receipt_gas_burnt,
-    SUM(
-      execution_outcome :outcome :tokens_burnt :: NUMBER
-    ) over (
-      PARTITION BY tx_hash
-      ORDER BY
-        tx_hash DESC
-    ) AS receipt_tokens_burnt,
-    execution_outcome :outcome: tokens_burnt :: NUMBER AS tokens_burnt,
-    _modified_timestamp
+    SUM(gas_burnt) AS receipt_gas_burnt,
+    SUM(execution_outcome :outcome :tokens_burnt :: NUMBER) AS receipt_tokens_burnt,
+    MAX(_modified_timestamp) AS _modified_timestamp
   FROM
     int_receipts
   WHERE
-    tokens_burnt != 0
+    execution_outcome :outcome: tokens_burnt :: NUMBER != 0
+  GROUP BY 
+    1
+),
+determine_tx_status AS (
+  SELECT
+    DISTINCT tx_hash,
+      LAST_VALUE(
+      receipt_succeeded
+    ) over (
+      PARTITION BY tx_hash
+      ORDER BY
+        block_id ASC
+    ) AS tx_succeeded
+  FROM
+    int_receipts
 ),
 FINAL AS (
   SELECT
     t.block_id,
     t.block_hash,
     t.tx_hash,
-    block_timestamp,
+    t.block_timestamp,
     t.nonce,
     t.signature,
     t.tx_receiver,
     t.tx_signer,
     t.tx,
-    t.transaction_gas_burnt + r.receipt_gas_burnt AS gas_used,
-    t.transaction_tokens_burnt + r.receipt_tokens_burnt AS transaction_fee,
+    t.transaction_gas_burnt + g.receipt_gas_burnt AS gas_used,
+    t.transaction_tokens_burnt + g.receipt_tokens_burnt AS transaction_fee,
     COALESCE(
       actions.attached_gas,
       gas_used
     ) AS attached_gas,
-    LAST_VALUE(
-      r.receipt_succeeded
-    ) over (
-      PARTITION BY r.tx_hash
-      ORDER BY
-        r.block_id ASC
-    ) = TRUE AS tx_succeeded,
+    s.tx_succeeded,
     IFF (
       tx_succeeded,
       'Success',
       'Fail'
     ) AS tx_status, -- DEPRECATE TX_STATUS IN GOLD
-      _partition_by_block_number,
-    _inserted_timestamp,
+    t._partition_by_block_number,
+    t._inserted_timestamp,
     GREATEST(
       t._modified_timestamp,
-      r._modified_timestamp
+      g._modified_timestamp
     ) AS _modified_timestamp
   FROM
     transactions AS t
-    LEFT JOIN receipts AS r
-    ON t.tx_hash = r.tx_hash
+    LEFT JOIN determine_tx_status s
+    ON t.tx_hash = s.tx_hash
     LEFT JOIN actions
     ON t.tx_hash = actions.tx_hash
+    LEFT JOIN gas_burnt g
+    ON t.tx_hash = g.tx_hash
 )
 SELECT
   tx_hash,
