@@ -30,23 +30,29 @@ WITH int_txs AS (
   FROM
     {{ ref('silver__streamline_transactions') }}
 
-    {% if var('IS_MIGRATION') %}
-    WHERE
-      {{ partition_incremental_load(
-        150000,
-        10000,
-        0
-      ) }}
+    {% if var('MANUAL_FIX') %}
+
+        WHERE
+            {{ partition_load_manual('front') }}
+            
     {% else %}
-    WHERE
-      {{ partition_incremental_load(
-        6000,
-        3000,
-        0
-      ) }}
-      OR _modified_timestamp >= (
-        SELECT MAX(_modified_timestamp) FROM {{ this }}
-      )
+
+      {% if var('IS_MIGRATION') %}
+      WHERE
+        {{ partition_incremental_load(
+          150000,
+          10000,
+          0
+        ) }}
+      {% else %}
+      WHERE
+        {{ partition_incremental_load(
+          6000,
+          3000,
+          0
+        ) }}
+      {% endif %}
+
     {% endif %}
 ),
 int_receipts AS (
@@ -64,23 +70,29 @@ int_receipts AS (
   FROM
     {{ ref('silver__streamline_receipts_final') }}
 
-    {% if var('IS_MIGRATION') %}
-    WHERE
-      {{ partition_incremental_load(
-        150000,
-        10000,
-        0
-      ) }}
+    {% if var('MANUAL_FIX') %}
+
+        WHERE
+            {{ partition_load_manual('front') }}
+            
     {% else %}
-    WHERE
-      {{ partition_incremental_load(
-        6000,
-        3000,
-        0
-      ) }}
-      OR _modified_timestamp >= (
-        SELECT MAX(_modified_timestamp) FROM {{ this }}
-      )
+
+      {% if var('IS_MIGRATION') %}
+      WHERE
+        {{ partition_incremental_load(
+          150000,
+          10000,
+          0
+        ) }}
+      {% else %}
+      WHERE
+        {{ partition_incremental_load(
+          6000,
+          3000,
+          0
+        ) }}
+      {% endif %}
+
     {% endif %}
 
 ),
@@ -97,9 +109,6 @@ int_blocks AS (
   WHERE
     _partition_by_block_number >= (
       SELECT MIN(_partition_by_block_number) FROM int_txs
-    )
-    OR _modified_timestamp >= (
-      SELECT MAX(_modified_timestamp) FROM {{ this }}
     )
 ),
 receipt_array AS (
