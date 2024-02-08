@@ -50,7 +50,6 @@ FINAL AS (
             '[0-9]+'
         ) :: NUMBER AS total_staking_shares,
         LOG,
-        _load_timestamp,
         _partition_by_block_number,
         {{ dbt_utils.generate_surrogate_key(['pool_id', 'epoch_number']) }} AS _epoch_id,
         _inserted_timestamp

@@ -43,10 +43,7 @@ txns AS (
         block_timestamp :: DATE AS day,
         tx_signer,
         first_tx_timestamp,
-        COALESCE(
-            _inserted_timestamp,
-            _load_timestamp
-        ) AS _inserted_timestamp
+        _inserted_timestamp
     FROM
         {{ ref('silver__streamline_transactions_final') }}
         t

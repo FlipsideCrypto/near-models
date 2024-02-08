@@ -20,7 +20,6 @@ WITH address_labels AS (
         project_name,
         labels_combined_id,
         _is_deleted,
-        _load_timestamp,
         _inserted_timestamp,
         _modified_timestamp
         
@@ -43,7 +42,6 @@ SELECT
     label_subtype,
     label_type AS l1_label,
     label_subtype AS l2_label,
-    _load_timestamp,
     _inserted_timestamp,
     _modified_timestamp,
     _is_deleted,
