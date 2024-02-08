@@ -86,6 +86,8 @@ models:
 
       - name: STREAMLINE_TRANSACTIONS_FINAL_ID
         description: "{{doc('id')}}"
+        tests:
+          - unique
 
       - name: INSERTED_TIMESTAMP
         description: "{{doc('inserted_timestamp')}}"

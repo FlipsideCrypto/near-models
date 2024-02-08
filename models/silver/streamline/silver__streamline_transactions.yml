@@ -52,6 +52,8 @@ models:
 
       - name: STREAMLINE_TRANSACTIONS_ID
         description: "{{doc('id')}}"
+        tests:
+          - unique
 
       - name: INSERTED_TIMESTAMP
         description: "{{doc('inserted_timestamp')}}"
