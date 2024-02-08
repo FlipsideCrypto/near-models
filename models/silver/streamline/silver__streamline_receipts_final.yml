@@ -95,6 +95,8 @@ models:
 
       - name: STREAMLINE_RECEIPTS_FINAL_ID
         description: "{{doc('id')}}"
+        tests:
+          - unique
 
       - name: INSERTED_TIMESTAMP
         description: "{{doc('inserted_timestamp')}}"
