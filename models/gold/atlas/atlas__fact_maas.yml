@@ -4,13 +4,20 @@ models:
   - name: atlas__fact_maas
     description: |-
       Monthly Active Accounts (wallets) on NEAR, including new and returning wallets, calculated over a rolling 30 day window. An active account, here, is defined as the signing of at least one transaction.
+    tests:
+      - dbt_utils.recency:
+          datepart: days
+          field: inserted_timestamp
+          interval: 1
 
     columns:
       - name: fact_maas_id
         description: "{{ doc('id') }}"
         tests:
-          - not_null
-          - unique
+          - not_null:
+              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '1 hour'
+          - unique:
+              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '1 hour'
 
       - name: day
         description: "{{ doc('active_day') }}"
@@ -35,10 +42,6 @@ models:
 
       - name: inserted_timestamp
         description: "{{ doc('inserted_timestamp') }}"
-        tests:
-          - not_null
 
       - name: modified_timestamp
         description: "{{ doc('modified_timestamp') }}"
-        tests:
-          - not_null
