@@ -117,7 +117,7 @@ FINAL AS (
     gas_used,
     tx_succeeded,
     receipt_succeeded,
-    ARRAY_MIN([tx_succeeded, receipt_succeeded]) AS status,
+    ARRAY_MIN([tx_succeeded, receipt_succeeded]) :: BOOLEAN AS status,
     _partition_by_block_number,
     _inserted_timestamp,
     _modified_timestamp
