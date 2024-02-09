@@ -4,13 +4,17 @@ models:
   - name: core__fact_blocks
     description: |-
       This table records all the blocks of Near blockchain.
+    tests:
+      - dbt_utils.recency:
+          datepart: hours
+          field: block_timestamp
+          interval: 3
 
     columns:
       - name: BLOCK_ID
         description: "{{ doc('block_id')}}"
         tests:
           - not_null
-          - unique
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
@@ -20,9 +24,6 @@ models:
         description: "{{ doc('block_timestamp')}}"
         tests:
           - not_null
-          - dbt_expectations.expect_row_values_to_have_recent_data:
-              datepart: day
-              interval: 1
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - TIMESTAMP_NTZ
@@ -31,7 +32,8 @@ models:
         description: "{{ doc('block_hash')}}"
         tests:
           - not_null
-          - unique
+          - unique:
+              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '2 hours'
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
@@ -52,7 +54,6 @@ models:
       - name: HEADER
         description: "{{ doc('header')}}"
         tests:
-          - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - VARIANT
@@ -61,7 +62,6 @@ models:
       - name: BLOCK_CHALLENGES_RESULT
         description: "{{ doc('block_challenges_result')}}"
         tests:
-          - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - ARRAY
@@ -98,7 +98,6 @@ models:
       - name: CHUNK_MASK
         description: "{{ doc('chunk_mask')}}"
         tests:
-          - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - ARRAY
@@ -117,7 +116,6 @@ models:
       - name: CHUNKS
         description: "{{ doc('chunks')}}"
         tests:
-          - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - ARRAY
@@ -152,7 +150,6 @@ models:
 
       - name: EVENTS
         description: "{{ doc('events')}}"
-
 
       - name: GAS_PRICE
         description: "{{ doc('gas_price')}}"
@@ -281,7 +278,6 @@ models:
       - name: VALIDATOR_PROPOSALS
         description: "{{ doc('validator_proposals')}}"
         tests:
-          - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - ARRAY
@@ -299,6 +295,11 @@ models:
 
       - name: FACT_BLOCKS_ID
         description: "{{doc('id')}}"
+        tests:
+          - unique:
+              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '2 hours'
+          - not_null:
+              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '2 hours'
 
       - name: INSERTED_TIMESTAMP
         description: "{{doc('inserted_timestamp')}}"

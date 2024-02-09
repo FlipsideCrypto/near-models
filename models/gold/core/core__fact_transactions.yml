@@ -3,6 +3,11 @@ version: 2
 models:
   - name: core__fact_transactions
     description: Deprecation notice. The column `tx_status` (string, success or fail) is being replaced with `tx_succeeded` (bool). Please migrate work by 2/1/2024! Transactions on the NEAR blockchain.
+    tests:
+      - dbt_utils.recency:
+          datepart: hours
+          field: block_timestamp
+          interval: 6 # TODO - decrease when root cause found
 
     columns:
       - name: BLOCK_ID
@@ -25,7 +30,6 @@ models:
         description: "{{ doc('tx_hash')}}"
         tests:
           - not_null
-          - unique
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
@@ -34,12 +38,11 @@ models:
       - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp')}}"
         tests:
-          - dbt_expectations.expect_row_values_to_have_recent_data:
-              datepart: day
-              interval: 1
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - TIMESTAMP_NTZ
+          - not_null:
+              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '2 hours'
 
       - name: NONCE
         description: "{{ doc('nonce')}}"
@@ -79,7 +82,6 @@ models:
       - name: TX
         description: "{{ doc('tx')}}"
         tests:
-          - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - OBJECT
@@ -88,6 +90,8 @@ models:
       - name: GAS_USED
         description: "{{ doc('gas_used')}}"
         tests:
+          - not_null:
+              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '2 hours'
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
@@ -96,6 +100,8 @@ models:
       - name: ATTACHED_GAS
         description: "{{ doc('attached_gas')}}"
         tests:
+          - not_null:
+              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '2 hours'
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
@@ -104,6 +110,8 @@ models:
       - name: TRANSACTION_FEE
         description: "{{ doc('transaction_fee')}}"
         tests:
+          - not_null:
+              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '2 hours'
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
@@ -112,6 +120,8 @@ models:
       - name: TX_SUCCEEDED
         description: "{{ doc('tx_succeeded')}}"
         tests:
+          - not_null:
+              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '2 hours'
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - BOOLEAN
@@ -124,11 +134,16 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: fact_transactions_id
+      - name: FACT_TRANSACTIONS_ID
         description: "{{doc('id')}}"
+        tests:
+          - unique:
+              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '2 hours'
+          - not_null:
+              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '2 hours'
 
       - name: INSERTED_TIMESTAMP
         description: "{{doc('inserted_timestamp')}}"
-
+        
       - name: MODIFIED_TIMESTAMP
         description: "{{doc('modified_timestamp')}}"

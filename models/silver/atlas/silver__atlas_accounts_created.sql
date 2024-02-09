@@ -9,18 +9,24 @@
 WITH accts AS (
 
     SELECT
-        *
+        receiver_id,
+        block_timestamp,
+        modified_timestamp AS _modified_timestamp
     FROM
         {{ ref('silver__streamline_receipts_final') }}
     WHERE
-        receipt_succeeded = TRUE
-        AND {% if var("MANUAL_FIX") %}
-            {{ partition_load_manual('no_buffer') }}
+        receipt_succeeded
+        {% if var("MANUAL_FIX") %}
+            AND {{ partition_load_manual('no_buffer') }}
         {% else %}
-            {{ incremental_last_x_days(
-                '_inserted_timestamp',
-                2
-            ) }}
+            {% if is_incremental() %}
+                AND _modified_timestamp >= (
+                    SELECT
+                        MAX(_modified_timestamp) - INTERVAL '2 days'
+                    FROM
+                        {{ this }}
+                )
+            {% endif %}
         {% endif %}
 
         qualify ROW_NUMBER() over (
@@ -32,21 +38,23 @@ WITH accts AS (
 FINAL AS (
     SELECT
         block_timestamp :: DATE AS "DAY",
-        {{ dbt_utils.generate_surrogate_key(
-            ['DAY']
-        ) }} AS atlas_account_created_id,
         COUNT(*) AS wallets_created,
-        SYSDATE() AS inserted_timestamp,
-        SYSDATE() AS modified_timestamp,
-        '{{ invocation_id }}' AS _invocation_id
+        MAX(_modified_timestamp) AS _modified_timestamp
     FROM
         accts
     GROUP BY
-        1,
-        2
+        1
 )
 SELECT
-    *
+    day,
+    wallets_created,
+    _modified_timestamp,
+    {{ dbt_utils.generate_surrogate_key(
+        ['DAY']
+    ) }} AS atlas_account_created_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
 FROM
     FINAL
 WHERE

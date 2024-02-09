@@ -4,19 +4,35 @@ models:
   - name: gov__fact_staking_pool_daily_balances
     description: |-
       Aggregates the balances of each pool for each day, taking the last balance reported for each pool. This always excludes the present date.
+    tests:
+      - dbt_utils.recency:
+          datepart: day
+          field: date
+          interval: 2
 
     columns:
       - name: DATE
         description: "{{ doc('date') }}"
+        tests:
+          - not_null
 
       - name: ADDRESS
         description: "{{ doc('pool_address') }}"
+        tests:
+          - not_null
 
       - name: BALANCE
         description: "{{ doc('balance') }}"
+        tests:
+          - not_null
 
       - name: FACT_STAKING_POOL_DAILY_BALANCES_ID
         description: "{{doc('id')}}"
+        tests:
+          - unique:
+              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '2 hours'
+          - not_null:
+              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '2 hours'
 
       - name: INSERTED_TIMESTAMP
         description: "{{doc('inserted_timestamp')}}"

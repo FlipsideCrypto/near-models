@@ -1,7 +1,6 @@
 {{ config(
   materialized = 'incremental',
-  incremental_strategy = 'merge',
-  merge_exclude_columns = ['inserted_timestamp'],
+  incremental_strategy = 'delete+insert',
   unique_key = 'tx_hash',
   cluster_by = ['_modified_timestamp::DATE', '_partition_by_block_number'],
   tags = ['receipt_map']
@@ -30,20 +29,29 @@ WITH int_txs AS (
   FROM
     {{ ref('silver__streamline_transactions') }}
 
-    {% if var('IS_MIGRATION') %}
-    WHERE
-      {{ partition_incremental_load(
-        150000,
-        10000,
-        0
-      ) }}
+    {% if var('MANUAL_FIX') %}
+
+        WHERE
+            {{ partition_load_manual('no_buffer') }}
+            
     {% else %}
-    WHERE
-      {{ partition_incremental_load(
-        2000,
-        1000,
-        0
-      ) }}
+
+      {% if var('IS_MIGRATION') %}
+      WHERE
+        {{ partition_incremental_load(
+          150000,
+          10000,
+          0
+        ) }}
+      {% else %}
+      WHERE
+        {{ partition_incremental_load(
+          6000,
+          6000,
+          0
+        ) }}
+      {% endif %}
+
     {% endif %}
 ),
 int_receipts AS (
@@ -61,20 +69,29 @@ int_receipts AS (
   FROM
     {{ ref('silver__streamline_receipts_final') }}
 
-    {% if var('IS_MIGRATION') %}
-    WHERE
-      {{ partition_incremental_load(
-        150000,
-        10000,
-        0
-      ) }}
+    {% if var('MANUAL_FIX') %}
+
+        WHERE
+            {{ partition_load_manual('end') }}
+            
     {% else %}
-    WHERE
-      {{ partition_incremental_load(
-        2000,
-        1000,
-        0
-      ) }}
+
+      {% if var('IS_MIGRATION') %}
+      WHERE
+        {{ partition_incremental_load(
+          150000,
+          10000,
+          0
+        ) }}
+      {% else %}
+      WHERE
+        {{ partition_incremental_load(
+          6000,
+          6000,
+          0
+        ) }}
+      {% endif %}
+
     {% endif %}
 
 ),

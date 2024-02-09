@@ -25,7 +25,7 @@ WITH nft_mints AS (
         gas_burnt,
         transaction_fee,
         implied_price,
-        tx_status,
+        tx_status, -- TODO migrate to tx_succeeded
         mint_action_id,
         COALESCE(
             standard_nft_mint_id,

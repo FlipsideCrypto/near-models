@@ -4,48 +4,19 @@ models:
   - name: core__dim_token_labels
     description: |-
       Deprecating Soon! The data in this table is now available, and kept up to date in, the view dim_ft_contract_metadata. Please migrate work to use that view by the end of February 2024.
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - token_contract
-            - token
-            - symbol
 
     columns:
       - name: TOKEN
         description: "{{ doc('token')}}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
 
       - name: SYMBOL
         description: "{{ doc('symbol')}}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
 
       - name: TOKEN_CONTRACT
         description: "{{ doc('token_contract')}}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
 
       - name: DECIMALS
         description: "{{ doc('decimals')}}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - NUMBER
 
       - name: DIM_TOKEN_LABELS_ID
         description: "{{doc('id')}}"

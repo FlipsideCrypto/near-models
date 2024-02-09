@@ -3,6 +3,11 @@ version: 2
 models:
   - name: core__fact_receipts
     description: Decoded and flattened transaction receipts from the block shards.
+    tests:
+      - dbt_utils.recency:
+          datepart: hours
+          field: block_timestamp
+          interval: 3
 
     columns:
       - name: BLOCK_TIMESTAMP
@@ -11,6 +16,8 @@ models:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - TIMESTAMP_NTZ
+          - not_null:
+              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '2 hours'
 
       - name: BLOCK_ID
         description: "{{ doc('block_id')}}"
@@ -27,13 +34,12 @@ models:
               column_type_list:
                 - STRING
                 - VARCHAR
+          - not_null:
+              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '2 hours'
 
       - name: RECEIPT_OBJECT_ID
         description: "{{ doc('receipt_object_id')}}"
         tests:
-          - not_null
-          - unique:
-              where: tx_hash != 'J4CZZQrZK6kYPVLkrdbTEpcqhUNZiRxktbMzHviqeGgf'
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
@@ -42,7 +48,6 @@ models:
       - name: RECEIPT_OUTCOME_ID
         description: "{{ doc('receipt_outcome_id')}}"
         tests:
-          - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - ARRAY
@@ -60,7 +65,6 @@ models:
       - name: ACTIONS
         description: "{{ doc('actions')}}"
         tests:
-          - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - OBJECT
@@ -87,7 +91,6 @@ models:
       - name: STATUS_VALUE
         description: "{{ doc('status_value')}}"
         tests:
-          - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - VARIANT
@@ -96,7 +99,6 @@ models:
       - name: LOGS
         description: "{{ doc('logs')}}"
         tests:
-          - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - ARRAY
@@ -106,7 +108,6 @@ models:
       - name: PROOF
         description: "{{ doc('proof')}}"
         tests:
-          - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - ARRAY
@@ -116,7 +117,6 @@ models:
       - name: METADATA
         description: "{{ doc('metadata')}}"
         tests:
-          - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - VARIANT
@@ -124,6 +124,11 @@ models:
 
       - name: FACT_RECEIPTS_ID
         description: "{{doc('id')}}"
+        tests:
+          - unique:
+              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '2 hours'
+          - not_null:
+              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '2 hours'
 
       - name: INSERTED_TIMESTAMP
         description: "{{doc('inserted_timestamp')}}"

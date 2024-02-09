@@ -10,6 +10,8 @@ models:
 
       - name: REPO_NAME
         description: "Repo name"
+        tests:
+          - not_null
 
       - name: ENDPOINT_NAME
         description: "Endpoint name for the data"
@@ -28,6 +30,10 @@ models:
 
       - name: FACT_DEVELOPER_ACTIVITY_ID
         description: "{{doc('id')}}"
+        tests:
+          - not_null
+          - unique:
+              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '2 hours'
 
       - name: INSERTED_TIMESTAMP
         description: "{{doc('inserted_timestamp')}}"

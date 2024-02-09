@@ -12,12 +12,18 @@ models:
 
       - name: TX_HASH
         description: "{{ doc('tx_hash')}}"
+        tests:
+          - not_null:
+              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '2 hours'
 
       - name: BLOCK_ID
         description: "{{ doc('block_id')}}"
 
       - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp')}}"
+        tests:
+          - not_null:
+              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '2 hours'
 
       - name: SIGNER_ID
         description: "{{ doc('signer_id')}}"
@@ -33,6 +39,11 @@ models:
 
       - name: FACT_POSTS_ID
         description: "{{doc('id')}}"
+        tests:
+          - unique:
+              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '2 hours'
+          - not_null:
+              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '2 hours'
 
       - name: INSERTED_TIMESTAMP
         description: "{{doc('inserted_timestamp')}}"

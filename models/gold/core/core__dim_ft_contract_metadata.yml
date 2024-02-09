@@ -8,25 +8,40 @@ models:
     columns:
       - name: CONTRACT_ADDRESS
         description: "{{ doc('contract_address')}}"
+        tests:
+          - not_null
 
       - name: NAME
         description: "{{ doc('name')}}"
+        tests: 
+          - not_null
 
       - name: SYMBOL
         description: "{{ doc('symbol')}}"
+        tests: 
+          - not_null
 
       - name: DECIMALS
         description: "{{ doc('decimals')}}"
+        tests: 
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
 
       - name: ICON
         description: "{{ doc('icon')}}"
-
 
       - name: DATA
         description: "{{ doc('data')}}"
 
       - name: DIM_FT_CONTRACT_METADATA_ID
         description: "{{doc('id')}}"
+        tests:
+          - not_null
+          - unique:
+              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '2 hours'
 
       - name: INSERTED_TIMESTAMP
         description: "{{doc('inserted_timestamp')}}"

@@ -6,34 +6,62 @@ models:
       An updated version of the staking actions table which looks at all logs, instead of just the first receipt.
       There are four actions taken when staking: staking->deposit->unstaking->withdraw.
       Note - in this core view the amount is decimal adjusted by 10^24.
+    tests:
+      - dbt_utils.recency:
+          datepart: day
+          field: block_timestamp
+          interval: 1
 
     columns:
       - name: TX_HASH
         description: "{{ doc('tx_hash') }}"
+        tests:
+          - not_null:
+              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '2 hours'
 
       - name: BLOCK_ID
         description: "{{ doc('block_id') }}"
+        tests:
+          - not_null
 
       - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp') }}"
+        tests:
+          - not_null:
+              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '2 hours'
 
       - name: RECEIPT_OBJECT_ID
         description: "{{ doc('receipt_object_id') }}"
+        tests:
+          - not_null
 
       - name: ADDRESS
         description: "{{ doc('pool_address') }}"
+        tests:
+          - not_null
 
       - name: SIGNER_ID
         description: "{{ doc('signer_id') }}"
+        tests:
+          - not_null
 
       - name: ACTION
         description: "{{ doc('staking_action') }}"
+        tests:
+          - not_null
 
       - name: AMOUNT
         description: "{{ doc('amount') }}"
+        tests:
+          - not_null
 
       - name: FACT_STAKING_ACTIONS_ID
         description: "{{doc('id')}}"
+        tests:
+          - unique:
+              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '2 hours'
+          - not_null:
+              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '2 hours'
 
       - name: INSERTED_TIMESTAMP
         description: "{{doc('inserted_timestamp')}}"

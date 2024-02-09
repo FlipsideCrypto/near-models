@@ -12,13 +12,13 @@ WITH logs AS (
         {{ ref('silver__logs_s3') }}
 )
 SELECT
-    tx_hash,
-    block_timestamp,
     block_id,
+    block_timestamp,
+    tx_hash,
+    receipt_object_id,
     receiver_id,
     signer_id,
     clean_log,
-    receipt_object_id,
     gas_burnt,
     COALESCE(
         logs_id,

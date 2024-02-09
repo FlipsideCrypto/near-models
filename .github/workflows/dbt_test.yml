@@ -42,7 +42,7 @@ jobs:
           dbt deps
       - name: Run DBT Jobs
         run: |
-          dbt test -s tag:load+
+          dbt test -s models/gold
         continue-on-error: true
 
       - name: Log test results
