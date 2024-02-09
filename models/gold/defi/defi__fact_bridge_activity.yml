@@ -60,7 +60,7 @@ models:
         description: "{{ doc('destination_chain')}}"
         tests:
           - not_null:
-              where: receipt_succeeded and platform = 'multichain'
+              where: receipt_succeeded and platform != 'multichain'
 
       - name: SOURCE_CHAIN
         description: "{{ doc('source_chain')}}"
