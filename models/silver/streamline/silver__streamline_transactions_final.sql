@@ -1,7 +1,6 @@
 {{ config(
   materialized = 'incremental',
-  incremental_strategy = 'merge',
-  merge_exclude_columns = ['inserted_timestamp'],
+  incremental_strategy = 'delete+insert',
   unique_key = 'tx_hash',
   cluster_by = ['_modified_timestamp::DATE', '_partition_by_block_number'],
   tags = ['receipt_map']
@@ -33,7 +32,7 @@ WITH int_txs AS (
     {% if var('MANUAL_FIX') %}
 
         WHERE
-            {{ partition_load_manual('front') }}
+            {{ partition_load_manual('no_buffer') }}
             
     {% else %}
 
@@ -73,7 +72,7 @@ int_receipts AS (
     {% if var('MANUAL_FIX') %}
 
         WHERE
-            {{ partition_load_manual('front') }}
+            {{ partition_load_manual('end') }}
             
     {% else %}
 
