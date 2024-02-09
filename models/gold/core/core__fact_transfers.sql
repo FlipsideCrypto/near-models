@@ -12,16 +12,19 @@ WITH transfers AS (
         {{ ref('silver__transfers_s3') }}
 )
 SELECT
-    tx_hash,
-    action_id,
     block_id,
     block_timestamp,
+    action_id,
+    deposit,
+    tx_hash,
     tx_signer,
     tx_receiver,
-    deposit,
     receipt_object_id,
+    signer_id,
+    receiver_id,
     transaction_fee,
     gas_used,
+    tx_succeeded,
     status,
     COALESCE(
         transfers_id,
