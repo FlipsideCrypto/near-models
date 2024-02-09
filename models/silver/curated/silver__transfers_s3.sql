@@ -89,7 +89,7 @@ actions AS (
     r.receipt_object_id,
     t.transaction_fee,
     t.gas_used,
-    r.receipt_succeeded,
+    A.receipt_succeeded,
     t.tx_succeeded,
     t._partition_by_block_number,
     t._inserted_timestamp,
@@ -116,7 +116,8 @@ FINAL AS (
     transaction_fee,
     gas_used,
     tx_succeeded,
-    tx_succeeded AS status,
+    receipt_succeeded,
+    ARRAY_MIN([tx_succeeded, receipt_succeeded]) AS status,
     _partition_by_block_number,
     _inserted_timestamp,
     _modified_timestamp

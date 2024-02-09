@@ -25,6 +25,7 @@ SELECT
     transaction_fee,
     gas_used,
     tx_succeeded,
+    receipt_succeeded,
     status,
     COALESCE(
         transfers_id,

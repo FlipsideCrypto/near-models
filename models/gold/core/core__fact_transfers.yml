@@ -118,6 +118,13 @@ models:
               column_type_list:
                 - BOOLEAN
 
+      - name: RECEIPT_SUCCEEDED
+        description: "{{ doc('receipt_succeeded')}}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - BOOLEAN
+
       - name: STATUS
         description: "{{ doc('status')}}"
         tests:
