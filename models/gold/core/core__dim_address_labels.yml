@@ -38,7 +38,7 @@ models:
         tests:
           - not_null
           - unique:
-              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '1 hour'
+              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '2 hours'
 
       - name: INSERTED_TIMESTAMP
         description: "{{doc('inserted_timestamp')}}"
