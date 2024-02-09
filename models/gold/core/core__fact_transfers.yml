@@ -82,6 +82,24 @@ models:
                 - ARRAY
                 - VARCHAR
 
+      - name: SIGNER_ID
+        description: "{{ doc('signer_id')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: RECEIVER_ID
+        description: "{{ doc('receiver_id')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
       - name: TRANSACTION_FEE
         description: "{{ doc('transaction_fee')}}"
         tests:
@@ -97,6 +115,20 @@ models:
               column_type_list:
                 - NUMBER
                 - FLOAT
+
+      - name: TX_SUCCEEDED
+        description: "{{ doc('tx_succeeded')}}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - BOOLEAN
+
+      - name: RECEIPT_SUCCEEDED
+        description: "{{ doc('receipt_succeeded')}}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - BOOLEAN
 
       - name: STATUS
         description: "{{ doc('status')}}"

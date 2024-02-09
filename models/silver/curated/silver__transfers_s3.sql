@@ -13,13 +13,17 @@ WITH action_events AS(
     tx_hash,
     action_id,
     action_data :deposit :: INT AS deposit,
+    receiver_id,
+    signer_id,
+    receipt_succeeded,
     _partition_by_block_number,
     _inserted_timestamp,
     modified_timestamp AS _modified_timestamp
   FROM
     {{ ref('silver__actions_events_s3') }}
   WHERE
-    action_name = 'Transfer' {% if var("MANUAL_FIX") %}
+    action_name = 'Transfer' 
+    {% if var("MANUAL_FIX") %}
       AND {{ partition_load_manual('no_buffer') }}
     {% else %}
       {% if var('IS_MIGRATION') %}
@@ -39,10 +43,7 @@ txs AS (
     tx_signer,
     transaction_fee,
     gas_used,
-    CASE
-      WHEN tx :receipt [0] :outcome :status :: STRING = '{"SuccessValue":""}' THEN TRUE
-      ELSE FALSE
-    END AS status,
+    tx_succeeded,
     _partition_by_block_number,
     _inserted_timestamp,
     modified_timestamp AS _modified_timestamp
@@ -82,11 +83,14 @@ actions AS (
     t.block_timestamp,
     t.tx_signer,
     t.tx_receiver,
+    A.receiver_id,
+    A.signer_id,
     A.deposit,
     r.receipt_object_id,
     t.transaction_fee,
     t.gas_used,
-    t.status,
+    A.receipt_succeeded,
+    t.tx_succeeded,
     t._partition_by_block_number,
     t._inserted_timestamp,
     t._modified_timestamp
@@ -99,17 +103,21 @@ actions AS (
 ),
 FINAL AS (
   SELECT
-    tx_hash,
-    action_id,
     block_id,
     block_timestamp,
+    action_id,
+    deposit,
+    tx_hash,
     tx_signer,
     tx_receiver,
-    deposit,
     receipt_object_id,
+    signer_id,
+    receiver_id,
     transaction_fee,
     gas_used,
-    status,
+    tx_succeeded,
+    receipt_succeeded,
+    ARRAY_MIN([tx_succeeded, receipt_succeeded]) AS status,
     _partition_by_block_number,
     _inserted_timestamp,
     _modified_timestamp

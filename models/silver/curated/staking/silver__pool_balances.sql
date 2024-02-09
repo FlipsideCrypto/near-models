@@ -41,7 +41,6 @@ FINAL AS (
             10,
             24
         ) AS amount_adj,
-        _load_timestamp,
         _partition_by_block_number,
         _inserted_timestamp
     FROM

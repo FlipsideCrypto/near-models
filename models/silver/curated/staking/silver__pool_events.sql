@@ -30,7 +30,6 @@ FINAL AS (
         status_value,
         logs,
         VALUE AS LOG,
-        _load_timestamp,
         _partition_by_block_number,
         _inserted_timestamp
     FROM
