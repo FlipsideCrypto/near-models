@@ -8,7 +8,7 @@ models:
       - dbt_utils.recency:
           datepart: hours
           field: block_timestamp
-          interval: 3
+          interval: 2
 
     columns:
       - name: TX_HASH

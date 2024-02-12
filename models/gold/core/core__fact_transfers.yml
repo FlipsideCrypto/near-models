@@ -3,12 +3,12 @@ version: 2
 models:
   - name: core__fact_transfers
     description: |-
-      This table records all the Transfer actions of the Near blockchain.
+      Deprecating soon! This table is going to be replaced with a new, easier to use, `FACT_TOKEN_TRANSFERS` that will include both Fungible Token and NEAR transfers.
     tests:
       - dbt_utils.recency:
           datepart: hours
           field: block_timestamp
-          interval: 6 # TODO - decrease when txs final fixed
+          interval: 2
 
     columns:
       - name: TX_HASH
@@ -71,16 +71,6 @@ models:
               column_type_list:
                 - NUMBER
                 - FLOAT
-
-      - name: RECEIPT_OBJECT_ID
-        description: "{{ doc('receipt_object_id')}}"
-        tests:
-          - not_null:
-              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '2 hours'
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - ARRAY
-                - VARCHAR
 
       - name: SIGNER_ID
         description: "{{ doc('signer_id')}}"

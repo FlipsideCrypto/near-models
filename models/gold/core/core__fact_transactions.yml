@@ -2,12 +2,15 @@ version: 2
 
 models:
   - name: core__fact_transactions
-    description: Deprecation notice. The column `tx_status` (string, success or fail) is being replaced with `tx_succeeded` (bool). Please migrate work by 2/1/2024! Transactions on the NEAR blockchain.
+    description: |-
+      Deprecating soon! The column `tx_status` (string, success or fail) is being replaced with `tx_succeeded` (bool). Please migrate work by 3/1/2024! 
+      Transactions on the NEAR blockchain.
+
     tests:
       - dbt_utils.recency:
           datepart: hours
           field: block_timestamp
-          interval: 6 # TODO - decrease when root cause found
+          interval: 2
 
     columns:
       - name: BLOCK_ID
