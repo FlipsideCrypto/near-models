@@ -67,20 +67,6 @@ txs AS (
       {% endif %}
     {% endif %}
 ),
-receipts AS (
-  SELECT
-    tx_hash,
-    ARRAY_AGG(
-      VALUE :id :: STRING
-    ) AS receipt_object_id
-  FROM
-    txs,
-    LATERAL FLATTEN(
-      input => tx_receipt
-    )
-  GROUP BY
-    1
-),
 actions AS (
   SELECT
     A.tx_hash,
@@ -93,7 +79,6 @@ actions AS (
     A.receiver_id,
     A.signer_id,
     A.deposit,
-    r.receipt_object_id,
     t.transaction_fee,
     A.gas_burnt AS gas_used,
     A.receipt_succeeded,
@@ -102,10 +87,8 @@ actions AS (
     A._inserted_timestamp,
     A._modified_timestamp
   FROM
-    txs AS t
-    INNER JOIN receipts AS r
-    ON r.tx_hash = t.tx_hash
-    INNER JOIN action_events AS A
+    action_events A
+    LEFT JOIN txs t
     ON A.tx_hash = t.tx_hash
 ),
 FINAL AS (
@@ -117,7 +100,6 @@ FINAL AS (
     tx_hash,
     tx_signer,
     tx_receiver,
-    receipt_object_id,
     predecessor_id,
     signer_id,
     receiver_id,
