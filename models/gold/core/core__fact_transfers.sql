@@ -19,7 +19,7 @@ SELECT
     tx_hash,
     tx_signer,
     tx_receiver,
-    receipt_object_id,
+    predecessor_id,
     signer_id,
     receiver_id,
     transaction_fee,

@@ -3,7 +3,7 @@ version: 2
 models:
   - name: core__fact_transfers
     description: |-
-      This table records all the Transfer actions of the Near blockchain.
+      Deprecating soon! This table is going to be replaced with a new, easier to use, `FACT_TOKEN_TRANSFERS` that will include both Fungible Token and NEAR transfers.
     tests:
       - dbt_utils.recency:
           datepart: hours
