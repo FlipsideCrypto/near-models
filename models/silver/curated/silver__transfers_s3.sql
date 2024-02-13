@@ -58,7 +58,7 @@ txs AS (
 
     {% if var("MANUAL_FIX") %}
     WHERE
-      {{ partition_load_manual('no_buffer') }}
+      {{ partition_load_manual('front') }}
     {% else %}
       {% if var('IS_MIGRATION') %}
           WHERE {{ incremental_load_filter('_inserted_timestamp') }}

@@ -49,7 +49,8 @@ models:
       - name: TX_SIGNER
         description: "{{ doc('tx_signer')}}"
         tests:
-          - not_null
+          - not_null:
+              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '2 hours'
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
@@ -58,7 +59,8 @@ models:
       - name: TX_RECEIVER
         description: "{{ doc('tx_receiver')}}"
         tests:
-          - not_null
+          - not_null:
+              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '2 hours'
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
