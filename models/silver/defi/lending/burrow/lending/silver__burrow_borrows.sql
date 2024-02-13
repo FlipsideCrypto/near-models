@@ -7,7 +7,7 @@
 ) }}
 
 WITH --borrows from Burrow LendingPool contracts
-borrow AS (
+borrows AS (
 
     SELECT
         block_id,
@@ -35,9 +35,10 @@ FINAL AS (
             args :msg
         ) :Execute :actions [0] :Borrow AS segmented_data,
         segmented_data :token_id AS token_contract_address,
-        segmented_data :amount AS borrowed_amount
+        segmented_data :amount AS amount,
+        'borrow' AS actions
     FROM
-        borrow
+        borrows
     WHERE
         receiver_id = 'contract.main.burrow.near'
         AND method_name = 'oracle_on_call'
@@ -46,11 +47,12 @@ FINAL AS (
 )
 SELECT
     tx_hash,
-    block_id,
+    block_id AS block_number,
     block_timestamp,
     receiver_id AS contract_address,
     sender,
     token_contract_address,
+    actions,
     amount,
     _inserted_timestamp,
     _partition_by_block_number,

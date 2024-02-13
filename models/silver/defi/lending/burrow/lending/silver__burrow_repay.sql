@@ -29,7 +29,7 @@ WHERE
     {{ incremental_load_filter('_modified_timestamp') }}
 {% endif %}
 ),
-repay_from_deposit AS (
+FINAL AS (
     SELECT
         *,
         args :sender_id AS sender,
@@ -43,49 +43,27 @@ repay_from_deposit AS (
         actions
     WHERE
         receiver_id = 'contract.main.burrow.near'
-        AND method_name = 'ft_on_transfer'
-        AND receipt_succeeded = TRUE
-        AND args:msg != ''
-        AND actions = 'repay'
-    ),
-repay_from_decrease_collateral as (
-    SELECT
-        *,
-        args :sender_id AS sender,
-        receiver_id AS contract_address,
-        PARSE_JSON(SUBSTRING(logs [1], 12)) AS segmented_data,
-        segmented_data :data [0] :account_id AS account_id,
-        segmented_data :data [0] :token_id AS token_contract_address,
-        segmented_data :data [0] :amount :: NUMBER AS amount,
-        segmented_data :event AS actions
-    FROM
-        deposit
-    WHERE
-        receiver_id = 'contract.main.burrow.near'
-        AND method_name = 'oracle_on_call'
+        AND (
+        (
+            method_name = 'ft_on_transfer' -- repay_from_deposit
+            AND args:msg != ''
+        ) OR (
+            method_name = 'oracle_on_call' -- repay_from_decrease_collateral
+            )
+        )
         AND actions = 'repay'
         AND receipt_succeeded = TRUE
-),
-FINAL AS (
-    SELECT
-        *
-    FROM
-        increase_collateral
-    UNION ALL
-    SELECT
-        *
-    FROM
-        decrease_collateral
-)
+    )
 SELECT
     tx_hash,
-    block_id,
+    block_id AS block_number,
     block_timestamp,
     actions,
     contract_address,
     sender,
     token_contract_address,
     amount,
+    account_id,
     _inserted_timestamp,
     _partition_by_block_number,
     {{ dbt_utils.generate_surrogate_key(

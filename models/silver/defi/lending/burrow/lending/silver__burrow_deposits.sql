@@ -48,7 +48,7 @@ FINAL AS (
     )
 SELECT
     tx_hash,
-    block_id,
+    block_id AS block_number,
     block_timestamp,
     actions,
     contract_address,

@@ -7,7 +7,7 @@
 ) }}
 
 WITH -- successfull withdraws
-withdraw AS (
+withdraws AS (
 
     SELECT
         block_id,
@@ -32,7 +32,6 @@ WHERE
 FINAL AS (
     SELECT
         *,
-        args :sender_id AS sender,
         receiver_id AS contract_address,
         PARSE_JSON(SUBSTRING(logs [0], 12)) AS segmented_data,
         segmented_data :data [0] :account_id AS account_id,
@@ -40,7 +39,7 @@ FINAL AS (
         segmented_data :data [0] :amount :: NUMBER AS amount,
         segmented_data :event AS actions
     FROM
-        supply
+        withdraws
     WHERE
         receiver_id = 'contract.main.burrow.near'
         AND method_name = 'after_ft_transfer'
@@ -48,11 +47,11 @@ FINAL AS (
 )
 SELECT
     tx_hash,
-    block_id,
+    block_id AS block_number,
     block_timestamp,
     actions,
     contract_address,
-    sender,
+    account_id,
     token_contract_address,
     amount,
     _inserted_timestamp,
