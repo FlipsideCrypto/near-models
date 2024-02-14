@@ -4,8 +4,8 @@ run-name: dbt_test_scheduled
 on:
   workflow_dispatch:
   schedule:
-    # Run at 1300 UTC daily (see https://crontab.guru)
-    - cron: "15 13 * * *"
+    # Run at 1245 UTC daily (see https://crontab.guru)
+    - cron: "45 12 * * *"
 env:
   USE_VARS: "${{ vars.USE_VARS }}"
   DBT_PROFILES_DIR: "${{ vars.DBT_PROFILES_DIR }}"
