@@ -63,7 +63,7 @@ txs AS (
       {% if var('IS_MIGRATION') %}
           WHERE {{ incremental_load_filter('_inserted_timestamp') }}
       {% else %}
-          WHERE {{ incremental_load_filter('_modified_timestamp') }}
+          WHERE {{ incremental_pad_x_minutes('_modified_timestamp', 5) }}
       {% endif %}
     {% endif %}
 ),
