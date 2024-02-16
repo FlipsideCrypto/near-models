@@ -57,15 +57,22 @@ FINAL AS (
         s.block_id,
         s.block_timestamp,
         s.receiver_id,
+        s.swap_input_data :pool_id :: INT AS pool_id,
         s.signer_id AS trader,
         s.swap_index,
         s.amount_out_raw,
-        s.amount_out_raw / pow(10,l1.decimals) AS amount_out,
+        s.amount_out_raw / pow(
+            10,
+            l1.decimals
+        ) AS amount_out,
         amount_out * p1.price_usd AS amount_out_usd,
         s.token_out AS token_out_contract,
         l1.symbol AS symbol_out,
         s.amount_in_raw,
-        s.amount_in_raw / pow(10,l2.decimals) AS amount_in,
+        s.amount_in_raw / pow(
+            10,
+            l2.decimals
+        ) AS amount_in,
         amount_in * p2.price_usd AS amount_in_usd,
         s.token_in AS token_in_contract,
         l2.symbol AS symbol_in,
@@ -76,8 +83,10 @@ FINAL AS (
         s.modified_timestamp
     FROM
         dex_swaps s
-        LEFT JOIN labels l1 ON s.token_out = l1.contract_address
-        LEFT JOIN labels l2 ON s.token_in = l2.contract_address
+        LEFT JOIN labels l1
+        ON s.token_out = l1.contract_address
+        LEFT JOIN labels l2
+        ON s.token_in = l2.contract_address
         LEFT JOIN prices p1
         ON DATE_TRUNC(
             'hour',
