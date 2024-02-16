@@ -88,7 +88,7 @@ actions AS (
     A._modified_timestamp
   FROM
     action_events A
-    LEFT JOIN txs t
+    INNER JOIN txs t
     ON A.tx_hash = t.tx_hash
 ),
 FINAL AS (
