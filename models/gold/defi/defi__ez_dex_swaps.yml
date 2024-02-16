@@ -2,11 +2,12 @@ version: 2
 
 models:
   - name: defi__ez_dex_swaps
-    description: |-
+    description: >
       DEX Swaps on the NEAR blockchain, with label and price data joined in for ease of use (where available).
       Note - view updated February 2024 to use the same v2 Swaps model as fact_dex_swaps.
       TOKEN_IN and TOKEN_OUT are now SYMBOL_IN/OUT.
       POOL ID is found in the SWAP_INPUT_DATA, where available.
+
     columns:
       - name: TX_HASH
         description: "{{ doc('tx_hash')}}"
@@ -39,7 +40,7 @@ models:
         description: "{{ doc('amount_usd')}}"
  
       - name: TOKEN_OUT_CONTRACT
-        description: "{{ doc('token_out_contract')}}"
+        description: "{{ doc('contract_address')}}"
 
       - name: SYMBOL_OUT
         description: "{{ doc('symbol')}}"
@@ -54,7 +55,7 @@ models:
         description: "{{ doc('amount_usd')}}"
  
       - name: TOKEN_IN_CONTRACT
-        description: "{{ doc('token_in_contract')}}"
+        description: "{{ doc('contract_address')}}"
 
       - name: SYMBOL_IN
         description: "{{ doc('symbol')}}"
@@ -62,7 +63,7 @@ models:
       - name: SWAP_INPUT_DATA
         description: "{{ doc('swap_input_data') }}"
 
-      - NAME: LOG
+      - name: LOG
         description: "{{doc('log')}}"
 
       - name: EZ_DEX_SWAPS_ID
