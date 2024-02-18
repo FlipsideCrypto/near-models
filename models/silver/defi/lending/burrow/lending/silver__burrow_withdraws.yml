@@ -4,18 +4,55 @@ models:
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
-            - TX_HASH
-            - AMOUNT
+            - _action_id
     columns:
+      - name: _ACTION_ID
+        description: "{{ doc('action_id')}}"
+        tests:
+          - not_null
+
       - name: TX_HASH
+        description: "{{ doc('tx_hash')}}"
         tests:
           - not_null
+
       - name: BLOCK_NUMBER
+        description: "{{ doc('block_id')}}"
         tests:
           - not_null
+
       - name: BLOCK_TIMESTAMP
+        description: "{{ doc('block_timestamp')}}"
         tests:
-          - not_null
-          - dbt_expectations.expect_row_values_to_have_recent_data:
-              datepart: month
-              interval: 1
+          - not_null:
+              where: _inserted_timestamp <= current_timestamp - interval '1 hour'
+
+      - name: SENDER
+        description: "{{ doc('sender')}}"
+
+      - name: ACTIONS
+        description: "{{ doc('action')}}"
+
+      - name: CONTRACT_ADDRESS
+        description: "{{ doc('contract_address')}}"
+
+      - name: AMOUNT
+        description: "{{ doc('amount')}}"
+
+      - name: TOKEN_CONTRACT_ADDRESS
+        description: "{{ doc('token_contract')}}"
+
+      - name: _PARTITION_BY_BLOCK_NUMBER
+        description: "{{ doc('_partition_by_block_number')}}"
+
+      - name: ACTIONS_EVENTS_ID
+        description: "{{doc('id')}}"
+
+      - name: INSERTED_TIMESTAMP
+        description: "{{doc('inserted_timestamp')}}"
+
+      - name: MODIFIED_TIMESTAMP
+        description: "{{doc('modified_timestamp')}}"
+
+      - name: _INVOCATION_ID
+        description: "{{doc('invocation_id')}}"

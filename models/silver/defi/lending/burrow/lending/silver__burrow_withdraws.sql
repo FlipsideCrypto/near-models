@@ -1,7 +1,8 @@
 {{ config(
     materialized = 'incremental',
-    incremental_strategy = 'delete+insert',
-    unique_key = "block_number",
+    incremental_strategy = 'merge',
+    merge_exclude_columns = ["inserted_timestamp"],
+    unique_key = "_action_id",
     cluster_by = ['block_timestamp::DATE'],
     tags = ['curated']
 ) }}
@@ -10,6 +11,7 @@ WITH -- successfull withdraws
 withdraws AS (
 
     SELECT
+        action_id AS _action_id,
         block_id,
         block_timestamp,
         tx_hash,
@@ -34,10 +36,10 @@ FINAL AS (
         *,
         receiver_id AS contract_address,
         PARSE_JSON(SUBSTRING(logs [0], 12)) AS segmented_data,
-        segmented_data :data [0] :account_id AS account_id,
+        segmented_data :data [0] :account_id AS sender,
         segmented_data :data [0] :token_id AS token_contract_address,
         segmented_data :data [0] :amount :: NUMBER AS amount,
-        segmented_data :event AS actions
+        segmented_data :event :: STRING AS actions
     FROM
         withdraws
     WHERE
@@ -46,18 +48,19 @@ FINAL AS (
         AND receipt_succeeded = TRUE
 )
 SELECT
+    _action_id,
     tx_hash,
     block_id AS block_number,
     block_timestamp,
+    sender,
     actions,
     contract_address,
-    account_id,
-    token_contract_address,
     amount,
+    token_contract_address,
     _inserted_timestamp,
     _partition_by_block_number,
     {{ dbt_utils.generate_surrogate_key(
-        ['tx_hash']
+        ['_action_id']
     ) }} AS actions_events_addkey_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,

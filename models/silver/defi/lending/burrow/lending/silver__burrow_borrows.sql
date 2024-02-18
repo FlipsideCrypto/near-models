@@ -1,7 +1,8 @@
 {{ config(
     materialized = 'incremental',
-    incremental_strategy = 'delete+insert',
-    unique_key = "block_number",
+    incremental_strategy = 'merge',
+    merge_exclude_columns = ["inserted_timestamp"],
+    unique_key = "_action_id",
     cluster_by = ['block_timestamp::DATE'],
     tags = ['curated']
 ) }}
@@ -10,6 +11,7 @@ WITH --borrows from Burrow LendingPool contracts
 borrows AS (
 
     SELECT
+        action_id as _action_id,
         block_id,
         block_timestamp,
         tx_hash,
@@ -31,12 +33,13 @@ FINAL AS (
     SELECT
         *,
         args :sender_id AS sender,
+        receiver_id AS contract_address,
         PARSE_JSON(
             args :msg
         ) :Execute :actions [0] :Borrow AS segmented_data,
         segmented_data :token_id AS token_contract_address,
         segmented_data :amount AS amount,
-        'borrow' AS actions
+        'borrow' :: STRING AS actions
     FROM
         borrows
     WHERE
@@ -46,18 +49,19 @@ FINAL AS (
         AND receipt_succeeded = TRUE
 )
 SELECT
+    _action_id,
     tx_hash,
     block_id AS block_number,
     block_timestamp,
-    receiver_id AS contract_address,
     sender,
-    token_contract_address,
     actions,
+    contract_address,
     amount,
+    token_contract_address,
     _inserted_timestamp,
     _partition_by_block_number,
     {{ dbt_utils.generate_surrogate_key(
-        ['tx_hash']
+        ['_action_id']
     ) }} AS actions_events_addkey_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
