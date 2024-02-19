@@ -18,8 +18,8 @@ models:
       - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp')}}"
 
-      - name: RECEIVER_ID
-        description: "{{ doc('receiver_id')}}"
+      - name: PLATFORM
+        description: "{{ doc('platform')}}"
 
       - name: POOL_ID
         description: "{{ doc('pool_id')}}"

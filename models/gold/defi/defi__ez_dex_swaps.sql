@@ -56,7 +56,7 @@ FINAL AS (
         s.receipt_object_id,
         s.block_id,
         s.block_timestamp,
-        s.receiver_id,
+        s.receiver_id AS platform,
         s.swap_input_data :pool_id :: INT AS pool_id,
         s.signer_id AS trader,
         s.swap_index,
@@ -91,13 +91,13 @@ FINAL AS (
         ON DATE_TRUNC(
             'hour',
             s.block_timestamp
-        ) = p.block_timestamp
+        ) = p1.block_timestamp
         AND s.token_out = p1.contract_address
         LEFT JOIN prices p2
         ON DATE_TRUNC(
             'hour',
             s.block_timestamp
-        ) = p.block_timestamp
+        ) = p2.block_timestamp
         AND s.token_in = p2.contract_address
 )
 SELECT
