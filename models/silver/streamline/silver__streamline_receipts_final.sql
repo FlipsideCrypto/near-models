@@ -52,7 +52,11 @@ base_receipts AS (
                 SELECT
                     MIN(_partition_by_block_number) - (3000 * {{ var('RECEIPT_MAP_LOOKBACK_HOURS') }})
                 FROM
-                    retry_range
+                    (
+                        SELECT MIN(_partition_by_block_number) AS _partition_by_block_number FROM retry_range
+                        UNION ALL
+                        SELECT MAX(_partition_by_block_number) AS _partition_by_block_number FROM {{ this }}
+                    )
             )
             AND (
                 {% if var('IS_MIGRATION') %}
@@ -98,12 +102,16 @@ blocks AS (
                 )
             OR
         {% endif %}
-                _partition_by_block_number >= (
-                    SELECT
-                        MIN(_partition_by_block_number) - (3000 * {{ var('RECEIPT_MAP_LOOKBACK_HOURS') }})
-                    FROM
-                        retry_range
-                )
+            _partition_by_block_number >= (
+                SELECT
+                    MIN(_partition_by_block_number) - (3000 * {{ var('RECEIPT_MAP_LOOKBACK_HOURS') }})
+                FROM
+                    (
+                        SELECT MIN(_partition_by_block_number) AS _partition_by_block_number FROM retry_range
+                        UNION ALL
+                        SELECT MAX(_partition_by_block_number) AS _partition_by_block_number FROM {{ this }}
+                    )
+            )
     {% endif %}
 ),
 append_tx_hash AS (
