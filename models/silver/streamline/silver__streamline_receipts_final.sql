@@ -162,7 +162,7 @@ FINAL AS (
         _modified_timestamp
     FROM
         append_tx_hash r
-        LEFT JOIN blocks b USING (block_id)
+        INNER JOIN blocks b USING (block_id)
 )
 SELECT
     *,
