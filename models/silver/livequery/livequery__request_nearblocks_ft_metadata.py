@@ -1,5 +1,3 @@
-import logging
-
 import anyjson as json
 import snowflake.snowpark.types as T
 
@@ -46,8 +44,6 @@ def model(dbt, session):
         [],
         schema
     )
-    logger = logging.getLogger("python_logger")
-
     # set upper limit
     max_page = 100
 
