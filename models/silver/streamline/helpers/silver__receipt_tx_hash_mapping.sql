@@ -50,7 +50,11 @@ txs AS (
                     SELECT
                         MIN(_partition_by_block_number) - (3000 * {{ var('RECEIPT_MAP_LOOKBACK_HOURS') }})
                     FROM
-                        {{ ref('_retry_range')}}
+                        (
+                            SELECT MIN(_partition_by_block_number) AS _partition_by_block_number FROM {{ ref('_retry_range') }}
+                            UNION ALL
+                            SELECT MAX(_partition_by_block_number) AS _partition_by_block_number FROM {{ target.database }}.silver.streamline_receipts_final
+                        )
                 )
         {% endif %}
 ),
