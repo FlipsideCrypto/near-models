@@ -1,9 +1,8 @@
 {{ config(
     materialized = 'view',
-    secure = false,
-    meta ={ 'database_tags':{ 'table':{ 'PURPOSE': 'DEFI, BRIDGING' }} },
     tags = ['core']
 ) }}
+
 
 WITH borrows AS
 (
@@ -28,12 +27,12 @@ deposits AS
         {{ ref('silver__burrow_deposits') }}
 
 ),
-repay AS
+repays AS
 (
     SELECT
         *
     FROM
-        {{ ref('silver__burrow_repay') }}
+        {{ ref('silver__burrow_repays') }}
 ),
 withdrawals AS
 (
@@ -45,38 +44,47 @@ withdrawals AS
 ),
 FINAL AS (
     SELECT
+        burrow_borrows_id as  burrow_lending_id,
         *
     FROM
         borrows
     UNION ALL
     SELECT
+        burrow_collaterals_id as  burrow_lending_id,
         *
     FROM
         collaterals
     UNION ALL
     SELECT
+        burrow_deposits_id as  burrow_lending_id,
         *
     FROM
         deposits
     UNION ALL
     SELECT
+        burrow_repays_id as  burrow_lending_id,
         *
     FROM
-        repay
+        repays
     UNION ALL
     SELECT
+        burrow_withdraws_id as  burrow_lending_id,
         *
     FROM
         withdrawals
 )
 SELECT
+    'burrow' as platform,
     tx_hash,
-    block_number,
+    block_id,
     block_timestamp,
     sender,
     actions,
     contract_address,
     amount,
-    token_contract_address
+    burrow_lending_id,
+    token_contract_address as token_address,
+    inserted_timestamp,
+    modified_timestamp
 FROM
     FINAL

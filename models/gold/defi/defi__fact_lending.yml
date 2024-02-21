@@ -1,0 +1,54 @@
+version: 2
+models:
+  - name: defi__fact_lending
+    columns:
+      - name: platform
+        description: "Lending platform"
+        tests:
+          - not_null
+
+      - name: TX_HASH
+        description: "{{ doc('tx_hash')}}"
+        tests:
+          - not_null
+
+      - name: block_id
+        description: "{{ doc('block_id')}}"
+        tests:
+          - not_null
+
+      - name: BLOCK_TIMESTAMP
+        description: "{{ doc('block_timestamp')}}"
+        tests:
+          - not_null:
+              where: inserted_timestamp <= current_timestamp - interval '1 hour'
+
+      - name: SENDER
+        description: "{{ doc('sender')}}"
+        tests:
+          - not_null
+
+      - name: ACTIONS
+        description: "{{ doc('action')}}"
+        tests:
+          - not_null
+
+      - name: CONTRACT_ADDRESS
+        description: "{{ doc('contract_address')}}"
+        tests:
+          - not_null
+
+      - name: AMOUNT
+        description: "{{ doc('amount')}}"
+        tests:
+          - not_null
+
+      - name: TOKEN_ADDRESS
+        description: "{{ doc('token_contract')}}"
+        tests:
+          - not_null
+
+      - name: FACT_LENDING_BURROW_ID
+        description: "{{ doc('id')}}"
+        tests:
+          - not_null

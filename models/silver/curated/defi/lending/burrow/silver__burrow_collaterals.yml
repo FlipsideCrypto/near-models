@@ -1,22 +1,19 @@
 version: 2
 models:
-  - name: silver__burrow_repay
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - _action_id
+  - name: silver__burrow_collaterals
     columns:
-      - name: _ACTION_ID
+      - name: action_id
         description: "{{ doc('action_id')}}"
         tests:
           - not_null
+          - unique
 
       - name: TX_HASH
         description: "{{ doc('tx_hash')}}"
         tests:
           - not_null
 
-      - name: BLOCK_NUMBER
+      - name: block_id
         description: "{{ doc('block_id')}}"
         tests:
           - not_null
@@ -45,8 +42,11 @@ models:
       - name: _PARTITION_BY_BLOCK_NUMBER
         description: "{{ doc('_partition_by_block_number')}}"
 
-      - name: ACTIONS_EVENTS_ID
+      - name: BURROW_COLLATERALS_ID
         description: "{{doc('id')}}"
+        test:
+          - not_null
+          - unique
 
       - name: INSERTED_TIMESTAMP
         description: "{{doc('inserted_timestamp')}}"
