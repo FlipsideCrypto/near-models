@@ -11,41 +11,20 @@ SELECT
         'hour',
         block_timestamp
     ) AS block_timestamp_hour,
-    {# MIN(block_id) AS block_number_min,
+    MIN(block_id) AS block_number_min,
     MAX(block_id) AS block_number_max,
     COUNT(
-        DISTINCT block_id
+        1
     ) AS block_count,
-    #}
-    COUNT(
-        DISTINCT tx_hash
-    ) AS transaction_count,
-    COUNT(
-        DISTINCT CASE
-            WHEN tx_succeeded THEN tx_hash
-        END
-    ) AS transaction_count_success,
-    COUNT(
-        DISTINCT CASE
-            WHEN NOT tx_succeeded THEN tx_hash
-        END
-    ) AS transaction_count_failed,
-    COUNT(
-        DISTINCT tx_signer
-    ) AS unique_from_count,
-    COUNT(
-        DISTINCT tx_receiver
-    ) AS unique_to_count,
-    SUM(transaction_fee / pow(10, 24)) AS total_fees,
     MAX(_inserted_timestamp) AS _inserted_timestamp,
     {{ dbt_utils.generate_surrogate_key(
         ['block_timestamp_hour']
-    ) }} AS core_metrics_hourly_id,
+    ) }} AS core_metrics_block_hourly_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
 FROM
-    {{ ref('silver__streamline_transactions_final') }}
+    {{ ref('silver__streamline_blocks') }}
 WHERE
     block_timestamp_hour < DATE_TRUNC(
         'hour',
