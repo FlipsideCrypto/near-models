@@ -13,8 +13,7 @@ WITH retry_range AS (
     SELECT
         *
     FROM
-        {{ ref('_retry_range')}}
-
+        {{ ref('_retry_range') }}
 ),
 base_receipts AS (
     SELECT
@@ -38,43 +37,44 @@ base_receipts AS (
         _inserted_timestamp,
         modified_timestamp AS _modified_timestamp
     FROM
-        {{ ref('silver__streamline_receipts') }} r
+        {{ ref('silver__streamline_receipts') }}
+        r
 
-    {% if var('MANUAL_FIX') %}
-
-        WHERE
-            {{ partition_load_manual('no_buffer') }}
-            
+        {% if var('MANUAL_FIX') %}
+    WHERE
+        {{ partition_load_manual('no_buffer') }}
     {% else %}
-
-        WHERE
-            _partition_by_block_number >= (
-                SELECT
-                    MIN(_partition_by_block_number) - (3000 * {{ var('RECEIPT_MAP_LOOKBACK_HOURS') }})
-                FROM
-                    (
-                        SELECT MIN(_partition_by_block_number) AS _partition_by_block_number FROM retry_range
-                        UNION ALL
-                        SELECT MAX(_partition_by_block_number) AS _partition_by_block_number FROM {{ this }}
-                    )
-            )
-            AND (
-                {% if var('IS_MIGRATION') %}
-                    _inserted_timestamp >= (
-                        SELECT 
-                            MAX(_inserted_timestamp) - INTERVAL '{{ var('STREAMLINE_LOAD_LOOKBACK_HOURS') }} hours'
-                        FROM {{ this }}
-                    )
-                {% else %}
-                    {{ incremental_load_filter('_inserted_timestamp') }}
-                {% endif %}
-                OR receipt_id IN (
+    WHERE
+        _partition_by_block_number >= (
+            SELECT
+                MIN(_partition_by_block_number) - (3000 * {{ var('RECEIPT_MAP_LOOKBACK_HOURS') }})
+            FROM
+                (
                     SELECT
-                        DISTINCT receipt_object_id
+                        MIN(_partition_by_block_number) AS _partition_by_block_number
                     FROM
                         retry_range
+                    UNION ALL
+                    SELECT
+                        MAX(_partition_by_block_number) AS _partition_by_block_number
+                    FROM
+                        {{ this }}
                 )
-            )
+        )
+        AND ({% if var('IS_MIGRATION') %}
+            _inserted_timestamp >= (
+        SELECT
+            MAX(_inserted_timestamp) - INTERVAL '{{ var(' streamline_load_lookback_hours ') }} hours'
+        FROM
+            {{ this }})
+        {% else %}
+            {{ incremental_load_filter('_inserted_timestamp') }}
+        {% endif %}
+        OR receipt_id IN (
+    SELECT
+        DISTINCT receipt_object_id
+    FROM
+        retry_range))
     {% endif %}
 ),
 blocks AS (
@@ -83,36 +83,51 @@ blocks AS (
         block_timestamp,
         _partition_by_block_number,
         _inserted_timestamp
-        {% if not var('IS_MIGRATION') %}
-        , modified_timestamp AS _modified_timestamp
-        {% endif %}
+
+        {% if not var('IS_MIGRATION') %},
+        modified_timestamp AS _modified_timestamp
+    {% endif %}
     FROM
         {{ ref('silver__streamline_blocks') }}
 
-    {% if var('MANUAL_FIX') %}
+        {% if var('MANUAL_FIX') %}
         WHERE
             {{ partition_load_manual('no_buffer') }}
-    {% else %}
+        {% else %}
         WHERE
-        {% if var('IS_MIGRATION') %}
+            {% if var('IS_MIGRATION') %}
                 _inserted_timestamp >= (
-                    SELECT 
-                        MAX(_inserted_timestamp) - INTERVAL '{{ var('STREAMLINE_LOAD_LOOKBACK_HOURS') }} hours'
-                    FROM {{ this }}
+                    SELECT
+                        MAX(_inserted_timestamp) - INTERVAL '{{ var(' streamline_load_lookback_hours ') }} hours'
+                    FROM
+                        {{ this }}
                 )
-            OR
-        {% endif %}
+                OR
+            {% endif %}
+
             _partition_by_block_number >= (
                 SELECT
                     MIN(_partition_by_block_number) - (3000 * {{ var('RECEIPT_MAP_LOOKBACK_HOURS') }})
                 FROM
                     (
-                        SELECT MIN(_partition_by_block_number) AS _partition_by_block_number FROM retry_range
+                        SELECT
+                            MIN(_partition_by_block_number) AS _partition_by_block_number
+                        FROM
+                            retry_range
                         UNION ALL
-                        SELECT MAX(_partition_by_block_number) AS _partition_by_block_number FROM {{ this }}
+                        SELECT
+                            MAX(_partition_by_block_number) AS _partition_by_block_number
+                        FROM
+                            {{ this }}
                     )
             )
-    {% endif %}
+            OR block_id IN (
+                SELECT
+                    DISTINCT block_id
+                FROM
+                    retry_range
+            )
+        {% endif %}
 ),
 append_tx_hash AS (
     SELECT
