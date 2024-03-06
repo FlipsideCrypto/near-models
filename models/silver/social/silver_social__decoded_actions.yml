@@ -21,6 +21,9 @@ models:
       - name: block_timestamp
         description: "{{ doc('block_timestamp')}}"
 
+      - name: PREDECESSOR_ID
+        description: "{{ doc('predecessor_id')}}"
+
       - name: signer_id
         description: "{{ doc('signer_id')}}"
         tests: 
