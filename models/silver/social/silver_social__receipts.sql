@@ -19,6 +19,7 @@ WITH all_social_receipts AS (
         execution_outcome,
         receipt_outcome_id,
         receiver_id,
+        receipt_actions :predecessor_id :: STRING AS predecessor_id,
         signer_id,
         receipt_type,
         gas_burnt,
