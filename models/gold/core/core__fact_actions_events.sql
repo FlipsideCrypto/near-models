@@ -15,6 +15,7 @@ SELECT
     action_id,
     tx_hash,
     receipt_object_id,
+    predecessor_id,
     receiver_id,
     signer_id,
     block_id,

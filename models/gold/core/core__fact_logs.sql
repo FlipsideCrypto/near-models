@@ -16,6 +16,7 @@ SELECT
     block_timestamp,
     tx_hash,
     receipt_object_id,
+    predecessor_id,
     receiver_id,
     signer_id,
     clean_log,
