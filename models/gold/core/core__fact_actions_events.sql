@@ -23,6 +23,8 @@ SELECT
     action_index,
     action_name,
     action_data,
+    logs,
+    receipt_succeeded,
     COALESCE(
         actions_events_id,
         {{ dbt_utils.generate_surrogate_key(

@@ -108,6 +108,12 @@ models:
                 - OBJECT
                 - VARIANT
 
+      - name: LOGS
+        description: "{{ doc('logs')}}"
+        
+      - name: RECEIPT_SUCCEEDED
+        description: "{{ doc('receipt_succeeded')}}"
+
       - name: FACT_ACTIONS_EVENTS_ID
         description: "{{ doc('id')}}"
         tests:
