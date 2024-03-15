@@ -50,6 +50,15 @@ models:
                 - STRING
                 - VARCHAR
 
+      - name: PREDECESSOR_ID
+        description: "{{ doc('predecessor_id')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
       - name: GAS_BURNT
         description: "{{ doc('gas_burnt')}}"
         tests:

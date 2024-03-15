@@ -38,6 +38,15 @@ models:
                 - STRING
                 - VARCHAR
 
+      - name: PREDECESSOR_ID
+        description: "{{ doc('predecessor_id')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
       - name: SIGNER_ID
         description: "{{ doc('signer_id')}}"
         tests:
@@ -106,6 +115,20 @@ models:
               column_type_list:
                 - NUMBER
                 - FLOAT
+
+      - name: LOGS
+        description: "{{ doc('logs')}}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - ARRAY
+                - VARIANT
+                - OBJECT
+
+      - name: RECEIPT_SUCCEEDED
+        description: "{{ doc('receipt_succeeded')}}"
+        tests:
+          - not_null
 
       - name: FACT_ACTIONS_EVENTS_FUNCTION_CALL_ID
         description: "{{doc('id')}}"

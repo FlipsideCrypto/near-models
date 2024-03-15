@@ -9,6 +9,7 @@ SELECT
     block_id,
     block_timestamp,
     signer_id,
+    predecessor_id,
     node,
     node_data,
     COALESCE(

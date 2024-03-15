@@ -15,6 +15,7 @@ SELECT
     action_id,
     tx_hash,
     receipt_object_id,
+    predecessor_id,
     receiver_id,
     signer_id,
     block_id,
@@ -22,6 +23,8 @@ SELECT
     action_index,
     action_name,
     action_data,
+    logs,
+    receipt_succeeded,
     COALESCE(
         actions_events_id,
         {{ dbt_utils.generate_surrogate_key(

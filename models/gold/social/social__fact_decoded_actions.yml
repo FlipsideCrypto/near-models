@@ -1,4 +1,3 @@
-
 version: 2
 
 models:
@@ -27,6 +26,15 @@ models:
 
       - name: SIGNER_ID
         description: "{{ doc('signer_id')}}"
+
+      - name: PREDECESSOR_ID
+        description: "{{ doc('predecessor_id')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
 
       - name: NODE
         description: "{{ doc('node')}}"

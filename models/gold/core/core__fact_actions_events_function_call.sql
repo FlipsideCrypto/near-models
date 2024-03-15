@@ -15,6 +15,7 @@ SELECT
     action_id,
     tx_hash,
     receiver_id,
+    predecessor_id,
     signer_id,
     block_id,
     block_timestamp,
@@ -23,6 +24,8 @@ SELECT
     args,
     deposit,
     attached_gas,
+    logs,
+    receipt_succeeded,
     COALESCE(
         actions_events_function_call_id,
         {{ dbt_utils.generate_surrogate_key(
