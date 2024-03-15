@@ -68,7 +68,7 @@ models:
       - name: AMOUNT_USD
         description: "{{ doc('amount_usd')}}"
 
-      - name: FACT_LENDING_ID
+      - name: EZ_LENDING_ID
         description: "{{ doc('id')}}"
         tests:
           - not_null
