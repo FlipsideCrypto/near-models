@@ -28,7 +28,7 @@ jobs:
     uses: FlipsideCrypto/analytics-workflow-templates/.github/workflows/dbt_run_template.yml@AN-4374/upgrade-dbt-1.7
     with:
       dbt_command: >
-        dbt run-operation run_sp_create_prod_clone
+        dbt run-operation run_sp_create_prod_clone; dbt run -s models/gold
       environment: workflow_prod
       warehouse: ${{ vars.WAREHOUSE }}
     secrets: inherit

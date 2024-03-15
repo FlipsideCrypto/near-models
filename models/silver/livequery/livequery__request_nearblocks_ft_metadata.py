@@ -44,7 +44,6 @@ def model(dbt, session):
         [],
         schema
     )
-
     # set upper limit
     max_page = 100
 
@@ -54,12 +53,13 @@ def model(dbt, session):
 
         # call udf api (max 50 requests per page)
         call_udf_sql = f"select livequery.live.udf_api('{method}', '{url}', {headers}, {data})"
-
         # execute udf_api call
         response = session.sql(call_udf_sql).collect()
-
-        token_count = len(json.loads(response[0][0])['data']['tokens'])
-
+        
+        try:
+            token_count = len(json.loads(response[0][0])['data']['tokens'])
+        except:
+            break
         if token_count > 0:
 
             _inserted_timestamp = datetime.utcnow()

@@ -27,11 +27,17 @@ models:
       - name: TX_RECEIVER
         description: "{{ doc('tx_receiver')}}"
 
+      - name: PREDECESSOR_ID
+        description: "{{ doc('predecessor_id')}}"
+
+      - name: SIGNER_ID
+        description: "{{ doc('signer_id')}}"
+      
+      - name: RECEIVER_ID
+        description: "{{ doc('receiver_id')}}"
+
       - name: DEPOSIT
         description: "{{ doc('deposit')}}"
-
-      - name: RECEIPT_OBJECT_ID
-        description: "{{ doc('receipt_object_id')}}"
 
       - name: TRANSACTION_FEE
         description: "{{ doc('transaction_fee')}}"
@@ -44,6 +50,12 @@ models:
         tests:
           - not_null:
               where: _inserted_timestamp <= current_timestamp - interval '1 hour'
+
+      - name: TX_SUCCEEDED
+        description: "{{ doc('tx_succeeded')}}"
+      
+      - name: RECEIPT_SUCCEEDED
+        description: "{{ doc('receipt_succeeded')}}"
 
       - name: STATUS
         description: "{{ doc('status')}}"

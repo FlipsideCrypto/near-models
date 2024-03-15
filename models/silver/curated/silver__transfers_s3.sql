@@ -11,11 +11,17 @@ WITH action_events AS(
 
   SELECT
     tx_hash,
+    block_id,
+    block_timestamp,
     action_id,
     action_data :deposit :: INT AS deposit,
+    predecessor_id,
     receiver_id,
     signer_id,
     receipt_succeeded,
+    gas_price,
+    gas_burnt,
+    tokens_burnt,
     _partition_by_block_number,
     _inserted_timestamp,
     modified_timestamp AS _modified_timestamp
@@ -52,53 +58,37 @@ txs AS (
 
     {% if var("MANUAL_FIX") %}
     WHERE
-      {{ partition_load_manual('no_buffer') }}
+      {{ partition_load_manual('front') }}
     {% else %}
       {% if var('IS_MIGRATION') %}
           WHERE {{ incremental_load_filter('_inserted_timestamp') }}
       {% else %}
-          WHERE {{ incremental_load_filter('_modified_timestamp') }}
+          WHERE {{ incremental_pad_x_minutes('_modified_timestamp', 5) }}
       {% endif %}
     {% endif %}
 ),
-receipts AS (
-  SELECT
-    tx_hash,
-    ARRAY_AGG(
-      VALUE :id :: STRING
-    ) AS receipt_object_id
-  FROM
-    txs,
-    LATERAL FLATTEN(
-      input => tx_receipt
-    )
-  GROUP BY
-    1
-),
 actions AS (
   SELECT
-    t.tx_hash,
+    A.tx_hash,
     A.action_id,
-    t.block_id,
-    t.block_timestamp,
+    A.block_id,
+    A.block_timestamp,
     t.tx_signer,
     t.tx_receiver,
+    A.predecessor_id,
     A.receiver_id,
     A.signer_id,
     A.deposit,
-    r.receipt_object_id,
     t.transaction_fee,
-    t.gas_used,
+    A.gas_burnt AS gas_used,
     A.receipt_succeeded,
     t.tx_succeeded,
-    t._partition_by_block_number,
-    t._inserted_timestamp,
-    t._modified_timestamp
+    A._partition_by_block_number,
+    A._inserted_timestamp,
+    A._modified_timestamp
   FROM
-    txs AS t
-    INNER JOIN receipts AS r
-    ON r.tx_hash = t.tx_hash
-    INNER JOIN action_events AS A
+    action_events A
+    INNER JOIN txs t
     ON A.tx_hash = t.tx_hash
 ),
 FINAL AS (
@@ -110,7 +100,7 @@ FINAL AS (
     tx_hash,
     tx_signer,
     tx_receiver,
-    receipt_object_id,
+    predecessor_id,
     signer_id,
     receiver_id,
     transaction_fee,

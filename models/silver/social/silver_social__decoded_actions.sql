@@ -11,6 +11,7 @@ WITH all_social_receipts AS (
     SELECT
         receipt_object_id,
         receiver_id,
+        predecessor_id,
         signer_id,
         execution_outcome,
         _partition_by_block_number,
@@ -83,6 +84,7 @@ join_wallet_ids AS (
         fc.deposit,
         fc.attached_gas,
         r.receiver_id,
+        r.predecessor_id,
         r.signer_id,
         r.execution_outcome,
         fc._partition_by_block_number,
@@ -101,11 +103,13 @@ action_data AS (
         block_id,
         block_timestamp,
         COALESCE(
+            args :data [predecessor_id],
             args :data [signer_id],
             args :data :accountId
         ) AS set_action_data,
         attached_gas,
         receiver_id,
+        predecessor_id,
         signer_id,
         _partition_by_block_number,
         _inserted_timestamp,
@@ -124,6 +128,7 @@ flattened_actions AS (
         block_id,
         block_timestamp,
         signer_id,
+        predecessor_id,
         key AS node,
         VALUE AS node_data,
         _partition_by_block_number,

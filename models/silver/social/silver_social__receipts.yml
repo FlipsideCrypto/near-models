@@ -36,6 +36,9 @@ models:
       - name: receiver_id
         description: "{{ doc('receiver_id')}}"
 
+      - name: PREDECESSOR_ID
+        description: "{{ doc('predecessor_id')}}"
+
       - name: signer_id
         description: "{{ doc('signer_id')}}"
 

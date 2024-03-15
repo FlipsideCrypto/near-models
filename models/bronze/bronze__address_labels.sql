@@ -11,7 +11,6 @@ SELECT
     label_subtype,
     address_name,
     project_name,
-    insert_date AS _load_timestamp,
     insert_date as _inserted_timestamp,
     modified_timestamp AS _modified_timestamp,
     _is_deleted,
