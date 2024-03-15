@@ -1,7 +1,7 @@
 {{ config(
     materialized = 'view',
     secure = false,
-    meta ={ 'database_tags':{ 'table':{ 'PURPOSE': 'DEFI, BRIDGING' }} },
+    meta ={ 'database_tags':{ 'table':{ 'PURPOSE': 'DEFI, LENDING' }} },
     tags = ['core']
 ) }}
 
@@ -20,9 +20,9 @@ FINAL AS (
         sender_id,
         actions,
         contract_address,
-        amount,
-        burrow_lending_id AS fact_lending_id,
         token_address,
+        amount_raw,
+        burrow_lending_id AS fact_lending_id,
         inserted_timestamp,
         modified_timestamp
     FROM

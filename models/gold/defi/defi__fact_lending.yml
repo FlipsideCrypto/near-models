@@ -46,8 +46,8 @@ models:
         tests:
           - not_null
 
-      - name: AMOUNT
-        description: "{{ doc('amount')}}"
+      - name: AMOUNT_RAW
+        description: "{{ doc('amount_raw')}}"
         tests:
           - not_null
 

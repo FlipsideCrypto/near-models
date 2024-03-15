@@ -42,7 +42,7 @@ FINAL AS (
             args :msg
         ) :Execute :actions [0] : Borrow :: OBJECT  AS segmented_data,
         segmented_data :token_id AS token_contract_address,
-        COALESCE( segmented_data :amount,segmented_data :max_amount)  AS amount,
+        COALESCE( segmented_data :amount,segmented_data :max_amount)  AS amount_raw,
         'borrow' :: STRING AS actions
     FROM
         borrows
@@ -57,7 +57,7 @@ SELECT
     sender_id,
     actions,
     contract_address,
-    amount,
+    amount_raw,
     token_contract_address,
     _inserted_timestamp,
     _modified_timestamp,

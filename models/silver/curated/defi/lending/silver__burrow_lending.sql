@@ -81,7 +81,7 @@ SELECT
     sender_id,
     actions,
     contract_address,
-    amount,
+    amount_raw,
     burrow_lending_id,
     token_contract_address as token_address,
     inserted_timestamp,

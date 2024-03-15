@@ -33,8 +33,8 @@ models:
       - name: CONTRACT_ADDRESS
         description: "{{ doc('contract_address')}}"
 
-      - name: AMOUNT
-        description: "{{ doc('amount')}}"
+      - name: AMOUNT_RAW
+        description: "{{ doc('amount_raw')}}"
 
       - name: TOKEN_CONTRACT_ADDRESS
         description: "{{ doc('token_contract')}}"

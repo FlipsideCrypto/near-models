@@ -41,7 +41,7 @@ FINAL AS (
         PARSE_JSON(SUBSTRING(logs [0], 12)) :: OBJECT AS segmented_data,
         segmented_data :data [0] :account_id AS account_id,
         segmented_data :data [0] :token_id AS token_contract_address,
-        segmented_data :data [0] :amount :: NUMBER AS amount,
+        segmented_data :data [0] :amount :: NUMBER AS amount_raw,
         segmented_data :event :: STRING AS actions
     FROM
         deposits
@@ -54,7 +54,7 @@ SELECT
     sender_id,
     actions,
     contract_address,
-    amount,
+    amount_raw,
     token_contract_address,
     _inserted_timestamp,
     _modified_timestamp,
