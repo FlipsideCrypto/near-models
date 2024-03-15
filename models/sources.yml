@@ -1,13 +1,6 @@
 version: 2
 
 sources:
-  - name: streamline_dev
-    database: streamline
-    schema: near_dev
-    tables:
-      - name: blocks
-      - name: shards
-
   - name: crosschain
     schema: core
     database: crosschain

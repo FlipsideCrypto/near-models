@@ -1,0 +1,58 @@
+version: 2
+models:
+  - name: silver__burrow_deposits
+    columns:
+      - name: action_id
+        description: "{{ doc('action_id')}}"
+        tests:
+          - not_null
+          - unique
+
+      - name: TX_HASH
+        description: "{{ doc('tx_hash')}}"
+        tests:
+          - not_null
+
+      - name: block_id
+        description: "{{ doc('block_id')}}"
+        tests:
+          - not_null
+
+      - name: BLOCK_TIMESTAMP
+        description: "{{ doc('block_timestamp')}}"
+        tests:
+          - not_null:
+              where: _inserted_timestamp <= current_timestamp - interval '1 hour'
+
+      - name: SENDER_ID
+        description: "{{ doc('sender_id')}}"
+
+      - name: ACTIONS
+        description: "{{ doc('action')}}"
+
+      - name: CONTRACT_ADDRESS
+        description: "{{ doc('contract_address')}}"
+
+      - name: AMOUNT_RAW
+        description: "{{ doc('amount_raw')}}"
+
+      - name: TOKEN_CONTRACT_ADDRESS
+        description: "{{ doc('token_contract')}}"
+
+      - name: _PARTITION_BY_BLOCK_NUMBER
+        description: "{{ doc('_partition_by_block_number')}}"
+
+      - name: BURROW_DEPOSITS_ID
+        description: "{{doc('id')}}"
+        test:
+          - not_null
+          - unique
+
+      - name: INSERTED_TIMESTAMP
+        description: "{{doc('inserted_timestamp')}}"
+
+      - name: MODIFIED_TIMESTAMP
+        description: "{{doc('modified_timestamp')}}"
+
+      - name: _INVOCATION_ID
+        description: "{{doc('invocation_id')}}"
