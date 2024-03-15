@@ -1,0 +1,74 @@
+version: 2
+models:
+  - name: defi__ez_lending
+    description: |-
+      Modeled activity for lending, with token contract and price info joined in for ease of use.
+    tests:
+      - dbt_utils.recency:
+          datepart: hours
+          field: block_timestamp
+          interval: 24
+
+    columns:
+      - name: platform
+        description: "Lending protocol"
+        tests:
+          - not_null
+
+      - name: TX_HASH
+        description: "{{ doc('tx_hash')}}"
+        tests:
+          - not_null
+
+      - name: block_id
+        description: "{{ doc('block_id')}}"
+        tests:
+          - not_null
+
+      - name: BLOCK_TIMESTAMP
+        description: "{{ doc('block_timestamp')}}"
+        tests:
+          - not_null:
+              where: inserted_timestamp <= current_timestamp - interval '1 hour'
+
+      - name: SENDER_ID
+        description: "{{ doc('sender_id')}}"
+        tests:
+          - not_null
+
+      - name: ACTIONS
+        description: "{{ doc('action')}}"
+        tests:
+          - not_null
+
+      - name: CONTRACT_ADDRESS
+        description: "{{ doc('contract_address')}}"
+        tests:
+          - not_null
+
+      - name: TOKEN_ADDRESS
+        description: "{{ doc('token_contract')}}"
+        tests:
+          - not_null
+
+      - name: NAME
+        description: "{{ doc('name')}}"
+
+      - name: SYMBOL
+        description: "{{ doc('symbol')}}"
+
+      - name: AMOUNT_RAW
+        description: "{{ doc('amount_raw')}}"
+        tests:
+          - not_null
+
+      - name: AMOUNT
+        description: "{{ doc('amount')}}"
+
+      - name: AMOUNT_USD
+        description: "{{ doc('amount_usd')}}"
+
+      - name: FACT_LENDING_ID
+        description: "{{ doc('id')}}"
+        tests:
+          - not_null
