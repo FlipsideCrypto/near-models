@@ -24,8 +24,8 @@ models:
           - not_null:
               where: _inserted_timestamp <= current_timestamp - interval '1 hour'
 
-      - name: SENDER
-        description: "{{ doc('sender')}}"
+      - name: SENDER_ID
+        description: "{{ doc('sender_id')}}"
 
       - name: ACTIONS
         description: "{{ doc('action')}}"

@@ -78,7 +78,7 @@ SELECT
     tx_hash,
     block_id,
     block_timestamp,
-    sender,
+    sender_id,
     actions,
     contract_address,
     amount,

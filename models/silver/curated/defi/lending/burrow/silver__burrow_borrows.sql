@@ -36,7 +36,7 @@ borrows AS (
 FINAL AS (
     SELECT
         *,
-        args :sender_id :: STRING AS sender,
+        args :sender_id :: STRING AS sender_id,
         receiver_id AS contract_address,
         PARSE_JSON(
             args :msg
@@ -54,7 +54,7 @@ SELECT
     tx_hash,
     block_id,
     block_timestamp,
-    sender,
+    sender_id,
     actions,
     contract_address,
     amount,

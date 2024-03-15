@@ -35,7 +35,7 @@ actions AS (
 FINAL AS (
     SELECT
         *,
-        args :sender_id:: STRING AS sender,
+        args :sender_id:: STRING AS sender_id,
         receiver_id AS contract_address,
         CASE 
             WHEN method_name = 'ft_on_transfer' THEN PARSE_JSON(SUBSTRING(logs [1], 12))
@@ -62,7 +62,7 @@ SELECT
     tx_hash,
     block_id,
     block_timestamp,
-    sender,
+    sender_id,
     actions,
     contract_address,
     amount,

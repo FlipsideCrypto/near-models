@@ -38,7 +38,7 @@ FINAL AS (
         *,
         receiver_id AS contract_address,
         PARSE_JSON(SUBSTRING(logs [0], 12)) :: OBJECT AS segmented_data,
-        segmented_data :data [0] :account_id AS sender,
+        segmented_data :data [0] :account_id AS sender_id,
         segmented_data :data [0] :token_id AS token_contract_address,
         segmented_data :data [0] :amount :: NUMBER AS amount,
         segmented_data :event :: STRING AS actions
@@ -50,7 +50,7 @@ SELECT
     tx_hash,
     block_id,
     block_timestamp,
-    sender,
+    sender_id,
     actions,
     contract_address,
     amount,
