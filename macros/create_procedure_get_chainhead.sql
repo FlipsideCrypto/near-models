@@ -1,6 +1,6 @@
-{% macro create_UDF_GET_CHAINHEAD() %}
+{% macro create_PROCEDURE_GET_CHAINHEAD() %}
     {% set sql %}
-        CREATE OR REPLACE FUNCTION {{ target.database }}.STREAMLINE.GET_CHAINHEAD(
+        CREATE OR REPLACE PROCEDURE {{ target.database }}.STREAMLINE.GET_CHAINHEAD(
         ) RETURNS STRING
         LANGUAGE JAVASCRIPT
         EXECUTE AS CALLER
