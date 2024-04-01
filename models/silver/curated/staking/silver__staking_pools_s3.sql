@@ -30,7 +30,7 @@ WITH txs AS (
             {% if var('IS_MIGRATION') %}
                 WHERE {{ incremental_load_filter('_inserted_timestamp') }}
             {% else %}
-                WHERE {{ incremental_load_filter('_modified_timestamp') }}
+                WHERE {{ incremental_load_filter('modified_timestamp') }}
             {% endif %}
         {% endif %}
 ),
@@ -64,7 +64,7 @@ function_calls AS (
             {% if var('IS_MIGRATION') %}
                 AND {{ incremental_load_filter('_inserted_timestamp') }}
             {% else %}
-                AND {{ incremental_load_filter('_modified_timestamp') }}
+                AND {{ incremental_load_filter('modified_timestamp') }}
             {% endif %}
         {% endif %}
 ),
