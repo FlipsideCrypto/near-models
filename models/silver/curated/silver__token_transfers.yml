@@ -1,0 +1,75 @@
+version: 2
+
+models:
+  - name: silver__token_transfers
+    description: |-
+      This table records all the Transfer actions of the Near blockchain.
+    columns:
+      - name: BLOCK_ID
+        description: "{{ doc('block_id')}}"
+
+      - name: BLOCK_TIMESTAMP
+        description: "{{ doc('block_timestamp')}}"
+        tests:
+          - not_null:
+              where: _inserted_timestamp <= current_timestamp - interval '10 hour'
+
+      - name: TX_HASH
+        description: "{{ doc('tx_hash')}}"
+
+      - name: ACTION_ID
+        description: "{{ doc('action_id')}}"
+
+      - name: CONTRACT_ADDRESS
+        description: "{{ doc('tx_signer')}}"
+
+      - name: FROM_ADDRESS
+        description: "{{ doc('from_address')}}"
+
+      - name: TO_ADDRESS
+        description: "{{ doc('to_address')}}"
+
+      - name: TOKEN_ID
+        description: "{{ doc('token_id')}}"
+
+      - name: RAW_AMOUNT
+        description: "{{ doc('amount_raw')}}"
+
+      - name: RAW_AMOUNT_PRECISE
+        description: "{{ doc('amount_adj')}}"
+
+      - name: AMOUNT
+        description: "{{ doc('amount')}}"
+
+      - name: AMOUNT_USD
+        description: "{{ doc('amount_usd')}}"
+
+      - name: TRANSFER_TYPE
+        description: "{{ doc('transfer_type')}}"
+
+      - name: SYMBOL
+        description: "{{ doc('symbol')}}"
+
+      - name: TOKEN_PRICE
+        description: "{{ doc('price_usd')}}"
+
+      - name: HAS_PRICE
+        description: "Boolean value indicating if the token has a price"
+
+      - name: _INSERTED_TIMESTAMP
+        description: "{{ doc('_inserted_timestamp')}}"
+
+      - name: _MODIFIED_TIMESTAMP
+        description: "{{ doc('_modified_timestamp')}}"
+
+      - name: TRANSFERS_ID
+        description: "{{doc('id')}}"
+
+      - name: INSERTED_TIMESTAMP
+        description: "{{doc('inserted_timestamp')}}"
+
+      - name: MODIFIED_TIMESTAMP
+        description: "{{doc('modified_timestamp')}}"
+
+      - name: _INVOCATION_ID
+        description: "{{doc('invocation_id')}}"

@@ -1,0 +1,77 @@
+version: 2
+
+models:
+  - name: core__fact_token_transfers
+    description: This table records all the Transfer actions of the Near blockchain.
+    columns:
+      - name: BLOCK_ID
+        description: "{{ doc('block_id')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
+      - name: BLOCK_TIMESTAMP
+        description: "{{ doc('block_timestamp')}}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
+          - not_null:
+              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '2 hours'
+
+      - name: TX_HASH
+        description: "{{ doc('tx_hash')}}"
+        tests:
+          - not_null
+
+      - name: CONTRACT_ADDRESS
+        description: "{{ doc('contract_address')}}"
+
+      - name: FROM_ADDRESS
+        description: "{{ doc('from_address')}}"
+
+      - name: TO_ADDRESS
+        description: "{{ doc('to_address')}}"
+
+      - name: TOKEN_ID
+        description: "{{ doc('token_id')}}"
+
+      - name: RAW_AMOUNT
+        description: "{{ doc('amount_raw')}}"
+
+      - name: RAW_AMOUNT_PRECISE
+        description: "{{ doc('amount_adj')}}"
+
+      - name: AMOUNT
+        description: "{{ doc('amount')}}"
+
+      - name: AMOUNT_USD
+        description: "{{ doc('amount_usd')}}"
+
+      - name: TRANSFER_TYPE
+        description: "{{ doc('transfer_type')}}"
+
+      - name: SYMBOL
+        description: "{{ doc('symbol')}}"
+
+      - name: TOKEN_PRICE
+        description: "{{ doc('price_usd')}}"
+
+      - name: HAS_PRICE
+        description: "Boolean value indicating if the token has a price"
+
+      - name: FACT_TOKEN_TRANSFERS_ID
+        description: "{{doc('id')}}"
+        tests:
+          - unique:
+              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '2 hours'
+          - not_null:
+              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '2 hours'
+
+      - name: INSERTED_TIMESTAMP
+        description: "{{doc('inserted_timestamp')}}"
+
+      - name: MODIFIED_TIMESTAMP
+        description: "{{doc('modified_timestamp')}}"

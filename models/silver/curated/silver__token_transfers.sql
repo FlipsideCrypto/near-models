@@ -7,40 +7,66 @@
     tags = ['curated']
 ) }}
 
+-- Curation Challenge - 'https://flipsidecrypto.xyz/Hossein/transfer-sector-of-near-curation-challenge-zgM44F'
+
 WITH actions_events AS (
 
     SELECT
-        *
+        block_id,
+        block_timestamp,
+        tx_hash,
+        action_id,
+        signer_id,
+        receiver_id,
+        action_name,
+        method_name,
+        deposit,
+        logs,
+        receipt_succeeded,
+        _inserted_timestamp,
+        modified_timestamp as _modified_timestamp
     FROM
         {{ ref('silver__actions_events_function_call_s3') }}
     WHERE
         receipt_succeeded = TRUE
         AND logs [0] IS NOT NULL
-
-{% if is_incremental() %}
-AND inserted_timestamp >= (
+        {% if is_incremental() %}
+        AND inserted_timestamp >= (
+            SELECT
+                MAX(inserted_timestamp)
+            FROM
+                {{ this }}
+        )
+        {% endif %}
+    limit 10000
+), 
+swaps_raw AS (
     SELECT
-        MAX(inserted_timestamp)
-    FROM
-        {{ this }}
-)
-{% endif %}
-), swaps_raw AS (
-    SELECT
-        *
+        block_id,
+        block_timestamp,
+        tx_hash,
+        receipt_object_id,
+        token_in,
+        signer_id,
+        receiver_id,
+        amount_in_raw,
+        amount_out_raw,
+        _inserted_timestamp,
+        modified_timestamp AS _modified_timestamp
     FROM
         {{ ref('silver__dex_swaps_v2') }}
-
-{% if is_incremental() %}
-WHERE
-    inserted_timestamp >= (
-        SELECT
-            MAX(inserted_timestamp)
-        FROM
-            {{ this }}
-    )
-{% endif %}
-), token_prices AS (
+    {% if is_incremental() %}
+        WHERE
+            inserted_timestamp >= (
+                SELECT
+                    MAX(inserted_timestamp)
+                FROM
+                    {{ this }}
+            )
+        {% endif %}
+    limit 10000
+), 
+token_prices AS (
     SELECT
         block_timestamp :: DATE AS DATE,
         token_contract AS token_contract,
@@ -53,16 +79,15 @@ WHERE
         1,
         2,
         inserted_timestamp
-
-{% if is_incremental() %}
-HAVING
-    inserted_timestamp >= (
-        SELECT
-            MAX(inserted_timestamp)
-        FROM
-            {{ this }}
-    )
-{% endif %}
+    {% if is_incremental() %}
+    HAVING
+        inserted_timestamp >= (
+            SELECT
+                MAX(inserted_timestamp)
+            FROM
+                {{ this }}
+        )
+    {% endif %}
 ),
 metadata AS (
     SELECT
@@ -81,7 +106,9 @@ native_transfers AS (
         receiver_id AS to_address,
         IFF(REGEXP_LIKE(deposit, '^[0-9]+$'), deposit, NULL) AS amount_unadjusted,
         --numeric validation (there are some exceptions that needs to be ignored)
-        receipt_succeeded
+        receipt_succeeded,
+        _inserted_timestamp,
+        _modified_timestamp
     FROM
         actions_events
     WHERE
@@ -103,7 +130,9 @@ nft_transfers AS (
         tx_hash,
         action_id,
         TRY_PARSE_JSON(REPLACE(b.value, 'EVENT_JSON:')) AS DATA,
-        receiver_id AS contract_id
+        receiver_id AS contract_id,
+        _inserted_timestamp,
+        _modified_timestamp
     FROM
         actions_events
         JOIN LATERAL FLATTEN(
@@ -126,7 +155,9 @@ swaps AS (
         signer_id AS from_address,
         receiver_id AS to_address,
         amount_in_raw :: variant AS amount_unadjusted,
-        'swap' AS memo
+        'swap' AS memo,
+        _inserted_timestamp,
+        _modified_timestamp
     FROM
         swaps_raw
     UNION ALL
@@ -139,7 +170,9 @@ swaps AS (
         receiver_id AS from_address,
         signer_id AS to_address,
         amount_out_raw :: variant AS amount_unadjusted,
-        'swap' AS memo
+        'swap' AS memo,
+        _inserted_timestamp,
+        _modified_timestamp
     FROM
         swaps_raw
 ),
@@ -151,7 +184,9 @@ orders AS (
         action_id,
         receiver_id,
         TRY_PARSE_JSON(REPLACE(g.value, 'EVENT_JSON:')) AS DATA,
-        DATA :event AS event
+        DATA :event AS event,
+        _inserted_timestamp,
+        _modified_timestamp
     FROM
         actions_events
         JOIN LATERAL FLATTEN(
@@ -172,7 +207,9 @@ orders_final AS (
         (
             f.value :original_amount
         ) :: variant AS amount_unadjusted,
-        'order' AS memo
+        'order' AS memo,
+        _inserted_timestamp,
+        _modified_timestamp
     FROM
         orders
         JOIN LATERAL FLATTEN(
@@ -205,7 +242,9 @@ add_liquidity AS (
             'e',
             1
         ) :: variant AS amount_unadjusted,
-        'add_liquidity' AS memo
+        'add_liquidity' AS memo,
+        _inserted_timestamp,
+        _modified_timestamp
     FROM
         actions_events,
         LATERAL FLATTEN (
@@ -227,7 +266,9 @@ ft_transfers_mints AS (
         tx_hash,
         action_id,
         TRY_PARSE_JSON(REPLACE(VALUE, 'EVENT_JSON:')) AS DATA,
-        receiver_id AS contract_address
+        receiver_id AS contract_address,
+        _inserted_timestamp,
+        _modified_timestamp
     FROM
         actions_events
         JOIN LATERAL FLATTEN(
@@ -256,6 +297,8 @@ ft_transfers_mints_final AS (
         ) :: STRING AS to_address,
         f.value :amount :: variant AS amount_unadjusted,
         f.value :memo :: STRING AS memo,
+        _inserted_timestamp,
+        _modified_timestamp
     FROM
         ft_transfers_mints
         JOIN LATERAL FLATTEN(
@@ -304,7 +347,9 @@ nft_final AS (
         A.value :token_ids [0] :: STRING AS token_id,
         NULL AS raw_amount,
         NULL AS raw_amount_precise,
-        'nft' AS transfer_type
+        'nft' AS transfer_type,
+        _inserted_timestamp,
+        _modified_timestamp
     FROM
         nft_transfers
         JOIN LATERAL FLATTEN(
@@ -325,7 +370,9 @@ native_final AS (
         NULL AS token_id,
         amount_unadjusted :: STRING AS raw_amount,
         amount_unadjusted :: FLOAT AS raw_amount_precise,
-        'native' AS transfer_type
+        'native' AS transfer_type,
+        _inserted_timestamp,
+        _modified_timestamp
     FROM
         native_transfers
 ),
@@ -341,7 +388,9 @@ nep_final AS (
         memo AS token_id,
         amount_unadjusted :: STRING AS raw_amount,
         amount_unadjusted :: FLOAT AS raw_amount_precise,
-        'nep141' AS transfer_type
+        'nep141' AS transfer_type,
+        _inserted_timestamp,
+        _modified_timestamp
     FROM
         nep_transfers
 ),
@@ -392,7 +441,9 @@ FINAL AS (
         CASE
             WHEN price_usd IS NULL THEN 'false'
             ELSE 'true'
-        END AS has_price
+        END AS has_price,
+        t._inserted_timestamp,
+        t._modified_timestamp
     FROM
         transfer_union t
         LEFT JOIN token_prices
@@ -410,5 +461,5 @@ SELECT
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
 FROM
-    FINAL --- ToDo -- Check for duplicates -- Swaps has duplicates
-    --- token-id aka memo - identity
+    FINAL 
+    --- ToDo -- Check for duplicates -- Swaps has duplicates
