@@ -10,8 +10,6 @@ WITH token_transfers AS (
         *
     FROM
         {{ ref('silver__token_transfers') }}
-    WHERE
-        transfer_type IN ('native', 'nep141')
 )
 SELECT
     block_id,

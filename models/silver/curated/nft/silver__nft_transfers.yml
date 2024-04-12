@@ -1,9 +1,9 @@
 version: 2
 
 models:
-  - name: silver__token_transfers
+  - name: silver__nft_transfers
     description: |-
-      This table records all the  Native Token + FTs Transfers  of the Near blockchain.
+      This table records all the NFT Transfer actions of the Near blockchain.
     columns:
       - name: BLOCK_ID
         description: "{{ doc('block_id')}}"
@@ -29,32 +29,8 @@ models:
       - name: TO_ADDRESS
         description: "{{ doc('to_address')}}"
 
-      - name: MEMO
-        description: "{{ doc('memo')}}"
-
-      - name: RAW_AMOUNT
-        description: "{{ doc('amount_raw')}}"
-
-      - name: RAW_AMOUNT_PRECISE
-        description: "{{ doc('amount_adj')}}"
-
-      - name: AMOUNT
-        description: "{{ doc('amount')}}"
-
-      - name: AMOUNT_USD
-        description: "{{ doc('amount_usd')}}"
-
-      - name: TRANSFER_TYPE
-        description: "{{ doc('transfer_type')}}"
-
-      - name: SYMBOL
-        description: "{{ doc('symbol')}}"
-
-      - name: TOKEN_PRICE
-        description: "{{ doc('price_usd')}}"
-
-      - name: HAS_PRICE
-        description: "Boolean value indicating if the token has a price"
+      - name: TOKEN_ID
+        description: "{{ doc('token_id')}}"
 
       - name: _INSERTED_TIMESTAMP
         description: "{{ doc('_inserted_timestamp')}}"

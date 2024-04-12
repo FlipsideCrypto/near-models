@@ -5,14 +5,12 @@
 ) }}
 
 
-WITH token_transfers AS (
+WITH nft_token_transfers AS (
 
     SELECT
         *
     FROM
-        {{ ref('silver__token_transfers') }}
-    WHERE
-        transfer_type = 'nft'
+        {{ ref('silver__nft_transfers') }}
 )
 SELECT
     block_id,
@@ -22,7 +20,7 @@ SELECT
     contract_address,
     from_address,
     to_address,
-    memo as token_id,
+    token_id,
     COALESCE(
         transfers_id,
         {{ dbt_utils.generate_surrogate_key(
@@ -32,4 +30,4 @@ SELECT
     COALESCE(inserted_timestamp, _inserted_timestamp, '2000-01-01' :: TIMESTAMP_NTZ) AS inserted_timestamp,
     COALESCE(modified_timestamp, _inserted_timestamp, '2000-01-01' :: TIMESTAMP_NTZ) AS modified_timestamp
 FROM
-    token_transfers
+    nft_token_transfers

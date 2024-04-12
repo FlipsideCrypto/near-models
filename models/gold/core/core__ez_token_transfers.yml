@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: core__fact_token_transfers
+  - name: core__ez_token_transfers
     description: This table records all the token transfers native and nep-141
     columns:
       - name: BLOCK_ID

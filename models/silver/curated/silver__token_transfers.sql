@@ -38,7 +38,7 @@ WITH actions_events AS (
                 {{ this }}
         )
         {% endif %}
-    limit 10000
+    limit 1000
 ), 
 swaps_raw AS (
     SELECT
@@ -64,7 +64,7 @@ swaps_raw AS (
                     {{ this }}
             )
         {% endif %}
-    limit 10000
+    limit 1000
 ), 
 token_prices AS (
     SELECT
@@ -97,6 +97,7 @@ metadata AS (
 ),
 ----------------------------    Native Token Transfers   ------------------------------
 native_transfers AS (
+
     SELECT
         block_id,
         block_timestamp,
@@ -110,40 +111,19 @@ native_transfers AS (
         _inserted_timestamp,
         _modified_timestamp
     FROM
-        actions_events
+        {{ ref('silver__transfers_s3') }}
     WHERE
-        (
-            action_name = 'Transfer'
+        status = TRUE
+        {% if is_incremental() %}
+        AND inserted_timestamp >= (
+            SELECT
+                MAX(inserted_timestamp)
+            FROM
+                {{ this }}
         )
-        OR (
-            action_name = 'FunctionCall'
-            AND method_name = 'near_deposit'
-        )
-        AND amount_unadjusted > 0
-),
---------------------------------    NFT Transfers    --------------------------------
-nft_transfers AS (
-    SELECT
-        block_id,
-        signer_id,
-        block_timestamp,
-        tx_hash,
-        action_id,
-        TRY_PARSE_JSON(REPLACE(b.value, 'EVENT_JSON:')) AS DATA,
-        receiver_id AS contract_id,
-        _inserted_timestamp,
-        _modified_timestamp
-    FROM
-        actions_events
-        JOIN LATERAL FLATTEN(
-            input => logs
-        ) b
-    WHERE
-        DATA :event IN (
-            'nft_transfer',
-            'nft_mint'
-        )
-),
+        {% endif %}
+    limit 1000
+), 
 ------------------------------   NEAR Tokens (NEP 141) --------------------------------
 swaps AS (
     SELECT
@@ -329,66 +309,39 @@ nep_transfers AS (
         add_liquidity
 ),
 ------------------------------  MODELS --------------------------------
-nft_final AS (
-    SELECT
-        block_id,
-        block_timestamp,
-        tx_hash,
-        action_id,
-        contract_id :: STRING AS contract_address,
-        COALESCE(
-            A.value :old_owner_id,
-            signer_id
-        ) :: STRING AS from_address,
-        COALESCE(
-            A.value :new_owner_id,
-            A.value :owner_id
-        ) :: STRING AS to_address,
-        A.value :memos [0] :: STRING AS memo,
-        NULL AS raw_amount,
-        NULL AS raw_amount_precise,
-        'nft' AS transfer_type,
-        _inserted_timestamp,
-        _modified_timestamp
-    FROM
-        nft_transfers
-        JOIN LATERAL FLATTEN(
-            input => DATA :data
-        ) A
-    WHERE
-        memo IS NOT NULL
-),
+
 native_final AS (
     SELECT
         block_id,
         block_timestamp,
         tx_hash,
         action_id,
-        'wrap.near' :: STRING AS contract_address,
+        'wrap.near' AS contract_address,
         from_address :: STRING,
         to_address :: STRING,
         NULL AS memo,
+        'native' as transfer_type,
         amount_unadjusted :: STRING AS raw_amount,
         amount_unadjusted :: FLOAT AS raw_amount_precise,
-        'native' AS transfer_type,
         _inserted_timestamp,
         _modified_timestamp
     FROM
         native_transfers
 ),
+
 nep_final AS (
     SELECT
         block_id,
         block_timestamp,
         tx_hash,
         action_id,
-        nep_transfers.contract_address :: STRING AS contract_address,
+        contract_address,
         from_address,
         to_address,
-        memo AS memo,
+        memo,
+        'nep141' as transfer_type,
         amount_unadjusted :: STRING AS raw_amount,
         amount_unadjusted :: FLOAT AS raw_amount_precise,
-        'nep141' AS transfer_type,
         _inserted_timestamp,
         _modified_timestamp
     FROM
@@ -396,61 +349,67 @@ nep_final AS (
 ),
 ------------------------------   FINAL --------------------------------
 transfer_union AS (
-    SELECT
-        *
-    FROM
-        nep_final
-    UNION ALL
-    SELECT
-        *
-    FROM
-        native_final
-    UNION ALL
-    SELECT
-        *
-    FROM
-        nft_final
+
+        SELECT
+            *
+        FROM
+            nep_final
+        UNION ALL
+        SELECT
+            *
+        FROM
+            native_final  
 ),
+price_union AS (
+    SELECT 
+        t.*,
+        b.symbol AS symbol,
+        b.decimals AS decimals,
+        price_usd AS token_price,
+        FROM
+    transfer_union t
+    LEFT JOIN token_prices
+        ON block_timestamp :: DATE = DATE
+        AND token_prices.token_contract = t.contract_address
+    LEFT JOIN metadata b
+        ON token_prices.token_contract = t.contract_address
+)
+,
 FINAL AS (
     SELECT
         block_id,
         block_timestamp,
         tx_hash,
         action_id,
-        t.contract_address :: STRING AS contract_address,
+        contract_address,
         from_address,
         to_address,
         memo,
         raw_amount,
         raw_amount_precise,
+        decimals,
         CASE
             WHEN transfer_type = 'native' THEN raw_amount_precise / 1e24
             WHEN transfer_type = 'nep141' THEN raw_amount_precise / pow(
                 10,
-                b.decimals
+                decimals
             )
-            WHEN transfer_type = 'nft' THEN NULL
         END AS amount,
-        CASE
-            WHEN transfer_type = 'nft' THEN NULL
-            ELSE amount * price_usd
-        END AS amount_usd,
         transfer_type,
-        b.symbol AS symbol,
-        price_usd AS token_price,
+        token_price,
+        amount * token_price AS amount_usd,
+        token_price
+        symbol,
         CASE
-            WHEN price_usd IS NULL THEN 'false'
+            WHEN token_price IS NULL THEN 'false'
             ELSE 'true'
         END AS has_price,
-        t._inserted_timestamp,
-        t._modified_timestamp
+        _inserted_timestamp,
+        _modified_timestamp
     FROM
-        transfer_union t
-        LEFT JOIN token_prices
-        ON block_timestamp :: DATE = DATE
-        AND token_prices.token_contract = t.contract_address
-        LEFT JOIN metadata b
-        ON token_prices.token_contract = b.contract_address
+        price_union
+
+
 )
 SELECT
     *,
@@ -461,4 +420,4 @@ SELECT
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
 FROM
-    FINAL 
+    FINAL
