@@ -29,8 +29,8 @@ models:
       - name: TO_ADDRESS
         description: "{{ doc('to_address')}}"
 
-      - name: TOKEN_ID
-        description: "{{ doc('token_id')}}"
+      - name: MEMO
+        description: "{{ doc('memo')}}"
 
       - name: RAW_AMOUNT
         description: "{{ doc('amount_raw')}}"

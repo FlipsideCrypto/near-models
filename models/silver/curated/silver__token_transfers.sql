@@ -344,7 +344,7 @@ nft_final AS (
             A.value :new_owner_id,
             A.value :owner_id
         ) :: STRING AS to_address,
-        A.value :token_ids [0] :: STRING AS token_id,
+        A.value :memos [0] :: STRING AS memo,
         NULL AS raw_amount,
         NULL AS raw_amount_precise,
         'nft' AS transfer_type,
@@ -356,7 +356,7 @@ nft_final AS (
             input => DATA :data
         ) A
     WHERE
-        token_id IS NOT NULL
+        memo IS NOT NULL
 ),
 native_final AS (
     SELECT
@@ -367,7 +367,7 @@ native_final AS (
         'wrap.near' :: STRING AS contract_address,
         from_address :: STRING,
         to_address :: STRING,
-        NULL AS token_id,
+        NULL AS memo,
         amount_unadjusted :: STRING AS raw_amount,
         amount_unadjusted :: FLOAT AS raw_amount_precise,
         'native' AS transfer_type,
@@ -385,7 +385,7 @@ nep_final AS (
         nep_transfers.contract_address :: STRING AS contract_address,
         from_address,
         to_address,
-        memo AS token_id,
+        memo AS memo,
         amount_unadjusted :: STRING AS raw_amount,
         amount_unadjusted :: FLOAT AS raw_amount_precise,
         'nep141' AS transfer_type,
@@ -420,7 +420,7 @@ FINAL AS (
         t.contract_address :: STRING AS contract_address,
         from_address,
         to_address,
-        token_id,
+        memo,
         raw_amount,
         raw_amount_precise,
         CASE
@@ -455,11 +455,10 @@ FINAL AS (
 SELECT
     *,
     {{ dbt_utils.generate_surrogate_key(
-        ['tx_hash', 'action_id','contract_address','raw_amount','amount_usd','from_address','to_address','token_id']
+        ['tx_hash', 'action_id','contract_address','raw_amount','amount_usd','from_address','to_address','memo']
     ) }} AS transfers_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
 FROM
     FINAL 
-    --- ToDo -- Check for duplicates -- Swaps has duplicates

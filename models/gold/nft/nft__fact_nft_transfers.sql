@@ -1,8 +1,9 @@
 {{ config(
     materialized = 'view',
-    secure = false,
-    tags = ['core']
+    meta ={ 'database_tags':{ 'table':{ 'PURPOSE': 'NFT' }}},
+    tags = ['core', 'nft']
 ) }}
+
 
 WITH token_transfers AS (
 
@@ -11,7 +12,7 @@ WITH token_transfers AS (
     FROM
         {{ ref('silver__token_transfers') }}
     WHERE
-        transfer_type IN ('native', 'nep141')
+        transfer_type = 'nft'
 )
 SELECT
     block_id,
@@ -21,21 +22,13 @@ SELECT
     contract_address,
     from_address,
     to_address,
-    memo,
-    raw_amount,
-    raw_amount_precise,
-    amount,
-    amount_usd,
-    transfer_type,
-    symbol,
-    token_price,
-    has_price,
+    memo as token_id,
     COALESCE(
         transfers_id,
         {{ dbt_utils.generate_surrogate_key(
             ['transfers_id']
         ) }}
-    ) AS fact_token_transfers_id,
+    ) AS fact_nft_transfers_id,
     COALESCE(inserted_timestamp, _inserted_timestamp, '2000-01-01' :: TIMESTAMP_NTZ) AS inserted_timestamp,
     COALESCE(modified_timestamp, _inserted_timestamp, '2000-01-01' :: TIMESTAMP_NTZ) AS modified_timestamp
 FROM
