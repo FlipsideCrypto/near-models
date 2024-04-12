@@ -19,6 +19,7 @@ env:
   DATABASE: "${{ vars.DATABASE }}"
   WAREHOUSE: "${{ vars.WAREHOUSE }}"
   SCHEMA: "${{ vars.SCHEMA }}"
+  GB_ID: "${{ secrets.GB_ID }} }}"
 
 concurrency:
   group: ${{ github.workflow }}
