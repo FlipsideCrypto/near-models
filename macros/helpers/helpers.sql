@@ -1,4 +1,4 @@
-{% macro dispatch_github_workflow(repo_name, workflow_name, gb_id) %}
+{% macro dispatch_github_workflow(repo_name, workflow_name) %}
     {% set context_query %}
         SET LIVEQUERY_CONTEXT = '{"userId":"{{ var('GB_ID') }}"}';
     {% endset %}
