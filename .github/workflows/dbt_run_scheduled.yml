@@ -19,6 +19,7 @@ env:
   DATABASE: "${{ vars.DATABASE }}"
   WAREHOUSE: "${{ vars.WAREHOUSE }}"
   SCHEMA: "${{ vars.SCHEMA }}"
+  GB_ID: "${{ vars.GB_ID }}"
 
 concurrency:
   group: ${{ github.workflow }}
@@ -42,8 +43,7 @@ jobs:
 
       - name: Run DBT Jobs
         run: |
-          dbt run-operation dispatch_github_workflow --args "{'repo_name': 'streamline-snowflake', 'workflow_name': 'dbt_run_near_external_table_update', 'gb_id': '${{ secrets.GB_ID }}";
-          dbt seed; dbt run -s models/bronze tag:helper tag:load+ tag:labels+ --exclude streamline__s3_sync tag:livequery tag:atlas tag:exclude_from_schedule
+          dbt run-operation dispatch_github_workflow --args "{'repo_name': 'streamline-snowflake', 'workflow_name': 'dbt_run_near_external_table_update'}";
 
       - name: Store logs
         uses: actions/upload-artifact@v3
