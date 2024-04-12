@@ -4,7 +4,7 @@
     {% endset %}
     {% do run_query(context_query) %}
     {% set query %}
-        SELECT livequery_dev.github_actions.workflow_dispatches('FlipsideCrypto', '{{ repo_name }}', '{{ workflow_name }}.yml', NULL)
+        SELECT github_actions.workflow_dispatches('FlipsideCrypto', '{{ repo_name }}', '{{ workflow_name }}.yml', NULL)
     {% endset %}
     {% do run_query(query) %}
 {% endmacro %}
