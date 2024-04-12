@@ -43,7 +43,7 @@ jobs:
 
       - name: Run DBT Jobs
         run: |
-          dbt run-operation dispatch_github_workflow --args "{'repo_name': 'streamline-snowflake', 'workflow_name': 'dbt_run_near_external_table_update', 'GB_ID': '${{ env.GB_ID }}'}";
+          dbt run-operation dispatch_github_workflow --args "{'repo_name': 'streamline-snowflake', 'workflow_name': 'dbt_run_near_external_table_update', 'gb_id': '${{ vars.GB_ID}}'}";
 
       - name: Store logs
         uses: actions/upload-artifact@v3
