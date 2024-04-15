@@ -31,9 +31,9 @@ WITH actions_events AS (
         receipt_succeeded = TRUE
         AND logs [0] IS NOT NULL
         {% if is_incremental() %}
-        AND inserted_timestamp >= (
+        AND _modified_timestamp >= (
             SELECT
-                MAX(inserted_timestamp)
+                MAX(modified_timestamp)
             FROM
                 {{ this }}
         )
@@ -57,9 +57,9 @@ swaps_raw AS (
         {{ ref('silver__dex_swaps_v2') }}
     {% if is_incremental() %}
         WHERE
-            inserted_timestamp >= (
+            _modified_timestamp >= (
                 SELECT
-                    MAX(inserted_timestamp)
+                    MAX(modified_timestamp)
                 FROM
                     {{ this }}
             )
@@ -80,9 +80,9 @@ token_prices AS (
         inserted_timestamp
     {% if is_incremental() %}
     HAVING
-        inserted_timestamp >= (
+        modified_timestamp >= (
             SELECT
-                MAX(inserted_timestamp)
+                MAX(modified_timestamp)
             FROM
                 {{ this }}
         )

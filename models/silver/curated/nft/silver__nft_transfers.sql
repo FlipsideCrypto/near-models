@@ -29,9 +29,9 @@ WITH actions_events AS (
         receipt_succeeded = TRUE
         AND logs [0] IS NOT NULL
         {% if is_incremental() %}
-        AND inserted_timestamp >= (
+        AND modified_timestamp >= (
             SELECT
-                MAX(inserted_timestamp)
+                MAX(modified_timestamp)
             FROM
                 {{ this }}
         )
