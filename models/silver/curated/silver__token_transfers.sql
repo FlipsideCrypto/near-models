@@ -71,16 +71,18 @@ token_prices AS (
         token_contract AS token_contract,
         AVG(price_usd) AS price_usd,
         MAX(symbol) AS symbol,
-        MAX(inserted_timestamp) AS inserted_timestamp
+        MAX(inserted_timestamp) AS inserted_timestamp,
+        MAX(modified_timestamp) AS _modified_timestamp
     FROM
         {{ ref('silver__prices_oracle_s3') }}
     GROUP BY
         1,
         2,
-        inserted_timestamp
+        inserted_timestamp,
+        _modified_timestamp
     {% if is_incremental() %}
     HAVING
-        modified_timestamp >= (
+        _modified_timestamp >= (
             SELECT
                 MAX(modified_timestamp)
             FROM
@@ -171,7 +173,7 @@ orders AS (
             input => logs
         ) g
     WHERE
-        DATA :event = 'order_added'
+        DATA :event:: STRING = 'order_added'
 ),
 orders_final AS (
     SELECT
@@ -253,7 +255,7 @@ ft_transfers_mints AS (
             input => logs
         ) b
     WHERE
-        DATA :event IN (
+        DATA :event:: STRING IN (
             'ft_transfer',
             'ft_mint'
         )
