@@ -38,7 +38,6 @@ WITH actions_events AS (
                 {{ this }}
         )
         {% endif %}
-    limit 1000
 ), 
 swaps_raw AS (
     SELECT
@@ -47,6 +46,7 @@ swaps_raw AS (
         tx_hash,
         receipt_object_id,
         token_in,
+        token_out,
         signer_id,
         receiver_id,
         amount_in_raw,
@@ -64,11 +64,10 @@ swaps_raw AS (
                     {{ this }}
             )
         {% endif %}
-    limit 1000
 ), 
 token_prices AS (
     SELECT
-        block_timestamp :: DATE AS DATE,
+        date_trunc('hour', block_timestamp) AS block_hour,
         token_contract AS token_contract,
         AVG(price_usd) AS price_usd,
         MAX(symbol) AS symbol,
@@ -122,7 +121,6 @@ native_transfers AS (
                 {{ this }}
         )
         {% endif %}
-    limit 1000
 ), 
 ------------------------------   NEAR Tokens (NEP 141) --------------------------------
 swaps AS (
@@ -146,7 +144,7 @@ swaps AS (
         block_timestamp,
         tx_hash,
         receipt_object_id,
-        token_in AS contract_address,
+        token_out AS contract_address,
         receiver_id AS from_address,
         signer_id AS to_address,
         amount_out_raw :: variant AS amount_unadjusted,
@@ -164,7 +162,7 @@ orders AS (
         action_id,
         receiver_id,
         TRY_PARSE_JSON(REPLACE(g.value, 'EVENT_JSON:')) AS DATA,
-        DATA :event AS event,
+        DATA :event :: STRING AS event,
         _inserted_timestamp,
         _modified_timestamp
     FROM
@@ -173,7 +171,7 @@ orders AS (
             input => logs
         ) g
     WHERE
-        DATA :event IN ('order_added')
+        DATA :event = 'order_added'
 ),
 orders_final AS (
     SELECT
@@ -321,8 +319,8 @@ native_final AS (
         to_address :: STRING,
         NULL AS memo,
         'native' as transfer_type,
-        amount_unadjusted :: STRING AS raw_amount,
-        amount_unadjusted :: FLOAT AS raw_amount_precise,
+        amount_unadjusted :: STRING AS amount_raw,
+        amount_unadjusted :: FLOAT AS amount_raw_precise,
         _inserted_timestamp,
         _modified_timestamp
     FROM
@@ -340,8 +338,8 @@ nep_final AS (
         to_address,
         memo,
         'nep141' as transfer_type,
-        amount_unadjusted :: STRING AS raw_amount,
-        amount_unadjusted :: FLOAT AS raw_amount_precise,
+        amount_unadjusted :: STRING AS amount_raw,
+        amount_unadjusted :: FLOAT AS amount_raw_precise,
         _inserted_timestamp,
         _modified_timestamp
     FROM
@@ -365,14 +363,14 @@ price_union AS (
         t.*,
         b.symbol AS symbol,
         b.decimals AS decimals,
-        price_usd AS token_price,
+        price_usd  AS token_price
         FROM
     transfer_union t
     LEFT JOIN token_prices
-        ON block_timestamp :: DATE = DATE
+        ON date_trunc('hour', block_timestamp) = block_hour
         AND token_prices.token_contract = t.contract_address
     LEFT JOIN metadata b
-        ON token_prices.token_contract = t.contract_address
+        ON t.contract_address = b.contract_address
 )
 ,
 FINAL AS (
@@ -385,12 +383,12 @@ FINAL AS (
         from_address,
         to_address,
         memo,
-        raw_amount,
-        raw_amount_precise,
+        amount_raw,
+        amount_raw_precise,
         decimals,
         CASE
-            WHEN transfer_type = 'native' THEN raw_amount_precise / 1e24
-            WHEN transfer_type = 'nep141' THEN raw_amount_precise / pow(
+            WHEN transfer_type = 'native' THEN amount_raw_precise / 1e24
+            WHEN transfer_type = 'nep141' THEN amount_raw_precise / pow(
                 10,
                 decimals
             )
@@ -398,7 +396,6 @@ FINAL AS (
         transfer_type,
         token_price,
         amount * token_price AS amount_usd,
-        token_price
         symbol,
         CASE
             WHEN token_price IS NULL THEN 'false'
@@ -414,7 +411,7 @@ FINAL AS (
 SELECT
     *,
     {{ dbt_utils.generate_surrogate_key(
-        ['tx_hash', 'action_id','contract_address','raw_amount','amount_usd','from_address','to_address','memo']
+        ['tx_hash', 'action_id','contract_address','amount_raw','amount_usd','from_address','to_address','memo']
     ) }} AS transfers_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,

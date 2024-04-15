@@ -38,10 +38,10 @@ models:
       - name: MEMO
         description: "{{ doc('memo')}}"
 
-      - name: RAW_AMOUNT
+      - name: AMOUNT_RAW
         description: "{{ doc('amount_raw')}}"
 
-      - name: RAW_AMOUNT_PRECISE
+      - name: AMOUNT_RAW_PRECISE
         description: "{{ doc('amount_adj')}}"
 
       - name: AMOUNT
