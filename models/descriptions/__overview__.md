@@ -52,6 +52,7 @@ There is more information on how to use dbt docs in the last section of this doc
 ### NFT Tables (`NEAR`.`NFT`.`<table_name>`)
 
 - [fact_nft_mints](#!/model/model.near.nft__fact_nft_mints)
+- [fact_nft_transfers](#!/model/model.near.nft__fact_nft_transfers)
 
 ### Price Tables (`NEAR`.`PRICE`.`<table_name>`)
 
@@ -155,8 +156,6 @@ Calls the `status` method on Near RPC and returns the block height of chainhead.
 SELECT
     NEAR.STREAMLINE.UDF_GET_CHAINHEAD()
 ```
-
-
 
 ## **Data Model Overview**
 

@@ -26,6 +26,9 @@ models:
       - name: FROM_ADDRESS
         description: "{{ doc('from_address')}}"
 
+      - name: RN
+        description: "Row number"
+
       - name: TO_ADDRESS
         description: "{{ doc('to_address')}}"
 

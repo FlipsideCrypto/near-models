@@ -89,6 +89,7 @@ token_prices AS (
                 {{ this }}
         )
     {% endif %}
+    qualify ROW_NUMBER() OVER (partition by block_hour order by _modified_timestamp desc) = 1
 ),
 metadata AS (
     SELECT
@@ -114,7 +115,7 @@ native_transfers AS (
     FROM
         {{ ref('silver__transfers_s3') }}
     WHERE
-        status = TRUE
+        status = TRUE AND deposit != 0
         {% if is_incremental() %}
         AND inserted_timestamp >= (
             SELECT
@@ -374,6 +375,8 @@ price_union AS (
     LEFT JOIN metadata b
         ON t.contract_address = b.contract_address
 )
+
+
 ,
 FINAL AS (
     SELECT
@@ -381,6 +384,11 @@ FINAL AS (
         block_timestamp,
         tx_hash,
         action_id,
+        ROW_NUMBER() OVER (
+            PARTITION BY tx_hash
+            ORDER BY
+                block_timestamp DESC
+        ) AS rn,
         contract_address,
         from_address,
         to_address,
@@ -413,7 +421,7 @@ FINAL AS (
 SELECT
     *,
     {{ dbt_utils.generate_surrogate_key(
-        ['tx_hash', 'action_id','contract_address','amount_raw','amount_usd','from_address','to_address','memo']
+        ['tx_hash', 'action_id','contract_address','amount_raw','amount_usd','from_address','to_address','memo','rn']
     ) }} AS transfers_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
