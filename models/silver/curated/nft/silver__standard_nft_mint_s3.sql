@@ -255,7 +255,7 @@ FINAL AS (
         mint_events._modified_timestamp
     FROM
         mint_events
-        LEFT JOIN mint_tx
+        INNER JOIN mint_tx
         ON mint_events.tx_hash = mint_tx.tx_hash
 )
 SELECT
