@@ -16,11 +16,7 @@ WITH actions_events AS (
         action_id,
         signer_id,
         receiver_id,
-        action_name,
-        method_name,
-        deposit,
         logs,
-        receipt_succeeded,
         _inserted_timestamp,
         modified_timestamp as _modified_timestamp
     FROM
@@ -39,7 +35,7 @@ WITH actions_events AS (
 ), 
 
 --------------------------------    NFT Transfers    --------------------------------
-nft_transfers AS (
+nft_logs AS (
     SELECT
         block_id,
         signer_id,
@@ -62,7 +58,7 @@ nft_transfers AS (
         )
 ),
 --------------------------------        FINAL      --------------------------------
-nft_final AS (
+nft_transfers AS (
     SELECT
         block_id,
         block_timestamp,
@@ -77,16 +73,36 @@ nft_final AS (
             A.value :new_owner_id,
             A.value :owner_id
         ) :: STRING AS to_address,
-        A.value :token_ids [0] :: STRING AS token_id,
+        A.value :token_ids AS token_ids,
+        token_ids [0] :: STRING AS token_id,
         _inserted_timestamp,
         _modified_timestamp
     FROM
-        nft_transfers
+        nft_logs
         JOIN LATERAL FLATTEN(
             input => DATA :data
         ) A
     WHERE
         token_id IS NOT NULL
+),
+
+nft_final AS (
+    SELECT
+        block_id,
+        block_timestamp,
+        tx_hash,
+        action_id,
+        contract_address,
+        from_address,
+        to_address,
+        B.value :: STRING AS token_id,
+        _inserted_timestamp,
+        _modified_timestamp
+    FROM
+        nft_transfers
+    JOIN LATERAL FLATTEN(
+            input => token_ids
+        ) B
 ),
 FINAL AS (
     SELECT
@@ -107,7 +123,7 @@ SELECT
     *,
     {{ dbt_utils.generate_surrogate_key(
         ['tx_hash', 'action_id','contract_address','from_address','to_address','token_id']
-    ) }} AS transfers_id,
+    ) }} AS nft_transfers_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id

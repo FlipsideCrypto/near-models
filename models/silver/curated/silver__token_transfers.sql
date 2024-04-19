@@ -137,6 +137,7 @@ swaps AS (
         receiver_id AS to_address,
         amount_in_raw :: variant AS amount_unadjusted,
         'swap' AS memo,
+        '0' as rn,
         _inserted_timestamp,
         _modified_timestamp
     FROM
@@ -152,6 +153,7 @@ swaps AS (
         signer_id AS to_address,
         amount_out_raw :: variant AS amount_unadjusted,
         'swap' AS memo,
+        '0' as rn,
         _inserted_timestamp,
         _modified_timestamp
     FROM
@@ -166,6 +168,7 @@ orders AS (
         receiver_id,
         TRY_PARSE_JSON(REPLACE(g.value, 'EVENT_JSON:')) AS DATA,
         DATA :event :: STRING AS event,
+        g.index as rn,
         _inserted_timestamp,
         _modified_timestamp
     FROM
@@ -189,6 +192,7 @@ orders_final AS (
             f.value :original_amount
         ) :: variant AS amount_unadjusted,
         'order' AS memo,
+        f.index as rn,
         _inserted_timestamp,
         _modified_timestamp
     FROM
@@ -224,6 +228,7 @@ add_liquidity AS (
             1
         ) :: variant AS amount_unadjusted,
         'add_liquidity' AS memo,
+        index as rn,
         _inserted_timestamp,
         _modified_timestamp
     FROM
@@ -278,6 +283,7 @@ ft_transfers_mints_final AS (
         ) :: STRING AS to_address,
         f.value :amount :: variant AS amount_unadjusted,
         f.value :memo :: STRING AS memo,
+        f.index as rn,
         _inserted_timestamp,
         _modified_timestamp
     FROM
@@ -321,6 +327,7 @@ native_final AS (
         from_address :: STRING,
         to_address :: STRING,
         NULL AS memo,
+        '0' AS rn,
         'native' as transfer_type,
         amount_unadjusted :: STRING AS amount_raw,
         amount_unadjusted :: FLOAT AS amount_raw_precise,
@@ -340,6 +347,7 @@ nep_final AS (
         from_address,
         to_address,
         memo,
+        rn,
         'nep141' as transfer_type,
         amount_unadjusted :: STRING AS amount_raw,
         amount_unadjusted :: FLOAT AS amount_raw_precise,
@@ -384,11 +392,7 @@ FINAL AS (
         block_timestamp,
         tx_hash,
         action_id,
-        ROW_NUMBER() OVER (
-            PARTITION BY tx_hash
-            ORDER BY
-                block_timestamp DESC
-        ) AS rn,
+        rn,
         contract_address,
         from_address,
         to_address,
