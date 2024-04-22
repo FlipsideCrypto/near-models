@@ -65,32 +65,6 @@ swaps_raw AS (
             )
         {% endif %}
 ), 
-token_prices AS (
-    SELECT
-        date_trunc('hour', block_timestamp) AS block_hour,
-        token_contract AS token_contract,
-        AVG(price_usd) AS price_usd,
-        MAX(symbol) AS symbol,
-        MAX(inserted_timestamp) AS inserted_timestamp,
-        MAX(modified_timestamp) AS _modified_timestamp
-    FROM
-        {{ ref('silver__prices_oracle_s3') }}
-    GROUP BY
-        1,
-        2,
-        inserted_timestamp,
-        _modified_timestamp
-    {% if is_incremental() %}
-    HAVING
-        _modified_timestamp >= (
-            SELECT
-                MAX(modified_timestamp)
-            FROM
-                {{ this }}
-        )
-    {% endif %}
-    qualify ROW_NUMBER() OVER (partition by block_hour order by _modified_timestamp desc) = 1
-),
 metadata AS (
     SELECT
         *
@@ -369,63 +343,31 @@ transfer_union AS (
         FROM
             native_final  
 ),
-price_union AS (
-    SELECT 
-        t.*,
-        b.symbol AS symbol,
-        b.decimals AS decimals,
-        price_usd  AS token_price
-        FROM
-    transfer_union t
-    LEFT JOIN token_prices
-        ON date_trunc('hour', block_timestamp) = block_hour
-        AND token_prices.token_contract = t.contract_address
-    LEFT JOIN metadata b
-        ON t.contract_address = b.contract_address
-)
-
-
-,
 FINAL AS (
     SELECT
         block_id,
         block_timestamp,
         tx_hash,
         action_id,
-        rn,
+        rn:: STRING,
         contract_address,
         from_address,
         to_address,
         memo,
         amount_raw,
         amount_raw_precise,
-        decimals,
-        CASE
-            WHEN transfer_type = 'native' THEN amount_raw_precise / 1e24
-            WHEN transfer_type = 'nep141' THEN amount_raw_precise / pow(
-                10,
-                decimals
-            )
-        END AS amount,
         transfer_type,
-        token_price,
-        amount * token_price AS amount_usd,
-        symbol,
-        CASE
-            WHEN token_price IS NULL THEN 'false'
-            ELSE 'true'
-        END AS has_price,
         _inserted_timestamp,
         _modified_timestamp
     FROM
-        price_union
+        transfer_union
 
 
 )
 SELECT
     *,
     {{ dbt_utils.generate_surrogate_key(
-        ['tx_hash', 'action_id','contract_address','amount_raw','amount_usd','from_address','to_address','memo','rn']
+        ['tx_hash', 'action_id','contract_address','amount_raw','from_address','to_address','memo','rn']
     ) }} AS transfers_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
