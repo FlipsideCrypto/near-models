@@ -2,7 +2,7 @@
     materialized = 'incremental',
     merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = ['block_timestamp::DATE'],
-    unique_key = 'transfers_id',
+    unique_key = 'nft_transfers_id',
     incremental_strategy = 'merge',
     tags = ['curated']
 ) }}
@@ -44,6 +44,7 @@ nft_logs AS (
         action_id,
         TRY_PARSE_JSON(REPLACE(b.value, 'EVENT_JSON:')) AS DATA,
         receiver_id AS contract_id,
+        b.index as logs_rn,
         _inserted_timestamp,
         _modified_timestamp
     FROM
@@ -75,6 +76,7 @@ nft_transfers AS (
         ) :: STRING AS to_address,
         A.value :token_ids AS token_ids,
         token_ids [0] :: STRING AS token_id,
+        logs_rn + A.index as transfer_rn,
         _inserted_timestamp,
         _modified_timestamp
     FROM
@@ -96,6 +98,7 @@ nft_final AS (
         from_address,
         to_address,
         B.value :: STRING AS token_id,
+        transfer_rn + B.index as rn,
         _inserted_timestamp,
         _modified_timestamp
     FROM
@@ -110,6 +113,7 @@ FINAL AS (
         block_timestamp,
         tx_hash,
         action_id,
+        rn,
         contract_address,
         from_address,
         to_address,
@@ -122,7 +126,7 @@ FINAL AS (
 SELECT
     *,
     {{ dbt_utils.generate_surrogate_key(
-        ['tx_hash', 'action_id','contract_address','from_address','to_address','token_id']
+        ['tx_hash', 'action_id','contract_address','from_address','to_address','token_id','rn']
     ) }} AS nft_transfers_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,

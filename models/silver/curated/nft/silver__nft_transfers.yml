@@ -11,6 +11,7 @@ models:
             - from_address
             - to_address
             - token_id
+            - rn
 
     description: |-
       This table records all the NFT Transfer actions of the Near blockchain.
@@ -26,6 +27,9 @@ models:
 
       - name: TX_HASH
         description: "{{ doc('tx_hash')}}"
+
+      - name: RN
+        description: "Row number"
 
       - name: ACTION_ID
         description: "{{ doc('action_id')}}"
