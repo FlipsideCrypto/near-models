@@ -3,7 +3,7 @@ version: 2
 models:
   - name: core__fact_transfers
     description: |-
-      Deprecating soon! This table is going to be replaced with a new, easier to use, `FACT_TOKEN_TRANSFERS` that will include both Fungible Token and NEAR transfers.
+      Deprecating soon! Please migrate to the ez_token_transfers model which includes both native near transfers and FT (nep141) transfers. This model will be deprecated by the end of May 2024.
     tests:
       - dbt_utils.recency:
           datepart: hours
