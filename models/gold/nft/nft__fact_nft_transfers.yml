@@ -2,16 +2,6 @@ version: 2
 
 models:
   - name: nft__fact_nft_transfers
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - tx_hash
-            - action_id
-            - contract_address
-            - from_address
-            - to_address
-            - memo
-            - rn
     description: This table contains all the NFT transfers
     columns:
       - name: BLOCK_ID

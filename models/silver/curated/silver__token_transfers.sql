@@ -44,6 +44,7 @@ swaps_raw AS (
         block_id,
         block_timestamp,
         tx_hash,
+        swap_index,
         receipt_object_id,
         token_in,
         token_out,
@@ -64,12 +65,6 @@ swaps_raw AS (
                     {{ this }}
             )
         {% endif %}
-), 
-metadata AS (
-    SELECT
-        *
-    FROM
-        {{ ref('silver__ft_contract_metadata') }}
 ),
 ----------------------------    Native Token Transfers   ------------------------------
 native_transfers AS (
@@ -111,7 +106,7 @@ swaps AS (
         receiver_id AS to_address,
         amount_in_raw :: variant AS amount_unadjusted,
         'swap' AS memo,
-        '0' as rn,
+        swap_index as rn,
         _inserted_timestamp,
         _modified_timestamp
     FROM
@@ -127,7 +122,7 @@ swaps AS (
         signer_id AS to_address,
         amount_out_raw :: variant AS amount_unadjusted,
         'swap' AS memo,
-        '0' as rn,
+        swap_index + 1 as rn,
         _inserted_timestamp,
         _modified_timestamp
     FROM
@@ -226,6 +221,7 @@ ft_transfers_mints AS (
         tx_hash,
         action_id,
         TRY_PARSE_JSON(REPLACE(VALUE, 'EVENT_JSON:')) AS DATA,
+        b.index as logs_rn,
         receiver_id AS contract_address,
         _inserted_timestamp,
         _modified_timestamp
@@ -257,7 +253,7 @@ ft_transfers_mints_final AS (
         ) :: STRING AS to_address,
         f.value :amount :: variant AS amount_unadjusted,
         f.value :memo :: STRING AS memo,
-        f.index as rn,
+        logs_rn + f.index as rn,
         _inserted_timestamp,
         _modified_timestamp
     FROM
@@ -321,7 +317,7 @@ nep_final AS (
         from_address,
         to_address,
         memo,
-        rn,
+        rn :: STRING as rn,
         'nep141' as transfer_type,
         amount_unadjusted :: STRING AS amount_raw,
         amount_unadjusted :: FLOAT AS amount_raw_precise,
@@ -349,7 +345,7 @@ FINAL AS (
         block_timestamp,
         tx_hash,
         action_id,
-        rn:: STRING,
+        rn,
         contract_address,
         from_address,
         to_address,

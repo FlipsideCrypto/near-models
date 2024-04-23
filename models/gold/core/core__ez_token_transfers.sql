@@ -22,12 +22,7 @@ SELECT
     memo,
     amount_raw,
     amount_raw_precise,
-    amount,
-    amount_usd,
     transfer_type,
-    symbol,
-    token_price,
-    has_price,
     transfers_id AS fact_token_transfers_id,
     COALESCE(inserted_timestamp, _inserted_timestamp, '2000-01-01' :: TIMESTAMP_NTZ) AS inserted_timestamp,
     COALESCE(modified_timestamp, _inserted_timestamp, '2000-01-01' :: TIMESTAMP_NTZ) AS modified_timestamp

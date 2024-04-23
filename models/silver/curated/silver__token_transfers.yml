@@ -2,6 +2,17 @@ version: 2
 
 models:
   - name: silver__token_transfers
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - tx_hash
+            - action_id
+            - contract_address
+            - amount_raw
+            - from_address
+            - to_address
+            - memo
+            - rn
     description: |-
       This table records all the  Native Token + FTs Transfers  of the Near blockchain.
     columns:

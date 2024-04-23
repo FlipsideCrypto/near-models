@@ -12,6 +12,7 @@ models:
               column_type_list:
                 - NUMBER
                 - FLOAT
+
       - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp')}}"
         tests:
@@ -44,20 +45,8 @@ models:
       - name: AMOUNT_RAW_PRECISE
         description: "{{ doc('amount_adj')}}"
 
-      - name: AMOUNT
-        description: "{{ doc('amount')}}"
-
-      - name: AMOUNT_USD
-        description: "{{ doc('amount_usd')}}"
-
       - name: TRANSFER_TYPE
         description: "{{ doc('transfer_type')}}"
-
-      - name: SYMBOL
-        description: "{{ doc('symbol')}}"
-
-      - name: TOKEN_PRICE
-        description: "{{ doc('price_usd')}}"
 
       - name: HAS_PRICE
         description: "Boolean value indicating if the token has a price"
