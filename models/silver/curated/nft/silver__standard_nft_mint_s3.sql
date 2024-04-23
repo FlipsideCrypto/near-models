@@ -116,7 +116,7 @@ nft_events AS (
         clean_log :version AS version
     FROM
         standard_logs
-        LEFT JOIN function_call
+        INNER JOIN function_call
         ON standard_logs.action_id = function_call.action_id
     WHERE
         STANDARD = 'nep171' -- nep171 nft STANDARD, version  nep245 IS multitoken STANDARD,  nep141 IS fungible token STANDARD

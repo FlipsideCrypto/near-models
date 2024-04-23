@@ -1,0 +1,74 @@
+version: 2
+
+models:
+  - name: silver__token_transfers
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - tx_hash
+            - action_id
+            - contract_address
+            - amount_raw
+            - from_address
+            - to_address
+            - memo
+            - rn
+    description: |-
+      This table records all the  Native Token + FTs Transfers  of the Near blockchain.
+    columns:
+      - name: BLOCK_ID
+        description: "{{ doc('block_id')}}"
+
+      - name: BLOCK_TIMESTAMP
+        description: "{{ doc('block_timestamp')}}"
+        tests:
+          - not_null:
+              where: _inserted_timestamp <= current_timestamp - interval '10 hour'
+
+      - name: TX_HASH
+        description: "{{ doc('tx_hash')}}"
+
+      - name: ACTION_ID
+        description: "{{ doc('action_id')}}"
+
+      - name: CONTRACT_ADDRESS
+        description: "{{ doc('tx_signer')}}"
+
+      - name: FROM_ADDRESS
+        description: "{{ doc('from_address')}}"
+
+      - name: RN
+        description: "Row number"
+
+      - name: TO_ADDRESS
+        description: "{{ doc('to_address')}}"
+
+      - name: MEMO
+        description: "{{ doc('memo')}}"
+
+      - name: AMOUNT_RAW
+        description: "{{ doc('amount_raw')}}"
+
+      - name: AMOUNT_RAW_PRECISE
+        description: "{{ doc('amount_adj')}}"
+
+      - name: TRANSFER_TYPE
+        description: "{{ doc('transfer_type')}}"
+
+      - name: _INSERTED_TIMESTAMP
+        description: "{{ doc('_inserted_timestamp')}}"
+
+      - name: _MODIFIED_TIMESTAMP
+        description: "{{ doc('_modified_timestamp')}}"
+
+      - name: TRANSFERS_ID
+        description: "{{doc('id')}}"
+
+      - name: INSERTED_TIMESTAMP
+        description: "{{doc('inserted_timestamp')}}"
+
+      - name: MODIFIED_TIMESTAMP
+        description: "{{doc('modified_timestamp')}}"
+
+      - name: _INVOCATION_ID
+        description: "{{doc('invocation_id')}}"
