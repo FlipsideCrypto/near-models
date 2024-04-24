@@ -1,17 +1,14 @@
 version: 2
 
 models:
-  - name: silver__nft_sales
+  - name: nft__ez_nft_sales
     description: |-
-      This table records all the NFT sales actions of the mainy Near marketplaces..
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - action_id
-            - logs_index
+      This table records all the NFT sales actions of the mainy Near marketplaces.
     columns:
       - name: ACTION_ID
         description: "{{ doc('action_id')}}"
+        tests:
+          - not_null
 
       - name: BLOCK_ID
         description: "{{ doc('block_id')}}"
@@ -24,33 +21,53 @@ models:
 
       - name: TX_HASH
         description: "{{ doc('tx_hash')}}"
+        tests:
+          - not_null
 
       - name: SELLER_ADDRESS
         description: "{{ doc('from_address')}}"
+        tests:
+          - not_null
 
       - name: BUYER_ADDRESS
         description: "{{ doc('to_address')}}"
+        tests:
+          - not_null
 
       - name: PLATFORM_ADDRESS
-        description: "{{ doc('tx_signer')}}"
+        description: "Platform Address"
+        tests:
+          - not_null
 
       - name: PLATFORM_NAME
         description: "Platform Name"
+        tests:
+          - not_null
 
       - name: NFT_ADDRESS
         description: "NFT Address"
+        tests:
+          - not_null
 
       - name: NFT_ID
         description: "{{ doc('token_id')}}"
+        tests:
+          - not_null
 
       - name: PRICE
         description: "{{ doc('raw_price')}}"
+        tests:
+          - not_null
 
       - name: METHOD_NAME
         description: "{{ doc('method_name')}}"
+        tests:
+          - not_null
 
       - name: LOGS
         description: "{{ doc('logs')}}"
+        tests:
+          - not_null
 
       - name: LOGS_INDEX
         description: "ROW NUMBER"
@@ -69,6 +86,3 @@ models:
 
       - name: MODIFIED_TIMESTAMP
         description: "{{doc('modified_timestamp')}}"
-
-      - name: _INVOCATION_ID
-        description: "{{doc('invocation_id')}}"
