@@ -25,8 +25,8 @@ models:
       - name: TX_HASH
         description: "{{ doc('tx_hash')}}"
 
-      - name: TRANSACTION_FEE
-        description: "{{ doc('transaction_fee')}}"
+      - name: GAS_BURNED
+        description: "{{ doc('attached_gas')}}"
 
       - name: SELLER_ADDRESS
         description: "{{ doc('from_address')}}"
@@ -43,11 +43,14 @@ models:
       - name: NFT_ADDRESS
         description: "NFT Address"
 
-      - name: NFT_ID
+      - name: TOKEN_ID
         description: "{{ doc('token_id')}}"
 
       - name: PRICE
         description: "{{ doc('raw_price')}}"
+
+      - name: PRICE_USD
+        description: "{{ doc('price_usd')}}"
 
       - name: METHOD_NAME
         description: "{{ doc('method_name')}}"

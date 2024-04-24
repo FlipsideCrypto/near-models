@@ -8,6 +8,7 @@
 ) }}
 
 WITH actions_events AS (
+
     SELECT
         block_id,
         block_timestamp,
@@ -19,39 +20,40 @@ WITH actions_events AS (
         deposit,
         args,
         logs,
+        attached_gas,
         _inserted_timestamp,
-        modified_timestamp as _modified_timestamp
+        modified_timestamp AS _modified_timestamp
     FROM
-         {{ ref('silver__actions_events_function_call_s3') }}
+        {{ ref('silver__actions_events_function_call_s3') }}
     WHERE
         receipt_succeeded = TRUE
         AND logs [0] IS NOT NULL
-        {% if is_incremental() %}
-        AND modified_timestamp >= (
-            SELECT
-                MAX(modified_timestamp)
-            FROM
-                {{ this }}
-        )
-        {% endif %}
-),
 
-tx AS (
+{% if is_incremental() %}
+AND modified_timestamp >= (
     SELECT
-        tx_hash,
-        transaction_fee
+        MAX(modified_timestamp)
     FROM
-        {{ ref('silver__streamline_transactions_final') }}
+        {{ this }}
+)
+{% endif %}
+),
+prices_oracle_s3 AS (
+    --get closing price for the hour
+    SELECT
+        DATE_TRUNC(
+            'HOUR',
+            block_timestamp
+        ) AS block_timestamp_hour,
+        price_usd
+    FROM
+        {{ ref('silver__prices_oracle_s3') }}
     WHERE
-        {% if var("MANUAL_FIX") %}
-            {{ partition_load_manual('no_buffer') }}
-        {% else %}
-            {% if var('IS_MIGRATION') %}
-                {{ incremental_load_filter('_inserted_timestamp') }}
-            {% else %}
-                {{ incremental_load_filter('_modified_timestamp') }}
-            {% endif %}
-        {% endif %}
+        token = 'Wrapped NEAR fungible token' qualify ROW_NUMBER() over (
+            PARTITION BY block_timestamp_hour
+            ORDER BY
+                block_timestamp DESC
+        ) = 1
 ),
 raw_logs AS (
     SELECT
@@ -64,12 +66,14 @@ raw_logs AS (
             input => A.logs
         ) l
 ),
+------------------------------- MINBASE  -------------------------------
 minbase_nft_sales AS (
     SELECT
         action_id,
         block_id,
         block_timestamp,
         tx_hash,
+        attached_gas,
         CASE
             WHEN method_name = 'buy' THEN args :nft_contract_id
             WHEN method_name = 'resolve_nft_payout' THEN args :token :owner_id
@@ -87,7 +91,7 @@ minbase_nft_sales AS (
         CASE
             WHEN method_name = 'buy' THEN args :token_id :: STRING
             WHEN method_name = 'resolve_nft_payout' THEN args :token :id :: STRING -- typos
-        END :: STRING AS nft_id,
+        END :: STRING AS token_id,
         CASE
             WHEN method_name = 'buy' THEN deposit
             WHEN method_name = 'resolve_nft_payout' THEN args :token :current_offer :price
@@ -112,12 +116,14 @@ minbase_nft_sales AS (
             AND method_name = 'resolve_nft_payout'
         )
 ),
+------------------------ OTHER MARKETPLACES  -------------------------------
 other_nft_sales AS (
     SELECT
         action_id,
         block_id,
         block_timestamp,
         tx_hash,
+        attached_gas,
         COALESCE(
             args :market_data :owner_id,
             args :sale :owner_id,
@@ -145,11 +151,11 @@ other_nft_sales AS (
             args :market_data :token_id,
             args :sale :token_id,
             args :token_id
-        ) :: STRING AS nft_id,
+        ) :: STRING AS token_id,
         COALESCE(
             args :price,
             args :offer_data :price,
-            args : market_data :price
+            args: market_data :price
         ) / 1e24 AS price,
         method_name,
         args AS LOG,
@@ -172,12 +178,14 @@ other_nft_sales AS (
             'resolve_offer'
         )
 ),
+------------------------------- MITTE  -------------------------------
 mitte_nft_sales AS (
     SELECT
         action_id,
         block_id,
         block_timestamp,
         tx_hash,
+        attached_gas,
         CASE
             WHEN SPLIT(
                 event_json :data :order [2],
@@ -247,7 +255,7 @@ mitte_nft_sales AS (
                 event_json :data :order [2],
                 ':'
             ) [3]
-        END :: STRING AS nft_id,
+        END :: STRING AS token_id,
         CASE
             WHEN SPLIT(
                 event_json :data :order [2],
@@ -273,6 +281,7 @@ mitte_nft_sales AS (
         AND event_json :event :: STRING != 'nft_mint'
         AND event_json :data :order [6] :: STRING != ''
 ),
+------------------------------- FINAL   -------------------------------
 sales_union AS (
     SELECT
         *
@@ -289,15 +298,34 @@ sales_union AS (
     FROM
         mitte_nft_sales
 ),
-FINAL AS 
-    (
+FINAL AS (
     SELECT
-        s.*,
-        t.transaction_fee as transaction_fee
+        action_id,
+        block_id,
+        block_timestamp,
+        tx_hash,
+        attached_gas AS gas_burned,
+        seller_address,
+        buyer_address,
+        platform_address,
+        platform_name,
+        nft_address,
+        token_id,
+        method_name,
+        LOG,
+        price,
+        price * price_usd AS price_usd,
+        logs_index,
+        _inserted_timestamp,
+        _modified_timestamp
     FROM
         sales_union s
-    INNER JOIN tx t ON s.tx_hash = t.tx_hash
-    )
+        LEFT JOIN prices_oracle_s3 p
+        ON DATE_TRUNC(
+            'hour',
+            s.block_timestamp
+        ) = p.block_timestamp_hour
+)
 SELECT
     *,
     {{ dbt_utils.generate_surrogate_key(
@@ -307,4 +335,4 @@ SELECT
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
 FROM
-    FINAL 
+    FINAL

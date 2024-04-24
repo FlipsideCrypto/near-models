@@ -17,15 +17,15 @@ models:
         description: "{{ doc('block_timestamp')}}"
         tests:
           - not_null:
-              where: _inserted_timestamp <= current_timestamp - interval '10 hour'
+              where: inserted_timestamp <= current_timestamp - interval '10 hour'
 
       - name: TX_HASH
         description: "{{ doc('tx_hash')}}"
         tests:
           - not_null
 
-      - name: TRANSACTION_FEE
-        description: "{{ doc('transaction_fee')}}"
+      - name: GAS_BURNED
+        description: "{{ doc('attached_gas')}}"
         tests:
           - not_null
 
@@ -54,7 +54,7 @@ models:
         tests:
           - not_null
 
-      - name: NFT_ID
+      - name: TOKEN_ID
         description: "{{ doc('token_id')}}"
         tests:
           - not_null
@@ -64,24 +64,21 @@ models:
         tests:
           - not_null
 
+      - name: PRICE_USD
+        description: "{{ doc('price_usd')}}"
+
       - name: METHOD_NAME
         description: "{{ doc('method_name')}}"
         tests:
           - not_null
 
-      - name: LOGS
+      - name: LOG
         description: "{{ doc('logs')}}"
         tests:
           - not_null
 
       - name: LOGS_INDEX
         description: "ROW NUMBER"
-
-      - name: _INSERTED_TIMESTAMP
-        description: "{{ doc('_inserted_timestamp')}}"
-
-      - name: _MODIFIED_TIMESTAMP
-        description: "{{ doc('_modified_timestamp')}}"
 
       - name: NFT_SALES_ID
         description: "{{doc('id')}}"
