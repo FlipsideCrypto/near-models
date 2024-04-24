@@ -35,6 +35,24 @@ WITH actions_events AS (
         )
         {% endif %}
 ),
+
+tx AS (
+    SELECT
+        tx_hash,
+        transaction_fee
+    FROM
+        {{ ref('silver__streamline_transactions_final') }}
+    WHERE
+        {% if var("MANUAL_FIX") %}
+            {{ partition_load_manual('no_buffer') }}
+        {% else %}
+            {% if var('IS_MIGRATION') %}
+                {{ incremental_load_filter('_inserted_timestamp') }}
+            {% else %}
+                {{ incremental_load_filter('_modified_timestamp') }}
+            {% endif %}
+        {% endif %}
+),
 raw_logs AS (
     SELECT
         *,
@@ -255,7 +273,7 @@ mitte_nft_sales AS (
         AND event_json :event :: STRING != 'nft_mint'
         AND event_json :data :order [6] :: STRING != ''
 ),
-FINAL AS (
+sales_union AS (
     SELECT
         *
     FROM
@@ -270,7 +288,16 @@ FINAL AS (
         *
     FROM
         mitte_nft_sales
-)
+),
+FINAL AS 
+    (
+    SELECT
+        s.*,
+        t.transaction_fee as transaction_fee
+    FROM
+        sales_union s
+    INNER JOIN tx t ON s.tx_hash = t.tx_hash
+    )
 SELECT
     *,
     {{ dbt_utils.generate_surrogate_key(

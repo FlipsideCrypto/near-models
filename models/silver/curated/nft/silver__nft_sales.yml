@@ -25,6 +25,9 @@ models:
       - name: TX_HASH
         description: "{{ doc('tx_hash')}}"
 
+      - name: TRANSACTION_FEE
+        description: "{{ doc('transaction_fee')}}"
+
       - name: SELLER_ADDRESS
         description: "{{ doc('from_address')}}"
 

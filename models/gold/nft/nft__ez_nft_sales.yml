@@ -24,6 +24,11 @@ models:
         tests:
           - not_null
 
+      - name: TRANSACTION_FEE
+        description: "{{ doc('transaction_fee')}}"
+        tests:
+          - not_null
+
       - name: SELLER_ADDRESS
         description: "{{ doc('from_address')}}"
         tests:
