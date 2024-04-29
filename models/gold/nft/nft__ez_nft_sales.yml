@@ -5,8 +5,8 @@ models:
     description: |-
       This table records all the NFT sales actions of the mainy Near marketplaces.
     columns:
-      - name: ACTION_ID
-        description: "{{ doc('action_id')}}"
+      - name: RECEIPT_ID
+        description: "{{ doc('receipt_id')}}"
         tests:
           - not_null
 

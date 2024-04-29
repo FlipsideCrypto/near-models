@@ -38,7 +38,7 @@ AND modified_timestamp >= (
 )
 {% endif %}
 ),
-prices_oracle_s3 AS (
+prices AS (
     --get closing price for the hour
     SELECT
         DATE_TRUNC(
@@ -66,40 +66,23 @@ raw_logs AS (
             input => A.logs
         ) l
 ),
-------------------------------- MINBASE  -------------------------------
-minbase_nft_sales AS (
+------------------------------- MINTBASE  -------------------------------
+mintbase_nft_sales AS (
     SELECT
         action_id,
         block_id,
         block_timestamp,
         tx_hash,
         attached_gas,
-        CASE
-            WHEN method_name = 'buy' THEN args :nft_contract_id
-            WHEN method_name = 'resolve_nft_payout' THEN args :token :owner_id
-        END :: STRING AS seller_address,
-        CASE
-            WHEN method_name = 'buy' THEN signer_id
-            WHEN method_name = 'resolve_nft_payout' THEN args :token :current_offer :from
-        END :: STRING AS buyer_address,
+        IFF(method_name = 'buy', TRUE, FALSE) AS is_buy,  --- else resolve_nft_payout
+        IFF(is_buy, args :nft_contract_id, args :token :owner_id) :: STRING AS seller_address,
+        IFF( is_buy, signer_id, args :token :current_offer :from) :: STRING AS buyer_address,
         receiver_id AS platform_address,
         'Mintbase' AS platform_name,
-        CASE
-            WHEN method_name = 'buy' THEN args :nft_contract_id
-            WHEN method_name = 'resolve_nft_payout' THEN args :token :store_id
-        END :: STRING AS nft_address,
-        CASE
-            WHEN method_name = 'buy' THEN args :token_id :: STRING
-            WHEN method_name = 'resolve_nft_payout' THEN args :token :id :: STRING -- typos
-        END :: STRING AS token_id,
-        CASE
-            WHEN method_name = 'buy' THEN deposit
-            WHEN method_name = 'resolve_nft_payout' THEN args :token :current_offer :price
-        END / 1e24 AS price,
-        CASE
-            WHEN method_name = 'buy' THEN 'nft_sale' -- buy
-            WHEN method_name = 'resolve_nft_payout' THEN 'nft_sold' -- offer
-        END :: STRING AS method_name,
+        IFF(is_buy, args :nft_contract_id, args :token :store_id) :: STRING AS nft_address,
+        IFF(is_buy, args :token_id, args :token :id) :: STRING AS token_id,
+        IFF(is_buy, deposit, args :token :current_offer :price) / 1e24 AS price,
+        IFF(is_buy, 'nft_sale', 'nft_sold') AS method_name,
         args AS LOG,
         logs_index,
         _inserted_timestamp,
@@ -284,9 +267,25 @@ mitte_nft_sales AS (
 ------------------------------- FINAL   -------------------------------
 sales_union AS (
     SELECT
-        *
+        action_id,
+        block_id,
+        block_timestamp,
+        tx_hash,
+        attached_gas,
+        seller_address,
+        buyer_address,
+        platform_address,
+        platform_name,
+        nft_address,
+        token_id,
+        price,
+        method_name,
+        LOG,
+        logs_index,
+        _inserted_timestamp,
+        _modified_timestamp
     FROM
-        minbase_nft_sales
+        mintbase_nft_sales
     UNION ALL
     SELECT
         *
@@ -300,7 +299,7 @@ sales_union AS (
 ),
 FINAL AS (
     SELECT
-        action_id,
+        split_part(action_id, '-', 1) AS receipt_id,
         block_id,
         block_timestamp,
         tx_hash,
@@ -314,13 +313,13 @@ FINAL AS (
         method_name,
         LOG,
         price,
-        price * price_usd AS price_usd,
+        s.price * p.price_usd AS price_usd,
         logs_index,
         _inserted_timestamp,
         _modified_timestamp
     FROM
         sales_union s
-        LEFT JOIN prices_oracle_s3 p
+        LEFT JOIN prices p
         ON DATE_TRUNC(
             'hour',
             s.block_timestamp
@@ -329,7 +328,7 @@ FINAL AS (
 SELECT
     *,
     {{ dbt_utils.generate_surrogate_key(
-        ['action_id', 'logs_index']
+        ['receipt_id', 'logs_index']
     ) }} AS nft_sales_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,

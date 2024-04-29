@@ -7,7 +7,7 @@
 WITH nft_sales AS (
 
     SELECT
-        action_id,
+        receipt_id,
         block_id,
         block_timestamp,
         tx_hash,
