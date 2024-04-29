@@ -1,6 +1,5 @@
 {{ config(
-    error_if = '>=10',
-    warn_if = 'BETWEEN 1 AND 9',
+    severity = 'error',
     tags = ['gap_test']
 ) }}
 

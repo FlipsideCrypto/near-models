@@ -20,15 +20,21 @@ WITH chunks AS (
         {{ ref('silver__streamline_shards') }}
     WHERE
         chunk != 'null'
-    {% if var('IS_MIGRATION') %}
+
+    {% if var('MANUAL_FIX') %}
         AND
-            _inserted_timestamp >= (
-                SELECT 
-                    MAX(_inserted_timestamp) - INTERVAL '{{ var('STREAMLINE_LOAD_LOOKBACK_HOURS') }} hours'
-                FROM {{ this }}
-            )
+            {{ partition_load_manual('no_buffer') }}
     {% else %}
-        AND {{ incremental_load_filter('_inserted_timestamp') }}
+        {% if var('IS_MIGRATION') %}
+            AND
+                _inserted_timestamp >= (
+                    SELECT 
+                        MAX(_inserted_timestamp) - INTERVAL '{{ var('STREAMLINE_LOAD_LOOKBACK_HOURS') }} hours'
+                    FROM {{ this }}
+                )
+        {% else %}
+            AND {{ incremental_load_filter('_inserted_timestamp') }}
+        {% endif %}
     {% endif %}
 ),
 flatten_transactions AS (
