@@ -3,7 +3,7 @@ version: 2
 models:
   - name: nft__ez_nft_sales
     description: |-
-      This table records all the NFT sales actions of the mainy Near marketplaces.
+      This table records all the NFT sales actions of the main Near marketplaces.
     columns:
       - name: RECEIPT_ID
         description: "{{ doc('receipt_id')}}"
