@@ -53,6 +53,7 @@ There is more information on how to use dbt docs in the last section of this doc
 
 - [fact_nft_mints](#!/model/model.near.nft__fact_nft_mints)
 - [fact_nft_transfers](#!/model/model.near.nft__fact_nft_transfers)
+- [ez_nft_sales](#!/model/model.near.nft__ez_nft_sales)
 
 ### Price Tables (`NEAR`.`PRICE`.`<table_name>`)
 
