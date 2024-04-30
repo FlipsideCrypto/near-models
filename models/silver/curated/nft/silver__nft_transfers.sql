@@ -18,12 +18,16 @@ WITH actions_events AS (
         receiver_id,
         logs,
         _inserted_timestamp,
-        modified_timestamp as _modified_timestamp
+        modified_timestamp as _modified_timestamp,
+        _partition_by_block_number
     FROM
         {{ ref('silver__actions_events_function_call_s3') }}
     WHERE
         receipt_succeeded = TRUE
         AND logs [0] IS NOT NULL
+    {% if var("MANUAL_FIX") %}
+      AND {{ partition_load_manual('no_buffer') }}
+    {% else %}
         {% if is_incremental() %}
         AND modified_timestamp >= (
             SELECT
@@ -32,6 +36,7 @@ WITH actions_events AS (
                 {{ this }}
         )
         {% endif %}
+    {% endif %}
 ), 
 
 --------------------------------    NFT Transfers    --------------------------------
@@ -46,7 +51,8 @@ nft_logs AS (
         receiver_id AS contract_id,
         b.index as logs_rn,
         _inserted_timestamp,
-        _modified_timestamp
+        _modified_timestamp,
+        _partition_by_block_number
     FROM
         actions_events
         JOIN LATERAL FLATTEN(
@@ -78,7 +84,8 @@ nft_transfers AS (
         token_ids [0] :: STRING AS token_id,
         logs_rn + A.index as transfer_rn,
         _inserted_timestamp,
-        _modified_timestamp
+        _modified_timestamp,
+        _partition_by_block_number
     FROM
         nft_logs
         JOIN LATERAL FLATTEN(
@@ -100,7 +107,8 @@ nft_final AS (
         B.value :: STRING AS token_id,
         transfer_rn + B.index as rn,
         _inserted_timestamp,
-        _modified_timestamp
+        _modified_timestamp,
+        _partition_by_block_number
     FROM
         nft_transfers
     JOIN LATERAL FLATTEN(
@@ -119,7 +127,8 @@ FINAL AS (
         to_address,
         token_id,
         _inserted_timestamp,
-        _modified_timestamp
+        _modified_timestamp,
+        _partition_by_block_number
     FROM
         nft_final
 )
