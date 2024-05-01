@@ -2,7 +2,7 @@
     materialized = 'incremental',
     incremental_strategy = 'delete+insert',
     unique_key = 'complete_native_asset_metadata_id',
-    tags = ['non_realtime']
+    tags = ['scheduled_non_core']
 ) }}
 
 SELECT

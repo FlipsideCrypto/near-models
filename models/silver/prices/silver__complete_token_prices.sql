@@ -2,7 +2,7 @@
     materialized = 'incremental',
     incremental_strategy = 'delete+insert',
     unique_key = 'complete_token_prices_id',
-    tags = ['non_realtime']
+    tags = ['scheduled_non_core']
 ) }}
 
 SELECT
