@@ -63,7 +63,7 @@ swaps_raw AS (
     FROM
         {{ ref('silver__dex_swaps_v2') }}
     {% if var("MANUAL_FIX") %}
-      AND {{ partition_load_manual('no_buffer') }}
+      WHERE {{ partition_load_manual('no_buffer') }}
     {% else %}
         {% if is_incremental() %}
             WHERE

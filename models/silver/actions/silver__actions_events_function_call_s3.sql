@@ -31,11 +31,12 @@ WITH action_events AS (
     {% if var("MANUAL_FIX") %}
       AND {{ partition_load_manual('no_buffer') }}
     {% else %}
-      {% if var('IS_MIGRATION') %}
-        AND {{ incremental_load_filter('_inserted_timestamp') }}
-      {% else %}
-        AND {{ incremental_load_filter('_modified_timestamp') }}
-      {% endif %}
+        WHERE _modified_timestamp >= (
+            SELECT
+                MAX(modified_timestamp)
+            FROM
+                {{ this }}
+        )
     {% endif %}
 ),
 FINAL AS (
