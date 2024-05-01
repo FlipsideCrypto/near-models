@@ -21,6 +21,7 @@ WITH actions_events AS (
         args,
         logs,
         attached_gas,
+        _partition_by_block_number,
         _inserted_timestamp,
         modified_timestamp AS _modified_timestamp
     FROM
@@ -29,13 +30,17 @@ WITH actions_events AS (
         receipt_succeeded = TRUE
         AND logs [0] IS NOT NULL
 
-    {% if is_incremental() %}
-    AND _modified_timestamp >= (
-        SELECT
-            MAX(modified_timestamp)
-        FROM
-            {{ this }}
-    )
+    {% if var("MANUAL_FIX") %}
+      AND {{ partition_load_manual('no_buffer') }}
+    {% else %}
+        {% if is_incremental() %}
+        AND inserted_timestamp >= (
+            SELECT
+                MAX(inserted_timestamp)
+            FROM
+                {{ this }}
+        )
+        {% endif %}
     {% endif %}
 ),
 prices AS (
@@ -86,7 +91,8 @@ mintbase_nft_sales AS (
         args AS LOG,
         logs_index,
         _inserted_timestamp,
-        _modified_timestamp
+        _modified_timestamp,
+        _partition_by_block_number
     FROM
         raw_logs
     WHERE
@@ -144,7 +150,8 @@ other_nft_sales AS (
         args AS LOG,
         logs_index,
         _inserted_timestamp,
-        _modified_timestamp
+        _modified_timestamp,
+        _partition_by_block_number
     FROM
         raw_logs
     WHERE
@@ -256,7 +263,8 @@ mitte_nft_sales AS (
         event_json AS LOG,
         logs_index,
         _inserted_timestamp,
-        _modified_timestamp
+        _modified_timestamp,
+        _partition_by_block_number
     FROM
         raw_logs
     WHERE
@@ -283,7 +291,8 @@ sales_union AS (
         LOG,
         logs_index,
         _inserted_timestamp,
-        _modified_timestamp
+        _modified_timestamp,
+        _partition_by_block_number
     FROM
         mintbase_nft_sales
     UNION ALL
@@ -316,7 +325,8 @@ FINAL AS (
         s.price * p.price_usd AS price_usd,
         logs_index,
         _inserted_timestamp,
-        _modified_timestamp
+        _modified_timestamp,
+        _partition_by_block_number
     FROM
         sales_union s
         LEFT JOIN prices p

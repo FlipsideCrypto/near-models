@@ -67,6 +67,9 @@ models:
       - name: _MODIFIED_TIMESTAMP
         description: "{{ doc('_modified_timestamp')}}"
 
+      - name: _PARTITION_BY_BLOCK_NUMBER
+        description: "{{ doc('_partition_by_block_number')}}"
+
       - name: NFT_SALES_ID
         description: "{{doc('id')}}"
 
