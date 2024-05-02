@@ -25,18 +25,16 @@ WITH actions_events AS (
     WHERE
         receipt_succeeded = TRUE
         AND logs [0] IS NOT NULL
-    {% if var("MANUAL_FIX") %}
-      AND {{ partition_load_manual('no_buffer') }}
-    {% else %}
-        {% if is_incremental() %}
-        AND modified_timestamp >= (
-            SELECT
-                MAX(modified_timestamp)
-            FROM
-                {{ this }}
-        )
+        {% if var("MANUAL_FIX") %}
+        AND {{ partition_load_manual('no_buffer') }}
+        {% else %}
+            AND _modified_timestamp >= (
+                SELECT
+                    MAX(modified_timestamp)
+                FROM
+                    {{ this }}
+            )
         {% endif %}
-    {% endif %}
 ), 
 
 --------------------------------    NFT Transfers    --------------------------------

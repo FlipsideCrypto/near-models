@@ -28,13 +28,14 @@ WITH swap_logs AS (
         AND receiver_id NOT LIKE '%dragon_bot.near' 
 
         {% if var("MANUAL_FIX") %}
-            AND {{ partition_load_manual('no_buffer') }}
+        AND {{ partition_load_manual('no_buffer') }}
         {% else %}
-            {% if var('IS_MIGRATION') %}
-                AND {{ incremental_load_filter('_inserted_timestamp') }}
-            {% else %}
-                AND {{ incremental_load_filter('_modified_timestamp') }}
-            {% endif %}
+            AND _modified_timestamp >= (
+                SELECT
+                    MAX(modified_timestamp)
+                FROM
+                    {{ this }}
+            )
         {% endif %}
 ),
 receipts AS (
@@ -56,13 +57,14 @@ receipts AS (
                 swap_logs
         )
         {% if var("MANUAL_FIX") %}
-            AND {{ partition_load_manual('no_buffer') }}
+        AND {{ partition_load_manual('no_buffer') }}
         {% else %}
-            {% if var('IS_MIGRATION') %}
-                AND {{ incremental_load_filter('_inserted_timestamp') }}
-            {% else %}
-                AND {{ incremental_load_filter('_modified_timestamp') }}
-            {% endif %}
+            AND _modified_timestamp >= (
+                SELECT
+                    MAX(modified_timestamp)
+                FROM
+                    {{ this }}
+            )
         {% endif %}
 ),
 swap_outcome AS (

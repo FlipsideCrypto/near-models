@@ -4,7 +4,8 @@
     incremental_strategy = "merge",
     merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = ["block_timestamp::DATE"],
-    tags = ['curated']
+    tags = ['curated'],
+    enabled = False
 ) }}
 {# DEPRECATED JANUARY 2024 #}
 WITH base_swap_calls AS (

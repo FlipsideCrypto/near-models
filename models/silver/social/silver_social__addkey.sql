@@ -17,16 +17,18 @@ WITH receipts AS (
     FROM
         {{ ref('silver__streamline_receipts_final') }}
     WHERE
-        {% if var("MANUAL_FIX") %}
-            {{ partition_load_manual('no_buffer') }}
-        {% else %}
-            {% if var('IS_MIGRATION') %}
-                {{ incremental_load_filter('_inserted_timestamp') }}
-            {% else %}
-                {{ incremental_load_filter('_modified_timestamp') }}
-            {% endif %}
-        {% endif %}
-        AND _partition_by_block_number >= 59670000
+        _partition_by_block_number >= 59670000
+
+    {% if var("MANUAL_FIX") %}
+      AND {{ partition_load_manual('no_buffer') }}
+    {% else %}
+        AND _modified_timestamp >= (
+            SELECT
+                MAX(modified_timestamp)
+            FROM
+                {{ this }}
+        )
+    {% endif %}
 ),
 from_addkey_event AS (
     SELECT

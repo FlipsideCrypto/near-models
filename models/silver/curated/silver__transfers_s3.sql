@@ -29,14 +29,16 @@ WITH action_events AS(
     {{ ref('silver__actions_events_s3') }}
   WHERE
     action_name = 'Transfer' 
+
     {% if var("MANUAL_FIX") %}
       AND {{ partition_load_manual('no_buffer') }}
     {% else %}
-      {% if var('IS_MIGRATION') %}
-          AND {{ incremental_load_filter('_inserted_timestamp') }}
-      {% else %}
-          AND {{ incremental_load_filter('_modified_timestamp') }}
-      {% endif %}
+        AND _modified_timestamp >= (
+            SELECT
+                MAX(modified_timestamp)
+            FROM
+                {{ this }}
+        )
     {% endif %}
 ),
 txs AS (
@@ -57,14 +59,14 @@ txs AS (
     {{ ref('silver__streamline_transactions_final') }}
 
     {% if var("MANUAL_FIX") %}
-    WHERE
-      {{ partition_load_manual('front') }}
+      WHERE {{ partition_load_manual('no_buffer') }}
     {% else %}
-      {% if var('IS_MIGRATION') %}
-          WHERE {{ incremental_load_filter('_inserted_timestamp') }}
-      {% else %}
-          WHERE {{ incremental_pad_x_minutes('_modified_timestamp', 5) }}
-      {% endif %}
+        WHERE _modified_timestamp >= (
+            SELECT
+                MAX(modified_timestamp)
+            FROM
+                {{ this }}
+        )
     {% endif %}
 ),
 actions AS (

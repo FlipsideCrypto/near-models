@@ -20,18 +20,19 @@ WITH all_social_receipts AS (
     FROM
         {{ ref('silver_social__receipts') }}
     WHERE
-        {% if var("MANUAL_FIX") %}
-            {{ partition_load_manual('no_buffer') }}
-        {% else %}
-            {% if var('IS_MIGRATION') %}
-                {{ incremental_load_filter('_inserted_timestamp') }}
-            {% else %}
-                {{ incremental_load_filter('_modified_timestamp') }}
-            {% endif %}
-        {% endif %}
-
         {# NOTE - 5 "maintenance" receipts prior to 75mm that create/add/revoke keys, etc. Largely irrelevant to the platform. #}
-        AND _partition_by_block_number >= 75000000
+         _partition_by_block_number >= 75000000
+
+    {% if var("MANUAL_FIX") %}
+      AND {{ partition_load_manual('no_buffer') }}
+    {% else %}
+        AND _modified_timestamp >= (
+            SELECT
+                MAX(modified_timestamp)
+            FROM
+                {{ this }}
+        )
+    {% endif %}
 ),
 decoded_function_calls AS (
     SELECT

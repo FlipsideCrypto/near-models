@@ -21,23 +21,23 @@ WITH functioncall AS (
         receipt_succeeded,
         _inserted_timestamp,
         _partition_by_block_number,
-        modified_timestamp
+        modified_timestamp AS _modified_timestamp
     FROM
         {{ ref('silver__actions_events_function_call_s3') }}
-    WHERE
-        TRUE {% if var("MANUAL_FIX") %}
-            AND {{ partition_load_manual('no_buffer') }}
+
+        {% if var("MANUAL_FIX") %}
+            WHERE {{ partition_load_manual('no_buffer') }}
         {% else %}
 
-{% if is_incremental() %}
-AND modified_timestamp >= (
-    SELECT
-        MAX(_modified_timestamp)
-    FROM
-        {{ this }}
-)
-{% endif %}
-{% endif %}
+            {% if is_incremental() %}
+            WHERE _modified_timestamp >= (
+                SELECT
+                    MAX(modified_timestamp)
+                FROM
+                    {{ this }}
+            )
+            {% endif %}
+        {% endif %}
 ),
 outbound_near_to_aurora AS (
     -- ft_transfer_call sends token to aurora

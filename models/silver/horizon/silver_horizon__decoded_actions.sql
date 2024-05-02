@@ -20,15 +20,16 @@ WITH all_horizon_receipts AS (
         modified_timestamp AS _modified_timestamp
     FROM
         {{ ref('silver_horizon__receipts') }}
-    WHERE
+        
         {% if var("MANUAL_FIX") %}
-            {{ partition_load_manual('no_buffer') }}
+        WHERE {{ partition_load_manual('no_buffer') }}
         {% else %}
-            {% if var('IS_MIGRATION') %}
-                {{ incremental_load_filter('_inserted_timestamp') }}
-            {% else %}
-                {{ incremental_load_filter('_modified_timestamp') }}
-            {% endif %}
+            WHERE _modified_timestamp >= (
+                SELECT
+                    MAX(modified_timestamp)
+                FROM
+                    {{ this }}
+            )
         {% endif %}
 ),
 decoded_function_calls AS (

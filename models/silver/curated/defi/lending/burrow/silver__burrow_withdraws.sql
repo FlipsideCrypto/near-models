@@ -29,9 +29,17 @@ withdraws AS (
         receiver_id = 'contract.main.burrow.near'
         AND method_name = 'after_ft_transfer'
         AND receipt_succeeded = TRUE
-    {% if is_incremental() %}
-        AND {{ incremental_load_filter('_modified_timestamp') }}
-    {% endif %}
+
+        {% if var("MANUAL_FIX") %}
+        AND {{ partition_load_manual('no_buffer') }}
+        {% else %}
+            AND _modified_timestamp >= (
+                SELECT
+                    MAX(modified_timestamp)
+                FROM
+                    {{ this }}
+            )
+        {% endif %}
 ),
 FINAL AS (
     SELECT

@@ -21,24 +21,22 @@ WITH functioncall AS (
         receipt_succeeded,
         _inserted_timestamp,
         _partition_by_block_number,
-        modified_timestamp
+        modified_timestamp AS _modified_timestamp
     FROM
         {{ ref('silver__actions_events_function_call_s3') }}
     WHERE
-        signer_id LIKE '%.portalbridge.near'
-        OR receiver_id LIKE '%.portalbridge.near' 
+        (signer_id LIKE '%.portalbridge.near'
+        OR receiver_id LIKE '%.portalbridge.near')
+
         {% if var("MANUAL_FIX") %}
-            AND {{ partition_load_manual('no_buffer') }}
+        AND {{ partition_load_manual('no_buffer') }}
         {% else %}
-            {% if is_incremental() %}
-
-                AND 
-                    modified_timestamp >= (
-                        SELECT MAX(_modified_timestamp) FROM {{ this }}
-                        )
-
-            {% endif %}
-
+            AND _modified_timestamp >= (
+                SELECT
+                    MAX(modified_timestamp)
+                FROM
+                    {{ this }}
+            )
         {% endif %}
 ),
 outbound_near AS (
@@ -61,7 +59,7 @@ outbound_near AS (
         'outbound' AS direction,
         _inserted_timestamp,
         _partition_by_block_number,
-        modified_timestamp AS _modified_timestamp
+        _modified_timestamp
     FROM
         functioncall
     WHERE
@@ -90,7 +88,7 @@ inbound_to_near AS (
         'inbound' AS direction,
         _inserted_timestamp,
         _partition_by_block_number,
-        modified_timestamp AS _modified_timestamp
+        _modified_timestamp
     FROM
         functioncall
     WHERE

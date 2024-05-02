@@ -25,16 +25,16 @@ WITH logs AS (
         modified_timestamp AS _modified_timestamp
     FROM
         {{ ref('silver__logs_s3') }}
-    WHERE
-        {% if var("MANUAL_FIX") %}
-            {{ partition_load_manual('no_buffer') }}
-        {% else %}
-            {% if var('IS_MIGRATION') %}
-                {{ incremental_load_filter('_inserted_timestamp') }}
-            {% else %}
-                {{ incremental_load_filter('_modified_timestamp') }}
-            {% endif %}
-        {% endif %}
+    {% if var("MANUAL_FIX") %}
+      WHERE {{ partition_load_manual('no_buffer') }}
+    {% else %}
+        WHERE _modified_timestamp >= (
+            SELECT
+                MAX(modified_timestamp)
+            FROM
+                {{ this }}
+        )
+    {% endif %}
 ),
 tx AS (
     SELECT
@@ -43,19 +43,20 @@ tx AS (
         tx_receiver,
         tx_succeeded,
         tx_status, -- TODO deprecate col
-        transaction_fee
+        transaction_fee,
+        modified_timestamp AS _modified_timestamp
     FROM
         {{ ref('silver__streamline_transactions_final') }}
-    WHERE
-        {% if var("MANUAL_FIX") %}
-            {{ partition_load_manual('no_buffer') }}
-        {% else %}
-            {% if var('IS_MIGRATION') %}
-                {{ incremental_load_filter('_inserted_timestamp') }}
-            {% else %}
-                {{ incremental_load_filter('_modified_timestamp') }}
-            {% endif %}
-        {% endif %}
+    {% if var("MANUAL_FIX") %}
+      WHERE {{ partition_load_manual('no_buffer') }}
+    {% else %}
+        WHERE _modified_timestamp >= (
+            SELECT
+                MAX(modified_timestamp)
+            FROM
+                {{ this }}
+        )
+    {% endif %}
 ),
 function_call AS (
     SELECT
@@ -63,19 +64,20 @@ function_call AS (
         tx_hash,
         TRY_PARSE_JSON(args) AS args_json,
         method_name,
-        deposit
+        deposit,
+        modified_timestamp AS _modified_timestamp
     FROM
         {{ ref("silver__actions_events_function_call_s3") }}
-    WHERE
-        {% if var("MANUAL_FIX") %}
-            {{ partition_load_manual('no_buffer') }}
-        {% else %}
-            {% if var('IS_MIGRATION') %}
-                {{ incremental_load_filter('_inserted_timestamp') }}
-            {% else %}
-                {{ incremental_load_filter('_modified_timestamp') }}
-            {% endif %}
-        {% endif %}
+    {% if var("MANUAL_FIX") %}
+      WHERE {{ partition_load_manual('no_buffer') }}
+    {% else %}
+        WHERE _modified_timestamp >= (
+            SELECT
+                MAX(modified_timestamp)
+            FROM
+                {{ this }}
+        )
+    {% endif %}
 ),
 standard_logs AS (
     SELECT

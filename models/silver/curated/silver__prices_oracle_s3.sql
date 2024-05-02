@@ -29,16 +29,16 @@ events_function_call AS (
     FROM
         {{ ref('silver__actions_events_function_call_s3') }}
 
-        {% if var("MANUAL_FIX") %}
-        WHERE
-            {{ partition_load_manual('no_buffer') }}
-        {% else %}
-            {% if var('IS_MIGRATION') %}
-                WHERE {{ incremental_load_filter('_inserted_timestamp') }}
-            {% else %}
-                WHERE {{ incremental_load_filter('_modified_timestamp') }}
-            {% endif %}
-        {% endif %}
+    {% if var("MANUAL_FIX") %}
+      WHERE {{ partition_load_manual('no_buffer') }}
+    {% else %}
+        WHERE _modified_timestamp >= (
+            SELECT
+                MAX(modified_timestamp)
+            FROM
+                {{ this }}
+        )
+    {% endif %}
 ),
 prices AS (
     SELECT

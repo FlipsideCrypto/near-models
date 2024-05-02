@@ -21,16 +21,18 @@ WITH decoded_actions AS (
     FROM
         {{ ref('silver_social__decoded_actions') }}
     WHERE
-        {% if var("MANUAL_FIX") %}
-            {{ partition_load_manual('no_buffer') }}
-        {% else %}
-            {% if var('IS_MIGRATION') %}
-                {{ incremental_load_filter('_inserted_timestamp') }}
-            {% else %}
-                {{ incremental_load_filter('_modified_timestamp') }}
-            {% endif %}
-        {% endif %}
-        AND node = 'profile'
+        node = 'profile'
+
+    {% if var("MANUAL_FIX") %}
+      AND {{ partition_load_manual('no_buffer') }}
+    {% else %}
+        AND _modified_timestamp >= (
+            SELECT
+                MAX(modified_timestamp)
+            FROM
+                {{ this }}
+        )
+    {% endif %}
 ),
 flatten_profile_json AS (
     SELECT

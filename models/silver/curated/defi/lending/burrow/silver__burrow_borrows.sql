@@ -28,9 +28,17 @@ borrows AS (
         receiver_id = 'contract.main.burrow.near'
         AND method_name = 'oracle_on_call'
         AND receipt_succeeded = TRUE
-    {% if is_incremental() %}
-        AND {{ incremental_load_filter('_modified_timestamp') }}
-    {% endif %}
+
+        {% if var("MANUAL_FIX") %}
+        AND {{ partition_load_manual('no_buffer') }}
+        {% else %}
+            AND _modified_timestamp >= (
+                SELECT
+                    MAX(modified_timestamp)
+                FROM
+                    {{ this }}
+            )
+        {% endif %}
 
 ),
 FINAL AS (
