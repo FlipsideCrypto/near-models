@@ -27,14 +27,16 @@ WITH receipts AS (
         {{ ref('silver__streamline_receipts_final') }}
 
     {% if var("MANUAL_FIX") %}
-      AND {{ partition_load_manual('no_buffer') }}
+      WHERE {{ partition_load_manual('no_buffer') }}
     {% else %}
-        AND _modified_timestamp >= (
+            {% if is_incremental() %}
+        WHERE _modified_timestamp >= (
             SELECT
                 MAX(modified_timestamp)
             FROM
                 {{ this }}
         )
+    {% endif %}
     {% endif %}
 ),
 FINAL AS (

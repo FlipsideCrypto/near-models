@@ -28,12 +28,14 @@ WITH logs AS (
     {% if var("MANUAL_FIX") %}
       WHERE {{ partition_load_manual('no_buffer') }}
     {% else %}
+            {% if is_incremental() %}
         WHERE _modified_timestamp >= (
             SELECT
                 MAX(modified_timestamp)
             FROM
                 {{ this }}
         )
+    {% endif %}
     {% endif %}
 ),
 tx AS (
@@ -50,12 +52,14 @@ tx AS (
     {% if var("MANUAL_FIX") %}
       WHERE {{ partition_load_manual('no_buffer') }}
     {% else %}
+            {% if is_incremental() %}
         WHERE _modified_timestamp >= (
             SELECT
                 MAX(modified_timestamp)
             FROM
                 {{ this }}
         )
+    {% endif %}
     {% endif %}
 ),
 function_call AS (
@@ -71,12 +75,14 @@ function_call AS (
     {% if var("MANUAL_FIX") %}
       WHERE {{ partition_load_manual('no_buffer') }}
     {% else %}
+            {% if is_incremental() %}
         WHERE _modified_timestamp >= (
             SELECT
                 MAX(modified_timestamp)
             FROM
                 {{ this }}
         )
+    {% endif %}
     {% endif %}
 ),
 standard_logs AS (

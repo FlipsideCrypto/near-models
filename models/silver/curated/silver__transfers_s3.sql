@@ -6,7 +6,7 @@
   incremental_strategy = 'merge',
   tags = ['curated']
 ) }}
-{# TODO - time for a v2 #}
+
 WITH action_events AS(
 
   SELECT
@@ -33,12 +33,14 @@ WITH action_events AS(
     {% if var("MANUAL_FIX") %}
       AND {{ partition_load_manual('no_buffer') }}
     {% else %}
+            {% if is_incremental() %}
         AND _modified_timestamp >= (
             SELECT
                 MAX(modified_timestamp)
             FROM
                 {{ this }}
         )
+    {% endif %}
     {% endif %}
 ),
 txs AS (
@@ -61,12 +63,14 @@ txs AS (
     {% if var("MANUAL_FIX") %}
       WHERE {{ partition_load_manual('no_buffer') }}
     {% else %}
+            {% if is_incremental() %}
         WHERE _modified_timestamp >= (
             SELECT
                 MAX(modified_timestamp)
             FROM
                 {{ this }}
         )
+    {% endif %}
     {% endif %}
 ),
 actions AS (

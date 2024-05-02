@@ -26,12 +26,14 @@ WITH all_social_receipts AS (
     {% if var("MANUAL_FIX") %}
       AND {{ partition_load_manual('no_buffer') }}
     {% else %}
+            {% if is_incremental() %}
         AND _modified_timestamp >= (
             SELECT
                 MAX(modified_timestamp)
             FROM
                 {{ this }}
         )
+    {% endif %}
     {% endif %}
 ),
 decoded_function_calls AS (
