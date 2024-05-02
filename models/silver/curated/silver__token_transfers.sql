@@ -6,7 +6,7 @@
     incremental_strategy = 'merge',
     tags = ['curated']
 ) }}
-
+{# Note - multisource model #}
 -- Curation Challenge - 'https://flipsidecrypto.xyz/Hossein/transfer-sector-of-near-curation-challenge-zgM44F'
 
 WITH actions_events AS (
@@ -38,7 +38,7 @@ WITH actions_events AS (
         {% if is_incremental() %}
         AND _modified_timestamp >= (
             SELECT
-                MAX(modified_timestamp)
+                MAX(_modified_timestamp)
             FROM
                 {{ this }}
         )
@@ -71,7 +71,7 @@ swaps_raw AS (
             WHERE
                 _modified_timestamp >= (
                     SELECT
-                        MAX(modified_timestamp)
+                        MAX(_modified_timestamp)
                     FROM
                         {{ this }}
                 )
@@ -105,7 +105,7 @@ native_transfers AS (
         {% if is_incremental() %}
         AND _modified_timestamp >= (
             SELECT
-                MAX(modified_timestamp)
+                MAX(_modified_timestamp)
             FROM
                 {{ this }}
         )

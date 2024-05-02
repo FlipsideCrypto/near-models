@@ -5,7 +5,7 @@
     unique_key = 'dex_swaps_v2_id',
     tags = ['curated'],
 ) }}
-
+{# Note - multisource model #}
 WITH swap_logs AS (
 
     SELECT
@@ -33,7 +33,7 @@ WITH swap_logs AS (
             {% if is_incremental() %}
             AND _modified_timestamp >= (
                 SELECT
-                    MAX(modified_timestamp)
+                    MAX(_modified_timestamp)
                 FROM
                     {{ this }}
             )
@@ -64,7 +64,7 @@ receipts AS (
             {% if is_incremental() %}
             AND _modified_timestamp >= (
                 SELECT
-                    MAX(modified_timestamp)
+                    MAX(_modified_timestamp)
                 FROM
                     {{ this }}
             )

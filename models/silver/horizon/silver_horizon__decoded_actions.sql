@@ -5,7 +5,7 @@
     cluster_by = ['_inserted_timestamp::date', '_partition_by_block_number'],
     tags = ['curated', 'horizon']
 ) }}
-
+{# Note - multisource model #}
 WITH all_horizon_receipts AS (
 
     SELECT
@@ -27,7 +27,7 @@ WITH all_horizon_receipts AS (
             {% if is_incremental() %}
             WHERE _modified_timestamp >= (
                 SELECT
-                    MAX(modified_timestamp)
+                    MAX(_modified_timestamp)
                 FROM
                     {{ this }}
             )
@@ -71,7 +71,7 @@ decoded_function_calls AS (
             {% if is_incremental() %}
             AND _modified_timestamp >= (
                 SELECT
-                    MAX(modified_timestamp)
+                    MAX(_modified_timestamp)
                 FROM
                     {{ this }}
             )

@@ -29,7 +29,7 @@ WITH decoded_actions AS (
             {% if is_incremental() %}
         AND _modified_timestamp >= (
             SELECT
-                MAX(modified_timestamp)
+                MAX(_modified_timestamp)
             FROM
                 {{ this }}
         )

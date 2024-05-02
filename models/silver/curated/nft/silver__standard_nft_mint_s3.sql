@@ -6,7 +6,7 @@
     merge_exclude_columns = ["inserted_timestamp"],
     tags = ['curated']
 ) }}
-
+{# Note - multisource model #}
 WITH logs AS (
 
     SELECT
@@ -31,7 +31,7 @@ WITH logs AS (
             {% if is_incremental() %}
         WHERE _modified_timestamp >= (
             SELECT
-                MAX(modified_timestamp)
+                MAX(_modified_timestamp)
             FROM
                 {{ this }}
         )
@@ -55,7 +55,7 @@ tx AS (
             {% if is_incremental() %}
         WHERE _modified_timestamp >= (
             SELECT
-                MAX(modified_timestamp)
+                MAX(_modified_timestamp)
             FROM
                 {{ this }}
         )
@@ -78,7 +78,7 @@ function_call AS (
             {% if is_incremental() %}
         WHERE _modified_timestamp >= (
             SELECT
-                MAX(modified_timestamp)
+                MAX(_modified_timestamp)
             FROM
                 {{ this }}
         )

@@ -5,7 +5,7 @@
     cluster_by = ['block_timestamp::date'],
     tags = ['curated', 'social']
 ) }}
-
+{# Note - multisource model #}
 WITH receipts AS (
 
     SELECT
@@ -25,7 +25,7 @@ WITH receipts AS (
             {% if is_incremental() %}
         AND _modified_timestamp >= (
             SELECT
-                MAX(modified_timestamp)
+                MAX(_modified_timestamp)
             FROM
                 {{ this }}
         )
@@ -48,16 +48,19 @@ from_addkey_event AS (
     FROM
         {{ ref('silver__actions_events_addkey_s3') }}
     WHERE
-        {% if var("MANUAL_FIX") %}
-            {{ partition_load_manual('no_buffer') }}
-        {% else %}
-            {% if var('IS_MIGRATION') %}
-                {{ incremental_load_filter('_inserted_timestamp') }}
-            {% else %}
-                {{ incremental_load_filter('_modified_timestamp') }}
-            {% endif %}
-        {% endif %}
-        AND receiver_id = 'social.near'
+        receiver_id = 'social.near'
+    {% if var("MANUAL_FIX") %}
+      AND {{ partition_load_manual('no_buffer') }}
+    {% else %}
+            {% if is_incremental() %}
+        AND _modified_timestamp >= (
+            SELECT
+                MAX(_modified_timestamp)
+            FROM
+                {{ this }}
+        )
+    {% endif %}
+    {% endif %}
 ),
 nested_in_functioncall AS (
     SELECT
@@ -77,17 +80,20 @@ nested_in_functioncall AS (
     FROM
         {{ ref('silver__actions_events_function_call_s3') }}
     WHERE
-        {% if var("MANUAL_FIX") %}
-            {{ partition_load_manual('no_buffer') }}
-        {% else %}
-            {% if var('IS_MIGRATION') %}
-                {{ incremental_load_filter('_inserted_timestamp') }}
-            {% else %}
-                {{ incremental_load_filter('_modified_timestamp') }}
-            {% endif %}
-        {% endif %}
-        AND method_name = 'add_request_and_confirm'
+        method_name = 'add_request_and_confirm'
         AND receiver_id = 'social.near'
+    {% if var("MANUAL_FIX") %}
+      AND {{ partition_load_manual('no_buffer') }}
+    {% else %}
+            {% if is_incremental() %}
+        AND _modified_timestamp >= (
+            SELECT
+                MAX(_modified_timestamp)
+            FROM
+                {{ this }}
+        )
+    {% endif %}
+    {% endif %}
 ),
 combine AS (
     SELECT

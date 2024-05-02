@@ -38,7 +38,7 @@ deposits AS (
 
             AND _modified_timestamp >= (
                 SELECT
-                    MAX(modified_timestamp)
+                    MAX(_modified_timestamp)
                 FROM
                     {{ this }}
             )
