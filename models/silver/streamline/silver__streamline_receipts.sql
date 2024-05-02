@@ -25,15 +25,13 @@ WITH shards AS (
         AND
             {{ partition_load_manual('no_buffer') }}
     {% else %}
-        {% if var('IS_MIGRATION') %}
-            AND
-                _inserted_timestamp >= (
-                    SELECT 
-                        MAX(_inserted_timestamp) - INTERVAL '{{ var('STREAMLINE_LOAD_LOOKBACK_HOURS') }} hours'
-                    FROM {{ this }}
-                )
-        {% else %}
-            AND {{ incremental_load_filter('_inserted_timestamp') }}
+        {% if is_incremental() %}
+            AND _modified_timestamp >= (
+                SELECT
+                    MAX(_modified_timestamp)
+                FROM
+                    {{ this }}
+            )
         {% endif %}
     {% endif %}
 ),
