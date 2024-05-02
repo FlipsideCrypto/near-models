@@ -34,9 +34,9 @@ WITH actions_events AS (
       AND {{ partition_load_manual('no_buffer') }}
     {% else %}
         {% if is_incremental() %}
-        AND inserted_timestamp >= (
+        AND _modified_timestamp >= (
             SELECT
-                MAX(inserted_timestamp)
+                MAX(_modified_timestamp)
             FROM
                 {{ this }}
         )
