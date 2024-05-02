@@ -37,7 +37,7 @@ WITH actions_events AS (
         {% if is_incremental() %}
         AND _modified_timestamp >= (
             SELECT
-                MAX(modified_timestamp)
+                MAX(_modified_timestamp)
             FROM
                 {{ this }}
         )
@@ -63,13 +63,13 @@ swaps_raw AS (
     FROM
         {{ ref('silver__dex_swaps_v2') }}
     {% if var("MANUAL_FIX") %}
-      AND {{ partition_load_manual('no_buffer') }}
+      WHERE {{ partition_load_manual('no_buffer') }}
     {% else %}
         {% if is_incremental() %}
             WHERE
                 _modified_timestamp >= (
                     SELECT
-                        MAX(modified_timestamp)
+                        MAX(_modified_timestamp)
                     FROM
                         {{ this }}
                 )
@@ -100,9 +100,9 @@ native_transfers AS (
       AND {{ partition_load_manual('no_buffer') }}
     {% else %}
         {% if is_incremental() %}
-        AND inserted_timestamp >= (
+        AND _modified_timestamp >= (
             SELECT
-                MAX(inserted_timestamp)
+                MAX(_modified_timestamp)
             FROM
                 {{ this }}
         )
