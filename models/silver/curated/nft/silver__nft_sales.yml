@@ -1,0 +1,83 @@
+version: 2
+
+models:
+  - name: silver__nft_sales
+    description: |-
+      This table records all the NFT sales actions of the mainy Near marketplaces..
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - receipt_id
+            - logs_index
+    columns:
+      - name: RECEIPT_ID
+        description: "{{ doc('receipt_id')}}"
+
+      - name: BLOCK_ID
+        description: "{{ doc('block_id')}}"
+
+      - name: BLOCK_TIMESTAMP
+        description: "{{ doc('block_timestamp')}}"
+        tests:
+          - not_null:
+              where: _inserted_timestamp <= current_timestamp - interval '10 hour'
+
+      - name: TX_HASH
+        description: "{{ doc('tx_hash')}}"
+
+      - name: GAS_BURNED
+        description: "{{ doc('attached_gas')}}"
+
+      - name: SELLER_ADDRESS
+        description: "{{ doc('from_address')}}"
+
+      - name: BUYER_ADDRESS
+        description: "{{ doc('to_address')}}"
+
+      - name: PLATFORM_ADDRESS
+        description: "{{ doc('tx_signer')}}"
+
+      - name: PLATFORM_NAME
+        description: "Platform Name"
+
+      - name: NFT_ADDRESS
+        description: "NFT Address"
+
+      - name: TOKEN_ID
+        description: "{{ doc('token_id')}}"
+
+      - name: PRICE
+        description: "{{ doc('raw_price')}}"
+
+      - name: PRICE_USD
+        description: "{{ doc('price_usd')}}"
+
+      - name: METHOD_NAME
+        description: "{{ doc('method_name')}}"
+
+      - name: LOGS
+        description: "{{ doc('logs')}}"
+
+      - name: LOGS_INDEX
+        description: "ROW NUMBER"
+
+      - name: _INSERTED_TIMESTAMP
+        description: "{{ doc('_inserted_timestamp')}}"
+
+      - name: _MODIFIED_TIMESTAMP
+        description: "{{ doc('_modified_timestamp')}}"
+
+      - name: _PARTITION_BY_BLOCK_NUMBER
+        description: "{{ doc('_partition_by_block_number')}}"
+
+      - name: NFT_SALES_ID
+        description: "{{doc('id')}}"
+
+      - name: INSERTED_TIMESTAMP
+        description: "{{doc('inserted_timestamp')}}"
+
+      - name: MODIFIED_TIMESTAMP
+        description: "{{doc('modified_timestamp')}}"
+
+      - name: _INVOCATION_ID
+        description: "{{doc('invocation_id')}}"
