@@ -4,8 +4,11 @@
   cluster_by = ['block_timestamp::DATE'],
   unique_key = 'action_id',
   incremental_strategy = 'merge',
-  tags = ['curated']
+  tags = ['curated'],
+  enabled = False
 ) }}
+{# TODO - test and apply, where applicable.
+Model disabled but will keep in repo for ref #}
 {# Note - multisource model #}
 {% if execute %}
 
