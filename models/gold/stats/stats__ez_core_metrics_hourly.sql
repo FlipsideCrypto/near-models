@@ -3,22 +3,23 @@
     tags = ['core']
 ) }}
 
-WITH prices_oracle_s3 AS (
+WITH prices AS (
     --get closing price for the hour
 
     SELECT
-        DATE_TRUNC(
-            'HOUR',
-            block_timestamp
-        ) AS block_timestamp_hour,
-        price_usd
+        HOUR AS block_timestamp_hour,
+        price AS price_usd
     FROM
-        {{ ref('silver__prices_oracle_s3') }}
+        {{ ref('silver__complete_token_prices') }}
     WHERE
-        token = 'Wrapped NEAR fungible token' qualify ROW_NUMBER() over (
+        token_address IN (
+            'near',
+            'wrap.near'
+        ) 
+        qualify ROW_NUMBER() over (
             PARTITION BY block_timestamp_hour
             ORDER BY
-                block_timestamp DESC
+                HOUR DESC
         ) = 1
 )
 SELECT
@@ -51,5 +52,5 @@ FROM
     JOIN {{ ref('silver_stats__core_metrics_hourly') }}
     t
     ON b.block_timestamp_hour = t.block_timestamp_hour
-    LEFT JOIN prices_oracle_s3 p
+    LEFT JOIN prices p
     ON b.block_timestamp_hour = p.block_timestamp_hour

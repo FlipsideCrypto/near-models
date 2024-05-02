@@ -36,12 +36,12 @@ prices AS (
     SELECT
         DATE_TRUNC(
             'hour',
-            block_timestamp
+            hour
         ) AS block_timestamp,
-        token_contract AS contract_address,
-        AVG(price_usd) AS price_usd
+        token_address AS contract_address,
+        AVG(price) AS price_usd
     FROM
-        {{ ref('silver__prices_oracle_s3') }}
+        {{ ref('silver__complete_token_prices') }}
     GROUP BY
         1,
         2
