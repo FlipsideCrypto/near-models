@@ -45,12 +45,14 @@ function_calls AS (
         modified_timestamp AS _modified_timestamp
     FROM
         {{ ref('silver__actions_events_function_call_s3') }}
+    WHERE 
+        receipt_succeeded = TRUE
 
     {% if var("MANUAL_FIX") %}
-      WHERE {{ partition_load_manual('no_buffer') }}
+      AND {{ partition_load_manual('no_buffer') }}
     {% else %}
             {% if is_incremental() %}
-        WHERE _modified_timestamp >= (
+        AND _modified_timestamp >= (
             SELECT
                 MAX(_modified_timestamp)
             FROM
@@ -58,6 +60,7 @@ function_calls AS (
         )
     {% endif %}
     {% endif %}
+
 ),
 xfers AS (
     SELECT
