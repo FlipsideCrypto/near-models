@@ -22,16 +22,20 @@ WITH decoded_actions AS (
     FROM
         {{ ref('silver_social__decoded_actions') }}
     WHERE
-        {% if var("MANUAL_FIX") %}
-            {{ partition_load_manual('no_buffer') }}
-        {% else %}
-            {% if var('IS_MIGRATION') %}
-                {{ incremental_load_filter('_inserted_timestamp') }}
-            {% else %}
-                {{ incremental_load_filter('_modified_timestamp') }}
-            {% endif %}
-        {% endif %}
-        AND node = 'widget'
+        node = 'widget'
+    
+    {% if var("MANUAL_FIX") %}
+      AND {{ partition_load_manual('no_buffer') }}
+    {% else %}
+        {% if is_incremental() %}
+        AND _modified_timestamp >= (
+            SELECT
+                MAX(_modified_timestamp)
+            FROM
+                {{ this }}
+        )
+    {% endif %}
+    {% endif %}
 ),
 widgets AS (
     SELECT

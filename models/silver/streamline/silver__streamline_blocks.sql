@@ -72,21 +72,16 @@ blocks AS (
         LEFT JOIN meta m USING (
             _filename
         )
-    {% if var('IS_MIGRATION') %}
-    {# Can quickly delete after migration. But, data in other tables is older blocks 
-    ingested more recently. So, simply doing >= inserted timestamp will cause a large gap.
-    Lookback, here, should probably be min 4 hours.
-     #}
-    WHERE
-        _inserted_timestamp >= (
-            SELECT 
-                MAX(_inserted_timestamp) - INTERVAL '{{ var('STREAMLINE_LOAD_LOOKBACK_HOURS') }} hours'
-            FROM {{ this }}
-        )
-    {% else %}
-    WHERE
-        {{ incremental_load_filter('_inserted_timestamp') }}
+    {% if is_incremental() %}
+        WHERE
+            _inserted_timestamp >= (
+                SELECT
+                    MAX(_inserted_timestamp)
+                FROM
+                    {{ this }}
+            )
     {% endif %}
+
 )
 SELECT
     *,

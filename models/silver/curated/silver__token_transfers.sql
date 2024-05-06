@@ -6,7 +6,7 @@
     incremental_strategy = 'merge',
     tags = ['curated']
 ) }}
-
+{# Note - multisource model #}
 -- Curation Challenge - 'https://flipsidecrypto.xyz/Hossein/transfer-sector-of-near-curation-challenge-zgM44F'
 
 WITH actions_events AS (
@@ -31,6 +31,7 @@ WITH actions_events AS (
     WHERE
         receipt_succeeded = TRUE
         AND logs [0] IS NOT NULL
+
     {% if var("MANUAL_FIX") %}
       AND {{ partition_load_manual('no_buffer') }}
     {% else %}
@@ -62,6 +63,7 @@ swaps_raw AS (
         _partition_by_block_number
     FROM
         {{ ref('silver__dex_swaps_v2') }}
+
     {% if var("MANUAL_FIX") %}
       WHERE {{ partition_load_manual('no_buffer') }}
     {% else %}
@@ -90,12 +92,13 @@ native_transfers AS (
         --numeric validation (there are some exceptions that needs to be ignored)
         receipt_succeeded,
         _inserted_timestamp,
-        _modified_timestamp,
+        modified_timestamp AS _modified_timestamp,
         _partition_by_block_number
     FROM
         {{ ref('silver__transfers_s3') }}
     WHERE
         status = TRUE AND deposit != 0
+
     {% if var("MANUAL_FIX") %}
       AND {{ partition_load_manual('no_buffer') }}
     {% else %}

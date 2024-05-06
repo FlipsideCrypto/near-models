@@ -32,11 +32,14 @@ WITH receipts AS (
         WHERE
             {{ partition_load_manual('no_buffer') }}
         {% else %}
-            {% if var('IS_MIGRATION') %}
-                WHERE {{ incremental_load_filter('_inserted_timestamp') }}
-            {% else %}
-                WHERE {{ incremental_load_filter('_modified_timestamp') }}
-            {% endif %}
+            {% if is_incremental() %}
+            WHERE _modified_timestamp >= (
+                SELECT
+                    MAX(_modified_timestamp)
+                FROM
+                    {{ this }}
+            )
+        {% endif %}
         {% endif %}
 ),
 flatten_actions AS (

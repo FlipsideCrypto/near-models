@@ -4,7 +4,7 @@
     unique_key = 'tx_hash',
     tags = ['curated'],
 ) }}
-
+{# Note - multisource model #}
 WITH txs AS (
 
     SELECT
@@ -16,16 +16,18 @@ WITH txs AS (
     FROM
         {{ ref('silver__streamline_transactions_final') }}
 
-        {% if var("MANUAL_FIX") %}
-        WHERE
-            {{ partition_load_manual('no_buffer') }}
-        {% else %}
-            {% if var('IS_MIGRATION') %}
-                WHERE {{ incremental_load_filter('_inserted_timestamp') }}
-            {% else %}
-                WHERE {{ incremental_load_filter('_modified_timestamp') }}
-            {% endif %}
-        {% endif %}
+    {% if var("MANUAL_FIX") %}
+      WHERE {{ partition_load_manual('no_buffer') }}
+    {% else %}
+            {% if is_incremental() %}
+        WHERE _modified_timestamp >= (
+            SELECT
+                MAX(_modified_timestamp)
+            FROM
+                {{ this }}
+        )
+    {% endif %}
+    {% endif %}
 ),
 function_calls AS (
     SELECT
@@ -45,16 +47,20 @@ function_calls AS (
         {{ ref('silver__actions_events_function_call_s3') }}
     WHERE 
         receipt_succeeded = TRUE
-        {% if var("MANUAL_FIX") %}
-        AND
-            {{ partition_load_manual('no_buffer') }}
-        {% else %}
-            {% if var('IS_MIGRATION') %}
-                AND {{ incremental_load_filter('_inserted_timestamp') }}
-            {% else %}
-                AND {{ incremental_load_filter('_modified_timestamp') }}
-            {% endif %}
-        {% endif %}
+
+    {% if var("MANUAL_FIX") %}
+      AND {{ partition_load_manual('no_buffer') }}
+    {% else %}
+            {% if is_incremental() %}
+        AND _modified_timestamp >= (
+            SELECT
+                MAX(_modified_timestamp)
+            FROM
+                {{ this }}
+        )
+    {% endif %}
+    {% endif %}
+
 ),
 xfers AS (
     SELECT
@@ -69,16 +75,18 @@ xfers AS (
     FROM
         {{ ref('silver__transfers_s3') }}
 
-        {% if var("MANUAL_FIX") %}
-        WHERE
-            {{ partition_load_manual('no_buffer') }}
-        {% else %}
-            {% if var('IS_MIGRATION') %}
-                WHERE {{ incremental_load_filter('_inserted_timestamp') }}
-            {% else %}
-                WHERE {{ incremental_load_filter('_modified_timestamp') }}
-            {% endif %}
-        {% endif %}
+    {% if var("MANUAL_FIX") %}
+      WHERE {{ partition_load_manual('no_buffer') }}
+    {% else %}
+            {% if is_incremental() %}
+        WHERE _modified_timestamp >= (
+            SELECT
+                MAX(_modified_timestamp)
+            FROM
+                {{ this }}
+        )
+    {% endif %}
+    {% endif %}
 ),
 lockup_actions AS (
     SELECT

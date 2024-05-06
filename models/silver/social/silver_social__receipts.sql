@@ -33,19 +33,23 @@ WITH all_social_receipts AS (
     FROM
         {{ ref('silver__streamline_receipts_final') }}
     WHERE
-        {% if var("MANUAL_FIX") %}
-            {{ partition_load_manual('no_buffer') }}
-        {% else %}
-            {% if var('IS_MIGRATION') %}
-                {{ incremental_load_filter('_inserted_timestamp') }}
-            {% else %}
-                {{ incremental_load_filter('_modified_timestamp') }}
-            {% endif %}
-        {% endif %}
-        AND (
+        (
             LOWER(signer_id) = 'social.near'
             OR LOWER(receiver_id) = 'social.near'
         )
+
+    {% if var("MANUAL_FIX") %}
+      AND {{ partition_load_manual('no_buffer') }}
+    {% else %}
+        {% if is_incremental() %}
+        AND _modified_timestamp >= (
+            SELECT
+                MAX(_modified_timestamp)
+            FROM
+                {{ this }}
+        )
+    {% endif %}
+    {% endif %}
 )
     SELECT
         *,
