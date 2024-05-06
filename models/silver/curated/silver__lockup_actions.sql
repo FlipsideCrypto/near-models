@@ -43,15 +43,16 @@ function_calls AS (
         modified_timestamp AS _modified_timestamp
     FROM
         {{ ref('silver__actions_events_function_call_s3') }}
-
+    WHERE 
+        receipt_succeeded = TRUE
         {% if var("MANUAL_FIX") %}
-        WHERE
+        AND
             {{ partition_load_manual('no_buffer') }}
         {% else %}
             {% if var('IS_MIGRATION') %}
-                WHERE {{ incremental_load_filter('_inserted_timestamp') }}
+                AND {{ incremental_load_filter('_inserted_timestamp') }}
             {% else %}
-                WHERE {{ incremental_load_filter('_modified_timestamp') }}
+                AND {{ incremental_load_filter('_modified_timestamp') }}
             {% endif %}
         {% endif %}
 ),
