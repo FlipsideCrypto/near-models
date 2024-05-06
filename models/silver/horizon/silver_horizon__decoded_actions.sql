@@ -5,7 +5,7 @@
     cluster_by = ['_inserted_timestamp::date', '_partition_by_block_number'],
     tags = ['curated', 'horizon']
 ) }}
-
+{# Note - multisource model #}
 WITH all_horizon_receipts AS (
 
     SELECT
@@ -20,15 +20,18 @@ WITH all_horizon_receipts AS (
         modified_timestamp AS _modified_timestamp
     FROM
         {{ ref('silver_horizon__receipts') }}
-    WHERE
+
         {% if var("MANUAL_FIX") %}
-            {{ partition_load_manual('no_buffer') }}
+        WHERE {{ partition_load_manual('no_buffer') }}
         {% else %}
-            {% if var('IS_MIGRATION') %}
-                {{ incremental_load_filter('_inserted_timestamp') }}
-            {% else %}
-                {{ incremental_load_filter('_modified_timestamp') }}
-            {% endif %}
+            {% if is_incremental() %}
+            WHERE _modified_timestamp >= (
+                SELECT
+                    MAX(_modified_timestamp)
+                FROM
+                    {{ this }}
+            )
+        {% endif %}
         {% endif %}
 ),
 decoded_function_calls AS (
@@ -51,17 +54,7 @@ decoded_function_calls AS (
     FROM
         {{ ref('silver__actions_events_function_call_s3') }}
     WHERE
-        {% if var("MANUAL_FIX") %}
-            {{ partition_load_manual('no_buffer') }}
-        {% else %}
-            {% if var('IS_MIGRATION') %}
-                {{ incremental_load_filter('_inserted_timestamp') }}
-            {% else %}
-                {{ incremental_load_filter('_modified_timestamp') }}
-            {% endif %}
-        {% endif %}
-
-        AND _partition_by_block_number >= 85000000
+        _partition_by_block_number >= 85000000
         AND SPLIT(
             action_id,
             '-'
@@ -71,6 +64,19 @@ decoded_function_calls AS (
             FROM
                 all_horizon_receipts
         )
+
+        {% if var("MANUAL_FIX") %}
+        AND {{ partition_load_manual('no_buffer') }}
+        {% else %}
+            {% if is_incremental() %}
+            AND _modified_timestamp >= (
+                SELECT
+                    MAX(_modified_timestamp)
+                FROM
+                    {{ this }}
+            )
+        {% endif %}
+        {% endif %}
 ),
 FINAL AS (
     SELECT

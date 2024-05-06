@@ -35,22 +35,12 @@ WITH int_txs AS (
             {{ partition_load_manual('no_buffer') }}
             
     {% else %}
-
-      {% if var('IS_MIGRATION') %}
-      WHERE
-        {{ partition_incremental_load(
-          150000,
-          10000,
-          0
-        ) }}
-      {% else %}
       WHERE
         {{ partition_incremental_load(
           6000,
           6000,
           0
         ) }}
-      {% endif %}
 
     {% endif %}
 ),
@@ -76,21 +66,12 @@ int_receipts AS (
             
     {% else %}
 
-      {% if var('IS_MIGRATION') %}
-      WHERE
-        {{ partition_incremental_load(
-          150000,
-          10000,
-          0
-        ) }}
-      {% else %}
       WHERE
         {{ partition_incremental_load(
           6000,
           6000,
           0
         ) }}
-      {% endif %}
 
     {% endif %}
 

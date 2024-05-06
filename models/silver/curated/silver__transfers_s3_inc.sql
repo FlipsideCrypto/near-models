@@ -4,11 +4,39 @@
   cluster_by = ['block_timestamp::DATE'],
   unique_key = 'action_id',
   incremental_strategy = 'merge',
-  tags = ['curated']
+  tags = ['curated'],
+  enabled = False
 ) }}
+{# TODO - test and apply, where applicable.
+Model disabled but will keep in repo for ref #}
 {# Note - multisource model #}
-WITH action_events AS(
+{% if execute %}
 
+{% if is_incremental() %}
+{% set max_modified_query %}
+
+SELECT
+  MAX(_modified_timestamp) AS _modified_timestamp
+FROM
+  {{ this }}
+
+  {% endset %}
+  {% set max_modified_timestamp = run_query(max_modified_query).columns [0].values() [0] %}
+{% endif %}
+
+{% set query = """ CREATE OR REPLACE TEMPORARY TABLE silver.transfers_s3_temp_dates as SELECT MIN(COALESCE(b._modified_timestamp,'2050-01-01') ) as _modified_timestamp FROM """ ~ ref('silver__actions_events_s3') ~ """ a join """ ~ ref('silver__streamline_transactions_final') ~ """ b ON A.tx_hash = b.tx_hash WHERE a.action_name = 'Transfer' """ %}
+{% set incr = "" %}
+
+{% if is_incremental() %}
+{% set incr = """ AND GREATEST(a._modified_timestamp,b._modified_timestamp) >= '""" ~ max_modified_timestamp ~ """' """ %}
+{% endif %}
+
+{% do run_query(
+  query ~ incr
+) %}
+{% endif %}
+
+WITH action_events AS(
   SELECT
     tx_hash,
     block_id,
@@ -28,25 +56,19 @@ WITH action_events AS(
   FROM
     {{ ref('silver__actions_events_s3') }}
   WHERE
-    action_name = 'Transfer' 
-
-    {% if var("MANUAL_FIX") %}
+    action_name = 'Transfer' {% if var("MANUAL_FIX") %}
       AND {{ partition_load_manual('no_buffer') }}
     {% else %}
-            {% if is_incremental() %}
-        AND _modified_timestamp >= (
-            SELECT
-                MAX(_modified_timestamp)
-            FROM
-                {{ this }}
-        )
-    {% endif %}
-    {% endif %}
+
+{% if is_incremental() %}
+AND _modified_timestamp >= '{{ max_modified_timestamp }}'
+{% endif %}
+{% endif %}
 ),
 txs AS (
   SELECT
     tx_hash,
-    tx :receipt ::ARRAY AS tx_receipt,
+    tx :receipt :: ARRAY AS tx_receipt,
     block_id,
     block_timestamp,
     tx_receiver,
@@ -61,17 +83,20 @@ txs AS (
     {{ ref('silver__streamline_transactions_final') }}
 
     {% if var("MANUAL_FIX") %}
-      WHERE {{ partition_load_manual('no_buffer') }}
+    WHERE
+      {{ partition_load_manual('no_buffer') }}
     {% else %}
-            {% if is_incremental() %}
-        WHERE _modified_timestamp >= (
-            SELECT
-                MAX(_modified_timestamp)
-            FROM
-                {{ this }}
-        )
-    {% endif %}
-    {% endif %}
+
+{% if is_incremental() %}
+WHERE
+  _modified_timestamp >= (
+    SELECT
+      MAX(_modified_timestamp)
+    FROM
+      silver.transfers_s3_temp_dates
+  )
+{% endif %}
+{% endif %}
 ),
 actions AS (
   SELECT
@@ -113,7 +138,7 @@ FINAL AS (
     gas_used,
     tx_succeeded,
     receipt_succeeded,
-    ARRAY_MIN([tx_succeeded, receipt_succeeded]) :: BOOLEAN AS status,
+    array_min([tx_succeeded, receipt_succeeded]) :: BOOLEAN AS status,
     _partition_by_block_number,
     _inserted_timestamp,
     _modified_timestamp

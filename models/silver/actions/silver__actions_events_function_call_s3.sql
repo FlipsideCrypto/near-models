@@ -28,13 +28,17 @@ WITH action_events AS (
     {{ ref('silver__actions_events_s3') }}
   WHERE
     action_name = 'FunctionCall' 
+
     {% if var("MANUAL_FIX") %}
       AND {{ partition_load_manual('no_buffer') }}
     {% else %}
-      {% if var('IS_MIGRATION') %}
-        AND {{ incremental_load_filter('_inserted_timestamp') }}
-      {% else %}
-        AND {{ incremental_load_filter('_modified_timestamp') }}
+      {% if is_incremental() %}
+        AND _modified_timestamp >= (
+            SELECT
+                MAX(_modified_timestamp)
+            FROM
+                {{ this }}
+        )
       {% endif %}
     {% endif %}
 ),

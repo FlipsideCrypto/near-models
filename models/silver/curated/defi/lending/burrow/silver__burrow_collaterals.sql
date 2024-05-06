@@ -28,9 +28,21 @@ actions AS (
     WHERE
         receiver_id = 'contract.main.burrow.near'
         AND receipt_succeeded = TRUE
-    {% if is_incremental() %}
-        AND {{ incremental_load_filter('_modified_timestamp') }}
-    {% endif %}
+
+        {% if var("MANUAL_FIX") %}
+        AND 
+        {{ partition_load_manual('no_buffer') }}
+        {% else %}
+            {% if is_incremental() %}
+        
+            AND _modified_timestamp >= (
+                SELECT
+                    MAX(_modified_timestamp)
+                FROM
+                    {{ this }}
+            )
+        {% endif %}
+        {% endif %}
 ),
 FINAL AS (
     SELECT

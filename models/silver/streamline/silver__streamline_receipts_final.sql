@@ -59,16 +59,16 @@ base_receipts AS (
                     )
             )
             AND (
-                {% if var('IS_MIGRATION') %}
-                    _inserted_timestamp >= (
-                        SELECT 
-                            MAX(_inserted_timestamp) - INTERVAL '{{ var('STREAMLINE_LOAD_LOOKBACK_HOURS') }} hours'
-                        FROM {{ this }}
+                {% if is_incremental() %}
+                    _modified_timestamp >= (
+                        SELECT
+                            MAX(_modified_timestamp)
+                        FROM
+                            {{ this }}
                     )
-                {% else %}
-                    {{ incremental_load_filter('_inserted_timestamp') }}
+                OR 
                 {% endif %}
-                OR receipt_id IN (
+                receipt_id IN (
                     SELECT
                         DISTINCT receipt_object_id
                     FROM
@@ -94,14 +94,6 @@ blocks AS (
             {{ partition_load_manual('no_buffer') }}
     {% else %}
         WHERE
-        {% if var('IS_MIGRATION') %}
-                _inserted_timestamp >= (
-                    SELECT 
-                        MAX(_inserted_timestamp) - INTERVAL '{{ var('STREAMLINE_LOAD_LOOKBACK_HOURS') }} hours'
-                    FROM {{ this }}
-                )
-            OR
-        {% endif %}
             _partition_by_block_number >= (
                 SELECT
                     MIN(_partition_by_block_number) - (3000 * {{ var('RECEIPT_MAP_LOOKBACK_HOURS') }})

@@ -32,20 +32,25 @@ WITH all_horizon_receipts AS (
         modified_timestamp AS _modified_timestamp
     FROM
         {{ ref('silver__streamline_receipts_final') }}
-    WHERE
-        {% if var("MANUAL_FIX") %}
-            {{ partition_load_manual('no_buffer') }}
-        {% else %}
-            {% if var('IS_MIGRATION') %}
-                {{ incremental_load_filter('_inserted_timestamp') }}
-            {% else %}
-                {{ incremental_load_filter('_modified_timestamp') }}
-            {% endif %}
-        {% endif %}
 
-        AND (LOWER(signer_id) = 'nearhorizon.near'
-        OR LOWER(receiver_id) = 'nearhorizon.near')
+        WHERE (
+            LOWER(signer_id) = 'nearhorizon.near'
+            OR LOWER(receiver_id) = 'nearhorizon.near'
+            )
         AND _partition_by_block_number >= 86000000
+
+        {% if var("MANUAL_FIX") %}
+        AND {{ partition_load_manual('no_buffer') }}
+        {% else %}
+            {% if is_incremental() %}
+            AND _modified_timestamp >= (
+                SELECT
+                    MAX(_modified_timestamp)
+                FROM
+                    {{ this }}
+            )
+        {% endif %}
+        {% endif %}
 )
 
     SELECT
