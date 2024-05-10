@@ -1,7 +1,5 @@
-
-
 name: dbt_run_dev_refresh
-run-name:  dbt_run_dev_refresh
+run-name: dbt_run_dev_refresh
 
 on:
   workflow_dispatch:
@@ -44,7 +42,7 @@ jobs:
 
       - name: Run DBT Jobs
         run: |
-        dbt run-operation run_sp_create_prod_clone; 
+          dbt run-operation run_sp_create_prod_clone;
 
       - name: Store logs
         uses: actions/upload-artifact@v3
@@ -53,5 +51,3 @@ jobs:
           path: |
             logs
             target
-
-
