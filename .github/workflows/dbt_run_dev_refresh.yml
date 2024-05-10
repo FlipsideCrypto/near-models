@@ -1,3 +1,5 @@
+
+
 name: dbt_run_scheduled_daily
 run-name: dbt_run_scheduled_daily
 
@@ -42,7 +44,7 @@ jobs:
 
       - name: Run DBT Jobs
         run: |
-          dbt run -s models/gold
+        dbt run-operation run_sp_create_prod_clone; 
 
       - name: Store logs
         uses: actions/upload-artifact@v3
@@ -51,3 +53,5 @@ jobs:
           path: |
             logs
             target
+
+
