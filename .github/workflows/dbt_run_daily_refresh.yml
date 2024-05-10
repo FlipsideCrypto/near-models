@@ -1,5 +1,5 @@
-name: dbt_run_scheduled_daily
-run-name: dbt_run_scheduled_daily
+name: dbt_run_daily_refresh
+run-name: dbt_run_daily_refresh
 
 on:
   workflow_dispatch:
