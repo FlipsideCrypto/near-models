@@ -1,0 +1,53 @@
+name: dbt_run_daily_refresh
+run-name: dbt_run_daily_refresh
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Runs 0900 daily (see https://crontab.guru)
+    - cron: "0 9 * * *"
+
+env:
+  USE_VARS: "${{ vars.USE_VARS }}"
+  DBT_PROFILES_DIR: "${{ vars.DBT_PROFILES_DIR }}"
+  DBT_VERSION: "${{ vars.DBT_VERSION }}"
+  ACCOUNT: "${{ vars.ACCOUNT }}"
+  ROLE: "${{ vars.ROLE }}"
+  USER: "${{ vars.USER }}"
+  PASSWORD: "${{ secrets.PASSWORD }}"
+  REGION: "${{ vars.REGION }}"
+  DATABASE: "${{ vars.DATABASE }}"
+  WAREHOUSE: "${{ vars.WAREHOUSE }}"
+  SCHEMA: "${{ vars.SCHEMA }}"
+
+concurrency:
+  group: ${{ github.workflow }}
+
+jobs:
+  dbt:
+    runs-on: ubuntu-latest
+    environment:
+      name: workflow_prod
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+          cache: "pip"
+
+      - name: install dependencies
+        run: |
+          pip install -r requirements.txt
+          dbt deps
+
+      - name: Run DBT Jobs
+        run: |
+          dbt run -s models/gold
+
+      - name: Store logs
+        uses: actions/upload-artifact@v3
+        with:
+          name: dbt-logs
+          path: |
+            logs
+            target
