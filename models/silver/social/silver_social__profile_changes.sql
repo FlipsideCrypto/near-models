@@ -3,7 +3,7 @@
     merge_exclude_columns = ["inserted_timestamp"],
     unique_key = 'action_id_profile',
     cluster_by = ['block_timestamp::date', 'signer_id'],
-    tags = ['curated', 'social','non_core']
+    tags = ['curated', 'social','scheduled_non_core']
 ) }}
 
 WITH decoded_actions AS (
