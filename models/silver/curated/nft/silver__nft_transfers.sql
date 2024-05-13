@@ -4,7 +4,7 @@
     cluster_by = ['block_timestamp::DATE'],
     unique_key = 'nft_transfers_id',
     incremental_strategy = 'merge',
-    tags = ['curated']
+    tags = ['curated','scheduled_non_core']
 ) }}
 
 WITH actions_events AS (

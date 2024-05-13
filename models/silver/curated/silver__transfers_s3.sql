@@ -4,7 +4,7 @@
   cluster_by = ['block_timestamp::DATE'],
   unique_key = 'action_id',
   incremental_strategy = 'merge',
-  tags = ['curated']
+  tags = ['curated','scheduled_non_core']
 ) }}
 {# Note - multisource model #}
 WITH action_events AS(

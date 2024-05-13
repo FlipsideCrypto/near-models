@@ -1,29 +1,9 @@
 {{ config(
     materalized = 'view',
     unique_key = 'receipt_id',
-    tags = ['helper', 'receipt_map']
+    tags = ['helper', 'receipt_map','scheduled_core']
 ) }}
-
-WITH 
-recursive ancestrytree AS (
-
-    SELECT
-        item,
-        PARENT
-    FROM
-        {{ ref('silver__flatten_receipts') }}
-    WHERE
-        PARENT IS NOT NULL
-    UNION ALL
-    SELECT
-        items.item,
-        t.parent
-    FROM
-        ancestrytree t
-        JOIN {{ ref('silver__flatten_receipts') }}
-        items
-        ON t.item = items.parent
-),
+ 
 txs AS (
     SELECT
         tx_hash,

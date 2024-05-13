@@ -3,7 +3,7 @@
     merge_exclude_columns = ["inserted_timestamp"],
     unique_key = 'action_id_horizon',
     cluster_by = ['_inserted_timestamp::date', '_partition_by_block_number'],
-    tags = ['curated', 'horizon']
+    tags = ['curated', 'horizon','scheduled_non_core']
 ) }}
 {# Note - multisource model #}
 WITH all_horizon_receipts AS (

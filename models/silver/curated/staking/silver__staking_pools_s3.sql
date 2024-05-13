@@ -4,7 +4,7 @@
     unique_key = 'tx_hash',
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
-    tags = ['curated']
+    tags = ['curated','scheduled_non_core']
 ) }}
 {# Note - multisource model #}
 WITH txs AS (
