@@ -31,6 +31,7 @@ WITH actions_events AS (
     WHERE
         receipt_succeeded = TRUE
         AND logs [0] IS NOT NULL
+        AND RIGHT(ACTION_ID, 1) = '0'
 
     {% if var("MANUAL_FIX") %}
       AND {{ partition_load_manual('no_buffer') }}
