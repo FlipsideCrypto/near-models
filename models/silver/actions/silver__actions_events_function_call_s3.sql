@@ -4,7 +4,7 @@
   merge_exclude_columns = ["inserted_timestamp"],
   cluster_by = ['block_timestamp::DATE', '_inserted_timestamp::DATE'],
   unique_key = 'action_id',
-  tags = ['actions', 'curated','scheduled_non_core']
+  tags = ['actions', 'curated','scheduled_core']
 ) }}
 
 WITH action_events AS (
