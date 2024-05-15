@@ -61,7 +61,7 @@ FINAL AS (
         l1.symbol,
         b.amount_unadj / pow(
             10,
-            l1.decimals
+            9
         ) AS amount,
         amount * p1.price_usd AS amount_usd,
         b.destination_address,
