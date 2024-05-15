@@ -44,7 +44,8 @@ prices AS (
             hour
         ) AS block_timestamp,
         token_address AS contract_address,
-        AVG(price) AS price_usd
+        AVG(price) AS price_usd,
+        MAX(SYMBOL) AS symbol
     FROM
         {{ ref('silver__complete_token_prices') }}
     GROUP BY
@@ -61,7 +62,7 @@ FINAL AS (
         l1.symbol,
         b.amount_unadj / pow(
             10,
-            9
+            l1.decimals
         ) AS amount,
         amount * p1.price_usd AS amount_usd,
         b.destination_address,
@@ -81,7 +82,11 @@ FINAL AS (
         LEFT JOIN labels l1
         ON b.token_address = l1.contract_address
         LEFT JOIN prices p1
-        ON b.token_address = p1.contract_address
+        ON (
+            (b.token_address = p1.contract_address)
+        OR
+            (l1.symbol = p1.symbol)
+        )
         AND DATE_TRUNC(
             'hour',
             b.block_timestamp
