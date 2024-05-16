@@ -48,7 +48,7 @@ prices AS (
         AVG(price) AS price_usd,
         MAX(SYMBOL) AS symbol
     FROM
-        near_dev.price.ez_prices_hourly
+        {{ ref('silver__complete_token_prices') }}
     GROUP BY
         1,
         2
@@ -76,13 +76,12 @@ FINAL AS (
         b.tx_hash,
         b.token_address,
         b.amount_unadj,
-        l1.symbol as symbol,
+        l1.symbol,
         b.amount_adj / pow(
             10,
             l1.decimals
         ) AS amount,
         amount * p1.price_usd AS amount_usd,
-        p1.price_usd AS price_usd,
         b.destination_address,
         b.source_address,
         b.platform,
