@@ -377,6 +377,7 @@ FINAL AS (
 )
 SELECT
     *,
+    amount_raw AS amount_adj,
     'rainbow' AS platform,
     {{ dbt_utils.generate_surrogate_key(
         ['tx_hash', 'source_chain_id', 'destination_address']
