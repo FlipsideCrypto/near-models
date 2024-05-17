@@ -110,6 +110,7 @@ FINAL AS (
 )
 SELECT
     *,
+    amount_raw AS amount_adj,
     'mpc-multichain.near' AS bridge_address,
     'multichain' AS platform,
     {{ dbt_utils.generate_surrogate_key(

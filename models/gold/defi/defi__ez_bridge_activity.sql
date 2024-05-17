@@ -13,6 +13,7 @@ WITH fact_bridging AS (
         tx_hash,
         token_address,
         amount_unadj,
+        amount_adj,
         destination_address,
         source_address,
         platform,
@@ -38,18 +39,35 @@ labels AS (
         {{ ref('silver__ft_contract_metadata') }}
 ),
 prices AS (
-    SELECT
-        DATE_TRUNC(
-            'hour',
-            hour
-        ) AS block_timestamp,
+        SELECT
+            DATE_TRUNC(
+                'hour',
+                hour
+            ) AS block_timestamp,
         token_address AS contract_address,
-        AVG(price) AS price_usd
+        AVG(price) AS price_usd,
+        MAX(SYMBOL) AS symbol
     FROM
         {{ ref('silver__complete_token_prices') }}
     GROUP BY
         1,
         2
+),
+prices_mapping AS (
+    SELECT
+        block_timestamp,
+        CASE
+            WHEN contract_address = '0xf7413489c474ca4399eee604716c72879eea3615' THEN 'apys.token.a11bd.near'
+            WHEN contract_address = '0x3294395e62f4eb6af3f1fcf89f5602d90fb3ef69' THEN 'celo.token.a11bd.near'
+            WHEN contract_address = '0xd2877702675e6ceb975b4a1dff9fb7baf4c91ea9' THEN 'luna.token.a11bd.near'
+            WHEN contract_address = '0xa47c8bf37f92abed4a126bda807a7b7498661acd' THEN 'ust.token.a11bd.near'
+            WHEN contract_address = 'aaaaaa20d9e0e2461697782ef11675f668207961.factory.bridge.near' THEN 'aurora'
+            ELSE contract_address
+        END AS contract_address,
+        symbol,
+        price_usd
+    FROM
+        prices
 ),
 FINAL AS (
     SELECT
@@ -59,7 +77,7 @@ FINAL AS (
         b.token_address,
         b.amount_unadj,
         l1.symbol,
-        b.amount_unadj / pow(
+        b.amount_adj / pow(
             10,
             l1.decimals
         ) AS amount,
@@ -80,7 +98,7 @@ FINAL AS (
         fact_bridging b
         LEFT JOIN labels l1
         ON b.token_address = l1.contract_address
-        LEFT JOIN prices p1
+        LEFT JOIN prices_mapping p1
         ON b.token_address = p1.contract_address
         AND DATE_TRUNC(
             'hour',

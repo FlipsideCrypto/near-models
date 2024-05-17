@@ -30,5 +30,6 @@ FROM
 WHERE
     blockchain IN (
         'near',
-        'near protocol'
+        'near protocol',
+        'ethereum'
     )

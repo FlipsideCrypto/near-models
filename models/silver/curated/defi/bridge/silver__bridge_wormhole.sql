@@ -183,6 +183,7 @@ FINAL AS (
 )
 SELECT
     *,
+    amount_raw AS amount_adj,
     'portalbridge.near' AS bridge_address,
     'wormhole' AS platform,
     {{ dbt_utils.generate_surrogate_key(
