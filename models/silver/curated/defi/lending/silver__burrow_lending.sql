@@ -92,11 +92,13 @@ FINAL AS (
         actions,
         f.contract_address,
         amount_raw,
-        RPAD(
-            amount_raw::STRING,
-            m.decimals,
-            '0'
-        ) :: NUMBER AS amount_adj,
+        GREATEST(
+            amount_raw,
+            RPAD(
+                amount_raw,
+                m.decimals,
+                '0'
+        )) :: NUMBER AS amount_adj,
         burrow_lending_id,
         token_contract_address,
         inserted_timestamp,
