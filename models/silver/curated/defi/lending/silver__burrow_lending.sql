@@ -4,7 +4,16 @@
 ) }}
 
 
-WITH borrows AS
+WITH metadata  AS (
+    SELECT
+        contract_address,
+        NAME,
+        symbol,
+        decimals
+    FROM
+        {{ ref('silver__ft_contract_metadata') }}
+),
+borrows AS
 (
     SELECT
         *
@@ -42,7 +51,7 @@ withdrawals AS
         {{ ref('silver__burrow_withdraws') }}
 
 ),
-FINAL AS (
+FINAL_UNION AS (
     SELECT
         burrow_borrows_id as  burrow_lending_id,
         *
@@ -72,6 +81,31 @@ FINAL AS (
         *
     FROM
         withdrawals
+),
+FINAL AS (
+    SELECT
+        'burrow' as platform,
+        tx_hash,
+        block_id,
+        block_timestamp,
+        sender_id,
+        actions,
+        f.contract_address,
+        amount_raw,
+        RPAD(
+            amount_raw::STRING,
+            m.decimals,
+            '0'
+        ) :: NUMBER AS amount_adj,
+        burrow_lending_id,
+        token_contract_address,
+        inserted_timestamp,
+        modified_timestamp
+    FROM
+        FINAL_UNION as f
+    JOIN metadata m ON
+        token_contract_address = m.contract_address
+
 )
 SELECT
     'burrow' as platform,
@@ -82,7 +116,8 @@ SELECT
     actions,
     contract_address,
     amount_raw,
-    burrow_lending_id,
+    amount_adj,
+    burrow_lending_id, 
     token_contract_address as token_address,
     inserted_timestamp,
     modified_timestamp

@@ -51,6 +51,11 @@ models:
         tests:
           - not_null
 
+      - name: AMOUNT_ADJ
+        description: "{{ doc('amount_adj')}}"
+        tests:
+          - not_null
+
       - name: TOKEN_ADDRESS
         description: "{{ doc('token_contract')}}"
         tests:

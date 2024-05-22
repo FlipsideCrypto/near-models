@@ -76,6 +76,7 @@ FINAL AS (
         b.tx_hash,
         b.token_address,
         b.amount_unadj,
+        b.amount_adj,
         l1.symbol,
         b.amount_adj / pow(
             10,
@@ -96,14 +97,14 @@ FINAL AS (
         b.modified_timestamp
     FROM
         fact_bridging b
-        LEFT JOIN labels l1
-        ON b.token_address = l1.contract_address
         LEFT JOIN prices_mapping p1
         ON b.token_address = p1.contract_address
         AND DATE_TRUNC(
             'hour',
             b.block_timestamp
         ) = p1.block_timestamp
+        LEFT JOIN labels l1
+        ON b.token_address = l1.contract_address
 )
 SELECT
     *
