@@ -89,22 +89,22 @@ swap_outcome AS (
             LOG,
             '.*Swapped (\\d+) (.*) for (\\d+) (.*)',
             '\\1'
-        ) :: INT AS amount_out_raw,
+        ) :: INT AS amount_in_raw,
         REGEXP_REPLACE(
             LOG,
             '.*Swapped \\d+ (\\S+) for (\\d+) (.*)',
             '\\1'
-        ) :: STRING AS token_out,
+        ) :: STRING AS token_in,
         REGEXP_REPLACE(
             LOG,
             '.*Swapped \\d+ \\S+ for (\\d+) (.*)',
             '\\1'
-        ) :: INT AS amount_in_raw,
+        ) :: INT AS amount_out_raw,
         REGEXP_REPLACE(
             LOG,
             '.*Swapped \\d+ \\S+ for \\d+ (.*)',
             '\\1'
-        ) :: STRING AS token_in,
+        ) :: STRING AS token_out,
         _partition_by_block_number,
         _inserted_timestamp,
         _modified_timestamp
