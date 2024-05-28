@@ -120,11 +120,12 @@ FINAL_UNION AS (
 FINAL AS (
     SELECT
         *,
-        RPAD(
-            amount_raw::STRING,
-            m.decimals,
-            '0'
-        ) :: NUMBER AS amount_adj,
+        GREATEST(amount_raw,
+            RPAD(
+                amount_raw,
+                m.decimals,
+                '0'
+        )) :: NUMBER AS amount_adj,
         'bridge.a11bd.near' AS bridge_address,
         'allbridge' AS platform
     FROM
