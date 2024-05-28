@@ -16,6 +16,7 @@ WITH lending AS (
         actions,
         contract_address,
         amount_raw,
+        amount_adj,
         burrow_lending_id AS ez_lending_id,
         token_address,
         inserted_timestamp,
@@ -59,7 +60,8 @@ FINAL AS (
         lb.name,
         lb.symbol,
         l.amount_raw,
-        l.amount_raw / pow(
+        l.amount_adj,
+        l.amount_adj/ pow(
             10,
             lb.decimals
         ) AS amount,

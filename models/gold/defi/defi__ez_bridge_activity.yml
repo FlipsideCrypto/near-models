@@ -41,6 +41,12 @@ models:
           - not_null:
               where: receipt_succeeded
 
+      - name: AMOUNT_ADJ
+        description: "{{ doc('amount_adj')}}"
+        tests:
+          - not_null:
+              where: receipt_succeeded
+
       - name: SYMBOL
         description: "{{ doc('symbol')}}"
 
@@ -49,7 +55,7 @@ models:
 
       - name: AMOUNT_USD
         description: "{{ doc('amount_usd')}}"
- 
+
       - name: DESTINATION_ADDRESS
         description: "{{ doc('destination_address')}}"
 

@@ -41,6 +41,15 @@ WITH functioncall AS (
 
         {% endif %}
 ),
+metadata  AS (
+    SELECT
+        contract_address,
+        NAME,
+        symbol,
+        decimals
+    FROM
+        {{ ref('silver__ft_contract_metadata') }}
+),
 outbound_near AS (
     -- burn
     SELECT
@@ -49,7 +58,6 @@ outbound_near AS (
         tx_hash,
         args :create_lock_args :token_id :: STRING AS token_address,
         args :create_lock_args :amount :: INT AS amount_raw,
-        args :create_lock_args :amount * pow(10, 15 ) :: NUMBER AS amount_adj,
         args :fee :: INT AS amount_fee_raw,
         args :memo :: STRING AS memo,
         args :create_lock_args :recipient :: STRING AS destination_address,
@@ -78,7 +86,6 @@ inbound_to_near AS (
         tx_hash,
         args :token_id :: STRING AS token_address,
         args :unlock_args :amount :: INT AS amount_raw,
-        args :unlock_args :amount * pow(10, 15 ) :: NUMBER AS amount_adj,
         args :fee :: INT AS amount_fee_raw,
         args :memo :: STRING AS memo,
         args :unlock_args :recipient :: STRING AS destination_address,
@@ -99,7 +106,7 @@ inbound_to_near AS (
     WHERE
         method_name = 'callback_create_unlock'
 ),
-FINAL AS (
+FINAL_UNION AS (
     SELECT
         *
     FROM
@@ -109,11 +116,26 @@ FINAL AS (
         *
     FROM
         inbound_to_near
+),
+FINAL AS (
+    SELECT
+        *,
+        GREATEST(amount_raw,
+            RPAD(
+                amount_raw,
+                m.decimals,
+                '0'
+        )) :: NUMBER AS amount_adj,
+        'bridge.a11bd.near' AS bridge_address,
+        'allbridge' AS platform
+    FROM
+        FINAL_UNION
+    JOIN metadata m ON
+        FINAL_UNION.token_address = m.contract_address
+
 )
 SELECT
     *,
-    'bridge.a11bd.near' AS bridge_address,
-    'allbridge' AS platform,
     {{ dbt_utils.generate_surrogate_key(
         ['tx_hash']
     ) }} AS bridge_allbridge_id,

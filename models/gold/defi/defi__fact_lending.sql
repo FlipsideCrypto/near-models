@@ -22,6 +22,7 @@ FINAL AS (
         contract_address,
         token_address,
         amount_raw,
+        amount_adj,
         burrow_lending_id AS fact_lending_id,
         inserted_timestamp,
         modified_timestamp
