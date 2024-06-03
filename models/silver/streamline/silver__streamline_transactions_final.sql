@@ -2,7 +2,7 @@
   materialized = 'incremental',
   incremental_strategy = 'delete+insert',
   unique_key = 'tx_hash',
-  cluster_by = ['_modified_timestamp::DATE', '_partition_by_block_number'],
+  cluster_by = ['block_timestamp::DATE','_modified_timestamp::DATE', '_partition_by_block_number'],
   tags = ['receipt_map','scheduled_core']
 ) }}
 
