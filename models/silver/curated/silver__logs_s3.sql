@@ -4,7 +4,7 @@
     cluster_by = ["_inserted_timestamp::DATE","block_timestamp::DATE"],
     unique_key = "log_id",
     incremental_strategy = "merge",
-    tags = ['curated','scheduled_non_core']
+    tags = ['curated', 'scheduled_core']
 ) }}
 
 WITH receipts AS (
