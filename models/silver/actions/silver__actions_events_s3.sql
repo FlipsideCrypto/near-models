@@ -4,7 +4,7 @@
     merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = ['block_timestamp::DATE', '_inserted_timestamp::DATE'],
     unique_key = 'action_id',
-    tags = ['actions', 'curated']
+    tags = ['actions', 'curated','scheduled_core']
 ) }}
 
 WITH receipts AS (
@@ -26,7 +26,7 @@ WITH receipts AS (
         _inserted_timestamp,
         modified_timestamp AS _modified_timestamp
     FROM
-        {{ ref('silver__streamline_receipts_j_final') }}
+        {{ ref('silver__streamline_receipts_final') }}
 
         {% if var("MANUAL_FIX") %}
         WHERE
