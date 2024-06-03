@@ -4,7 +4,7 @@
     cluster_by = ['block_timestamp::DATE'],
     unique_key = 'transfers_id',
     incremental_strategy = 'merge',
-    tags = ['curated']
+    tags = ['curated','scheduled_non_core']
 ) }}
 {# Note - multisource model #}
 -- Curation Challenge - 'https://flipsidecrypto.xyz/Hossein/transfer-sector-of-near-curation-challenge-zgM44F'

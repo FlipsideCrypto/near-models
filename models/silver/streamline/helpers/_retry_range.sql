@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'ephemeral',
-    tags = ['helper', 'receipt_map']
+    tags = ['helper', 'receipt_map','scheduled_core']
 ) }}
 
 SELECT

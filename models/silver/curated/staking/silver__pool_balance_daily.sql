@@ -2,7 +2,7 @@
     materialized = 'table',
     cluster_by = ['date_day'],
     unique_key = '_id',
-    tags = ['curated']
+    tags = ['curated','scheduled_non_core']
 ) }}
 
 WITH pool_balances AS (

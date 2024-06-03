@@ -3,7 +3,7 @@
     merge_exclude_columns = ["inserted_timestamp"],
     unique_key = 'action_id',
     cluster_by = ['block_timestamp::date'],
-    tags = ['curated', 'social']
+    tags = ['curated', 'social','scheduled_non_core']
 ) }}
 {# Note - multisource model #}
 WITH receipts AS (

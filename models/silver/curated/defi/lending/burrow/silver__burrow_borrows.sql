@@ -4,7 +4,7 @@
     merge_exclude_columns = ["inserted_timestamp"],
     unique_key = "burrow_borrows_id",
     cluster_by = ['block_timestamp::DATE'],
-    tags = ['curated']
+    tags = ['curated','scheduled_non_core']
 ) }}
 
 WITH --borrows from Burrow LendingPool contracts

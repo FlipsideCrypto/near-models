@@ -1,7 +1,7 @@
 {{ config(
     materialized = 'table',
     unique_key = 'date_day',
-    tags = ['labels']
+    tags = ['labels','scheduled_non_core']
 ) }}
 
 WITH dim_dates AS (
