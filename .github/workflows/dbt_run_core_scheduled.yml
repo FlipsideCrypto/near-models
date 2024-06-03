@@ -4,8 +4,8 @@ run-name: dbt_run_scheduled
 on:
   workflow_dispatch:
   schedule:
-    # Runs "every 20mins" (see https://crontab.guru)
-    - cron: "20,40 * * * *"
+    # Runs "every 30 mins" (see https://crontab.guru)
+    - cron: "15,45 * * * *"
 
 env:
   USE_VARS: "${{ vars.USE_VARS }}"
