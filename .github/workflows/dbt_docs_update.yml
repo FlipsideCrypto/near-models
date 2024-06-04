@@ -1,7 +1,9 @@
 name: docs_update
 
 on:
-  workflow_call:
+  push:
+    branches:
+      - "main"
 
 env:
   USE_VARS: "${{ vars.USE_VARS }}"
@@ -31,18 +33,6 @@ jobs:
           python-version: "3.10"
           cache: "pip"
 
-      - name: overwrite env vars
-        if: ${{ env.USE_VARS == 'TRUE' }}
-        run: |
-          echo "DBT_VERSION=${{ vars.DBT_VERSION }}" >> $GITHUB_ENV
-          echo "DBT_PROFILES_DIR=${{ vars.DBT_PROFILES_DIR }}" >> $GITHUB_ENV
-          echo "ACCOUNT=${{ vars.ACCOUNT }}" >> $GITHUB_ENV
-          echo "ROLE=${{ vars.ROLE }}" >> $GITHUB_ENV
-          echo "USER=${{ vars.USER }}" >> $GITHUB_ENV
-          echo "REGION=${{ vars.REGION }}" >> $GITHUB_ENV
-          echo "DATABASE=${{ vars.DATABASE }}" >> $GITHUB_ENV
-          echo "SCHEMA=${{ vars.SCHEMA }}" >> $GITHUB_ENV
-
       - name: install dependencies
         run: |
           pip install dbt-snowflake==${{ vars.DBT_VERSION }}
@@ -63,6 +53,7 @@ jobs:
         run: |
           mkdir -p ./docs
           cp target/{catalog.json,manifest.json,index.html} docs/
+
       - name: clean up target directory
         run: dbt clean
 
