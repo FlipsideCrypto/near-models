@@ -79,6 +79,12 @@ swaps_raw AS (
             {% endif %}
     {% endif %}
 ),
+distinct_swaps AS (
+    SELECT
+        DISTINCT (tx_hash) AS tx_hash
+    FROM
+        swaps_raw
+),
 ----------------------------    Native Token Transfers   ------------------------------
 native_transfers AS (
 
@@ -87,7 +93,7 @@ native_transfers AS (
         block_timestamp,
         tx_hash,
         action_id,
-        signer_id AS from_address,
+        predecessor_id AS from_address,
         receiver_id AS to_address,
         IFF(REGEXP_LIKE(deposit, '^[0-9]+$'), deposit, NULL) AS amount_unadjusted,
         --numeric validation (there are some exceptions that needs to be ignored)
@@ -238,7 +244,7 @@ add_liquidity AS (
     WHERE
         logs [0] LIKE 'Liquidity added [%minted % shares'
 ),
-ft_transfers_mints AS (
+ft_transfers AS (
     SELECT
         block_id,
         block_timestamp,
@@ -257,9 +263,41 @@ ft_transfers_mints AS (
         ) b
     WHERE
         DATA :event:: STRING IN (
-            'ft_transfer',
+            'ft_transfer'
+        ) and tx_hash not in (SELECT tx_hash FROM distinct_swaps)
+),
+ft_mints AS (
+    SELECT
+        block_id,
+        block_timestamp,
+        tx_hash,
+        action_id,
+        TRY_PARSE_JSON(REPLACE(VALUE, 'EVENT_JSON:')) AS DATA,
+        b.index as logs_rn,
+        receiver_id AS contract_address,
+        _inserted_timestamp,
+        _modified_timestamp,
+        _partition_by_block_number
+    FROM
+        actions_events
+        JOIN LATERAL FLATTEN(
+            input => logs
+        ) b
+    WHERE
+        DATA :event:: STRING IN (
             'ft_mint'
         )
+),
+ft_transfers_mints AS (
+    SELECT
+        *
+    FROM
+        ft_transfers
+    UNION ALL
+    SELECT
+        *
+    FROM
+        ft_mints
 ),
 ft_transfers_mints_final AS (
     SELECT
@@ -311,6 +349,23 @@ nep_transfers AS (
     FROM
         add_liquidity
 ),
+nep_transfers_deduplicate AS (
+    SELECT
+        *,
+        ROW_NUMBER() OVER (
+            PARTITION BY
+                tx_hash,
+                contract_address,
+                from_address,
+                to_address,
+                amount_unadjusted,
+                memo
+            ORDER BY
+                memo desc
+        ) AS rna
+    FROM
+        nep_transfers
+)
 ------------------------------  MODELS --------------------------------
 
 native_final AS (
