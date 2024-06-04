@@ -17,7 +17,7 @@ env:
   PASSWORD: "${{ secrets.PASSWORD }}"
   REGION: "${{ vars.REGION }}"
   DATABASE: "${{ vars.DATABASE }}"
-  WAREHOUSE: "${{ vars.WAREHOUSE }}"
+  WAREHOUSE: DBT_CLOUD
   SCHEMA: "${{ vars.SCHEMA }}"
 
 concurrency:
