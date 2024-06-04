@@ -349,25 +349,7 @@ nep_transfers AS (
     FROM
         add_liquidity
 ),
-nep_transfers_deduplicate AS (
-    SELECT
-        *,
-        ROW_NUMBER() OVER (
-            PARTITION BY
-                tx_hash,
-                contract_address,
-                from_address,
-                to_address,
-                amount_unadjusted,
-                memo
-            ORDER BY
-                memo desc
-        ) AS rna
-    FROM
-        nep_transfers
-)
 ------------------------------  MODELS --------------------------------
-
 native_final AS (
     SELECT
         block_id,
