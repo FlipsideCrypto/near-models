@@ -142,7 +142,7 @@ swaps AS (
         signer_id AS to_address,
         amount_out_raw :: variant AS amount_unadjusted,
         'swap' AS memo,
-        swap_index + 1 as rn,
+        swap_index as rn,
         _inserted_timestamp,
         _modified_timestamp,
         _partition_by_block_number
@@ -351,7 +351,7 @@ swaps_final AS (
     s.to_address,
     s.amount_unadjusted,
     s.memo,
-    s.rn,
+    coalesce(t.rn, s.rn) as rn,
     s._inserted_timestamp,
     s._modified_timestamp,
     s._partition_by_block_number
@@ -433,7 +433,7 @@ nep_final AS (
     FROM
         nep_transfers
     qualify
-        row_number() over (partition by tx_hash, action_id, contract_address, from_address, to_address, amount_raw  order by _modified_timestamp desc) = 1
+        row_number() over (partition by tx_hash, action_id, contract_address, from_address, to_address, amount_raw  order by memo desc) = 1
 ),
 ------------------------------   FINAL --------------------------------
 transfer_union AS (
