@@ -123,7 +123,7 @@ swaps AS (
         token_in AS contract_address,
         signer_id AS from_address,
         receiver_id AS to_address,
-        amount_in_raw :: string AS amount_unadjusted,
+        amount_in_raw :: variant AS amount_unadjusted,
         'swap' AS memo,
         swap_index as rn,
         _inserted_timestamp,
@@ -140,7 +140,7 @@ swaps AS (
         token_out AS contract_address,
         receiver_id AS from_address,
         signer_id AS to_address,
-        amount_out_raw :: string AS amount_unadjusted,
+        amount_out_raw :: variant AS amount_unadjusted,
         'swap' AS memo,
         swap_index + 1 as rn,
         _inserted_timestamp,
@@ -345,7 +345,7 @@ swaps_final AS (
     s.block_id,
     s.block_timestamp,
     s.tx_hash,
-    action_id,
+    coalesce(t.action_id, s.receipt_object_id) as action_id,
     s.contract_address,
     s.from_address,
     s.to_address,
@@ -362,9 +362,8 @@ swaps_final AS (
     AND t.contract_address = s.contract_address
     AND t.from_address = s.from_address
     AND t.to_address = s.to_address
-    AND t.amount_unadjusted = s.amount_unadjusted;
-)
-
+    AND t.amount_unadjusted :: STRING = s.amount_unadjusted :: STRING
+),
 nep_transfers AS (
     SELECT
         *
