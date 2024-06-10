@@ -46,39 +46,6 @@ WITH actions_events AS (
         {% endif %}
     {% endif %}
 ), 
-swaps_raw AS (
-    SELECT
-        block_id,
-        block_timestamp,
-        tx_hash,
-        swap_index,
-        receipt_object_id,
-        token_in,
-        token_out,
-        signer_id,
-        receiver_id,
-        amount_in_raw,
-        amount_out_raw,
-        _inserted_timestamp,
-        modified_timestamp AS _modified_timestamp,
-        _partition_by_block_number
-    FROM
-        {{ ref('silver__dex_swaps_v2') }}
-
-    {% if var("MANUAL_FIX") %}
-      WHERE {{ partition_load_manual('no_buffer') }}
-    {% else %}
-        {% if is_incremental() %}
-            WHERE
-                _modified_timestamp >= (
-                    SELECT
-                        MAX(_modified_timestamp)
-                    FROM
-                        {{ this }}
-                )
-            {% endif %}
-    {% endif %}
-),
 ----------------------------    Native Token Transfers   ------------------------------
 native_transfers AS (
 
@@ -114,41 +81,6 @@ native_transfers AS (
     {% endif %}
 ), 
 ------------------------------   NEAR Tokens (NEP 141) --------------------------------
-swaps AS (
-    SELECT
-        block_id,
-        block_timestamp,
-        tx_hash,
-        receipt_object_id,
-        token_in AS contract_address,
-        signer_id AS from_address,
-        receiver_id AS to_address,
-        amount_in_raw :: variant AS amount_unadjusted,
-        'swap' AS memo,
-        swap_index as rn,
-        _inserted_timestamp,
-        _modified_timestamp,
-        _partition_by_block_number
-    FROM
-        swaps_raw
-    UNION ALL
-    SELECT
-        block_id,
-        block_timestamp,
-        tx_hash,
-        receipt_object_id,
-        token_out AS contract_address,
-        receiver_id AS from_address,
-        signer_id AS to_address,
-        amount_out_raw :: variant AS amount_unadjusted,
-        'swap' AS memo,
-        swap_index + 1 as rn,
-        _inserted_timestamp,
-        _modified_timestamp,
-        _partition_by_block_number
-    FROM
-        swaps_raw
-),
 orders AS (
     SELECT
         block_id,
@@ -304,15 +236,9 @@ nep_transfers AS (
     SELECT
         *
     FROM
-        swaps
-    UNION ALL
-    SELECT
-        *
-    FROM
         add_liquidity
 ),
 ------------------------------  MODELS --------------------------------
-
 native_final AS (
     SELECT
         block_id,
@@ -333,7 +259,6 @@ native_final AS (
     FROM
         native_transfers
 ),
-
 nep_final AS (
     SELECT
         block_id,
