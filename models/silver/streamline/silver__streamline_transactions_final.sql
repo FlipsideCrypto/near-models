@@ -140,8 +140,8 @@ base_transactions AS (
       b._modified_timestamp) AS _modified_timestamp
   FROM
     int_txs t
-    LEFT JOIN receipt_array r USING (tx_hash)
-    LEFT JOIN int_blocks b USING (block_id)
+    INNER JOIN receipt_array r USING (tx_hash)
+    INNER JOIN int_blocks b USING (block_id)
 ),
 {# The following steps were copied directly from legacy tx model to replicate columns #}
 actions AS (
@@ -234,11 +234,11 @@ FINAL AS (
     ) AS _modified_timestamp
   FROM
     transactions AS t
-    LEFT JOIN determine_tx_status s
+    INNER JOIN determine_tx_status s
     ON t.tx_hash = s.tx_hash
-    LEFT JOIN actions
+    INNER JOIN actions
     ON t.tx_hash = actions.tx_hash
-    LEFT JOIN gas_burnt g
+    INNER JOIN gas_burnt g
     ON t.tx_hash = g.tx_hash
 )
 SELECT
