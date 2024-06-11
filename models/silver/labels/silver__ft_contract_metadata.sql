@@ -3,7 +3,7 @@
     unique_key = 'contract_address',
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
-    tags = ['livequery', 'nearblocks']
+    tags = ['livequery', 'nearblocks','scheduled_non_core']
 ) }}
 
 WITH livequery_results AS (

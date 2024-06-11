@@ -3,7 +3,7 @@
     merge_exclude_columns = ["inserted_timestamp"],
     unique_key = 'metadata_id',
     incremental_strategy = 'merge',
-    tags = ['livequery', 'pagoda']
+    tags = ['livequery', 'pagoda','scheduled_non_core']
 ) }}
 
 WITH livequery_response AS (

@@ -4,7 +4,7 @@
     merge_exclude_columns = ['inserted_timestamp'],
     unique_key = 'tx_hash',
     cluster_by = ['_inserted_timestamp::date', '_partition_by_block_number'],
-    tags = ['load', 'load_shards']
+    tags = ['load', 'load_shards','scheduled_core']
 ) }}
 
 WITH chunks AS (
@@ -19,7 +19,7 @@ WITH chunks AS (
     FROM
         {{ ref('silver__streamline_shards') }}
     WHERE
-        chunk != 'null'
+        chunk != 'null' -- why are we using this condition and not ARRAY_SIZE(chunk :transactions) > 0?
 
     {% if var('MANUAL_FIX') %}
         AND

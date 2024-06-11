@@ -4,7 +4,7 @@
     unique_key = '_res_id',
     incremental_strategy = 'merge',
     cluster_by = ['_inserted_timestamp::date', 'token_contract'],
-    tags = ['api', 'labels']
+    tags = ['api', 'labels','scheduled_non_core']
 ) }}
 {# Deprecated 9/25/2023, TODO disable via config.
 12 / 11 / 2023 note - DATA IN bronze still used IN gold VIEW.#}

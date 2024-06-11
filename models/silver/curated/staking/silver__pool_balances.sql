@@ -1,7 +1,7 @@
 {{ config(
     materialized = 'table',
     unique_key = 'tx_hash',
-    tags = ['curated'],
+    tags = ['curated','scheduled_non_core'],
     cluster_by = ['_partition_by_block_number', 'block_timestamp::date']
 ) }}
 
