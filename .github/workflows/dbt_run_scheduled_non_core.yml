@@ -1,11 +1,11 @@
-name: dbt_run_scheduled
-run-name: dbt_run_scheduled
+name: dbt_run_scheduled_non_core
+run-name: dbt_run_scheduled_non_core
 
 on:
   workflow_dispatch:
   schedule:
     # Runs "every hour" (see https://crontab.guru)
-    - cron: "30 * * * *"
+    - cron: "0 * * * *"
 
 env:
   USE_VARS: "${{ vars.USE_VARS }}"
@@ -17,7 +17,7 @@ env:
   PASSWORD: "${{ secrets.PASSWORD }}"
   REGION: "${{ vars.REGION }}"
   DATABASE: "${{ vars.DATABASE }}"
-  WAREHOUSE: "${{ vars.WAREHOUSE }}"
+  WAREHOUSE: DBT_CLOUD
   SCHEMA: "${{ vars.SCHEMA }}"
 
 concurrency:
@@ -43,7 +43,7 @@ jobs:
       - name: Run DBT Jobs
         run: |
           dbt run-operation dispatch_github_workflow --args "{'repo_name': 'streamline-snowflake', 'workflow_name': 'dbt_run_near_external_table_update', 'gb_id': '${{ secrets.GB_ID}}'}";
-          dbt seed; dbt run -s models/bronze tag:helper tag:load+ tag:labels+ tag:scheduled_non_core --exclude streamline__s3_sync tag:livequery tag:atlas tag:exclude_from_schedule
+          dbt run -s tag:scheduled_non_core models/gold;
 
       - name: Store logs
         uses: actions/upload-artifact@v3

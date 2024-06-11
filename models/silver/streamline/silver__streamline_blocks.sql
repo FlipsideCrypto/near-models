@@ -4,7 +4,7 @@
     merge_exclude_columns = ['inserted_timestamp'],
     cluster_by = ['_inserted_timestamp::DATE', '_partition_by_block_number'],
     unique_key = 'block_id',
-    tags = ['load', 'load_blocks'],
+    tags = ['load', 'load_blocks','scheduled_core'],
     full_refresh = False
 ) }}
 

@@ -2,7 +2,7 @@
     materialized = 'incremental',
     merge_exclude_columns = ["inserted_timestamp"],
     unique_key = 'tx_hash',
-    tags = ['curated'],
+    tags = ['curated', 'scheduled_non_core'],
 ) }}
 {# Note - multisource model #}
 WITH txs AS (

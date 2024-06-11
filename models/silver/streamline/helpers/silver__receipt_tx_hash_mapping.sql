@@ -1,7 +1,7 @@
 {{ config(
     materalized = 'view',
     unique_key = 'receipt_id',
-    tags = ['helper', 'receipt_map']
+    tags = ['helper', 'receipt_map','scheduled_core']
 ) }}
 
 WITH 

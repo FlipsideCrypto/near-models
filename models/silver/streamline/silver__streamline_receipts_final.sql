@@ -4,7 +4,7 @@
     merge_exclude_columns = ['inserted_timestamp'],
     unique_key = 'receipt_object_id',
     cluster_by = ['_inserted_timestamp::date', '_modified_timestamp::DATE', '_partition_by_block_number', 'block_timestamp::DATE'],
-    tags = ['receipt_map'],
+    tags = ['receipt_map','scheduled_core'],
     full_refresh = False
 ) }}
 
