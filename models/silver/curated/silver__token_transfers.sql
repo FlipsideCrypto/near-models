@@ -46,6 +46,39 @@ WITH actions_events AS (
         {% endif %}
     {% endif %}
 ), 
+swaps_raw AS (
+    SELECT
+        block_id,
+        block_timestamp,
+        tx_hash,
+        swap_index,
+        receipt_object_id,
+        token_in,
+        token_out,
+        signer_id,
+        receiver_id,
+        amount_in_raw,
+        amount_out_raw,
+        _inserted_timestamp,
+        modified_timestamp AS _modified_timestamp,
+        _partition_by_block_number
+    FROM
+        {{ ref('silver__dex_swaps_v2') }}
+
+    {% if var("MANUAL_FIX") %}
+      WHERE {{ partition_load_manual('no_buffer') }}
+    {% else %}
+        {% if is_incremental() %}
+            WHERE
+                _modified_timestamp >= (
+                    SELECT
+                        MAX(_modified_timestamp)
+                    FROM
+                        {{ this }}
+                )
+            {% endif %}
+    {% endif %}
+),
 ----------------------------    Native Token Transfers   ------------------------------
 native_transfers AS (
 
@@ -358,6 +391,7 @@ nep_transfers AS (
         add_liquidity
 ),
 ------------------------------  MODELS --------------------------------
+
 native_final AS (
     SELECT
         block_id,
@@ -378,6 +412,7 @@ native_final AS (
     FROM
         native_transfers
 ),
+
 nep_final AS (
     SELECT
         block_id,
