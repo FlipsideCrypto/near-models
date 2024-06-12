@@ -48,13 +48,14 @@ prices AS (
     SELECT
         DATE_TRUNC(
             'HOUR',
-            block_timestamp
+            hour
         ) AS block_timestamp_hour,
-        price_usd
+        price as price_usd
     FROM
-        {{ ref('silver__prices_oracle_s3') }}
+        
+        {{ ref('silver__complete_token_prices') }}
     WHERE
-        token = 'Wrapped NEAR fungible token' qualify ROW_NUMBER() over (
+        where token_address = 'wrap.near' qualify ROW_NUMBER() over (
             PARTITION BY block_timestamp_hour
             ORDER BY
                 block_timestamp DESC

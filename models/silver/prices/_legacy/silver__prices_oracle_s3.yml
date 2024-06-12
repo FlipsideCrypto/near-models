@@ -3,7 +3,7 @@ version: 2
 models:
   - name: silver__prices_oracle_s3
     description: |-
-      This table parses messages from the contract `priceoracle.near` and extracts the available price data.
+      This table parses messages from the contract `priceoracle.near` and extracts the available price data. As a complement for crosschain prices.
 
     columns:
       - name: BLOCK_ID
@@ -26,7 +26,7 @@ models:
         tests:
           - not_null:
               where: _inserted_timestamp <= current_timestamp - interval '1 hour'
-              
+
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
