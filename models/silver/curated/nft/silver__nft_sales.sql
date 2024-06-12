@@ -58,7 +58,7 @@ prices AS (
         token_address = 'wrap.near' qualify ROW_NUMBER() over (
             PARTITION BY block_timestamp_hour
             ORDER BY
-                block_timestamp DESC
+                hour DESC
         ) = 1
 ),
 raw_logs AS (
