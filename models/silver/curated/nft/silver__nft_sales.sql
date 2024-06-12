@@ -55,7 +55,7 @@ prices AS (
         
         {{ ref('silver__complete_token_prices') }}
     WHERE
-        where token_address = 'wrap.near' qualify ROW_NUMBER() over (
+        token_address = 'wrap.near' qualify ROW_NUMBER() over (
             PARTITION BY block_timestamp_hour
             ORDER BY
                 block_timestamp DESC
