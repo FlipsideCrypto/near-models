@@ -46,39 +46,6 @@ WITH actions_events AS (
         {% endif %}
     {% endif %}
 ), 
-swaps_raw AS (
-    SELECT
-        block_id,
-        block_timestamp,
-        tx_hash,
-        swap_index,
-        receipt_object_id,
-        token_in,
-        token_out,
-        signer_id,
-        receiver_id,
-        amount_in_raw,
-        amount_out_raw,
-        _inserted_timestamp,
-        modified_timestamp AS _modified_timestamp,
-        _partition_by_block_number
-    FROM
-        {{ ref('silver__dex_swaps_v2') }}
-
-    {% if var("MANUAL_FIX") %}
-      WHERE {{ partition_load_manual('no_buffer') }}
-    {% else %}
-        {% if is_incremental() %}
-            WHERE
-                _modified_timestamp >= (
-                    SELECT
-                        MAX(_modified_timestamp)
-                    FROM
-                        {{ this }}
-                )
-            {% endif %}
-    {% endif %}
-),
 ----------------------------    Native Token Transfers   ------------------------------
 native_transfers AS (
 
@@ -114,41 +81,6 @@ native_transfers AS (
     {% endif %}
 ), 
 ------------------------------   NEAR Tokens (NEP 141) --------------------------------
-swaps AS (
-    SELECT
-        block_id,
-        block_timestamp,
-        tx_hash,
-        receipt_object_id,
-        token_in AS contract_address,
-        signer_id AS from_address,
-        receiver_id AS to_address,
-        amount_in_raw :: variant AS amount_unadjusted,
-        'swap' AS memo,
-        swap_index as rn,
-        _inserted_timestamp,
-        _modified_timestamp,
-        _partition_by_block_number
-    FROM
-        swaps_raw
-    UNION ALL
-    SELECT
-        block_id,
-        block_timestamp,
-        tx_hash,
-        receipt_object_id,
-        token_out AS contract_address,
-        receiver_id AS from_address,
-        signer_id AS to_address,
-        amount_out_raw :: variant AS amount_unadjusted,
-        'swap' AS memo,
-        swap_index as rn,
-        _inserted_timestamp,
-        _modified_timestamp,
-        _partition_by_block_number
-    FROM
-        swaps_raw
-),
 orders AS (
     SELECT
         block_id,
@@ -340,30 +272,6 @@ ft_mints_final AS (
     WHERE
         amount_unadjusted > 0
 ),
-swaps_final AS (
-    SELECT
-    s.block_id,
-    s.block_timestamp,
-    s.tx_hash,
-    coalesce(t.action_id, s.receipt_object_id) as action_id,
-    s.contract_address,
-    s.from_address,
-    s.to_address,
-    s.amount_unadjusted,
-    s.memo,
-    coalesce(t.rn, s.rn) as rn,
-    s._inserted_timestamp,
-    s._modified_timestamp,
-    s._partition_by_block_number
-    FROM
-        swaps s
-    LEFT JOIN ft_transfers_final  t
-    ON t.tx_hash = s.tx_hash
-    AND t.contract_address = s.contract_address
-    AND t.from_address = s.from_address
-    AND t.to_address = s.to_address
-    AND t.amount_unadjusted :: STRING = s.amount_unadjusted :: STRING
-),
 nep_transfers AS (
     SELECT
         *
@@ -379,11 +287,6 @@ nep_transfers AS (
         *
     FROM
         orders_final
-    UNION ALL
-    SELECT
-        *
-    FROM
-        swaps_final
     UNION ALL
     SELECT
         *
@@ -432,9 +335,7 @@ nep_final AS (
         _partition_by_block_number
     FROM
         nep_transfers
-    qualify
-        row_number() over (partition by tx_hash, action_id, contract_address, from_address, to_address, amount_raw  order by memo desc) = 1
-),
+    ),
 ------------------------------   FINAL --------------------------------
 transfer_union AS (
 
