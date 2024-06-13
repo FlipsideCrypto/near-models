@@ -335,9 +335,7 @@ nep_final AS (
         _partition_by_block_number
     FROM
         nep_transfers
-    qualify
-        row_number() over (partition by tx_hash, action_id, contract_address, from_address, to_address, amount_raw  order by memo desc) = 1
-),
+    ),
 ------------------------------   FINAL --------------------------------
 transfer_union AS (
 
