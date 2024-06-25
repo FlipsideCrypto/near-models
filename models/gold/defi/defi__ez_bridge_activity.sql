@@ -2,7 +2,7 @@
     materialized = 'view',
     secure = false,
     meta ={ 'database_tags':{ 'table':{ 'PURPOSE': 'DEFI, BRIDGING' }} },
-    tags = ['core']
+    tags = ['core', 'grail']
 ) }}
 
 WITH fact_bridging AS (

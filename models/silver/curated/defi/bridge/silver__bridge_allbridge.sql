@@ -4,7 +4,7 @@
     merge_exclude_columns = ["inserted_timestamp"],
     unique_key = 'bridge_allbridge_id',
     cluster_by = ['block_timestamp::DATE', '_modified_timestamp::DATE'],
-    tags = ['curated','scheduled_non_core'],
+    tags = ['curated','scheduled_non_core', 'grail'],
 ) }}
 
 WITH functioncall AS (
