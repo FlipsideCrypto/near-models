@@ -5,7 +5,8 @@
     unique_key = 'receipt_object_id',
     cluster_by = ['_inserted_timestamp::date', '_modified_timestamp::DATE', '_partition_by_block_number', 'block_timestamp::DATE'],
     tags = ['receipt_map','scheduled_core'],
-    full_refresh = False
+    full_refresh = False,
+    snowflake_warehouse='DBT_EMERGENCY'
 ) }}
 
 WITH retry_range AS (
