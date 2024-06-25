@@ -50,7 +50,6 @@ jobs:
 
       - name: Run DBT Jobs
         run: |
-          dbt run-operation dispatch_github_workflow --args "{'repo_name': 'streamline-snowflake', 'workflow_name': 'dbt_run_near_external_table_update', 'gb_id': '${{ secrets.GB_ID}}'}";
           dbt seed;
           dbt run -s tag:scheduled_core tag:grail --vars "{ 'RECEIPT_MAP_LOOKBACK_HOURS': 0.5}";
       - name: Store logs
