@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
   schedule:
     # Runs "every 15 mins" (see https://crontab.guru)
-    - cron: "15 * * * *"
+    - cron: "*/15 * * * *"
 
 env:
   USE_VARS: "${{ vars.USE_VARS }}"
