@@ -301,11 +301,15 @@ inbound_e2n_final_eth AS (
         'neth.tkn.near' AS token_address,
         COALESCE(
             REGEXP_SUBSTR(actions :finish_deposit :logs[1], 'Mint (\\d+) \\w+ tokens for: [a-fA-F0-9]+', 1, 1, 'e', 1),
-            REGEXP_SUBSTR(actions :deposit :logs[1], 'NEP141Wei\\((\\d+)\\)', 1, 1, 'e', 1)
+            REGEXP_SUBSTR(actions :finish_deposit :logs[2], 'Mint (\\d+) \\w+ tokens for: [a-fA-F0-9]+', 1, 1, 'e', 1),
+            REGEXP_SUBSTR(actions :deposit :logs[1], 'NEP141Wei\\((\\d+)\\)', 1, 1, 'e', 1),
+            REGEXP_SUBSTR(actions :deposit :logs[1], 'with amount: (\\d+)', 1, 1, 'e', 1)
          ) AS amount_raw,
         COALESCE(
             REGEXP_SUBSTR(actions :finish_deposit :logs[1], 'for: ([^\\s]+)', 1, 1, 'e', 1),
-            REGEXP_SUBSTR(actions :deposit :logs[1], 'AccountId\\("([a-fA-F0-9]+)"\\)', 1, 1, 'e', 1)
+            REGEXP_SUBSTR(actions :finish_deposit :logs[2], 'for: ([^\\s]+)', 1, 1, 'e', 1),
+            REGEXP_SUBSTR(actions :deposit :logs[1], 'AccountId\\("([a-fA-F0-9]+)"\\)', 1, 1, 'e', 1),
+            REGEXP_SUBSTR(actions :deposit :logs[1], 'to recipient \\"([^\\"]+)\\"', 1, 1, 'e', 1)
          ) AS destination_address,
         NULL as memo,
         CONCAT('0x', REGEXP_SUBSTR(actions :deposit :logs[1], 'from ([a-fA-F0-9]+)', 1, 1, 'e', 1)) AS source_address,
