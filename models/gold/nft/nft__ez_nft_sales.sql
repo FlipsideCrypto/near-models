@@ -22,6 +22,10 @@ WITH nft_sales AS (
         method_name,
         log,
         gas_burned,
+        affiliate_id,
+        affiliate_amount,
+        royalties,
+        platform_fee,
         nft_sales_id AS ez_nft_sales_id,
         COALESCE(inserted_timestamp, _inserted_timestamp, '2000-01-01' :: TIMESTAMP_NTZ) AS inserted_timestamp,
         COALESCE(modified_timestamp, _inserted_timestamp, '2000-01-01' :: TIMESTAMP_NTZ) AS modified_timestamp

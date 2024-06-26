@@ -54,9 +54,7 @@ raw_logs AS (
     SELECT
         *,
         l.index AS logs_index,
-        TRY_PARSE_JSON(REPLACE(l.value :: STRING, 'EVENT_JSON:', '')) AS event_json,
-        event_json:event as event_type,
-        event_json:standard as standard
+        TRY_PARSE_JSON(REPLACE(l.value :: STRING, 'EVENT_JSON:', '')) AS event_json
     FROM
         actions_events A,
         LATERAL FLATTEN(

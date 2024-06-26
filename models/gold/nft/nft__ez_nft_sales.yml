@@ -80,6 +80,18 @@ models:
       - name: LOGS_INDEX
         description: "ROW NUMBER"
 
+      - name: AFFILIATE_ID affiliate_id
+        description: "Affiliate id"
+
+      - name: AFFILIATE_AMOUNT
+        description: "Affiliate amount"
+
+      - name: ROYALTIES
+        description: "Royalties breakdown"
+
+      - name: PLATFORM_FEE
+        description: "Platform fee"
+
       - name: NFT_SALES_ID
         description: "{{doc('id')}}"
 
