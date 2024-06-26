@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: silver__nft_sales
+  - name: silver__nft__complete_nft_sales
     description: |-
       This table records all the NFT sales actions of the mainy Near marketplaces..
     tests:

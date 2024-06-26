@@ -30,7 +30,7 @@ WITH nft_sales AS (
         COALESCE(inserted_timestamp, _inserted_timestamp, '2000-01-01' :: TIMESTAMP_NTZ) AS inserted_timestamp,
         COALESCE(modified_timestamp, _inserted_timestamp, '2000-01-01' :: TIMESTAMP_NTZ) AS modified_timestamp
     FROM
-        {{ ref('silver__nft_sales') }}
+        {{ ref('silver__nft__complete_nft_sales') }}
 )
 SELECT
     *
