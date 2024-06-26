@@ -234,18 +234,19 @@ inbound_eth_to_near AS (
             FROM
                 functioncall
             WHERE
-                receiver_id = 'factory.bridge.near'
+                receiver_id in ('factory.bridge.near', 'aurora')
                 AND method_name = 'finish_deposit'
         )
         AND method_name IN (
             'mint',
             'ft_transfer_call',
+            'deposit',
             'finish_deposit'
         )
     GROUP BY
         1
 ),
-inbound_e2n_final AS (
+inbound_e2n_final_ft AS (
     -- inbound token is minted on chain, take contract and amt from mint event
     SELECT
         block_id,
@@ -289,6 +290,43 @@ inbound_e2n_final AS (
         _modified_timestamp
     FROM
         inbound_eth_to_near
+    WHERE
+        actions :finish_deposit :receiver_id :: STRING != 'aurora'
+),
+inbound_e2n_final_eth AS (
+    SELECT
+        block_id,
+        block_timestamp,
+        tx_hash,
+        'neth.tkn.near' AS token_address,
+        COALESCE(
+            REGEXP_SUBSTR(actions :finish_deposit :logs[1], 'Mint (\\d+) \\w+ tokens for: [a-fA-F0-9]+', 1, 1, 'e', 1),
+            REGEXP_SUBSTR(actions :finish_deposit :logs[2], 'Mint (\\d+) \\w+ tokens for: [a-fA-F0-9]+', 1, 1, 'e', 1),
+            REGEXP_SUBSTR(actions :deposit :logs[1], 'NEP141Wei\\((\\d+)\\)', 1, 1, 'e', 1),
+            REGEXP_SUBSTR(actions :deposit :logs[1], 'with amount: (\\d+)', 1, 1, 'e', 1)
+         ) AS amount_raw,
+        COALESCE(
+            REGEXP_SUBSTR(actions :finish_deposit :logs[1], 'for: ([^\\s]+)', 1, 1, 'e', 1),
+            REGEXP_SUBSTR(actions :finish_deposit :logs[2], 'for: ([^\\s]+)', 1, 1, 'e', 1),
+            REGEXP_SUBSTR(actions :deposit :logs[1], 'AccountId\\("([a-fA-F0-9]+)"\\)', 1, 1, 'e', 1),
+            REGEXP_SUBSTR(actions :deposit :logs[1], 'to recipient \\"([^\\"]+)\\"', 1, 1, 'e', 1)
+         ) AS destination_address,
+        NULL as memo,
+        CONCAT('0x', REGEXP_SUBSTR(actions :deposit :logs[1], 'from ([a-fA-F0-9]+)', 1, 1, 'e', 1)) AS source_address,
+        'Ethereum' AS source_chain_id,
+        'Near' AS destination_chain_id,
+        receipt_succeeded,
+        'mint' AS method_name,
+        'prover.bridge.near' AS bridge_address,
+        'inbound' AS direction,
+        _inserted_timestamp,
+        _partition_by_block_number,
+        _modified_timestamp
+    FROM
+        inbound_eth_to_near
+    WHERE
+        actions :finish_deposit :receiver_id :: STRING = 'aurora'
+
 ),
 FINAL AS (
     SELECT
@@ -373,7 +411,28 @@ FINAL AS (
         _partition_by_block_number,
         _modified_timestamp
     FROM
-        inbound_e2n_final
+        inbound_e2n_final_ft
+    UNION ALL
+    SELECT
+        block_id,
+        block_timestamp,
+        tx_hash,
+        token_address,
+        amount_raw,
+        memo,
+        destination_address,
+        source_address,
+        destination_chain_id,
+        source_chain_id,
+        receipt_succeeded,
+        method_name,
+        bridge_address,
+        direction,
+        _inserted_timestamp,
+        _partition_by_block_number,
+        _modified_timestamp
+    FROM
+        inbound_e2n_final_eth
 )
 SELECT
     *,
