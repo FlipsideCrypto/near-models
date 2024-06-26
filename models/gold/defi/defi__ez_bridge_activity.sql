@@ -61,8 +61,7 @@ prices_mapping AS (
             WHEN contract_address = '0x3294395e62f4eb6af3f1fcf89f5602d90fb3ef69' THEN 'celo.token.a11bd.near'
             WHEN contract_address = '0xd2877702675e6ceb975b4a1dff9fb7baf4c91ea9' THEN 'luna.token.a11bd.near'
             WHEN contract_address = '0xa47c8bf37f92abed4a126bda807a7b7498661acd' THEN 'ust.token.a11bd.near'
-            WHEN contract_address = 'aaaaaa20d9e0e2461697782ef11675f668207961.factory.bridge.near' THEN 'aurora'
-            WHEN contract_address = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' THEN 'neth.tkn.near'
+            WHEN contract_address = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' THEN 'aurora'
             ELSE contract_address
         END AS contract_address,
         symbol,
