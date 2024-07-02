@@ -2,7 +2,7 @@
     materialized = 'incremental',
     merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = ['block_timestamp::DATE'],
-    unique_key = 'nft_sales_id',
+    unique_key = 'nft_other_sales_id',
     incremental_strategy = 'merge',
     tags = ['curated','scheduled_non_core']
 ) }}
@@ -29,7 +29,14 @@ WITH actions_events AS (
     WHERE
         receipt_succeeded = TRUE
         AND logs [0] IS NOT NULL
-
+        AND  receiver_id IN (
+            'apollo42.near',
+            'market.tradeport.near',
+            'market.nft.uniqart.near',
+            'market.l2e.near',
+            'market.fewandfar.near',
+            'a.mitte-orderbook.near'
+        )
     {% if var("MANUAL_FIX") %}
       AND {{ partition_load_manual('no_buffer') }}
     {% else %}
@@ -43,24 +50,6 @@ WITH actions_events AS (
         {% endif %}
     {% endif %}
 ),
-prices AS (
-    --get closing price for the hour
-    SELECT
-        DATE_TRUNC(
-            'HOUR',
-            hour
-        ) AS block_timestamp_hour,
-        price as price_usd
-    FROM
-        
-        {{ ref('silver__complete_token_prices') }}
-    WHERE
-        token_address = 'wrap.near' qualify ROW_NUMBER() over (
-            PARTITION BY block_timestamp_hour
-            ORDER BY
-                hour DESC
-        ) = 1
-),
 raw_logs AS (
     SELECT
         *,
@@ -71,40 +60,6 @@ raw_logs AS (
         LATERAL FLATTEN(
             input => A.logs
         ) l
-),
-------------------------------- MINTBASE  -------------------------------
-mintbase_nft_sales AS (
-    SELECT
-        action_id,
-        block_id,
-        block_timestamp,
-        tx_hash,
-        attached_gas,
-        IFF(method_name = 'buy', TRUE, FALSE) AS is_buy,  --- else resolve_nft_payout
-        IFF(is_buy, args :nft_contract_id, args :token :owner_id) :: STRING AS seller_address,
-        IFF( is_buy, signer_id, args :token :current_offer :from) :: STRING AS buyer_address,
-        receiver_id AS platform_address,
-        'Mintbase' AS platform_name,
-        IFF(is_buy, args :nft_contract_id, args :token :store_id) :: STRING AS nft_address,
-        IFF(is_buy, args :token_id, args :token :id) :: STRING AS token_id,
-        IFF(is_buy, deposit, args :token :current_offer :price) / 1e24 AS price,
-        IFF(is_buy, 'nft_sale', 'nft_sold') AS method_name,
-        args AS LOG,
-        logs_index,
-        _inserted_timestamp,
-        _modified_timestamp,
-        _partition_by_block_number
-    FROM
-        raw_logs
-    WHERE
-        (
-            receiver_id = 'simple.market.mintbase1.near'
-            AND method_name = 'buy'
-        )
-        OR (
-            receiver_id = 'market.mintbase1.near'
-            AND method_name = 'resolve_nft_payout'
-        )
 ),
 ------------------------ OTHER MARKETPLACES  -------------------------------
 other_nft_sales AS (
@@ -125,7 +80,6 @@ other_nft_sales AS (
         ) :: STRING AS buyer_address,
         receiver_id AS platform_address,
         CASE
-            WHEN receiver_id = 'marketplace.paras.near' THEN 'Paras'
             WHEN receiver_id = 'market.l2e.near' THEN 'L2E'
             WHEN receiver_id = 'market.nft.uniqart.near' THEN 'UniqArt'
             WHEN receiver_id = 'market.tradeport.near' THEN 'TradePort'
@@ -161,7 +115,6 @@ other_nft_sales AS (
             'market.tradeport.near',
             'market.nft.uniqart.near',
             'market.l2e.near',
-            'marketplace.paras.near',
             'market.fewandfar.near'
         )
         AND method_name IN (
@@ -276,28 +229,6 @@ mitte_nft_sales AS (
 ------------------------------- FINAL   -------------------------------
 sales_union AS (
     SELECT
-        action_id,
-        block_id,
-        block_timestamp,
-        tx_hash,
-        attached_gas,
-        seller_address,
-        buyer_address,
-        platform_address,
-        platform_name,
-        nft_address,
-        token_id,
-        price,
-        method_name,
-        LOG,
-        logs_index,
-        _inserted_timestamp,
-        _modified_timestamp,
-        _partition_by_block_number
-    FROM
-        mintbase_nft_sales
-    UNION ALL
-    SELECT
         *
     FROM
         other_nft_sales
@@ -309,11 +240,11 @@ sales_union AS (
 ),
 FINAL AS (
     SELECT
-        split_part(action_id, '-', 1) AS receipt_id,
+        action_id,
         block_id,
         block_timestamp,
         tx_hash,
-        attached_gas AS gas_burned,
+        attached_gas,
         seller_address,
         buyer_address,
         platform_address,
@@ -323,24 +254,22 @@ FINAL AS (
         method_name,
         LOG,
         price,
-        s.price * p.price_usd AS price_usd,
+        NULL :: STRING AS affiliate_id,
+        NULL :: STRING AS affiliate_amount,
+        '{}' :: VARIANT AS royalties,
+        NULL :: FLOAT AS platform_fee,
         logs_index,
         _inserted_timestamp,
         _modified_timestamp,
         _partition_by_block_number
     FROM
         sales_union s
-        LEFT JOIN prices p
-        ON DATE_TRUNC(
-            'hour',
-            s.block_timestamp
-        ) = p.block_timestamp_hour
 )
 SELECT
     *,
     {{ dbt_utils.generate_surrogate_key(
-        ['receipt_id', 'logs_index']
-    ) }} AS nft_sales_id,
+        ['action_id', 'logs_index']
+    ) }} AS nft_other_sales_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
