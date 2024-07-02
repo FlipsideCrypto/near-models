@@ -181,8 +181,10 @@ FINAL AS (
         logs_index,
         affiliate_id,
         affiliate_amount,
+        affiliate_amount * p.price_usd AS affiliate_amount_usd,
         royalties,
-        platform_fee,
+        platform_fee AS platform_fee,
+        platform_fee * p.price_usd AS platform_fee_usd,
         _inserted_timestamp,
         _modified_timestamp,
         _partition_by_block_number

@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: silver__nft__complete_nft_sales
+  - name: silver__nft_complete_nft_sales
     description: |-
       This table records all the NFT sales actions of the mainy Near marketplaces..
     tests:
@@ -58,17 +58,17 @@ models:
       - name: LOGS
         description: "{{ doc('logs')}}"
 
-      - name: AFFILIATE_ID affiliate_id
-        description: "Affiliate id"
+      - name: AFFILIATE_ID
+        description: "{{ doc('affiliate_id')}}"
 
       - name: AFFILIATE_AMOUNT
-        description: "Affiliate amount"
+        description: "{{ doc('affiliate_amount')}}"
 
       - name: ROYALTIES
-        description: "Royalties breakdown"
+        description: "{{ doc('royalties')}}"
 
       - name: PLATFORM_FEE
-        description: "Platform fee"
+        description: "{{ doc('platform_fee')}}"
 
       - name: _INSERTED_TIMESTAMP
         description: "{{ doc('_inserted_timestamp')}}"
