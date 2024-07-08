@@ -42,6 +42,8 @@ WITH actions_events AS (
                 MAX(_modified_timestamp)
             FROM
                 {{ this }}
+            WHERE
+                transfer_type = 'nep141'
         )
         {% endif %}
     {% endif %}
@@ -76,6 +78,9 @@ native_transfers AS (
                 MAX(_modified_timestamp)
             FROM
                 {{ this }}
+            WHERE
+                transfer_type = 'native'
+
         )
         {% endif %}
     {% endif %}
