@@ -131,7 +131,7 @@ append_tx_hash AS (
         r._modified_timestamp
     FROM
         base_receipts r
-        LEFT JOIN {{ ref('silver__receipt_tx_hash_mapping') }}
+        INNER JOIN {{ ref('silver__receipt_tx_hash_mapping') }}
         m USING (receipt_id)
 ),
 FINAL AS (
