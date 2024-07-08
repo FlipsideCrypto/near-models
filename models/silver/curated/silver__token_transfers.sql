@@ -37,12 +37,12 @@ WITH actions_events AS (
       AND {{ partition_load_manual('no_buffer') }}
     {% else %}
         {% if is_incremental() %}
-        AND _modified_timestamp >= (
+        AND _modified_timestamp >= DATEADD('minute',-90,(
             SELECT
                 MAX(_modified_timestamp)
             FROM
                 {{ this }}
-        )
+        ))
         {% endif %}
     {% endif %}
 ), 
@@ -71,12 +71,12 @@ native_transfers AS (
       AND {{ partition_load_manual('no_buffer') }}
     {% else %}
         {% if is_incremental() %}
-        AND _modified_timestamp >= (
+        AND _modified_timestamp >= DATEADD('minute',-90,(
             SELECT
                 MAX(_modified_timestamp)
             FROM
                 {{ this }}
-        )
+        ))
         {% endif %}
     {% endif %}
 ), 
