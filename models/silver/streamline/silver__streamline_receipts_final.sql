@@ -3,7 +3,8 @@
     incremental_strategy = 'merge',
     merge_exclude_columns = ['inserted_timestamp'],
     unique_key = 'receipt_object_id',
-    cluster_by = ['_inserted_timestamp::date', '_modified_timestamp::DATE', '_partition_by_block_number', 'block_timestamp::DATE'],
+    cluster_by = ['block_timestamp::DATE','_modified_timestamp::DATE', '_partition_by_block_number', ],
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,receipt_object_id,receiver_id,signer_id);",
     tags = ['receipt_map','scheduled_core'],
     full_refresh = False,
     snowflake_warehouse='DBT_EMERGENCY'

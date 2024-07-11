@@ -4,6 +4,7 @@
     merge_exclude_columns = ["inserted_timestamp"],
     unique_key = 'bridge_allbridge_id',
     cluster_by = ['block_timestamp::DATE', '_modified_timestamp::DATE'],
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,destination_address,source_address);",
     tags = ['curated','scheduled_non_core', 'grail'],
 ) }}
 
@@ -25,21 +26,21 @@ WITH functioncall AS (
     FROM
         {{ ref('silver__actions_events_function_call_s3') }}
     WHERE
-        receiver_id = 'bridge.a11bd.near'
-
+        receiver_id = 'bridge.a11bd.near' 
+        
         {% if var("MANUAL_FIX") %}
             AND {{ partition_load_manual('no_buffer') }}
-        {% else %}
-            {% if is_incremental() %}
+        {% else %}  
+{% if is_incremental() %}
 
-                AND 
-                    modified_timestamp >= (
-                        SELECT MAX(_modified_timestamp) FROM {{ this }}
-                        )
+        AND 
+            modified_timestamp >= (
+                SELECT MAX(_modified_timestamp) FROM {{ this }}
+)
 
-            {% endif %}
+{% endif %}
 
-        {% endif %}
+{% endif %}
 ),
 metadata  AS (
     SELECT
@@ -89,7 +90,7 @@ inbound_to_near AS (
         args :fee :: INT AS amount_fee_raw,
         args :memo :: STRING AS memo,
         args :unlock_args :recipient :: STRING AS destination_address,
-        null AS source_address,
+        NULL AS source_address,
         'near' AS destination_chain_id,
         LOWER(
             args :unlock_args :lock_source :: STRING
@@ -125,14 +126,14 @@ FINAL AS (
                 amount_raw,
                 m.decimals,
                 '0'
-        )) :: NUMBER AS amount_adj,
+            )) :: NUMBER AS amount_adj,
         'bridge.a11bd.near' AS bridge_address,
         'allbridge' AS platform
     FROM
         FINAL_UNION
-    JOIN metadata m ON
+        JOIN metadata m ON 
         FINAL_UNION.token_address = m.contract_address
-
+        
 )
 SELECT
     *,

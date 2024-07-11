@@ -2,6 +2,8 @@
     materialized = 'incremental',
     incremental_strategy = 'delete+insert',
     unique_key = 'complete_token_prices_id',
+    cluster_by = ['HOUR::DATE'],
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(token_address,symbol);",
     tags = ['scheduled_non_core', 'grail']
 ) }}
 

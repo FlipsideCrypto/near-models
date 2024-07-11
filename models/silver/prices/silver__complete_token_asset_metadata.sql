@@ -2,6 +2,7 @@
     materialized = 'incremental',
     incremental_strategy = 'delete+insert',
     unique_key = 'complete_token_asset_metadata_id',
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(asset_id,token_address,name,symbol);",
     tags = ['scheduled_non_core']
 ) }}
 

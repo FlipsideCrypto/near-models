@@ -2,8 +2,9 @@
     materialized = 'incremental',
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
-    cluster_by = ['block_timestamp::DATE', '_inserted_timestamp::DATE'],
+    cluster_by = ['block_timestamp::DATE', '_modified_timestamp::DATE'],
     unique_key = 'action_id',
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,action_id,signer_id,receipt_object_id,receiver_id);",
     tags = ['actions', 'curated','scheduled_core', 'grail']
 ) }}
 
@@ -32,15 +33,15 @@ WITH receipts AS (
         WHERE
             {{ partition_load_manual('no_buffer') }}
         {% else %}
-            {% if is_incremental() %}
-            WHERE _modified_timestamp >= (
-                SELECT
-                    MAX(_modified_timestamp)
-                FROM
-                    {{ this }}
-            )
-        {% endif %}
-        {% endif %}
+{% if is_incremental() %}
+WHERE _modified_timestamp >= (
+        SELECT
+            MAX(_modified_timestamp)
+        FROM
+            {{ this }}
+    )
+{% endif %}
+{% endif %}
 ),
 flatten_actions AS (
     SELECT
@@ -53,11 +54,11 @@ flatten_actions AS (
         chunk_hash,
         logs,
         receipt_actions,
-        receipt_actions :predecessor_id :: STRING as predecessor_id,
-        receipt_actions :receipt :Action :gas_price :: NUMBER as gas_price,
+        receipt_actions :predecessor_id :: STRING AS predecessor_id,
+        receipt_actions :receipt :Action :gas_price :: NUMBER AS gas_price,
         execution_outcome,
         gas_burnt,
-        execution_outcome :outcome :tokens_burnt :: NUMBER as tokens_burnt,
+        execution_outcome :outcome :tokens_burnt :: NUMBER AS tokens_burnt,
         VALUE AS action_object,
         INDEX AS action_index,
         receipt_succeeded,

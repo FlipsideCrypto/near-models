@@ -4,6 +4,7 @@
     merge_exclude_columns = ["inserted_timestamp"],
     unique_key = 'bridge_rainbow_id',
     cluster_by = ['block_timestamp::DATE', '_modified_timestamp::DATE'],
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,destination_address,source_address);",
     tags = ['curated','scheduled_non_core', 'grail'],
 ) }}
 
@@ -26,18 +27,18 @@ WITH functioncall AS (
         {{ ref('silver__actions_events_function_call_s3') }}
 
         {% if var("MANUAL_FIX") %}
-            WHERE {{ partition_load_manual('no_buffer') }}
+        WHERE {{ partition_load_manual('no_buffer') }}
         {% else %}
 
-            {% if is_incremental() %}
-            WHERE _modified_timestamp >= (
-                SELECT
-                    MAX(_modified_timestamp)
-                FROM
-                    {{ this }}
-            )
-            {% endif %}
-        {% endif %}
+{% if is_incremental() %}
+WHERE _modified_timestamp >= (
+        SELECT
+            MAX(_modified_timestamp)
+        FROM
+            {{ this }}
+    )
+{% endif %}
+{% endif %}
 ),
 outbound_near_to_aurora AS (
     -- ft_transfer_call sends token to aurora
@@ -326,7 +327,7 @@ inbound_e2n_final_eth AS (
         inbound_eth_to_near
     WHERE
         actions :finish_deposit :receiver_id :: STRING = 'aurora'
-
+        
 ),
 FINAL AS (
     SELECT

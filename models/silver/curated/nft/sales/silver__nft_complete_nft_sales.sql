@@ -4,6 +4,7 @@
     cluster_by = ['block_timestamp::DATE'],
     unique_key = 'nft_sales_id',
     incremental_strategy = 'merge',
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,seller_address,buyer_address,nft_address,token_id);",
     tags = ['curated','scheduled_non_core']
 ) }}
 

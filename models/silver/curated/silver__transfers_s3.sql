@@ -4,6 +4,7 @@
   cluster_by = ['block_timestamp::DATE'],
   unique_key = 'action_id',
   incremental_strategy = 'merge',
+  post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,action_id, tx_hash,tx_signer,tx_receiver,predecessor_id,signer_id,receiver_id);",
   tags = ['curated','scheduled_non_core']
 ) }}
 {# Note - multisource model #}
@@ -29,24 +30,24 @@ WITH action_events AS(
     {{ ref('silver__actions_events_s3') }}
   WHERE
     action_name = 'Transfer' 
-
+    
     {% if var("MANUAL_FIX") %}
       AND {{ partition_load_manual('no_buffer') }}
     {% else %}
-            {% if is_incremental() %}
-        AND _modified_timestamp >= (
-            SELECT
-                MAX(_modified_timestamp)
-            FROM
-                {{ this }}
-        )
-    {% endif %}
-    {% endif %}
+{% if is_incremental() %}
+AND _modified_timestamp >= (
+  SELECT
+    MAX(_modified_timestamp)
+  FROM
+    {{ this }}
+)
+{% endif %}
+{% endif %}
 ),
 txs AS (
   SELECT
     tx_hash,
-    tx :receipt ::ARRAY AS tx_receipt,
+    tx :receipt :: ARRAY AS tx_receipt,
     block_id,
     block_timestamp,
     tx_receiver,
@@ -61,17 +62,17 @@ txs AS (
     {{ ref('silver__streamline_transactions_final') }}
 
     {% if var("MANUAL_FIX") %}
-      WHERE {{ partition_load_manual('no_buffer') }}
+    WHERE {{ partition_load_manual('no_buffer') }}
     {% else %}
-            {% if is_incremental() %}
-        WHERE _modified_timestamp >= (
-            SELECT
-                MAX(_modified_timestamp)
-            FROM
-                {{ this }}
-        )
-    {% endif %}
-    {% endif %}
+{% if is_incremental() %}
+WHERE _modified_timestamp >= (
+    SELECT
+      MAX(_modified_timestamp)
+    FROM
+      {{ this }}
+  )
+{% endif %}
+{% endif %}
 ),
 actions AS (
   SELECT
