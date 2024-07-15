@@ -4,6 +4,7 @@
     unique_key = "mint_action_id",
     incremental_strategy = "merge",
     merge_exclude_columns = ["inserted_timestamp"],
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,tx_signer,tx_receiver,receipt_object_id,receiver_id,signer_id,owner_id,token_id);",
     tags = ['curated','scheduled_non_core']
 ) }}
 {# Note - multisource model #}

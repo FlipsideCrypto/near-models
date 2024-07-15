@@ -2,7 +2,8 @@
     materialized = 'table',
     unique_key = 'tx_hash',
     tags = ['curated','scheduled_non_core'],
-    cluster_by = ['_partition_by_block_number', 'block_timestamp::date']
+    cluster_by = ['block_timestamp::date','_partition_by_block_number'],
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,receiver_id,signer_id);",
 ) }}
 
 WITH pool_events AS (

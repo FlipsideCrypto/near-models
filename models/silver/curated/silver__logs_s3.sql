@@ -1,9 +1,10 @@
 {{ config(
     materialized = "incremental",
     merge_exclude_columns = ["inserted_timestamp"],
-    cluster_by = ["_inserted_timestamp::DATE","block_timestamp::DATE"],
+    cluster_by = ["block_timestamp::DATE","_modified_timestamp::DATE"],
     unique_key = "log_id",
     incremental_strategy = "merge",
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,receipt_object_id,receiver_id,predecessor_id,signer_id);",
     tags = ['curated', 'scheduled_core']
 ) }}
 
@@ -26,18 +27,18 @@ WITH receipts AS (
     FROM
         {{ ref('silver__streamline_receipts_final') }}
 
-    {% if var("MANUAL_FIX") %}
-      WHERE {{ partition_load_manual('no_buffer') }}
-    {% else %}
-            {% if is_incremental() %}
-        WHERE _modified_timestamp >= (
-            SELECT
-                MAX(_modified_timestamp)
-            FROM
-                {{ this }}
-        )
-    {% endif %}
-    {% endif %}
+        {% if var("MANUAL_FIX") %}
+        WHERE {{ partition_load_manual('no_buffer') }}
+        {% else %}
+{% if is_incremental() %}
+    WHERE _modified_timestamp >= (
+        SELECT
+            MAX(_modified_timestamp)
+        FROM
+            {{ this }}
+    )
+{% endif %}
+{% endif %}
 ),
 FINAL AS (
     SELECT

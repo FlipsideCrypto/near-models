@@ -4,6 +4,7 @@
     merge_exclude_columns = ["inserted_timestamp"],
     unique_key = "burrow_withdraws_id",
     cluster_by = ['block_timestamp::DATE'],
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,sender_id);",
     tags = ['curated','scheduled_non_core']
 ) }}
 

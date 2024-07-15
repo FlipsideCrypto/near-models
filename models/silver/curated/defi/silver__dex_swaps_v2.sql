@@ -3,6 +3,8 @@
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
     unique_key = 'dex_swaps_v2_id',
+    cluster_by = ['block_timestamp::DATE'],
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,receipt_object_id,receiver_id,signer_id,token_out,token_in);",
     tags = ['curated','scheduled_non_core'],
 ) }}
 {# Note - multisource model #}
@@ -26,19 +28,19 @@ WITH swap_logs AS (
         receipt_succeeded
         AND clean_log LIKE 'Swapped%'
         AND receiver_id NOT LIKE '%dragon_bot.near' 
-
+        
         {% if var("MANUAL_FIX") %}
-        AND {{ partition_load_manual('no_buffer') }}
+            AND {{ partition_load_manual('no_buffer') }}
         {% else %}
-            {% if is_incremental() %}
-            AND _modified_timestamp >= (
-                SELECT
-                    MAX(_modified_timestamp)
-                FROM
-                    {{ this }}
-            )
-        {% endif %}
-        {% endif %}
+{% if is_incremental() %}
+AND _modified_timestamp >= (
+    SELECT
+        MAX(_modified_timestamp)
+    FROM
+        {{ this }}
+)
+{% endif %}
+{% endif %}
 ),
 receipts AS (
     SELECT
@@ -57,19 +59,19 @@ receipts AS (
                 receipt_object_id
             FROM
                 swap_logs
-        )
+        ) 
         {% if var("MANUAL_FIX") %}
-        AND {{ partition_load_manual('no_buffer') }}
+            AND {{ partition_load_manual('no_buffer') }}
         {% else %}
-            {% if is_incremental() %}
-            AND _modified_timestamp >= (
-                SELECT
-                    MAX(_modified_timestamp)
-                FROM
-                    {{ this }}
-            )
-        {% endif %}
-        {% endif %}
+{% if is_incremental() %}
+AND _modified_timestamp >= (
+    SELECT
+        MAX(_modified_timestamp)
+    FROM
+        {{ this }}
+)
+{% endif %}
+{% endif %}
 ),
 swap_outcome AS (
     SELECT

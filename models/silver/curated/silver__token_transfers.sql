@@ -4,6 +4,7 @@
     cluster_by = ['block_timestamp::DATE'],
     unique_key = 'transfers_id',
     incremental_strategy = 'merge',
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,action_id,contract_address,from_address,to_address);",
     tags = ['curated','scheduled_non_core']
 ) }}
 {# Note - multisource model #}
@@ -24,39 +25,38 @@ WITH actions_events AS (
         logs,
         receipt_succeeded,
         _inserted_timestamp,
-        modified_timestamp as _modified_timestamp,
+        modified_timestamp AS _modified_timestamp,
         _partition_by_block_number
     FROM
         {{ ref('silver__actions_events_function_call_s3') }}
     WHERE
         receipt_succeeded = TRUE
         AND logs [0] IS NOT NULL
-        AND RIGHT(ACTION_ID, 1) = '0'
+        AND RIGHT(action_id, 1) = '0' 
 
-    {% if var("MANUAL_FIX") %}
-      AND {{ partition_load_manual('no_buffer') }}
-    {% else %}
-        {% if is_incremental() %}
-        AND _modified_timestamp >= (
-            SELECT
-                MAX(_modified_timestamp)
-            FROM
-                {{ this }}
-            WHERE
-                transfer_type = 'nep141'
-        )
-        {% endif %}
-    {% endif %}
-), 
+        {% if var("MANUAL_FIX") %}
+            AND {{ partition_load_manual('no_buffer') }}
+        {% else %}
+{% if is_incremental() %}
+AND _modified_timestamp >= (
+    SELECT
+        MAX(_modified_timestamp)
+    FROM
+        {{ this }}
+    WHERE
+        transfer_type = 'nep141'
+)
+{% endif %}
+{% endif %}
+),
 ----------------------------    Native Token Transfers   ------------------------------
 native_transfers AS (
-
     SELECT
         block_id,
         block_timestamp,
         tx_hash,
         action_id,
-        predecessor_id as from_address,
+        predecessor_id AS from_address,
         receiver_id AS to_address,
         IFF(REGEXP_LIKE(deposit, '^[0-9]+$'), deposit, NULL) AS amount_unadjusted,
         --numeric validation (there are some exceptions that needs to be ignored)
@@ -67,24 +67,24 @@ native_transfers AS (
     FROM
         {{ ref('silver__transfers_s3') }}
     WHERE
-        status = TRUE AND deposit != 0
+        status = TRUE AND deposit != 0 
 
-    {% if var("MANUAL_FIX") %}
-      AND {{ partition_load_manual('no_buffer') }}
-    {% else %}
-        {% if is_incremental() %}
-        AND _modified_timestamp >= (
-            SELECT
-                MAX(_modified_timestamp)
-            FROM
-                {{ this }}
-            WHERE
-                transfer_type = 'native'
+        {% if var("MANUAL_FIX") %}
+            AND {{ partition_load_manual('no_buffer') }}
+        {% else %}
+{% if is_incremental() %}
+AND _modified_timestamp >= (
+    SELECT
+        MAX(_modified_timestamp)
+    FROM
+        {{ this }}
+    WHERE
+        transfer_type = 'native'
 
-        )
-        {% endif %}
-    {% endif %}
-), 
+)
+{% endif %}
+{% endif %}
+),
 ------------------------------   NEAR Tokens (NEP 141) --------------------------------
 orders AS (
     SELECT
@@ -95,7 +95,7 @@ orders AS (
         receiver_id,
         TRY_PARSE_JSON(REPLACE(g.value, 'EVENT_JSON:')) AS DATA,
         DATA :event :: STRING AS event,
-        g.index as rn,
+        g.index AS rn,
         _inserted_timestamp,
         _modified_timestamp,
         _partition_by_block_number
@@ -105,7 +105,7 @@ orders AS (
             input => logs
         ) g
     WHERE
-        DATA :event:: STRING = 'order_added'
+        DATA :event :: STRING = 'order_added'
 ),
 orders_final AS (
     SELECT
@@ -120,7 +120,7 @@ orders_final AS (
             f.value :original_amount
         ) :: variant AS amount_unadjusted,
         'order' AS memo,
-        f.index as rn,
+        f.index AS rn,
         _inserted_timestamp,
         _modified_timestamp,
         _partition_by_block_number
@@ -157,7 +157,7 @@ add_liquidity AS (
             1
         ) :: variant AS amount_unadjusted,
         'add_liquidity' AS memo,
-        index as rn,
+        INDEX AS rn,
         _inserted_timestamp,
         _modified_timestamp,
         _partition_by_block_number
@@ -182,7 +182,7 @@ ft_transfers AS (
         tx_hash,
         action_id,
         TRY_PARSE_JSON(REPLACE(VALUE, 'EVENT_JSON:')) AS DATA,
-        b.index as logs_rn,
+        b.index AS logs_rn,
         receiver_id AS contract_address,
         _inserted_timestamp,
         _modified_timestamp,
@@ -193,7 +193,7 @@ ft_transfers AS (
             input => logs
         ) b
     WHERE
-        DATA :event:: STRING IN (
+        DATA :event :: STRING IN (
             'ft_transfer'
         )
 ),
@@ -214,7 +214,7 @@ ft_transfers_final AS (
         ) :: STRING AS to_address,
         f.value :amount :: variant AS amount_unadjusted,
         f.value :memo :: STRING AS memo,
-        logs_rn + f.index as rn,
+        logs_rn + f.index AS rn,
         _inserted_timestamp,
         _modified_timestamp,
         _partition_by_block_number
@@ -233,7 +233,7 @@ ft_mints AS (
         tx_hash,
         action_id,
         TRY_PARSE_JSON(REPLACE(VALUE, 'EVENT_JSON:')) AS DATA,
-        b.index as logs_rn,
+        b.index AS logs_rn,
         receiver_id AS contract_address,
         _inserted_timestamp,
         _modified_timestamp,
@@ -244,7 +244,7 @@ ft_mints AS (
             input => logs
         ) b
     WHERE
-        DATA :event:: STRING IN (
+        DATA :event :: STRING IN (
             'ft_mint'
         )
 ),
@@ -265,7 +265,7 @@ ft_mints_final AS (
         ) :: STRING AS to_address,
         f.value :amount :: variant AS amount_unadjusted,
         f.value :memo :: STRING AS memo,
-        logs_rn + f.index as rn,
+        logs_rn + f.index AS rn,
         _inserted_timestamp,
         _modified_timestamp,
         _partition_by_block_number
@@ -311,7 +311,7 @@ native_final AS (
         to_address :: STRING,
         NULL AS memo,
         '0' AS rn,
-        'native' as transfer_type,
+        'native' AS transfer_type,
         amount_unadjusted :: STRING AS amount_raw,
         amount_unadjusted :: FLOAT AS amount_raw_precise,
         _inserted_timestamp,
@@ -320,7 +320,6 @@ native_final AS (
     FROM
         native_transfers
 ),
-
 nep_final AS (
     SELECT
         block_id,
@@ -331,8 +330,8 @@ nep_final AS (
         from_address,
         to_address,
         memo,
-        rn :: STRING as rn,
-        'nep141' as transfer_type,
+        rn :: STRING AS rn,
+        'nep141' AS transfer_type,
         amount_unadjusted :: STRING AS amount_raw,
         amount_unadjusted :: FLOAT AS amount_raw_precise,
         _inserted_timestamp,
@@ -340,19 +339,18 @@ nep_final AS (
         _partition_by_block_number
     FROM
         nep_transfers
-    ),
+),
 ------------------------------   FINAL --------------------------------
 transfer_union AS (
-
-        SELECT
-            *
-        FROM
-            nep_final
-        UNION ALL
-        SELECT
-            *
-        FROM
-            native_final  
+    SELECT
+        *
+    FROM
+        nep_final
+    UNION ALL
+    SELECT
+        *
+    FROM
+        native_final
 ),
 FINAL AS (
     SELECT
@@ -373,8 +371,6 @@ FINAL AS (
         _partition_by_block_number
     FROM
         transfer_union
-
-
 )
 SELECT
     *,
