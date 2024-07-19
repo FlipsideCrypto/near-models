@@ -7,8 +7,7 @@
     cluster_by = ['block_timestamp::DATE','_modified_timestamp::DATE', '_partition_by_block_number', ],
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,receipt_object_id,receiver_id,signer_id);",
     tags = ['receipt_map','scheduled_core'],
-    full_refresh = False,
-    snowflake_warehouse='DBT_CLOUD_LARGE'
+    full_refresh = False
 ) }}
 
 WITH retry_range AS (
