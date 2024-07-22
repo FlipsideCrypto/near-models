@@ -1,6 +1,10 @@
 {{ config(
-    materialized = 'view',
-    secure = false,
+    materialized = 'incremental',
+    incremental_predicates = ["COALESCE(DBT_INTERNAL_DEST.block_timestamp::DATE,'2099-12-31') >= (select min(block_timestamp::DATE) from " ~ generate_tmp_view_name(this) ~ ")"],
+    unique_key = "fact_token_transfers_id",
+    incremental_strategy = 'merge',
+    merge_exclude_columns = ["inserted_timestamp"],
+    cluster_by = ['block_timestamp::DATE'],
     tags = ['core']
 ) }}
 
@@ -59,9 +63,12 @@ SELECT
         ELSE 'true'
     END AS has_price,
     transfer_type,
-    transfers_id AS fact_token_transfers_id,
-    inserted_timestamp,
-    modified_timestamp
+    {{ dbt_utils.generate_surrogate_key(
+        ['transfers_id']
+    ) }} AS fact_token_transfers_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
 FROM
     token_transfers t
 LEFT JOIN {{ ref('price__ez_prices_hourly') }} p
@@ -71,3 +78,31 @@ LEFT JOIN {{ ref('price__ez_prices_hourly') }} p
         t.block_timestamp
     ) = HOUR
 LEFT JOIN labels C USING (contract_address)
+{% if is_incremental() %}
+WHERE
+    GREATEST(
+        t.modified_timestamp,
+        COALESCE(
+            b.modified_timestamp,
+            '2000-01-01'
+        ),
+        COALESCE(
+            f.modified_timestamp,
+            '2000-01-01'
+        ),
+        COALESCE(
+            s.modified_timestamp,
+            '2000-01-01'
+        )
+    ) >= DATEADD(
+        'minute',
+        -5,(
+            SELECT
+                MAX(
+                    modified_timestamp
+                )
+            FROM
+                {{ this }}
+        )
+    )
+{% endif %}
