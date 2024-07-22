@@ -2,7 +2,7 @@ version: 2
 
 models:
   - name: core__ez_token_transfers
-    description: This table records all the token transfers native and nep-141
+    description: This table records all native token transfers and nep-141
     columns:
       - name: BLOCK_ID
         description: "{{ doc('block_id')}}"

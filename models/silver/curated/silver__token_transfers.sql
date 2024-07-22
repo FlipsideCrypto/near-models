@@ -37,17 +37,17 @@ WITH actions_events AS (
         {% if var("MANUAL_FIX") %}
             AND {{ partition_load_manual('no_buffer') }}
         {% else %}
-{% if is_incremental() %}
-AND _modified_timestamp >= (
-    SELECT
-        MAX(_modified_timestamp)
-    FROM
-        {{ this }}
-    WHERE
-        transfer_type = 'nep141'
-)
-{% endif %}
-{% endif %}
+            {% if is_incremental() %}
+            AND _modified_timestamp >= (
+                SELECT
+                    MAX(_modified_timestamp)
+                FROM
+                    {{ this }}
+                WHERE
+                    transfer_type = 'nep141'
+            )
+            {% endif %}
+        {% endif %}
 ),
 ----------------------------    Native Token Transfers   ------------------------------
 native_transfers AS (
