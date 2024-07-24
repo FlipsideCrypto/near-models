@@ -1,5 +1,6 @@
 {{ config(
     materialized = 'incremental',
+    incremental_predicates = ['DBT_INTERNAL_DEST._partition_by_block_number >= (select min(_partition_by_block_number) from ' ~ generate_tmp_view_name(this) ~ ')'],
     incremental_strategy = 'merge',
     merge_exclude_columns = ['inserted_timestamp'],
     unique_key = 'tx_hash',
