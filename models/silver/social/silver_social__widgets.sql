@@ -1,6 +1,5 @@
 {{ config(
     materialized = 'incremental',
-    incremental_predicates = ["COALESCE(DBT_INTERNAL_DEST.block_timestamp::DATE,'2099-12-31') >= (select min(block_timestamp::DATE) from " ~ generate_tmp_view_name(this) ~ ")"],
     merge_exclude_columns = ["inserted_timestamp"],
     unique_key = 'social_widgets_id',
     cluster_by = ['_inserted_timestamp::date', '_partition_by_block_number'],
