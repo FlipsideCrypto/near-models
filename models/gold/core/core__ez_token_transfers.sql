@@ -54,14 +54,6 @@ SELECT
     C.decimals AS decimals,
     C.symbol AS symbol,
     price AS token_price,
-    CASE
-        WHEN C.decimals IS NULL THEN 'false'
-        ELSE 'true'
-    END AS has_decimal,
-    CASE
-        WHEN price IS NULL THEN 'false'
-        ELSE 'true'
-    END AS has_price,
     transfer_type,
     {{ dbt_utils.generate_surrogate_key(
         ['transfers_id']
