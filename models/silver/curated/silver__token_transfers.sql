@@ -197,7 +197,7 @@ ft_transfers_method AS (
         ) b
     WHERE
         method_name = 'ft_transfer'
-        AND from_address IS NOT NULL and amount_unadjusted IS NOT NULL
+        AND from_address IS NOT NULL AND to_address IS NOT NULL AND amount_unadjusted IS NOT NULL
 ),
 ft_transfers_event AS (
     SELECT
@@ -404,7 +404,7 @@ FINAL AS (
 SELECT
     *,
     {{ dbt_utils.generate_surrogate_key(
-        ['tx_hash', 'action_id','contract_address','amount_raw','from_address','to_address','memo','rn']
+        ['tx_hash','rn']
     ) }} AS transfers_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
