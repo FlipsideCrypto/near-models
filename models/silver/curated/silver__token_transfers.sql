@@ -33,22 +33,22 @@ WITH actions_events AS (
     WHERE
         receipt_succeeded = TRUE
         AND logs [0] IS NOT NULL
-        AND RIGHT(action_id, 1) = '0' 
+        AND RIGHT(action_id, 2) = '-0' 
 
         {% if var("MANUAL_FIX") %}
             AND {{ partition_load_manual('no_buffer') }}
         {% else %}
-{% if is_incremental() %}
-AND _modified_timestamp >= (
-    SELECT
-        MAX(_modified_timestamp)
-    FROM
-        {{ this }}
-    WHERE
-        transfer_type = 'nep141'
-)
-{% endif %}
-{% endif %}
+            {% if is_incremental() %}
+            AND _modified_timestamp >= (
+                SELECT
+                    MAX(_modified_timestamp)
+                FROM
+                    {{ this }}
+                WHERE
+                    transfer_type = 'nep141'
+            )
+            {% endif %}
+        {% endif %}
 ),
 ----------------------------    Native Token Transfers   ------------------------------
 native_transfers AS (
@@ -73,14 +73,14 @@ native_transfers AS (
         {% if var("MANUAL_FIX") %}
             AND {{ partition_load_manual('no_buffer') }}
         {% else %}
-{% if is_incremental() %}
-AND _modified_timestamp >= (
-    SELECT
-        MAX(_modified_timestamp)
-    FROM
-        {{ this }}
-    WHERE
-        transfer_type = 'native'
+    {% if is_incremental() %}
+    AND _modified_timestamp >= (
+        SELECT
+            MAX(_modified_timestamp)
+        FROM
+            {{ this }}
+        WHERE
+            transfer_type = 'native'
 
 )
 {% endif %}
@@ -176,7 +176,31 @@ add_liquidity AS (
     WHERE
         logs [0] LIKE 'Liquidity added [%minted % shares'
 ),
-ft_transfers AS (
+ft_transfers_method AS (
+    SELECT
+        block_id,
+        block_timestamp,
+        tx_hash,
+        action_id,
+        receiver_id AS contract_address,
+        regexp_substr(VALUE, 'from ([^ ]+)', 1, 1, '', 1) :: STRING  as from_address,
+        regexp_substr(VALUE, 'to ([^ ]+)', 1, 1, '', 1):: STRING as to_address,
+        regexp_substr(VALUE, '\\d+') :: VARIANT as amount_unadjusted,
+        '' AS memo,
+        b.index AS rn,
+        _inserted_timestamp,
+        _modified_timestamp,
+        _partition_by_block_number
+    FROM
+        actions_events
+        JOIN LATERAL FLATTEN(
+            input => logs
+        ) b
+    WHERE
+        method_name = 'ft_transfer'
+        AND from_address IS NOT NULL AND to_address IS NOT NULL AND amount_unadjusted IS NOT NULL
+),
+ft_transfers_event AS (
     SELECT
         block_id,
         block_timestamp,
@@ -220,7 +244,7 @@ ft_transfers_final AS (
         _modified_timestamp,
         _partition_by_block_number
     FROM
-        ft_transfers
+        ft_transfers_event
         JOIN LATERAL FLATTEN(
             input => DATA :data
         ) f
@@ -279,6 +303,11 @@ ft_mints_final AS (
         amount_unadjusted > 0
 ),
 nep_transfers AS (
+    SELECT
+        *
+    FROM
+        ft_transfers_method
+    UNION ALL
     SELECT
         *
     FROM
