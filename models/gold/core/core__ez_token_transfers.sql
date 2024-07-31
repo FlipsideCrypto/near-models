@@ -75,15 +75,11 @@ WHERE
     GREATEST(
         t.modified_timestamp,
         COALESCE(
-            b.modified_timestamp,
+            p.modified_timestamp,
             '2000-01-01'
         ),
         COALESCE(
-            f.modified_timestamp,
-            '2000-01-01'
-        ),
-        COALESCE(
-            s.modified_timestamp,
+            c.modified_timestamp,
             '2000-01-01'
         )
     ) >= DATEADD(
