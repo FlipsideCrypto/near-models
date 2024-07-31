@@ -77,10 +77,6 @@ WHERE
         COALESCE(
             p.modified_timestamp,
             '2000-01-01'
-        ),
-        COALESCE(
-            c.modified_timestamp,
-            '2000-01-01'
         )
     ) >= DATEADD(
         'minute',
