@@ -43,6 +43,7 @@ jobs:
       - name: Run DBT Jobs
         run: |
           dbt test -s models/gold
+          dbt test -s tests__final_gaps
         continue-on-error: true
 
       - name: Log test results
