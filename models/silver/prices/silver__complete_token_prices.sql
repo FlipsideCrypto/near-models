@@ -7,11 +7,51 @@
     tags = ['scheduled_non_core', 'grail']
 ) }}
 
+WITH ranked_prices AS (
+    SELECT
+        HOUR,
+        LOWER(p.token_address) AS token_address,
+        asset_id,
+        symbol,
+        NAME,
+        decimals,
+        price,
+        blockchain,
+        blockchain_name,
+        blockchain_id,
+        is_imputed,
+        is_deprecated,
+        provider,
+        source,
+        _inserted_timestamp,
+        inserted_timestamp,
+        modified_timestamp,
+        complete_token_prices_id,
+        _invocation_id,
+        ROW_NUMBER() OVER (PARTITION BY HOUR ORDER BY 
+            CASE 
+                WHEN category = 'coingecko' THEN 1
+                WHEN category = 'coinmarketcap' THEN 2
+                ELSE 3
+            END, 
+            price ASC
+        ) AS rank
+    FROM
+        {{ ref('bronze__complete_token_prices') }} p
+    {% if is_incremental() %}
+    WHERE
+        modified_timestamp >= (
+            SELECT
+                MAX(modified_timestamp)
+            FROM
+                {{ this }}
+        )
+    {% endif %}
+)
+
 SELECT
     HOUR,
-    LOWER(
-        p.token_address
-    ) AS token_address,
+    token_address,
     asset_id,
     symbol,
     NAME,
@@ -30,19 +70,13 @@ SELECT
     complete_token_prices_id,
     _invocation_id
 FROM
-    {{ ref(
-        'bronze__complete_token_prices'
-    ) }}
-    p
-
-{% if is_incremental() %}
+    ranked_prices
 WHERE
-    modified_timestamp >= (
-        SELECT
-            MAX(
-                modified_timestamp
-            )
-        FROM
-            {{ this }}
-    )
-{% endif %}
+    rank = 1
+
+
+
+
+
+
+-- QUALIFY row_number() OVER (partition by HOUR, token_address, symbol ORDER BY price ASC) = 1
