@@ -46,3 +46,4 @@ WHERE
             {{ this }}
     )
 {% endif %}
+QUALIFY row_number() OVER (partition by HOUR, token_address, symbol ORDER BY price ASC) = 1
