@@ -8,61 +8,19 @@
     tags = ['core']
 ) }}
 
-WITH token_transfers AS (
+WITH hourly_prices AS (
 
-    SELECT
-        *
-    FROM
-        {{ ref('silver__token_transfers') }}
-    {% if is_incremental() %}
-    WHERE
-        _modified_timestamp >= DATEADD(
-            'minute',
-            -5,(
-                SELECT
-                    MAX(
-                        modified_timestamp
-                    )
-                FROM
-                    {{ this }}
-            )
-        )
-    {% endif %}
-),
-labels AS (
-    SELECT
-        contract_address,
-        NAME,
-        symbol,
-        decimals
-    FROM
-        {{ ref('silver__ft_contract_metadata') }}
-),
-hourly_prices AS (
     SELECT
         token_address,
         price,
         HOUR,
-        modified_timestamp,
-        ROW_NUMBER() OVER (PARTITION BY token_address, HOUR ORDER BY HOUR DESC) AS rn
+        modified_timestamp
     FROM
         {{ ref('price__ez_prices_hourly') }}
-    {% if is_incremental() %}
-    WHERE
-        modified_timestamp >= DATEADD(
-            'minute',
-            -5,(
-                SELECT
-                    MAX(
-                        modified_timestamp
-                    )
-                FROM
-                    {{ this }}
-            )
-        )
-    {% endif %}
+        qualify(ROW_NUMBER() over (PARTITION BY token_address, HOUR
+    ORDER BY
+        HOUR DESC) = 1)
 )
-
 SELECT
     block_id,
     block_timestamp,
@@ -100,12 +58,33 @@ SELECT
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
 FROM
-    token_transfers t
-LEFT JOIN  hourly_prices p
+    {{ ref('silver__token_transfers') }}
+    t
+    LEFT JOIN hourly_prices p
     ON t.contract_address = p.token_address
     AND DATE_TRUNC(
         'hour',
         t.block_timestamp
     ) = HOUR
-    AND p.rn = 0
-LEFT JOIN labels C USING (contract_address)
+    LEFT JOIN {{ ref('silver__ft_contract_metadata') }} C USING (contract_address)
+
+{% if is_incremental() %}
+WHERE
+    GREATEST(
+        t.modified_timestamp,
+        COALESCE(
+            C.modified_timestamp,
+            '2000-01-01'
+        )
+    ) >= DATEADD(
+        'minute',
+        -5,(
+            SELECT
+                MAX(
+                    modified_timestamp
+                )
+            FROM
+                {{ this }}
+        )
+    )
+{% endif %}
