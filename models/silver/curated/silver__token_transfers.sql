@@ -2,7 +2,7 @@
     materialized = 'incremental',
     incremental_predicates = ["COALESCE(DBT_INTERNAL_DEST.block_timestamp::DATE,'2099-12-31') >= (select min(block_timestamp::DATE) from " ~ generate_tmp_view_name(this) ~ ")"],
     merge_exclude_columns = ["inserted_timestamp"],
-    cluster_by = ['block_timestamp::DATE'],
+    cluster_by = ['block_timestamp::DATE','modified_timestamp::Date'],
     unique_key = 'transfers_id',
     incremental_strategy = 'merge',
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,action_id,contract_address,from_address,to_address);",
@@ -10,7 +10,6 @@
 ) }}
 {# Note - multisource model #}
 -- Curation Challenge - 'https://flipsidecrypto.xyz/Hossein/transfer-sector-of-near-curation-challenge-zgM44F'
-
 WITH actions_events AS (
 
     SELECT
@@ -33,22 +32,24 @@ WITH actions_events AS (
     WHERE
         receipt_succeeded = TRUE
         AND logs [0] IS NOT NULL
-        AND RIGHT(action_id, 2) = '-0' 
-
-        {% if var("MANUAL_FIX") %}
+        AND RIGHT(
+            action_id,
+            2
+        ) = '-0' {% if var("MANUAL_FIX") %}
             AND {{ partition_load_manual('no_buffer') }}
         {% else %}
-            {% if is_incremental() %}
-            AND _modified_timestamp >= (
-                SELECT
-                    MAX(_modified_timestamp)
-                FROM
-                    {{ this }}
-                WHERE
-                    transfer_type = 'nep141'
-            )
-            {% endif %}
-        {% endif %}
+
+{% if is_incremental() %}
+AND _modified_timestamp >= (
+    SELECT
+        MAX(_modified_timestamp)
+    FROM
+        {{ this }}
+    WHERE
+        transfer_type = 'nep141'
+)
+{% endif %}
+{% endif %}
 ),
 ----------------------------    Native Token Transfers   ------------------------------
 native_transfers AS (
@@ -68,20 +69,19 @@ native_transfers AS (
     FROM
         {{ ref('silver__transfers_s3') }}
     WHERE
-        status = TRUE AND deposit != 0 
-
-        {% if var("MANUAL_FIX") %}
+        status = TRUE
+        AND deposit != 0 {% if var("MANUAL_FIX") %}
             AND {{ partition_load_manual('no_buffer') }}
         {% else %}
-    {% if is_incremental() %}
-    AND _modified_timestamp >= (
-        SELECT
-            MAX(_modified_timestamp)
-        FROM
-            {{ this }}
-        WHERE
-            transfer_type = 'native'
 
+{% if is_incremental() %}
+AND _modified_timestamp >= (
+    SELECT
+        MAX(_modified_timestamp)
+    FROM
+        {{ this }}
+    WHERE
+        transfer_type = 'native'
 )
 {% endif %}
 {% endif %}
@@ -183,9 +183,26 @@ ft_transfers_method AS (
         tx_hash,
         action_id,
         receiver_id AS contract_address,
-        regexp_substr(VALUE, 'from ([^ ]+)', 1, 1, '', 1) :: STRING  as from_address,
-        regexp_substr(VALUE, 'to ([^ ]+)', 1, 1, '', 1):: STRING as to_address,
-        regexp_substr(VALUE, '\\d+') :: VARIANT as amount_unadjusted,
+        REGEXP_SUBSTR(
+            VALUE,
+            'from ([^ ]+)',
+            1,
+            1,
+            '',
+            1
+        ) :: STRING AS from_address,
+        REGEXP_SUBSTR(
+            VALUE,
+            'to ([^ ]+)',
+            1,
+            1,
+            '',
+            1
+        ) :: STRING AS to_address,
+        REGEXP_SUBSTR(
+            VALUE,
+            '\\d+'
+        ) :: variant AS amount_unadjusted,
         '' AS memo,
         b.index AS rn,
         _inserted_timestamp,
@@ -198,7 +215,9 @@ ft_transfers_method AS (
         ) b
     WHERE
         method_name = 'ft_transfer'
-        AND from_address IS NOT NULL AND to_address IS NOT NULL AND amount_unadjusted IS NOT NULL
+        AND from_address IS NOT NULL
+        AND to_address IS NOT NULL
+        AND amount_unadjusted IS NOT NULL
 ),
 ft_transfers_event AS (
     SELECT
@@ -329,7 +348,6 @@ nep_transfers AS (
         add_liquidity
 ),
 ------------------------------  MODELS --------------------------------
-
 native_final AS (
     SELECT
         block_id,
