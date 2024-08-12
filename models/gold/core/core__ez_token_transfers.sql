@@ -17,7 +17,9 @@ WITH hourly_prices AS (
         modified_timestamp
     FROM
         {{ ref('price__ez_prices_hourly') }}
-        qualify(ROW_NUMBER() over (PARTITION BY token_address, HOUR
+    WHERE
+        HOUR >= DATEADD(DAY, -1, SYSDATE())
+    QUALIFY(ROW_NUMBER() OVER (PARTITION BY token_address, HOUR
     ORDER BY
         HOUR DESC) = 1)
 )
