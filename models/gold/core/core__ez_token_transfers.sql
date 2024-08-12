@@ -74,10 +74,7 @@ FROM
 WHERE
     GREATEST(
         t.modified_timestamp,
-        COALESCE(
-            C.modified_timestamp,
             '2000-01-01'
-        )
     ) >= DATEADD(
         'minute',
         -5,(
