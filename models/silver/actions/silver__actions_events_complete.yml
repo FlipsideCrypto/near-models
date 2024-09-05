@@ -1,0 +1,106 @@
+version: 2
+
+models:
+  - name: silver__actions_events_complete
+    description: |-
+      This table extracts all action events from a receipt and stores the argument data under action_data.
+
+    columns:
+      - name: ACTION_ID
+        description: "{{ doc('action_id')}}"
+        tests:
+          - unique:
+              where: tx_hash != 'J4CZZQrZK6kYPVLkrdbTEpcqhUNZiRxktbMzHviqeGgf'
+          - not_null
+
+      - name: BLOCK_ID
+        description: "{{ doc('block_id')}}"
+
+      - name: BLOCK_TIMESTAMP
+        description: "{{ doc('block_timestamp')}}"
+        tests:
+          - not_null:
+              where: _inserted_timestamp <= current_timestamp - interval '1 hour'
+
+      - name: RECEIPT_OBJECT_ID
+        description: "{{ doc('receipt_object_id')}}"
+
+      - name: CHUNK_HASH
+        description: "{{ doc('chunk_hash')}}"
+        tests:
+          - not_null:
+              where: "block_id not in (34691244, 34691277)"
+
+      - name: RECEIVER_ID
+        description: "{{ doc('receiver_id')}}"
+
+      - name: PREDECESSOR_ID
+        description: "{{ doc('predecessor_id')}}"
+
+      - name: SIGNER_ID
+        description: "{{ doc('signer_id')}}"
+
+      - name: ACTION_INDEX
+        description: "{{ doc('action_index')}}"
+
+      - name: ACTION_NAME
+        description: "{{ doc('action_name')}}"
+
+      - name: ACTION_DATA
+        description: "{{ doc('action_data')}}"
+
+      - name: LOGS
+        description: "{{ doc('logs')}}"
+
+      - name: RECEIPT_SUCCEEDED
+        description: "{{ doc('receipt_succeeded')}}"
+
+      - name: TX_HASH
+        description: "{{ doc('tx_hash')}}"
+        tests:
+          - not_null
+      - name: TX_RECEIVER
+        description: "{{ doc('tx_receiver')}}"
+        tests:
+          - not_null
+      - name: TX_SIGNER
+        description: "{{ doc('tx_signer')}}"
+        tests:
+          - not_null
+      - name: GAS_USED
+        description: "{{ doc('gas_used')}}"
+        tests:
+          - not_null
+      - name: TRANSACTION_FEE
+        description: "{{ doc('transaction_fee')}}"
+        tests:
+          - not_null
+      - name: ATTACHED_GAS
+        description: "{{ doc('attached_gas')}}"
+        tests:
+          - not_null
+      - name: TX_SUCCEEDED
+        description: "{{ doc('tx_succeeded')}}"
+        tests:
+          - not_null
+
+      - name: _PARTITION_BY_BLOCK_NUMBER
+        description: "{{ doc('_partition_by_block_number')}}"
+
+      - name: _INSERTED_TIMESTAMP
+        description: "{{ doc('_inserted_timestamp')}}"
+
+      - name: _MODIFIED_TIMESTAMP
+        description: "{{ doc('_modified_timestamp')}}"
+
+      - name: ACTIONS_EVENTS_ID
+        description: "{{doc('id')}}"
+
+      - name: INSERTED_TIMESTAMP
+        description: "{{doc('inserted_timestamp')}}"
+
+      - name: MODIFIED_TIMESTAMP
+        description: "{{doc('modified_timestamp')}}"
+
+      - name: _INVOCATION_ID
+        description: "{{doc('invocation_id')}}"
