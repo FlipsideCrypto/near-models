@@ -54,7 +54,6 @@ tx_data AS (
     tx_succeeded
     FROM
         {{ ref('silver__streamline_transactions_final') }}
-    WHERE _partition_by_block_number between 91961000 and 91968000
     {% if var("MANUAL_FIX") %}
         WHERE
             {{ partition_load_manual('no_buffer') }}
@@ -125,7 +124,7 @@ FINAL AS (
         gas_used,
         transaction_fee,
         attached_gas,
-        tx_succeeded
+        tx_succeeded,
         _partition_by_block_number,
         _inserted_timestamp,
         _modified_timestamp
