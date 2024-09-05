@@ -35,7 +35,8 @@ WITH actions_events AS (
         AND RIGHT(
             action_id,
             2
-        ) = '-0' {% if var("MANUAL_FIX") %}
+        ) = '-0' 
+        {% if var("MANUAL_FIX") %}
             AND {{ partition_load_manual('no_buffer') }}
         {% else %}
 

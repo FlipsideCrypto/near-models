@@ -21,12 +21,8 @@ WITH external_shards AS (
             "shards"
         ) }}
     WHERE
-        _partition_by_block_number >= (
-            SELECT
-                MAX(_partition_by_block_number) - (3000 * {{ var('STREAMLINE_LOAD_LOOKBACK_HOURS') }})
-            FROM
-                {{ this }}
-        )
+        _partition_by_block_number between 126676000 and 126849000
+
 ),
 meta AS (
     SELECT
@@ -37,7 +33,7 @@ meta AS (
             information_schema.external_table_file_registration_history(
                 start_time => DATEADD(
                     'hour', 
-                    -{{ var('STREAMLINE_LOAD_LOOKBACK_HOURS') }},
+                    -124,
                     SYSDATE()
                 ),
                 table_name => '{{ source( 'streamline', 'shards' ) }}'
@@ -67,15 +63,6 @@ shards AS (
         external_shards e
         LEFT JOIN meta m USING (_filename)
 
-    {% if is_incremental() %}
-        WHERE
-            _inserted_timestamp >= (
-                SELECT
-                    MAX(_inserted_timestamp)
-                FROM
-                    {{ this }}
-            )
-    {% endif %}
 )
 SELECT
     *,

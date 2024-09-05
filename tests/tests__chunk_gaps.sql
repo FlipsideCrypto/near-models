@@ -76,7 +76,7 @@ WHERE
     chunk_ct_expected > 0
     AND is_missing 
     {# Filter out false positive from blocks at start of window #}
-    AND _inserted_timestamp_blocks > SYSDATE() - INTERVAL '7 days' + INTERVAL '1 hour'
-    AND _inserted_timestamp_shards > SYSDATE() - INTERVAL '7 days' + INTERVAL '1 hour'
+    {# AND _inserted_timestamp_blocks > SYSDATE() - INTERVAL '7 days' + INTERVAL '1 hour' #}
+    {# AND _inserted_timestamp_shards > SYSDATE() - INTERVAL '7 days' + INTERVAL '1 hour' #}
 ORDER BY
     1

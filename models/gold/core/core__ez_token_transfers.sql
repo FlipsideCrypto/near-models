@@ -70,6 +70,9 @@ FROM
     ) = HOUR
     LEFT JOIN {{ ref('silver__ft_contract_metadata') }} C USING (contract_address)
 
+    {% if var("MANUAL_FIX") %}
+      AND {{ partition_load_manual('no_buffer') }}
+    {% else %}
 {% if is_incremental() %}
 WHERE
     GREATEST(
@@ -86,4 +89,5 @@ WHERE
                 {{ this }}
         )
     )
+{% endif %}
 {% endif %}
