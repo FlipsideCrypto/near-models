@@ -95,3 +95,5 @@ SELECT
     *
 FROM
     ft_mints_final
+WHERE
+    mint_id IS NOT NULL
