@@ -2,10 +2,9 @@
     materialized = 'incremental',
     incremental_predicates = ["COALESCE(DBT_INTERNAL_DEST.block_timestamp::DATE,'2099-12-31') >= (select min(block_timestamp::DATE) from " ~ generate_tmp_view_name(this) ~ ")"],
     merge_exclude_columns = ["inserted_timestamp"],
-    cluster_by = ['block_timestamp::DATE','modified_timestamp::Date'],
-    unique_key = 'transfers_id',
+    cluster_by = ['block_timestamp::DATE','_modified_timestamp::Date'],
+    unique_key = 'action_id',
     incremental_strategy = 'merge',
-    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,action_id,contract_address,from_address,to_address);",
     tags = ['curated','scheduled_non_core']
 ) }}
 
@@ -34,21 +33,17 @@ WITH nep141 AS (
         AND RIGHT(
             action_id,
             2
-        ) = '-0' {% if var("MANUAL_FIX") %}
+        ) = '-0' 
+    {% if var("MANUAL_FIX") %}
             AND {{ partition_load_manual('no_buffer') }}
-        {% else %}
-
-    {% if is_incremental() %}
+    {% elif is_incremental() %}
     AND _modified_timestamp >= (
         SELECT
             MAX(_modified_timestamp)
         FROM
             {{ this }}
-        WHERE
-            transfer_type = 'nep141'
     )
     {% endif %}
-{% endif %}
 )
 SELECT
     *

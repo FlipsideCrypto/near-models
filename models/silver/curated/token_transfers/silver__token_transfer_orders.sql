@@ -2,23 +2,11 @@
     materialized = 'incremental',
     incremental_predicates = ["COALESCE(DBT_INTERNAL_DEST.block_timestamp::DATE,'2099-12-31') >= (select min(block_timestamp::DATE) from " ~ generate_tmp_view_name(this) ~ ")"],
     merge_exclude_columns = ["inserted_timestamp"],
-    cluster_by = ['block_timestamp::DATE','modified_timestamp::Date'],
-    unique_key = 'transfers_id',
+    cluster_by = ['block_timestamp::DATE','_modified_timestamp::Date'],
+    unique_key = 'action_id',
     incremental_strategy = 'merge',
-    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,action_id,contract_address,from_address,to_address);",
     tags = ['curated','scheduled_non_core']
 ) }}
-{{ config(
-    materialized = 'incremental',
-    incremental_predicates = ["COALESCE(DBT_INTERNAL_DEST.block_timestamp::DATE,'2099-12-31') >= (select min(block_timestamp::DATE) from " ~ generate_tmp_view_name(this) ~ ")"],
-    merge_exclude_columns = ["inserted_timestamp"],
-    cluster_by = ['block_timestamp::DATE','modified_timestamp::Date'],
-    unique_key = 'transfers_id',
-    incremental_strategy = 'merge',
-    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,action_id,contract_address,from_address,to_address);",
-    tags = ['curated','scheduled_non_core']
-) }}
-
 
 WITH actions_events AS (
 
@@ -35,10 +23,10 @@ WITH actions_events AS (
         logs,
         receipt_succeeded,
         _inserted_timestamp,
-        modified_timestamp AS _modified_timestamp,
+        _modified_timestamp,
         _partition_by_block_number
     FROM
-        {{silver__token_transfer_base}}
+        {{ ref('silver__token_transfer_base') }}
     {% if is_incremental() %}
     WHERE _modified_timestamp >= (
         SELECT
@@ -47,7 +35,6 @@ WITH actions_events AS (
             {{ this }}
     )
     {% endif %}
-{% endif %}
 ),
 orders AS (
     SELECT

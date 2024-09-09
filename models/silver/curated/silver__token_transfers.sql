@@ -12,239 +12,35 @@
 -- Curation Challenge - 'https://flipsidecrypto.xyz/Hossein/transfer-sector-of-near-curation-challenge-zgM44F'
 
 ------------------------------   NEAR Tokens (NEP 141) --------------------------------
-WITH orders AS (
-    SELECT
-        block_id,
-        block_timestamp,
-        tx_hash,
-        action_id,
-        receiver_id,
-        TRY_PARSE_JSON(REPLACE(g.value, 'EVENT_JSON:')) AS DATA,
-        DATA :event :: STRING AS event,
-        g.index AS rn,
-        _inserted_timestamp,
-        _modified_timestamp,
-        _partition_by_block_number
+WITH orders_final AS (
+    SELECT 
+        *
     FROM
-        actions_events
-        JOIN LATERAL FLATTEN(
-            input => logs
-        ) g
-    WHERE
-        DATA :event :: STRING = 'order_added'
-),
-orders_final AS (
-    SELECT
-        block_id,
-        block_timestamp,
-        tx_hash,
-        action_id,
-        f.value :sell_token :: STRING AS contract_address,
-        f.value :owner_id :: STRING AS from_address,
-        receiver_id :: STRING AS to_address,
-        (
-            f.value :original_amount
-        ) :: variant AS amount_unadjusted,
-        'order' AS memo,
-        f.index AS rn,
-        _inserted_timestamp,
-        _modified_timestamp,
-        _partition_by_block_number
-    FROM
-        orders
-        JOIN LATERAL FLATTEN(
-            input => DATA :data
-        ) f
-    WHERE
-        amount_unadjusted > 0
+        {{ref('silver__token_transfer_orders')}}
 ),
 add_liquidity AS (
     SELECT
-        block_id,
-        block_timestamp,
-        tx_hash,
-        action_id,
-        REGEXP_SUBSTR(
-            SPLIT.value,
-            '"\\d+ ([^"]*)["]',
-            1,
-            1,
-            'e',
-            1
-        ) :: STRING AS contract_address,
-        NULL AS from_address,
-        receiver_id AS to_address,
-        REGEXP_SUBSTR(
-            SPLIT.value,
-            '"(\\d+) ',
-            1,
-            1,
-            'e',
-            1
-        ) :: variant AS amount_unadjusted,
-        'add_liquidity' AS memo,
-        INDEX AS rn,
-        _inserted_timestamp,
-        _modified_timestamp,
-        _partition_by_block_number
+        *
     FROM
-        actions_events,
-        LATERAL FLATTEN (
-            input => SPLIT(
-                REGEXP_SUBSTR(
-                    logs [0],
-                    '\\["(.*?)"\\]'
-                ),
-                ','
-            )
-        ) SPLIT
-    WHERE
-        logs [0] LIKE 'Liquidity added [%minted % shares'
+        {{ref('silver__token_transfer_liquidity')}}
 ),
 ft_transfers_method AS (
     SELECT
-        block_id,
-        block_timestamp,
-        tx_hash,
-        action_id,
-        receiver_id AS contract_address,
-        REGEXP_SUBSTR(
-            VALUE,
-            'from ([^ ]+)',
-            1,
-            1,
-            '',
-            1
-        ) :: STRING AS from_address,
-        REGEXP_SUBSTR(
-            VALUE,
-            'to ([^ ]+)',
-            1,
-            1,
-            '',
-            1
-        ) :: STRING AS to_address,
-        REGEXP_SUBSTR(
-            VALUE,
-            '\\d+'
-        ) :: variant AS amount_unadjusted,
-        '' AS memo,
-        b.index AS rn,
-        _inserted_timestamp,
-        _modified_timestamp,
-        _partition_by_block_number
+        *
     FROM
-        actions_events
-        JOIN LATERAL FLATTEN(
-            input => logs
-        ) b
-    WHERE
-        method_name = 'ft_transfer'
-        AND from_address IS NOT NULL
-        AND to_address IS NOT NULL
-        AND amount_unadjusted IS NOT NULL
+        {{ref('silver__token_transfer_ft_transfers_method')}}
 ),
 ft_transfers_event AS (
     SELECT
-        block_id,
-        block_timestamp,
-        tx_hash,
-        action_id,
-        TRY_PARSE_JSON(REPLACE(VALUE, 'EVENT_JSON:')) AS DATA,
-        b.index AS logs_rn,
-        receiver_id AS contract_address,
-        _inserted_timestamp,
-        _modified_timestamp,
-        _partition_by_block_number
+        *
     FROM
-        actions_events
-        JOIN LATERAL FLATTEN(
-            input => logs
-        ) b
-    WHERE
-        DATA :event :: STRING IN (
-            'ft_transfer'
-        )
-),
-ft_transfers_final AS (
-    SELECT
-        block_id,
-        block_timestamp,
-        tx_hash,
-        action_id,
-        contract_address,
-        NVL(
-            f.value :old_owner_id,
-            NULL
-        ) :: STRING AS from_address,
-        NVL(
-            f.value :new_owner_id,
-            f.value :owner_id
-        ) :: STRING AS to_address,
-        f.value :amount :: variant AS amount_unadjusted,
-        f.value :memo :: STRING AS memo,
-        logs_rn + f.index AS rn,
-        _inserted_timestamp,
-        _modified_timestamp,
-        _partition_by_block_number
-    FROM
-        ft_transfers_event
-        JOIN LATERAL FLATTEN(
-            input => DATA :data
-        ) f
-    WHERE
-        amount_unadjusted > 0
-),
-ft_mints AS (
-    SELECT
-        block_id,
-        block_timestamp,
-        tx_hash,
-        action_id,
-        TRY_PARSE_JSON(REPLACE(VALUE, 'EVENT_JSON:')) AS DATA,
-        b.index AS logs_rn,
-        receiver_id AS contract_address,
-        _inserted_timestamp,
-        _modified_timestamp,
-        _partition_by_block_number
-    FROM
-        actions_events
-        JOIN LATERAL FLATTEN(
-            input => logs
-        ) b
-    WHERE
-        DATA :event :: STRING IN (
-            'ft_mint'
-        )
+        {{ref('silver__token_transfer_ft_transfers_event')}}
 ),
 ft_mints_final AS (
     SELECT
-        block_id,
-        block_timestamp,
-        tx_hash,
-        action_id,
-        contract_address,
-        NVL(
-            f.value :old_owner_id,
-            NULL
-        ) :: STRING AS from_address,
-        NVL(
-            f.value :new_owner_id,
-            f.value :owner_id
-        ) :: STRING AS to_address,
-        f.value :amount :: variant AS amount_unadjusted,
-        f.value :memo :: STRING AS memo,
-        logs_rn + f.index AS rn,
-        _inserted_timestamp,
-        _modified_timestamp,
-        _partition_by_block_number
+        *
     FROM
-        ft_mints
-        JOIN LATERAL FLATTEN(
-            input => DATA :data
-        ) f
-    WHERE
-        amount_unadjusted > 0
+        {{ref('silver__token_transfer_mints')}}
 ),
 nep_transfers AS (
     SELECT
@@ -255,10 +51,22 @@ nep_transfers AS (
     SELECT
         *
     FROM
-        ft_transfers_final
+        ft_transfers_event
     UNION ALL
     SELECT
-        *
+        block_id,
+        block_timestamp,
+        tx_hash,
+        action_id,
+        contract_address,
+        from_address,
+        to_address,
+        amount_unadjusted,
+        memo,
+        rn,
+        _inserted_timestamp,
+        _modified_timestamp,
+        _partition_by_block_number
     FROM
         ft_mints_final
     UNION ALL
@@ -271,6 +79,12 @@ nep_transfers AS (
         *
     FROM
         add_liquidity
+),
+native_transfers AS (
+    SELECT
+        *
+    FROM
+        {{ref('silver__token_transfer_base_native')}}
 ),
 ------------------------------  MODELS --------------------------------
 native_final AS (
