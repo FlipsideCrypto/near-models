@@ -1,7 +1,7 @@
 # Name your project! Project names should contain only lowercase characters
 # and underscores. A good package name should reflect your organization's
 # name or the intended use of these models
-name: "near"
+name: "near_models"
 version: "1.2.0"
 config-version: 2
 
