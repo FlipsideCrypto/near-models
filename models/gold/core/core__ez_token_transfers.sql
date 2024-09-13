@@ -60,7 +60,7 @@ SELECT
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
 FROM
-    {{ ref('silver__token_transfers') }}
+    {{ ref('silver__token_transfers_complete') }}
     t
     LEFT JOIN hourly_prices p
     ON t.contract_address = p.token_address

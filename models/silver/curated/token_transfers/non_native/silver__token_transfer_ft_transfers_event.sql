@@ -3,10 +3,11 @@
     incremental_predicates = ["COALESCE(DBT_INTERNAL_DEST.block_timestamp::DATE,'2099-12-31') >= (select min(block_timestamp::DATE) from " ~ generate_tmp_view_name(this) ~ ")"],
     merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = ['block_timestamp::DATE','_modified_timestamp::Date'],
-    unique_key = 'mint_id',
+    unique_key = 'transfers_event_id',
     incremental_strategy = 'merge',
     tags = ['curated','scheduled_non_core']
 ) }}
+
 
 WITH actions_events AS (
 
@@ -23,11 +24,13 @@ WITH actions_events AS (
         logs,
         receipt_succeeded,
         _inserted_timestamp,
-        _modified_timestamp,
+        modified_timestamp as _modified_timestamp,
         _partition_by_block_number
     FROM
         {{ ref('silver__token_transfer_base') }}
-    {% if is_incremental() %}
+    {% if var("MANUAL_FIX") %}
+            WHERE {{ partition_load_manual('no_buffer') }}            
+    {% elif is_incremental() %}
     WHERE _modified_timestamp >= (
         SELECT
             MAX(_modified_timestamp)
@@ -35,9 +38,8 @@ WITH actions_events AS (
             {{ this }}
     )
     {% endif %}
-)
-,
-ft_mints AS (
+),
+ft_transfers_event AS (
     SELECT
         block_id,
         block_timestamp,
@@ -56,10 +58,10 @@ ft_mints AS (
         ) b
     WHERE
         DATA :event :: STRING IN (
-            'ft_mint'
+            'ft_transfer'
         )
 ),
-ft_mints_final AS (
+ft_transfers_final AS (
     SELECT
         block_id,
         block_timestamp,
@@ -81,19 +83,20 @@ ft_mints_final AS (
         _modified_timestamp,
         _partition_by_block_number
     FROM
-        ft_mints
+        ft_transfers_event
         JOIN LATERAL FLATTEN(
             input => DATA :data
         ) f
     WHERE
         amount_unadjusted > 0
 )
-SELECT  
-     {{ dbt_utils.generate_surrogate_key(
-        ['action_id','rn']
-    ) }} AS mint_id,
-    *
+SELECT
+    *,
+  {{ dbt_utils.generate_surrogate_key(
+    ['action_id']
+  ) }} AS transfers_event_id,
+  SYSDATE() AS inserted_timestamp,
+  SYSDATE() AS modified_timestamp,
+  '{{ invocation_id }}' AS _invocation_id
 FROM
-    ft_mints_final
-WHERE
-    mint_id IS NOT NULL
+    ft_transfers_final

@@ -3,7 +3,7 @@
     incremental_predicates = ["COALESCE(DBT_INTERNAL_DEST.block_timestamp::DATE,'2099-12-31') >= (select min(block_timestamp::DATE) from " ~ generate_tmp_view_name(this) ~ ")"],
     merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = ['block_timestamp::DATE','_modified_timestamp::Date'],
-    unique_key = 'action_id',
+    unique_key = 'transfers_native_id',
     incremental_strategy = 'merge',
     tags = ['curated','scheduled_non_core']
 ) }}
@@ -37,7 +37,34 @@ WITH native_transfers AS (
             {{ this }}
     )
     {% endif %}
-)
+),
+FINAL AS (
 SELECT 
-    *
-FROM native_transfers
+    block_id,
+    block_timestamp,
+    tx_hash,
+    action_id,
+    'wrap.near' AS contract_address,
+    from_address :: STRING AS from_address,
+    to_address :: STRING AS to_address,
+    NULL AS memo,
+    '0' AS rn,
+    'native' AS transfer_type,
+    amount_unadjusted :: STRING AS amount_raw,
+    amount_unadjusted :: FLOAT AS amount_raw_precise,
+    _inserted_timestamp,
+    _modified_timestamp,
+    _partition_by_block_number
+FROM 
+    native_transfers
+)
+SELECT
+    *,
+  {{ dbt_utils.generate_surrogate_key(
+    ['action_id']
+  ) }} AS transfers_native_id,
+  SYSDATE() AS inserted_timestamp,
+  SYSDATE() AS modified_timestamp,
+  '{{ invocation_id }}' AS _invocation_id
+FROM
+    FINAL
