@@ -1,7 +1,7 @@
 {{ config(
     materialized = 'incremental',
     incremental_predicates = ["COALESCE(DBT_INTERNAL_DEST.block_timestamp::DATE,'2099-12-31') >= (select min(block_timestamp::DATE) from " ~ generate_tmp_view_name(this) ~ ")"],
-    unique_key = "fact_token_transfers_id",
+    unique_key = "ez_token_transfers_id",
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = ['block_timestamp::DATE'],
@@ -32,8 +32,8 @@ SELECT
     from_address,
     to_address,
     memo,
-    amount_raw,
-    amount_raw_precise,
+    amount_unadjusted :: STRING AS amount_raw,
+    amount_unadjusted :: FLOAT AS amount_raw_precise,
     IFF(
         C.decimals IS NOT NULL,
         utils.udf_decimal_adjust(
@@ -53,12 +53,9 @@ SELECT
     C.symbol AS symbol,
     price AS token_price,
     transfer_type,
-    {{ dbt_utils.generate_surrogate_key(
-        ['transfers_id']
-    ) }} AS fact_token_transfers_id,
+    transfers_complete_id AS ez_token_transfers_id,
     SYSDATE() AS inserted_timestamp,
-    SYSDATE() AS modified_timestamp,
-    '{{ invocation_id }}' AS _invocation_id
+    SYSDATE() AS modified_timestamp
 FROM
     {{ ref('silver__token_transfers_complete') }}
     t

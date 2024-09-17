@@ -5,7 +5,7 @@
   cluster_by = ['block_timestamp::DATE'],
   unique_key = 'action_id',
   incremental_strategy = 'merge',
-  post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,action_id, tx_hash,tx_signer,tx_receiver,predecessor_id,signer_id,receiver_id);",
+  post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,action_id,predecessor_id,receiver_id);",
   tags = ['curated','scheduled_non_core']
 ) }}
 {# Note - multisource model #}

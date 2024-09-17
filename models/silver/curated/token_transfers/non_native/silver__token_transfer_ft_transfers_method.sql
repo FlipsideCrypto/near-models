@@ -2,10 +2,9 @@
 {{ config(
     materialized = 'incremental',
     incremental_predicates = ["COALESCE(DBT_INTERNAL_DEST.block_timestamp::DATE,'2099-12-31') >= (select min(block_timestamp::DATE) from " ~ generate_tmp_view_name(this) ~ ")"],
-    merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = ['block_timestamp::DATE','_modified_timestamp::Date'],
     unique_key = 'action_id',
-    incremental_strategy = 'merge',
+    incremental_strategy = 'delete+insert',
     tags = ['curated','scheduled_non_core']
 ) }}
 

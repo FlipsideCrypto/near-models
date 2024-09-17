@@ -3,13 +3,48 @@
     incremental_predicates = ["COALESCE(DBT_INTERNAL_DEST.block_timestamp::DATE,'2099-12-31') >= (select min(block_timestamp::DATE) from " ~ generate_tmp_view_name(this) ~ ")"],
     merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = ['block_timestamp::DATE','modified_timestamp::Date'],
-    unique_key = 'transfers_id',
+    unique_key = 'transfers_complete_id',
     incremental_strategy = 'merge',
-    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,action_id,contract_address,from_address,to_address);",
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,contract_address,from_address,to_address);",
     tags = ['curated','scheduled_non_core']
 ) }}
 
 WITH native_transfers AS (
+
+    SELECT
+        block_id,
+        block_timestamp,
+        tx_hash,
+        action_id,
+        '0' AS rn,
+        'wrap.near' AS contract_address,
+        predecessor_id AS from_address,
+        receiver_id AS to_address,
+        NULL AS memo,
+        IFF(REGEXP_LIKE(deposit, '^[0-9]+$'), deposit, NULL) AS amount_unadjusted,
+        -- unadj, raw, adj?
+        'native' AS transfer_type,
+        _inserted_timestamp,
+        modified_timestamp AS _modified_timestamp,
+        _partition_by_block_number
+    FROM
+        {{ ref('silver__transfers_s3') }}
+
+        {% if var("MANUAL_FIX") %}
+        WHERE
+            {{ partition_load_manual('no_buffer') }}
+
+            {% elif is_incremental() and 'native' not in var('HEAL_MODELS') %}
+        WHERE
+            _modified_timestamp >= (
+                SELECT
+                    MAX(_modified_timestamp)
+                FROM
+                    {{ this }}
+            )
+        {% endif %}
+),
+ft_transfers_method AS (
     SELECT
         block_id,
         block_timestamp,
@@ -20,27 +55,30 @@ WITH native_transfers AS (
         from_address,
         to_address,
         memo,
-        amount_raw,
-        amount_raw_precise,
-        transfer_type,
+        amount_unadjusted,
+        'nep141' AS transfer_type,
         _inserted_timestamp,
-        modified_timestamp as _modified_timestamp,
+        modified_timestamp AS _modified_timestamp,
         _partition_by_block_number
     FROM
-        {{ref('silver__token_transfer_native')}}
-    {% if var("MANUAL_FIX") %}
-            WHERE {{ partition_load_manual('no_buffer') }}            
-    {% elif is_incremental() %}
-    WHERE _modified_timestamp >= (
-        SELECT
-            MAX(_modified_timestamp)
-        FROM
-            {{ this }}
-    )
-    {% endif %}
+        {{ ref('silver__token_transfer_ft_transfers_method') }}
+
+        {% if var("MANUAL_FIX") %}
+        WHERE
+            {{ partition_load_manual('no_buffer') }}
+
+            {% elif is_incremental() and 'ft_transfers_method' not in var('HEAL_MODELS') %}
+        WHERE
+            _modified_timestamp >= (
+                SELECT
+                    MAX(_modified_timestamp)
+                FROM
+                    {{ this }}
+            )
+        {% endif %}
 ),
-non_native AS (
-    SELECT 
+ft_transfers_event AS (
+    SELECT
         block_id,
         block_timestamp,
         tx_hash,
@@ -50,41 +88,176 @@ non_native AS (
         from_address,
         to_address,
         memo,
-        amount_raw,
-        amount_raw_precise,
-        transfer_type,
+        amount_unadjusted,
+        'nep141' AS transfer_type,
         _inserted_timestamp,
-        modified_timestamp as _modified_timestamp,
+        modified_timestamp AS _modified_timestamp,
         _partition_by_block_number
     FROM
-        {{ref('silver__token_transfer_non_native_complete')}}
-    {% if var("MANUAL_FIX") %}
-            WHERE {{ partition_load_manual('no_buffer') }}            
-    {% elif is_incremental() %}
-        WHERE  _modified_timestamp >= (
-        SELECT
-            MAX(_modified_timestamp)
-        FROM
-            {{ this }}
-    )
-    {% endif %}
+        {{ ref('silver__token_transfer_ft_transfers_event') }}
+
+        {% if var("MANUAL_FIX") %}
+        WHERE
+            {{ partition_load_manual('no_buffer') }}
+
+            {% elif is_incremental() and 'ft_transfers_event' not in var('HEAL_MODELS') %}
+        WHERE
+            _modified_timestamp >= (
+                SELECT
+                    MAX(_modified_timestamp)
+                FROM
+                    {{ this }}
+            )
+        {% endif %}
+),
+mints AS (
+    SELECT
+        block_id,
+        block_timestamp,
+        tx_hash,
+        action_id,
+        rn,
+        contract_address,
+        from_address,
+        to_address,
+        memo,
+        amount_unadjusted,
+        'nep141' AS transfer_type,
+        _inserted_timestamp,
+        modified_timestamp AS _modified_timestamp,
+        _partition_by_block_number
+    FROM
+        {{ ref('silver__token_transfer_mints') }}
+
+        {% if var("MANUAL_FIX") %}
+        WHERE
+            {{ partition_load_manual('no_buffer') }}
+
+            {% elif is_incremental() and 'mints' not in var('HEAL_MODELS') %}
+        WHERE
+            _modified_timestamp >= (
+                SELECT
+                    MAX(_modified_timestamp)
+                FROM
+                    {{ this }}
+            )
+        {% endif %}
+),
+orders AS (
+    SELECT
+        block_id,
+        block_timestamp,
+        tx_hash,
+        action_id,
+        rn,
+        contract_address,
+        from_address,
+        to_address,
+        memo,
+        amount_unadjusted,
+        'nep141' AS transfer_type,
+        _inserted_timestamp,
+        modified_timestamp AS _modified_timestamp,
+        _partition_by_block_number
+    FROM
+        {{ ref('silver__token_transfer_orders') }}
+
+        {% if var("MANUAL_FIX") %}
+        WHERE
+            {{ partition_load_manual('no_buffer') }}
+
+            {% elif is_incremental() and 'orders' not in var('HEAL_MODELS') %}
+        WHERE
+            _modified_timestamp >= (
+                SELECT
+                    MAX(_modified_timestamp)
+                FROM
+                    {{ this }}
+            )
+        {% endif %}
+),
+liquidity AS (
+    SELECT
+        block_id,
+        block_timestamp,
+        tx_hash,
+        action_id,
+        rn,
+        contract_address,
+        from_address,
+        to_address,
+        memo,
+        amount_unadjusted,
+        'nep141' AS transfer_type,
+        _inserted_timestamp,
+        modified_timestamp AS _modified_timestamp,
+        _partition_by_block_number
+    FROM
+        {{ ref('silver__token_transfer_liquidity') }}
+
+        {% if var("MANUAL_FIX") %}
+        WHERE
+            {{ partition_load_manual('no_buffer') }}
+
+            {% elif is_incremental() and 'liquidity' not in var('HEAL_MODELS') %}
+        WHERE
+            _modified_timestamp >= (
+                SELECT
+                    MAX(_modified_timestamp)
+                FROM
+                    {{ this }}
+            )
+        {% endif %}
 ),
 FINAL AS (
     SELECT
         *
     FROM
-        non_native
+        native_transfers
     UNION ALL
     SELECT
         *
     FROM
-       native_transfers
+        ft_transfers_method
+    UNION ALL
+    SELECT
+        *
+    FROM
+        ft_transfers_event
+    UNION ALL
+    SELECT
+        *
+    FROM
+        mints
+    UNION ALL
+    SELECT
+        *
+    FROM
+        orders
+    UNION ALL
+    SELECT
+        *
+    FROM
+        liquidity
 )
 SELECT
-    *,
+    block_id,
+    block_timestamp,
+    tx_hash,
+    action_id,
+    rn,
+    contract_address,
+    from_address,
+    to_address,
+    memo,
+    amount_unadjusted,
+    transfer_type,
+    _inserted_timestamp,
+    _modified_timestamp,
+    _partition_by_block_number,
     {{ dbt_utils.generate_surrogate_key(
-        ['tx_hash', 'action_id','contract_address','amount_raw','from_address','to_address','memo','rn']
-    ) }} AS transfers_id,
+        ['action_id','contract_address','amount_unadjusted','from_address','to_address','rn']
+    ) }} AS transfers_complete_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id

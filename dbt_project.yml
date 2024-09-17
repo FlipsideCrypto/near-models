@@ -64,6 +64,7 @@ vars:
   STREAMLINE_LOAD_LOOKBACK_HOURS: 3
   RECEIPT_MAP_LOOKBACK_HOURS: 6
   IS_MIGRATION: False
+  HEAL_MODELS: []
 
 dispatch:
   - macro_namespace: dbt

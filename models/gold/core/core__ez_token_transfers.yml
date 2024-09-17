@@ -3,6 +3,12 @@ version: 2
 models:
   - name: core__ez_token_transfers
     description: This table records all native token transfers and nep-141
+    tests:
+      - dbt_utils.recency:
+          datepart: hour
+          field: block_timestamp
+          interval: 2
+
     columns:
       - name: BLOCK_ID
         description: "{{ doc('block_id')}}"
@@ -51,7 +57,7 @@ models:
       - name: HAS_PRICE
         description: "Boolean value indicating if the token has a price"
 
-      - name: FACT_TOKEN_TRANSFERS_ID
+      - name: EZ_TOKEN_TRANSFERS_ID
         description: "{{doc('id')}}"
         tests:
           - unique:

@@ -15,6 +15,7 @@ WITH nep141 AS (
         block_timestamp,
         tx_hash,
         action_id,
+        predecessor_id,
         signer_id,
         receiver_id,
         action_name,
