@@ -75,7 +75,7 @@ ft_mints_final AS (
             f.value :new_owner_id,
             f.value :owner_id
         ) :: STRING AS to_address,
-        f.value :amount :: variant AS amount_unadjusted,
+        f.value :amount :: variant AS amount_unadj,
         f.value :memo :: STRING AS memo,
         logs_rn + f.index AS rn,
         _inserted_timestamp,
@@ -87,7 +87,7 @@ ft_mints_final AS (
             input => DATA :data
         ) f
     WHERE
-        amount_unadjusted > 0
+        amount_unadj > 0
 )
 SELECT  
     *,

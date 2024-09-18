@@ -61,7 +61,7 @@ add_liquidity AS (
             1,
             'e',
             1
-        ) :: variant AS amount_unadjusted,
+        ) :: variant AS amount_unadj,
         'add_liquidity' AS memo,
         INDEX AS rn,
         _inserted_timestamp,

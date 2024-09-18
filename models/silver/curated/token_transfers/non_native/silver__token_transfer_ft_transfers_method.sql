@@ -65,7 +65,7 @@ ft_transfers_method AS (
         REGEXP_SUBSTR(
             VALUE,
             '\\d+'
-        ) :: variant AS amount_unadjusted,
+        ) :: variant AS amount_unadj,
         '' AS memo,
         b.index AS rn,
         _inserted_timestamp,
@@ -80,7 +80,7 @@ ft_transfers_method AS (
         method_name = 'ft_transfer'
         AND from_address IS NOT NULL
         AND to_address IS NOT NULL
-        AND amount_unadjusted IS NOT NULL
+        AND amount_unadj IS NOT NULL
 )
 SELECT
     *,

@@ -32,8 +32,8 @@ SELECT
     from_address,
     to_address,
     memo,
-    amount_unadjusted :: STRING AS amount_raw,
-    amount_unadjusted :: FLOAT AS amount_raw_precise,
+    amount_unadj :: STRING AS amount_raw,
+    amount_unadj :: FLOAT AS amount_raw_precise,
     IFF(
         C.decimals IS NOT NULL,
         utils.udf_decimal_adjust(

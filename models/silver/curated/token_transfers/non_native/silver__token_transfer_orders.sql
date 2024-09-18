@@ -69,7 +69,7 @@ orders_final AS (
         receiver_id :: STRING AS to_address,
         (
             f.value :original_amount
-        ) :: variant AS amount_unadjusted,
+        ) :: variant AS amount_unadj,
         'order' AS memo,
         f.index AS rn,
         _inserted_timestamp,
@@ -81,7 +81,7 @@ orders_final AS (
             input => DATA :data
         ) f
     WHERE
-        amount_unadjusted > 0
+        amount_unadj > 0
 )
 SELECT  
     *,

@@ -74,6 +74,9 @@ models:
 
       - name: TRANSFERS_ID
         description: "{{doc('id')}}"
+        tests:
+          - not_null
+          - unique
 
       - name: INSERTED_TIMESTAMP
         description: "{{doc('inserted_timestamp')}}"
