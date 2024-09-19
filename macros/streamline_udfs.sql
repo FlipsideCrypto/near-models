@@ -60,3 +60,25 @@
         'https://jfqhk99kj1.execute-api.us-east-1.amazonaws.com/stg/s3/copy_objects'
     {%- endif %};
 {% endmacro %}
+
+{% macro create_udf_decode_withrawal_event() %}
+    CREATE
+    OR REPLACE EXTERNAL FUNCTION streamline.udf_decode_near_event(
+        DATA STRING
+    ) returns ARRAY api_integration = aws_near_api_stg_v2 AS {% if target.name == "prod" %}
+        ''
+    {% else %}
+        'https://cx7cyhtcjf.execute-api.us-east-1.amazonaws.com/stg/decode_withdrawal_event'
+    {%- endif %};
+{% endmacro %}
+
+{% macro create_udf_bulk_decode_near_events() %}
+    CREATE
+    OR REPLACE EXTERNAL FUNCTION streamline.udf_bulk_decode_near_events(
+        json OBJECT
+    ) returns ARRAY api_integration = aws_near_api_stg_v2 AS {% if target.name == "prod" %}
+        ''
+    {% else %}
+        'https://cx7cyhtcjf.execute-api.us-east-1.amazonaws.com/stg/bulk_decode_near_events'
+    {%- endif %};
+{% endmacro %}
