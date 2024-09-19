@@ -28,13 +28,14 @@ WITH native_transfers AS (
         _partition_by_block_number
     FROM
         {{ ref('silver__transfers_s3') }}
-
+    WHERE
+        status = TRUE AND deposit != 0
         {% if var("MANUAL_FIX") %}
-        WHERE
+        AND
             {{ partition_load_manual('no_buffer') }}
 
-            {% elif is_incremental() and 'native' not in var('HEAL_MODELS') %}
-        WHERE
+            {% elif is_incremental() %}
+        AND
             _modified_timestamp >= (
                 SELECT
                     MAX(_modified_timestamp)
@@ -66,7 +67,7 @@ ft_transfers_method AS (
         WHERE
             {{ partition_load_manual('no_buffer') }}
 
-            {% elif is_incremental() and 'ft_transfers_method' not in var('HEAL_MODELS') %}
+            {% elif is_incremental() %}
         WHERE
             _modified_timestamp >= (
                 SELECT
@@ -99,7 +100,7 @@ ft_transfers_event AS (
         WHERE
             {{ partition_load_manual('no_buffer') }}
 
-            {% elif is_incremental() and 'ft_transfers_event' not in var('HEAL_MODELS') %}
+            {% elif is_incremental() %}
         WHERE
             _modified_timestamp >= (
                 SELECT
@@ -132,7 +133,7 @@ mints AS (
         WHERE
             {{ partition_load_manual('no_buffer') }}
 
-            {% elif is_incremental() and 'mints' not in var('HEAL_MODELS') %}
+            {% elif is_incremental() %}
         WHERE
             _modified_timestamp >= (
                 SELECT
@@ -165,7 +166,7 @@ orders AS (
         WHERE
             {{ partition_load_manual('no_buffer') }}
 
-            {% elif is_incremental() and 'orders' not in var('HEAL_MODELS') %}
+            {% elif is_incremental() %}
         WHERE
             _modified_timestamp >= (
                 SELECT
@@ -198,7 +199,7 @@ liquidity AS (
         WHERE
             {{ partition_load_manual('no_buffer') }}
 
-            {% elif is_incremental() and 'liquidity' not in var('HEAL_MODELS') %}
+            {% elif is_incremental() %}
         WHERE
             _modified_timestamp >= (
                 SELECT
