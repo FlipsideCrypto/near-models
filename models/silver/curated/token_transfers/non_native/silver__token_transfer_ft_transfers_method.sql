@@ -1,9 +1,10 @@
 {{ config(
     materialized = 'incremental',
+    incremental_predicates = ["COALESCE(DBT_INTERNAL_DEST.block_timestamp::DATE,'2099-12-31') >= (select min(block_timestamp::DATE) from " ~ generate_tmp_view_name(this) ~ ")"],
     merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = ['block_timestamp::DATE','_modified_timestamp::Date'],
     unique_key = 'transfers_id',
-    incremental_strategy = 'delete+insert',
+    incremental_strategy = 'merge',
     tags = ['curated','scheduled_non_core']
 ) }}
 
@@ -83,7 +84,7 @@ ft_transfers_method AS (
 SELECT
     *,
   {{ dbt_utils.generate_surrogate_key(
-    ['action_id']
+    ['tx_hash', 'action_id','contract_address','amount_unadj','from_address','to_address','memo','rn']
   ) }} AS transfers_id,
   SYSDATE() AS inserted_timestamp,
   SYSDATE() AS modified_timestamp,
