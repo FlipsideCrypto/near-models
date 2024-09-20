@@ -86,7 +86,7 @@ add_liquidity AS (
 SELECT
     *,
   {{ dbt_utils.generate_surrogate_key(
-        'tx_hash', 'action_id','contract_address','amount_raw','from_address','to_address','memo','rn']
+    ['tx_hash', 'action_id','contract_address','amount_raw','from_address','to_address','memo','rn']
   ) }} AS transfers_liquidity_id,
   SYSDATE() AS inserted_timestamp,
   SYSDATE() AS modified_timestamp,
