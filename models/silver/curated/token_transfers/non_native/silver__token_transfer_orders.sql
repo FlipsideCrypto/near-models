@@ -1,9 +1,10 @@
 {{ config(
     materialized = 'incremental',
     merge_exclude_columns = ["inserted_timestamp"],
+    incremental_predicates = ["COALESCE(DBT_INTERNAL_DEST.block_timestamp::DATE,'2099-12-31') >= (select min(block_timestamp::DATE) from " ~ generate_tmp_view_name(this) ~ ")"],
     cluster_by = ['block_timestamp::DATE','_modified_timestamp::Date'],
     unique_key = 'transfers_orders_id',
-    incremental_strategy = 'delete+insert',
+    incremental_strategy = 'merge',
     tags = ['curated','scheduled_non_core']
 ) }}
 
@@ -86,7 +87,7 @@ orders_final AS (
 SELECT  
     *,
     {{ dbt_utils.generate_surrogate_key(
-        ['action_id']
+        ['action_id','rn']
     ) }} AS transfers_orders_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
