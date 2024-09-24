@@ -6,13 +6,14 @@
     unique_key = 'state_change_id',
     cluster_by = ['modified_timestamp::date', '_partition_by_block_number']
 ) }}
-
+-- https://app.snowflake.com/zsniary/exa10207/#/compute/history/queries/01b73a95-0411-29e0-3d4f-83027386d7bb/detail
+-- Took 3h16m on 2XL
 WITH shards AS (
 
     SELECT
         block_id,
         shard_id,
-        state_change,
+        state_changes,
         _partition_by_block_number,
         COALESCE(
             modified_timestamp,
@@ -21,18 +22,20 @@ WITH shards AS (
     FROM
         {{ ref('silver__streamline_shards') }}
     WHERE
-        ARRAY_SIZE(state_change) > 0 {% if var('MANUAL_FIX') %}
-            AND {{ partition_load_manual('no_buffer') }}
-        {% else %}
+        ARRAY_SIZE(state_changes) > 0 
 
-{% if is_incremental() %}
-AND _modified_timestamp >= (
-    SELECT
-        MAX(modified_timestamp)
-    FROM
-        {{ this }}
-)
-{% endif %}
+{% if var('MANUAL_FIX') %}
+    AND {{ partition_load_manual('no_buffer') }}
+{% else %}
+
+    {% if is_incremental() %}
+    AND _modified_timestamp >= (
+        SELECT
+            MAX(modified_timestamp)
+        FROM
+            {{ this }}
+    )
+    {% endif %}
 {% endif %}
 ),
 flatten_state_change AS (
@@ -52,6 +55,8 @@ flatten_state_change AS (
 SELECT
     block_id,
     shard_id,
+    value,
+    index,
     state_change_cause,
     state_changes,
     state_change_type,

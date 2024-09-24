@@ -21,15 +21,15 @@ WITH native_transfers AS (
         predecessor_id AS from_address,
         receiver_id AS to_address,
         NULL AS memo,
-        IFF(REGEXP_LIKE(deposit, '^[0-9]+$'), deposit, NULL) AS amount_unadj,
+        amount_unadj,
         'native' AS transfer_type,
         _inserted_timestamp,
         modified_timestamp AS _modified_timestamp,
         _partition_by_block_number
     FROM
-        {{ ref('silver__transfers_s3') }}
+        {{ ref('silver__token_transfer_native') }}
     WHERE
-        status = TRUE AND deposit != 0
+        receipt_succeeded
         {% if var("MANUAL_FIX") %}
         AND
             {{ partition_load_manual('no_buffer') }}

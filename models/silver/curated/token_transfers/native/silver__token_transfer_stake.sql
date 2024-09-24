@@ -30,7 +30,8 @@ WITH action_events AS(
     FROM
         {{ ref('silver__actions_events_s3') }}
     WHERE
-        action_name = 'Stake' {% if var("MANUAL_FIX") %}
+        action_name = 'Stake' 
+        {% if var("MANUAL_FIX") %}
             AND {{ partition_load_manual('no_buffer') }}
         {% else %}
 

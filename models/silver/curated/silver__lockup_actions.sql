@@ -71,12 +71,12 @@ xfers AS (
         action_id,
         block_timestamp,
         block_id,
-        deposit,
+        amount_unadj :: INT AS deposit,
         _partition_by_block_number,
         _inserted_timestamp,
         modified_timestamp AS _modified_timestamp
     FROM
-        {{ ref('silver__transfers_s3') }}
+        {{ ref('silver__token_transfer_native') }}
 
     {% if var("MANUAL_FIX") %}
       WHERE {{ partition_load_manual('no_buffer') }}
