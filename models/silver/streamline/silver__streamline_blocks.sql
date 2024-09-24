@@ -73,6 +73,9 @@ blocks AS (
         LEFT JOIN meta m USING (
             _filename
         )
+        
+    {% if not var('MANUAL_FIX') %}
+
     {% if is_incremental() %}
         WHERE
             _inserted_timestamp >= (
@@ -81,6 +84,7 @@ blocks AS (
                 FROM
                     {{ this }}
             )
+    {% endif %}
     {% endif %}
 
 )
