@@ -42,8 +42,7 @@ jobs:
           dbt deps
       - name: Run DBT Jobs
         run: |
-          dbt test -s models/gold
-          dbt test -s tests__final_gaps
+          dbt test -s models/gold tests__final_gaps tag:gap_test
         continue-on-error: true
 
       - name: Log test results
