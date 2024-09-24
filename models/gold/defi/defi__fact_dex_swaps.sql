@@ -11,6 +11,7 @@ SELECT
     block_id,
     block_timestamp,
     receiver_id,
+    predecessor_id,
     signer_id,
     swap_index,
     amount_out_raw,
@@ -19,6 +20,8 @@ SELECT
     token_in,
     swap_input_data,
     LOG,
+    total_fee,
+    admin_fee,
     dex_swaps_v2_id AS fact_dex_swaps_id,
     inserted_timestamp,
     modified_timestamp
