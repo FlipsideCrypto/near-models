@@ -17,9 +17,19 @@ WITH hourly_prices AS (
         modified_timestamp
     FROM
         {{ ref('price__ez_prices_hourly') }}
-    WHERE
-        HOUR >= DATEADD(DAY, -1, SYSDATE())
-    QUALIFY(ROW_NUMBER() OVER (PARTITION BY token_address, HOUR
+
+        {% if var('MANUAL_FIX') %}
+        WHERE
+            HOUR BETWEEN '{{ var('RANGE_START_DATE', None) }}'
+            AND '{{ var('RANGE_END_DATE', None) }}'
+        {% else %}
+            {% if is_incremental() %}
+            WHERE
+                HOUR >= DATEADD(DAY, -1, SYSDATE())
+            {% endif %}
+        {% endif %}
+
+        qualify(ROW_NUMBER() over (PARTITION BY token_address, HOUR
     ORDER BY
         HOUR DESC) = 1)
 )
@@ -65,25 +75,26 @@ FROM
         'hour',
         t.block_timestamp
     ) = HOUR
-    LEFT JOIN {{ ref('silver__ft_contract_metadata') }} C USING (contract_address)
-{% if var("MANUAL_FIX") %}
-    WHERE {{ partition_load_manual('no_buffer') }}
-{% else %}
-    {% if is_incremental() %}
+    LEFT JOIN {{ ref('silver__ft_contract_metadata') }} C USING (contract_address) {% if var("MANUAL_FIX") %}
     WHERE
-        GREATEST(
-            t.modified_timestamp,
-                '2000-01-01'
-        ) >= DATEADD(
-            'minute',
-            -5,(
-                SELECT
-                    MAX(
-                        modified_timestamp
-                    )
-                FROM
-                    {{ this }}
-            )
+        {{ partition_load_manual('no_buffer') }}
+    {% else %}
+
+{% if is_incremental() %}
+WHERE
+    GREATEST(
+        t.modified_timestamp,
+        '2000-01-01'
+    ) >= DATEADD(
+        'minute',
+        -5,(
+            SELECT
+                MAX(
+                    modified_timestamp
+                )
+            FROM
+                {{ this }}
         )
-    {% endif %}
+    )
+{% endif %}
 {% endif %}
