@@ -80,26 +80,28 @@ FROM
         'hour',
         t.block_timestamp
     ) = HOUR
-    LEFT JOIN {{ ref('silver__ft_contract_metadata') }} C USING (contract_address) {% if var("MANUAL_FIX") %}
+    LEFT JOIN {{ ref('silver__ft_contract_metadata') }} C USING (contract_address) 
+    
+    {% if var("MANUAL_FIX") %}
     WHERE
         {{ partition_load_manual('no_buffer') }}
     {% else %}
 
-{% if is_incremental() %}
-WHERE
-    GREATEST(
-        t.modified_timestamp,
-        '2000-01-01'
-    ) >= DATEADD(
-        'minute',
-        -5,(
-            SELECT
-                MAX(
-                    modified_timestamp
+        {% if is_incremental() %}
+        WHERE
+            GREATEST(
+                t.modified_timestamp,
+                '2000-01-01'
+            ) >= DATEADD(
+                'minute',
+                -5,(
+                    SELECT
+                        MAX(
+                            modified_timestamp
+                        )
+                    FROM
+                        {{ this }}
                 )
-            FROM
-                {{ this }}
-        )
-    )
-{% endif %}
-{% endif %}
+            )
+        {% endif %}
+    {% endif %}
