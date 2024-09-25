@@ -65,7 +65,7 @@ SELECT
   _partition_by_block_number,
   _inserted_timestamp,
   {{ dbt_utils.generate_surrogate_key(
-    ['action_id', 'predecessor_id', 'receiver_id']
+    ['action_id', 'predecessor_id', 'receiver_id', 'amount_unadj']
   ) }} AS token_transfer_native_id,
   SYSDATE() AS inserted_timestamp,
   SYSDATE() AS modified_timestamp,
