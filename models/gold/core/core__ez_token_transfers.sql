@@ -19,19 +19,24 @@ WITH hourly_prices AS (
         {{ ref('price__ez_prices_hourly') }}
 
         {% if var('MANUAL_FIX') %}
+        -- Note, this will intentionally fail if a date range is not passed
         WHERE
-            HOUR BETWEEN '{{ var('RANGE_START_DATE', None) }}'
+            DATE_TRUNC(
+                'day',
+                HOUR
+            ) BETWEEN '{{ var('RANGE_START_DATE', None) }}'
             AND '{{ var('RANGE_END_DATE', None) }}'
         {% else %}
-            {% if is_incremental() %}
-            WHERE
-                HOUR >= DATEADD(DAY, -1, SYSDATE())
-            {% endif %}
-        {% endif %}
 
-        qualify(ROW_NUMBER() over (PARTITION BY token_address, HOUR
-    ORDER BY
-        HOUR DESC) = 1)
+{% if is_incremental() %}
+WHERE
+    HOUR >= DATEADD(DAY, -1, SYSDATE())
+{% endif %}
+{% endif %}
+
+qualify(ROW_NUMBER() over (PARTITION BY token_address, HOUR
+ORDER BY
+    HOUR DESC) = 1)
 )
 SELECT
     block_id,
