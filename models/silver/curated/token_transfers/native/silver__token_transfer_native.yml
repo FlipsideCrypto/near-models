@@ -8,12 +8,18 @@ models:
     columns:
       - name: TX_HASH
         description: "{{ doc('tx_hash')}}"
+        tests:
+          - not_null
 
       - name: ACTION_ID
         description: "{{ doc('action_id')}}"
+        tests:
+          - not_null
 
       - name: BLOCK_ID
         description: "{{ doc('block_id')}}"
+        tests:
+          - not_null
 
       - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp')}}"
@@ -23,30 +29,48 @@ models:
 
       - name: AMOUNT_UNADJ
         description: "{{ doc('amount_unadj')}}"
+        tests:
+          - not_null
 
       - name: AMOUNT_ADJ
         description: "{{ doc('amount_adj')}}"
+        tests:
+          - not_null
 
       - name: PREDECESSOR_ID
         description: "{{ doc('predecessor_id')}}"
+        tests:
+          - not_null
 
       - name: SIGNER_ID
         description: "{{ doc('signer_id')}}"
-      
+        tests:
+          - not_null
+
       - name: RECEIVER_ID
         description: "{{ doc('receiver_id')}}"
+        tests:
+          - not_null
 
       - name: RECEIPT_SUCCEEDED
         description: "{{ doc('receipt_succeeded')}}"
+        tests:
+          - not_null
 
       - name: GAS_PRICE
         description: "{{ doc('gas_price')}}"
+        tests:
+          - not_null
 
       - name: GAS_BURNT
         description: "{{ doc('gas_burnt')}}"
+        tests:
+          - not_null
 
       - name: TOKENS_BURNT
         description: "{{ doc('tokens_burnt')}}"
+        tests:
+          - not_null
 
       - name: _PARTITION_BY_BLOCK_NUMBER
         description: "{{ doc('_partition_by_block_number')}}"

@@ -37,7 +37,7 @@ WITH action_events AS(
 {% if is_incremental() %}
 AND _modified_timestamp >= (
   SELECT
-    MAX(_modified_timestamp)
+    MAX(modified_timestamp)
   FROM
     {{ this }}
 )
@@ -65,7 +65,7 @@ SELECT
   _partition_by_block_number,
   _inserted_timestamp,
   {{ dbt_utils.generate_surrogate_key(
-    ['action_id', 'predecessor_id', 'receiver_id', 'amount_unadj']
+    ['action_id', 'predecessor_id', 'receiver_id']
   ) }} AS token_transfer_native_id,
   SYSDATE() AS inserted_timestamp,
   SYSDATE() AS modified_timestamp,
