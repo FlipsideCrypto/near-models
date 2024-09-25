@@ -8,19 +8,7 @@
 WITH receipts AS (
 
     SELECT
-        tx_hash,
-        block_id,
-        block_timestamp,
-        receipt_object_id,
-        predecessor_id,
-        receiver_id,
-        signer_id,
-        status_value,
-        logs,
-        receipt_succeeded,
-        _partition_by_block_number,
-        _inserted_timestamp,
-        modified_timestamp AS _modified_timestamp
+        *
     FROM
         {{ ref('silver__streamline_receipts_final') }}
     WHERE
@@ -37,7 +25,6 @@ FINAL AS (
         block_id,
         block_timestamp,
         receipt_object_id,
-        predecessor_id,
         receiver_id,
         signer_id,
         status_value,
