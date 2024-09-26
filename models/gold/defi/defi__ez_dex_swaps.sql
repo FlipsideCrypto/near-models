@@ -13,6 +13,7 @@ WITH dex_swaps AS (
         block_id,
         block_timestamp,
         receiver_id,
+        predecessor_id,
         signer_id,
         swap_index,
         amount_out_raw,
@@ -21,6 +22,8 @@ WITH dex_swaps AS (
         token_in,
         swap_input_data,
         LOG,
+        total_fee,
+        admin_fee,
         dex_swaps_v2_id AS ez_dex_swaps_id,
         inserted_timestamp,
         modified_timestamp
@@ -58,7 +61,7 @@ FINAL AS (
         s.block_timestamp,
         s.receiver_id AS platform,
         s.swap_input_data :pool_id :: INT AS pool_id,
-        s.signer_id AS trader,
+        s.predecessor_id AS trader,
         s.swap_index,
         s.amount_out_raw,
         s.amount_out_raw / pow(
@@ -78,6 +81,8 @@ FINAL AS (
         l2.symbol AS symbol_in,
         s.swap_input_data,
         s.log,
+        s.total_fee,
+        s.admin_fee,
         s.ez_dex_swaps_id,
         s.inserted_timestamp,
         s.modified_timestamp

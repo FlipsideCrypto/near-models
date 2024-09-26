@@ -17,6 +17,7 @@ WITH swap_logs AS (
         block_id,
         block_timestamp,
         receiver_id,
+        predecessor_id,
         signer_id,
         log_index,
         clean_log,
@@ -29,25 +30,26 @@ WITH swap_logs AS (
         receipt_succeeded
         AND clean_log LIKE 'Swapped%'
         AND receiver_id NOT LIKE '%dragon_bot.near' 
-        
         {% if var("MANUAL_FIX") %}
             AND {{ partition_load_manual('no_buffer') }}
         {% else %}
-{% if is_incremental() %}
-AND _modified_timestamp >= (
-    SELECT
-        MAX(_modified_timestamp)
-    FROM
-        {{ this }}
-)
-{% endif %}
-{% endif %}
+
+        {% if is_incremental() %}
+        AND _modified_timestamp >= (
+            SELECT
+                MAX(_modified_timestamp)
+            FROM
+                {{ this }}
+        )
+        {% endif %}
+        {% endif %}
 ),
 receipts AS (
     SELECT
         receipt_object_id,
         receipt_actions,
         receiver_id,
+        receipt_actions :predecessor_id :: STRING AS predecessor_id,
         signer_id,
         _partition_by_block_number,
         _inserted_timestamp,
@@ -64,15 +66,16 @@ receipts AS (
         {% if var("MANUAL_FIX") %}
             AND {{ partition_load_manual('no_buffer') }}
         {% else %}
-{% if is_incremental() %}
-AND _modified_timestamp >= (
-    SELECT
-        MAX(_modified_timestamp)
-    FROM
-        {{ this }}
-)
-{% endif %}
-{% endif %}
+
+        {% if is_incremental() %}
+        AND _modified_timestamp >= (
+            SELECT
+                MAX(_modified_timestamp)
+            FROM
+                {{ this }}
+        )
+        {% endif %}
+        {% endif %}
 ),
 swap_outcome AS (
     SELECT
@@ -81,30 +84,34 @@ swap_outcome AS (
         block_id,
         block_timestamp,
         receiver_id,
+        predecessor_id,
         signer_id,
         ROW_NUMBER() over (
             PARTITION BY receipt_object_id
             ORDER BY
                 log_index ASC
         ) - 1 AS swap_index,
-        COALESCE(SPLIT(clean_log, ',') [0], clean_log) AS LOG,
+        clean_log AS LOG,
+        COALESCE(SPLIT(clean_log, ',') [0], clean_log) AS primary_log,
+        REGEXP_SUBSTR(SPLIT(clean_log, ', ') [1], 'total fee ([0-9]+)', 1, 1, 'e', 1) AS total_fee,
+        REGEXP_SUBSTR(SPLIT(clean_log, ', ') [2], 'admin fee ([0-9]+)', 1, 1, 'e', 1) AS admin_fee,
         REGEXP_REPLACE(
-            LOG,
+            primary_log,
             '.*Swapped (\\d+) (.*) for (\\d+) (.*)',
             '\\1'
         ) :: INT AS amount_in_raw,
         REGEXP_REPLACE(
-            LOG,
+            primary_log,
             '.*Swapped \\d+ (\\S+) for (\\d+) (.*)',
             '\\1'
         ) :: STRING AS token_in,
         REGEXP_REPLACE(
-            LOG,
+            primary_log,
             '.*Swapped \\d+ \\S+ for (\\d+) (.*)',
             '\\1'
         ) :: INT AS amount_out_raw,
         REGEXP_REPLACE(
-            LOG,
+            primary_log,
             '.*Swapped \\d+ \\S+ for \\d+ (.*)',
             '\\1'
         ) :: STRING AS token_out,
@@ -120,10 +127,14 @@ parse_actions AS (
         o.receipt_object_id,
         block_id,
         block_timestamp,
-        receiver_id,
-        signer_id,
+        o.receiver_id,
+        o.predecessor_id,
+        o.signer_id,
         swap_index,
         LOG,
+        primary_log,
+        total_fee,
+        admin_fee,
         amount_out_raw,
         token_out,
         amount_in_raw,
@@ -152,7 +163,7 @@ parse_actions AS (
                         -- for multi-swaps, there is (often) one action with an array of input dicts that correspond with the swap index
                         decoded_action :msg,
                         -- Swap must be capitalized! Autoformat may change to "swap"
-                        decoded_action :operation: Swap,
+                        decoded_action :operation :Swap,
                         decoded_action
                     )
                 ) :actions [swap_index],
@@ -178,6 +189,7 @@ FINAL AS (
         block_id,
         block_timestamp,
         receiver_id,
+        predecessor_id,
         signer_id,
         swap_index,
         amount_out_raw,
@@ -186,6 +198,9 @@ FINAL AS (
         token_in,
         swap_input_data,
         LOG,
+        primary_log,
+        total_fee,
+        admin_fee,
         _partition_by_block_number,
         _inserted_timestamp,
         _modified_timestamp
