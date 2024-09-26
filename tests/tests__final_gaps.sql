@@ -43,6 +43,7 @@ f_transactions AS (
 )
 
 SELECT
+    'receipt_id' AS hash_type,
     r_receipts.receipt_id AS missing,
     r_receipts.block_id
 FROM
@@ -57,6 +58,7 @@ WHERE
 UNION ALL
 
 SELECT
+    'tx_hash' AS hash_type,
     r_transactions.tx_hash AS missing,
     r_transactions.block_id
 FROM
