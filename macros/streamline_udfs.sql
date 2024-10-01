@@ -61,7 +61,7 @@
     {%- endif %};
 {% endmacro %}
 
-{% macro create_udf_decode_near_event() %}    
+{% macro create_udf_decode_near_event() %}
     CREATE
     OR REPLACE EXTERNAL FUNCTION streamline.udf_decode_near_event(
         DATA STRING, EVENT_STRUCT STRING
