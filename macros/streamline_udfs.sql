@@ -61,10 +61,10 @@
     {%- endif %};
 {% endmacro %}
 
-{% macro create_udf_decode_withrawal_event() %}
+{% macro create_udf_decode_near_event() %}    
     CREATE
-    OR REPLACE EXTERNAL FUNCTION streamline.udf_decode_near_event(
-        DATA STRING
+    OR REPLACE EXTERNAL FUNCTION near_dev.streamline.udf_decode_near_event(
+        DATA STRING, EVENT_STRUCT STRING
     ) returns ARRAY api_integration = aws_near_api_stg_v2 AS {% if target.name == "prod" %}
         ''
     {% else %}
