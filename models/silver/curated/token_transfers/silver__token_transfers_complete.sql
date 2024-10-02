@@ -57,7 +57,7 @@ native_deposits AS (
         _inserted_timestamp,
         _partition_by_block_number
     FROM
-        {{ ref('silver__token_transfer_deposits') }}
+        {{ ref('silver__token_transfer_deposit') }}
     WHERE
         receipt_succeeded
         {% if var("MANUAL_FIX") %}
@@ -239,6 +239,11 @@ FINAL AS (
         *
     FROM
         native_transfers
+    UNION ALL
+    SELECT
+        *
+    FROM
+        native_deposits
     UNION ALL
     SELECT
         *

@@ -3,7 +3,7 @@
     merge_exclude_columns = ["inserted_timestamp"],
     incremental_predicates = ["COALESCE(DBT_INTERNAL_DEST.block_timestamp::DATE,'2099-12-31') >= (select min(block_timestamp::DATE) from " ~ generate_tmp_view_name(this) ~ ")"],
     cluster_by = ['block_timestamp::DATE'],
-    unique_key = 'token_transfer_deposits_id',
+    unique_key = 'token_transfer_deposit_id',
     incremental_strategy = 'merge',
     tags = ['curated','scheduled_non_core']
 ) }}
@@ -28,7 +28,7 @@ WITH functioncalls AS (
         deposit :: INT > 0
         AND receipt_succeeded
 {% if is_incremental() %}
-WHERE
+AND
     modified_timestamp >= (
         SELECT
             MAX(modified_timestamp)

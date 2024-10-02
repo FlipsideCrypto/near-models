@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: silver__token_transfer_deposits
+  - name: silver__token_transfer_deposit
     description: |-
       This table records all the positive Deposit events from FunctionCalls.
 
