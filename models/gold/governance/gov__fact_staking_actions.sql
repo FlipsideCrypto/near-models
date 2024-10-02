@@ -13,6 +13,7 @@ WITH staking_actions AS (
         block_timestamp,
         receipt_object_id,
         receiver_id AS address,
+        predecessor_id,
         signer_id,
         action,
         amount_adj AS amount,

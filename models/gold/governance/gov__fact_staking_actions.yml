@@ -40,6 +40,11 @@ models:
         tests:
           - not_null
 
+      - name: PREDECESSOR_ID
+        description: "{{ doc('predecessor_id') }}"
+        tests:
+          - not_null
+
       - name: SIGNER_ID
         description: "{{ doc('signer_id') }}"
         tests:

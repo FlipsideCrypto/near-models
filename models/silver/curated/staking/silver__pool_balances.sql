@@ -27,6 +27,7 @@ FINAL AS (
         receipt_object_id,
         receiver_id,
         signer_id,
+        predecessor_id,
         LOG,
         TO_NUMBER(
             REGEXP_SUBSTR(

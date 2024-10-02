@@ -25,6 +25,9 @@ models:
       - name: signer_id
         description: "{{ doc('signer_id') }}"
 
+      - name: predecessor_id
+        description: "{{ doc('predecessor_id') }}"
+
       - name: status_value
         description: "{{ doc('status_value') }}"
 

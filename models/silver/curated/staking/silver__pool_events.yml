@@ -43,6 +43,11 @@ models:
         tests:
           - not_null
 
+      - name: predecessor_id
+        description: "{{ doc('predecessor_id') }}"
+        tests:
+          - not_null
+
       - name: status_value
         description: "{{ doc('status_value') }}"
         tests:
