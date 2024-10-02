@@ -19,6 +19,7 @@ WITH functioncalls AS (
         signer_id,
         receiver_id,
         deposit,
+        receipt_succeeded,
         _inserted_timestamp,
         _partition_by_block_number
     FROM
@@ -47,6 +48,7 @@ SELECT
         10,
         24
     ) AS amount_adj,
+    receipt_succeeded,
     _partition_by_block_number,
     _inserted_timestamp,
     {{ dbt_utils.generate_surrogate_key(
