@@ -29,6 +29,8 @@ WITH action_events AS(
     {{ ref('silver__actions_events_s3') }}
   WHERE
     action_name = 'Transfer' 
+    AND 
+      receipt_succeeded
     
     {% if var("MANUAL_FIX") %}
       AND {{ partition_load_manual('no_buffer') }}

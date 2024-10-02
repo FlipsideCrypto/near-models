@@ -24,7 +24,9 @@ WITH functioncalls AS (
         _partition_by_block_number
     FROM
         {{ ref('silver__actions_events_function_call_s3') }}
-
+    WHERE
+        deposit :: INT > 0
+        AND receipt_succeeded
 {% if is_incremental() %}
 WHERE
     modified_timestamp >= (
@@ -59,5 +61,3 @@ SELECT
     '{{ invocation_id }}' AS _invocation_id
 FROM
     functioncalls
-WHERE
-    amount_unadj > 0
