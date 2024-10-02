@@ -22,7 +22,6 @@ WITH native_transfers AS (
         amount_unadj,
         'native' AS transfer_type,
         _inserted_timestamp,
-        modified_timestamp AS _modified_timestamp,
         _partition_by_block_number
     FROM
         {{ ref('silver__token_transfer_native') }}
@@ -34,9 +33,42 @@ WITH native_transfers AS (
 
             {% elif is_incremental() %}
         AND
-            _modified_timestamp >= (
+            modified_timestamp >= (
                 SELECT
-                    MAX(_modified_timestamp)
+                    MAX(modified_timestamp)
+                FROM
+                    {{ this }}
+            )
+        {% endif %}
+),
+native_deposits AS (
+    SELECT
+        block_id,
+        block_timestamp,
+        tx_hash,
+        action_id,
+        '0' AS rn,
+        'wrap.near' AS contract_address,
+        predecessor_id AS from_address,
+        receiver_id AS to_address,
+        NULL AS memo,
+        amount_unadj,
+        'native' AS transfer_type,
+        _inserted_timestamp,
+        _partition_by_block_number
+    FROM
+        {{ ref('silver__token_transfer_deposits') }}
+    WHERE
+        receipt_succeeded
+        {% if var("MANUAL_FIX") %}
+        AND
+            {{ partition_load_manual('no_buffer') }}
+
+            {% elif is_incremental() %}
+        AND
+            modified_timestamp >= (
+                SELECT
+                    MAX(modified_timestamp)
                 FROM
                     {{ this }}
             )
@@ -56,7 +88,6 @@ ft_transfers_method AS (
         amount_unadj,
         'nep141' AS transfer_type,
         _inserted_timestamp,
-        modified_timestamp AS _modified_timestamp,
         _partition_by_block_number
     FROM
         {{ ref('silver__token_transfer_ft_transfers_method') }}
@@ -67,9 +98,9 @@ ft_transfers_method AS (
 
             {% elif is_incremental() %}
         WHERE
-            _modified_timestamp >= (
+            modified_timestamp >= (
                 SELECT
-                    MAX(_modified_timestamp)
+                    MAX(modified_timestamp)
                 FROM
                     {{ this }}
             )
@@ -89,7 +120,6 @@ ft_transfers_event AS (
         amount_unadj,
         'nep141' AS transfer_type,
         _inserted_timestamp,
-        modified_timestamp AS _modified_timestamp,
         _partition_by_block_number
     FROM
         {{ ref('silver__token_transfer_ft_transfers_event') }}
@@ -100,9 +130,9 @@ ft_transfers_event AS (
 
             {% elif is_incremental() %}
         WHERE
-            _modified_timestamp >= (
+            modified_timestamp >= (
                 SELECT
-                    MAX(_modified_timestamp)
+                    MAX(modified_timestamp)
                 FROM
                     {{ this }}
             )
@@ -122,7 +152,6 @@ mints AS (
         amount_unadj,
         'nep141' AS transfer_type,
         _inserted_timestamp,
-        modified_timestamp AS _modified_timestamp,
         _partition_by_block_number
     FROM
         {{ ref('silver__token_transfer_mints') }}
@@ -133,9 +162,9 @@ mints AS (
 
             {% elif is_incremental() %}
         WHERE
-            _modified_timestamp >= (
+            modified_timestamp >= (
                 SELECT
-                    MAX(_modified_timestamp)
+                    MAX(modified_timestamp)
                 FROM
                     {{ this }}
             )
@@ -155,7 +184,6 @@ orders AS (
         amount_unadj,
         'nep141' AS transfer_type,
         _inserted_timestamp,
-        modified_timestamp AS _modified_timestamp,
         _partition_by_block_number
     FROM
         {{ ref('silver__token_transfer_orders') }}
@@ -166,9 +194,9 @@ orders AS (
 
             {% elif is_incremental() %}
         WHERE
-            _modified_timestamp >= (
+            modified_timestamp >= (
                 SELECT
-                    MAX(_modified_timestamp)
+                    MAX(modified_timestamp)
                 FROM
                     {{ this }}
             )
@@ -188,7 +216,6 @@ liquidity AS (
         amount_unadj,
         'nep141' AS transfer_type,
         _inserted_timestamp,
-        modified_timestamp AS _modified_timestamp,
         _partition_by_block_number
     FROM
         {{ ref('silver__token_transfer_liquidity') }}
@@ -199,9 +226,9 @@ liquidity AS (
 
             {% elif is_incremental() %}
         WHERE
-            _modified_timestamp >= (
+            modified_timestamp >= (
                 SELECT
-                    MAX(_modified_timestamp)
+                    MAX(modified_timestamp)
                 FROM
                     {{ this }}
             )
@@ -251,7 +278,6 @@ SELECT
     amount_unadj,
     transfer_type,
     _inserted_timestamp,
-    _modified_timestamp,
     _partition_by_block_number,
     {{ dbt_utils.generate_surrogate_key(
         ['action_id','contract_address','amount_unadj','from_address','to_address','rn']
