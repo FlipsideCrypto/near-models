@@ -37,6 +37,8 @@
 
 {% endif %}
 
+{# {{ log("min_block_timestamp_day: " ~ min_block_timestamp_day, info=True) }} #}
+
     WITH hourly_prices AS (
         SELECT
             token_address,
@@ -91,12 +93,9 @@ SELECT
 FROM
     {{ ref('silver__token_transfers_complete') }}
     t
-    LEFT JOIN hourly_prices p
-    ON t.contract_address = p.token_address
-    AND DATE_TRUNC(
-        'hour',
-        t.block_timestamp
-    ) = HOUR
+    ASOF JOIN hourly_prices p
+    MATCH_CONDITION (t.block_timestamp >= p.HOUR)
+    ON (t.contract_address = p.token_address)
     LEFT JOIN {{ ref('silver__ft_contract_metadata') }} C USING (contract_address) 
     {% if var("MANUAL_FIX") %}
     WHERE
