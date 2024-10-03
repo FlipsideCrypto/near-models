@@ -3,7 +3,7 @@
     unique_key = "ez_token_transfers_id",
     incremental_strategy = 'delete+insert',
     cluster_by = ['block_timestamp::DATE', 'floor(block_id, -3)'],
-    tags = ['core']
+    tags = ['scheduled_non_core']
 ) }}
 
 {% if execute %}
