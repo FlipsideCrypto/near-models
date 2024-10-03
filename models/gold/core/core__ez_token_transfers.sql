@@ -34,10 +34,12 @@
             {% endset %}
             {% set min_block_timestamp_day = run_query(query).columns [0].values() [0] %}
     {% endif %}
-
+    {% if not min_block_timestamp_day or min_block_timestamp_day == 'None' %}
+        {% set min_block_timestamp_day = '2099-01-01' %}
+    {% endif %}
 {% endif %}
 
-{# {{ log("min_block_timestamp_day: " ~ min_block_timestamp_day, info=True) }} #}
+{{ log("min_block_timestamp_day: " ~ min_block_timestamp_day, info=True) }}
 
     WITH hourly_prices AS (
         SELECT
