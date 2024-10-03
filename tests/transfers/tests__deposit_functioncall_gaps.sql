@@ -29,7 +29,7 @@ native_transfer_deposits AS (
         block_timestamp,
         _partition_by_block_number
     FROM
-        {{ ref('silver__token_transfer_deposits') }}
+        {{ ref('silver__token_transfer_deposit') }}
 
         {% if var('DBT_FULL_TEST') %}
         WHERE
