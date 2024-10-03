@@ -34,6 +34,7 @@
             {% endset %}
             {% set min_block_timestamp_day = run_query(query).columns [0].values() [0] %}
     {% endif %}
+
 {% endif %}
 
     WITH hourly_prices AS (
