@@ -192,11 +192,11 @@ FINAL AS (
         _partition_by_block_number
     FROM
         sales_union s
-        LEFT JOIN prices p
-        ON DATE_TRUNC(
-            'hour',
-            s.block_timestamp
-        ) = p.block_timestamp_hour
+        ASOF JOIN prices p
+        MATCH_CONDITION (
+            DATE_TRUNC('hour', s.block_timestamp) 
+            >= p.block_timestamp_hour
+        )
 )
 SELECT
     *,
