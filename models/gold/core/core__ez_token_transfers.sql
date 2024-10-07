@@ -35,7 +35,7 @@
             {% set min_block_timestamp_day = run_query(query).columns [0].values() [0] %}
     {% endif %}
     {% if not min_block_timestamp_day or min_block_timestamp_day == 'None' %}
-        {% set min_block_timestamp_day = '2099-01-01' %}
+        {% set min_block_timestamp_day = '2020-07-01' %}
     {% endif %}
 {% endif %}
 
