@@ -1,0 +1,82 @@
+version: 2
+
+models:
+  - name: silver__token_transfer_deposit
+    description: |-
+      This table records all the positive Deposit events from FunctionCalls.
+
+    columns:
+      - name: TX_HASH
+        description: "{{ doc('tx_hash')}}"
+        tests:
+          - not_null
+
+      - name: ACTION_ID
+        description: "{{ doc('action_id')}}"
+        tests:
+          - not_null
+
+      - name: BLOCK_ID
+        description: "{{ doc('block_id')}}"
+        tests:
+          - not_null
+
+      - name: BLOCK_TIMESTAMP
+        description: "{{ doc('block_timestamp')}}"
+        tests:
+          - not_null:
+              where: _inserted_timestamp <= current_timestamp - interval '1 hour'
+
+      - name: AMOUNT_UNADJ
+        description: "{{ doc('amount_unadj')}}"
+        tests:
+          - not_null
+
+      - name: AMOUNT_ADJ
+        description: "{{ doc('amount_adj')}}"
+        tests:
+          - not_null
+
+      - name: PREDECESSOR_ID
+        description: "{{ doc('predecessor_id')}}"
+        tests:
+          - not_null
+
+      - name: SIGNER_ID
+        description: "{{ doc('signer_id')}}"
+        tests:
+          - not_null
+
+      - name: RECEIVER_ID
+        description: "{{ doc('receiver_id')}}"
+        tests:
+          - not_null
+
+      - name: RECEIPT_SUCCEEDED
+        description: "{{ doc('receipt_succeeded')}}"
+        tests:
+          - not_null
+
+      - name: _PARTITION_BY_BLOCK_NUMBER
+        description: "{{ doc('_partition_by_block_number')}}"
+
+      - name: _INSERTED_TIMESTAMP
+        description: "{{ doc('_inserted_timestamp')}}"
+
+      - name: _MODIFIED_TIMESTAMP
+        description: "{{ doc('_modified_timestamp')}}"
+
+      - name: TOKEN_TRANSFER_DEPOSIT_ID
+        description: "{{doc('id')}}"
+        tests:
+          - not_null
+          - unique
+
+      - name: INSERTED_TIMESTAMP
+        description: "{{doc('inserted_timestamp')}}"
+
+      - name: MODIFIED_TIMESTAMP
+        description: "{{doc('modified_timestamp')}}"
+
+      - name: _INVOCATION_ID
+        description: "{{doc('invocation_id')}}"

@@ -24,18 +24,19 @@ WITH action_events AS(
     gas_burnt,
     tokens_burnt,
     _partition_by_block_number,
-    _inserted_timestamp,
-    modified_timestamp AS _modified_timestamp
+    _inserted_timestamp
   FROM
     {{ ref('silver__actions_events_s3') }}
   WHERE
     action_name = 'Transfer' 
+    AND 
+      receipt_succeeded
     
     {% if var("MANUAL_FIX") %}
       AND {{ partition_load_manual('no_buffer') }}
     {% else %}
 {% if is_incremental() %}
-AND _modified_timestamp >= (
+AND modified_timestamp >= (
   SELECT
     MAX(modified_timestamp)
   FROM

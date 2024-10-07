@@ -1,0 +1,7 @@
+version: 2
+
+tests:
+  name: tests__transfer_action_gaps
+  description: |-
+    This test checks for gaps in Transfer actions and the silver model. 
+    For best use, aggregate the results around _PARTITION_BY_BLOCK_NUMBER and run MANUAL FIX logic on these ranges.
