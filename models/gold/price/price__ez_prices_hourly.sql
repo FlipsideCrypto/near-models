@@ -23,7 +23,7 @@ FROM
 UNION ALL
 SELECT
     HOUR,
-    NULL AS token_address,
+    'wrap.near' AS token_address,
     symbol,
     NAME,
     decimals,
