@@ -27,14 +27,17 @@ WITH functioncalls AS (
     WHERE
         deposit :: INT > 0
         AND receipt_succeeded
+    {% if var("MANUAL_FIX") %}
+      AND {{ partition_load_manual('no_buffer') }}
+    {% else %}
 {% if is_incremental() %}
-AND
-    modified_timestamp >= (
-        SELECT
-            MAX(modified_timestamp)
-        FROM
-            {{ this }}
-    )
+AND modified_timestamp >= (
+  SELECT
+    MAX(modified_timestamp)
+  FROM
+    {{ this }}
+)
+{% endif %}
 {% endif %}
 )
 SELECT
