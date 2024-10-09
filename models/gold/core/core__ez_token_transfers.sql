@@ -7,7 +7,8 @@
 ) }}
 
 {% if execute %}
-    {% if is_incremental() %}
+    {% if is_incremental() and not var('MANUAL_FIX') %}
+        {{ log("Incremental load", info=True) }}
         {% set query %}
 
         SELECT
@@ -23,6 +24,7 @@
             ) 
             {% endset %}
             {% set min_block_timestamp_day = run_query(query).columns [0].values() [0] %}
+            {{ log("Incremental query executed, min_block_timestamp_day: " ~ min_block_timestamp_day, info=True) }}
     {% elif var('MANUAL_FIX') %}
             {{ log("MANUAL_FIX: " ~ var('MANUAL_FIX'), info=True) }}
             {% set query %}
@@ -36,13 +38,14 @@
             {% set min_block_timestamp_day = run_query(query).columns [0].values() [0] %}
             {{ log("Query executed, min_block_timestamp_day: " ~ min_block_timestamp_day, info=True) }}
     {% endif %}
+
     {% if not min_block_timestamp_day or min_block_timestamp_day == 'None' %}
-        {{ log("min_block_timestamp_day not set, setting to 2020-07-01", warn=True) }}
+        {{ log("min_block_timestamp_day not set, setting to 2020-07-01", info=True) }}
         {% set min_block_timestamp_day = '2020-07-01' %}
     {% endif %}
-{% endif %}
 
-{{ log("min_block_timestamp_day: " ~ min_block_timestamp_day, info=True) }}
+{{ log("Final min_block_timestamp_day: " ~ min_block_timestamp_day, info=True) }}
+{% endif %}
 
     WITH hourly_prices AS (
         SELECT
