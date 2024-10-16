@@ -7,15 +7,66 @@
     tags = ['scheduled_non_core', 'grail']
 ) }}
 
+WITH complete_token_prices AS (
+
+    SELECT
+        HOUR,
+        LOWER(
+            p.token_address
+        ) AS token_address,
+        asset_id,
+        symbol,
+        NAME,
+        decimals,
+        price,
+        blockchain,
+        blockchain_name,
+        blockchain_id,
+        is_imputed,
+        is_deprecated,
+        provider,
+        source,
+        _inserted_timestamp,
+        inserted_timestamp,
+        modified_timestamp,
+        complete_token_prices_id,
+        _invocation_id
+    FROM
+        {{ ref(
+            'bronze__complete_token_prices'
+        ) }}
+        p
+
+{% if is_incremental() %}
+WHERE
+    modified_timestamp >= (
+        SELECT
+            MAX(
+                modified_timestamp
+            )
+        FROM
+            {{ this }}
+    )
+{% endif %}
+
+qualify ROW_NUMBER() over (
+    PARTITION BY HOUR,
+    token_address,
+    symbol
+    ORDER BY
+        price ASC
+) = 1
+)
 SELECT
     HOUR,
-    LOWER(
-        p.token_address
-    ) AS token_address,
+    token_address,
     asset_id,
     symbol,
     NAME,
-    decimals,
+    COALESCE(
+        ft.decimals,
+        decimals
+    ) AS decimals,
     price,
     blockchain,
     blockchain_name,
@@ -30,20 +81,7 @@ SELECT
     complete_token_prices_id,
     _invocation_id
 FROM
-    {{ ref(
-        'bronze__complete_token_prices'
-    ) }}
-    p
-
-{% if is_incremental() %}
-WHERE
-    modified_timestamp >= (
-        SELECT
-            MAX(
-                modified_timestamp
-            )
-        FROM
-            {{ this }}
-    )
-{% endif %}
-QUALIFY row_number() OVER (partition by HOUR, token_address, symbol ORDER BY price ASC) = 1
+    complete_token_prices
+    LEFT JOIN {{ ref('silver__ft_contract_metadata') }}
+    ft
+    ON complete_token_prices.token_address = ft.contract_address

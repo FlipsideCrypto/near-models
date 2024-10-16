@@ -11,7 +11,7 @@ SELECT
     asset_id,
     symbol,
     NAME,
-    decimals,
+    24 AS decimals,
     price,
     blockchain,
     is_imputed,
