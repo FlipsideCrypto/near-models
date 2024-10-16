@@ -76,10 +76,12 @@ SELECT
     provider,
     source,
     p._inserted_timestamp,
-    inserted_timestamp,
-    modified_timestamp,
-    complete_token_prices_id,
-    _invocation_id
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    {{ dbt_utils.generate_surrogate_key(
+        ['HOUR', 'token_address', 'p.symbol']
+    ) }} AS complete_token_prices_id,
+    '{{ invocation_id }}' AS _invocation_id
 FROM
     complete_token_prices p
     LEFT JOIN {{ ref('silver__ft_contract_metadata') }}
