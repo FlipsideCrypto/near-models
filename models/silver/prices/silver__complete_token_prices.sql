@@ -61,11 +61,11 @@ SELECT
     HOUR,
     token_address,
     asset_id,
-    symbol,
-    NAME,
+    p.symbol,
+    p.NAME,
     COALESCE(
         ft.decimals,
-        decimals
+        p.decimals
     ) AS decimals,
     price,
     blockchain,
@@ -75,13 +75,13 @@ SELECT
     is_deprecated,
     provider,
     source,
-    _inserted_timestamp,
+    p._inserted_timestamp,
     inserted_timestamp,
     modified_timestamp,
     complete_token_prices_id,
     _invocation_id
 FROM
-    complete_token_prices
+    complete_token_prices p
     LEFT JOIN {{ ref('silver__ft_contract_metadata') }}
     ft
-    ON complete_token_prices.token_address = ft.contract_address
+    ON p.token_address = ft.contract_address
