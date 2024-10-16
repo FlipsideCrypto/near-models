@@ -7,33 +7,35 @@
     tags = ['scheduled_non_core', 'grail']
 ) }}
 
-SELECT
-    HOUR,
-    LOWER(
-        p.token_address
-    ) AS token_address,
-    asset_id,
-    symbol,
-    NAME,
-    decimals,
-    price,
-    blockchain,
-    blockchain_name,
-    blockchain_id,
-    is_imputed,
-    is_deprecated,
-    provider,
-    source,
-    _inserted_timestamp,
-    inserted_timestamp,
-    modified_timestamp,
-    complete_token_prices_id,
-    _invocation_id
-FROM
-    {{ ref(
-        'bronze__complete_token_prices'
-    ) }}
-    p
+WITH complete_token_prices AS (
+
+    SELECT
+        HOUR,
+        LOWER(
+            p.token_address
+        ) AS token_address,
+        asset_id,
+        symbol,
+        NAME,
+        decimals,
+        price,
+        blockchain,
+        blockchain_name,
+        blockchain_id,
+        is_imputed,
+        is_deprecated,
+        provider,
+        source,
+        _inserted_timestamp,
+        inserted_timestamp,
+        modified_timestamp,
+        complete_token_prices_id,
+        _invocation_id
+    FROM
+        {{ ref(
+            'bronze__complete_token_prices'
+        ) }}
+        p
 
 {% if is_incremental() %}
 WHERE
@@ -46,4 +48,42 @@ WHERE
             {{ this }}
     )
 {% endif %}
-QUALIFY row_number() OVER (partition by HOUR, token_address, symbol ORDER BY price ASC) = 1
+
+qualify ROW_NUMBER() over (
+    PARTITION BY HOUR,
+    token_address,
+    symbol
+    ORDER BY
+        price ASC
+) = 1
+)
+SELECT
+    HOUR,
+    token_address,
+    asset_id,
+    p.symbol,
+    p.NAME,
+    COALESCE(
+        ft.decimals,
+        p.decimals
+    ) AS decimals,
+    price,
+    blockchain,
+    blockchain_name,
+    blockchain_id,
+    is_imputed,
+    is_deprecated,
+    provider,
+    source,
+    p._inserted_timestamp,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    {{ dbt_utils.generate_surrogate_key(
+        ['HOUR', 'token_address', 'p.symbol']
+    ) }} AS complete_token_prices_id,
+    '{{ invocation_id }}' AS _invocation_id
+FROM
+    complete_token_prices p
+    LEFT JOIN {{ ref('silver__ft_contract_metadata') }}
+    ft
+    ON p.token_address = ft.contract_address
