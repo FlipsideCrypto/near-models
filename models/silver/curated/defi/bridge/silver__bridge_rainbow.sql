@@ -441,7 +441,7 @@ SELECT
     amount_raw AS amount_adj,
     'rainbow' AS platform,
     {{ dbt_utils.generate_surrogate_key(
-        ['tx_hash', 'source_chain_id', 'destination_address']
+        ['tx_hash', 'source_chain_id', 'destination_address', 'token_address']
     ) }} AS bridge_rainbow_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
