@@ -8,6 +8,9 @@
     tags = ['curated','scheduled_non_core']
 ) }}
 
+-- TODO - incremental predicate causes issues with MANUAL_FIX logic
+-- must update / change for non regular scheduled runs
+
 WITH actions_events AS (
 
     SELECT
