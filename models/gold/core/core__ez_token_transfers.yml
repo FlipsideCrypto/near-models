@@ -61,9 +61,9 @@ models:
         description: "{{doc('id')}}"
         tests:
           - unique:
-              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '2 hours'
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
           - not_null:
-              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '2 hours'
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
 
       - name: INSERTED_TIMESTAMP
         description: "{{doc('inserted_timestamp')}}"
