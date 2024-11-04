@@ -3,7 +3,6 @@
     cluster_by = ['block_timestamp::DATE','modified_timestamp::Date'],
     unique_key = 'transfers_complete_id',
     incremental_strategy = 'delete+insert',
-    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,contract_address,from_address,to_address);",
     tags = ['curated','scheduled_non_core']
 ) }}
 
@@ -27,19 +26,18 @@ WITH native_transfers AS (
         {{ ref('silver__token_transfer_native') }}
     WHERE
         receipt_succeeded
-        {% if var("MANUAL_FIX") %}
-        AND
-            {{ partition_load_manual('no_buffer') }}
 
-            {% elif is_incremental() %}
-        AND
-            modified_timestamp >= (
-                SELECT
-                    MAX(modified_timestamp)
-                FROM
-                    {{ this }}
-            )
-        {% endif %}
+        {% if var("MANUAL_FIX") %}
+        AND {{ partition_load_manual('no_buffer') }}
+
+        {% elif is_incremental() %}
+        AND modified_timestamp >= (
+            SELECT
+                MAX(modified_timestamp)
+            FROM
+                {{ this }}
+        )
+    {% endif %}
 ),
 native_deposits AS (
     SELECT
@@ -60,19 +58,18 @@ native_deposits AS (
         {{ ref('silver__token_transfer_deposit') }}
     WHERE
         receipt_succeeded
-        {% if var("MANUAL_FIX") %}
-        AND
-            {{ partition_load_manual('no_buffer') }}
 
-            {% elif is_incremental() %}
-        AND
-            modified_timestamp >= (
-                SELECT
-                    MAX(modified_timestamp)
-                FROM
-                    {{ this }}
-            )
-        {% endif %}
+        {% if var("MANUAL_FIX") %}
+        AND {{ partition_load_manual('no_buffer') }}
+
+        {% elif is_incremental() %}
+        AND modified_timestamp >= (
+            SELECT
+                MAX(modified_timestamp)
+            FROM
+                {{ this }}
+        )
+    {% endif %}
 ),
 ft_transfers_method AS (
     SELECT

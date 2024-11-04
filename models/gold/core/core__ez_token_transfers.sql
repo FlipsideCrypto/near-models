@@ -2,7 +2,9 @@
     materialized = 'incremental',
     unique_key = "ez_token_transfers_id",
     incremental_strategy = 'delete+insert',
+    incremental_predicates = ['block_timestamp::DATE >= (select min(block_timestamp::DATE) from ' ~ generate_tmp_view_name(this) ~ ')'],
     cluster_by = ['block_timestamp::DATE', 'floor(block_id, -3)'],
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,contract_address,from_address,to_address,ez_token_transfers_id);",    
     tags = ['scheduled_non_core']
 ) }}
 
