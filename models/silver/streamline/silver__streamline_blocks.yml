@@ -2,6 +2,7 @@ version: 2
 
 models:
   - name: silver__streamline_blocks
+    access: public
     description: |-
       Parses the blocks JSON files for NEAR.
 
