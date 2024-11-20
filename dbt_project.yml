@@ -45,6 +45,8 @@ models:
     relation: True
     columns: True
   +on_schema_change: "append_new_columns"
+  near_models:
+    +pre-hook: '{{ fsc_utils.set_query_tag() }}'
 
 tests:
   near:
@@ -65,6 +67,12 @@ vars:
   RECEIPT_MAP_LOOKBACK_HOURS: 6
   IS_MIGRATION: False
   HEAL_MODELS: []
+  core_folders: [
+    'silver/streamline',
+    'silver/actions',
+    'gold/core',
+    'streamline'
+  ]
 
 dispatch:
   - macro_namespace: dbt
