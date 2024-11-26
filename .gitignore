@@ -21,3 +21,4 @@ dbt_docs.sh
 
 local*
 .user.yml
+.cursorignore
