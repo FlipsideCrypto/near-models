@@ -2,6 +2,7 @@ version: 2
 
 models:
   - name: core__fact_blocks
+    access: public
     description: |-
       This table records all the blocks of Near blockchain.
     tests:
