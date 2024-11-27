@@ -1,7 +1,6 @@
 {{ config(
     materialized = 'incremental',
-    incremental_strategy = 'merge',
-    merge_exclude_columns = ['inserted_timestamp'],
+    incremental_strategy = 'delete+insert',
     unique_key = 'tx_hash',
     tags = ['curated','scheduled_non_core'],
     cluster_by = ['_partition_by_block_number', 'block_timestamp::date']
