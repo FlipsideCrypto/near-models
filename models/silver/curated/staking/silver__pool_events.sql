@@ -1,5 +1,7 @@
 {{ config(
-    materialized = 'table',
+    materialized = 'incremental',
+    incremental_strategy = 'merge',
+    merge_exclude_columns = ['inserted_timestamp'],
     unique_key = 'tx_hash',
     tags = ['curated','scheduled_non_core'],
     cluster_by = ['_partition_by_block_number', 'block_timestamp::date']
@@ -22,12 +24,18 @@ WITH receipts AS (
     FROM
         {{ ref('silver__streamline_receipts_final') }}
     WHERE
+        receipt_succeeded
         {% if var("MANUAL_FIX") %}
-            {{ partition_load_manual('no_buffer') }}
-        {% else %}
-            {{ incremental_load_filter('_inserted_timestamp') }}
-        {% endif %}
-        AND receipt_succeeded
+        AND {{ partition_load_manual('no_buffer') }}
+
+        {% elif is_incremental() %}
+        AND modified_timestamp >= (
+            SELECT
+                MAX(modified_timestamp)
+            FROM
+                {{ this }}
+        )
+    {% endif %}
 ),
 FINAL AS (
     SELECT
