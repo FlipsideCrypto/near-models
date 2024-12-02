@@ -17,7 +17,9 @@ WITH receipts AS (
         signer_id,
         receiver_id,
         receipt_actions :predecessor_id :: STRING AS predecessor_id,
+        receipt_actions:receipt:Action:actions[0]:FunctionCall:method_name::STRING as method_name,
         receipt_actions :receipt :Action :actions [0] :FunctionCall :args :: STRING AS encoded_input,
+        array_size(receipt_actions :receipt :Action :actions) AS action_count,
         status_value :SuccessValue :: STRING AS encoded_output
     FROM
         {{ ref('silver__streamline_receipts_final') }}
@@ -49,8 +51,10 @@ SELECT
     signer_id,
     receiver_id,
     predecessor_id,
+    method_name,
     encoded_input,
     encoded_output,
+    action_count,
     {{ dbt_utils.generate_surrogate_key(
         ['receipt_object_id']
     ) }} AS aurora_encoded_withdraw_receipts_id,
