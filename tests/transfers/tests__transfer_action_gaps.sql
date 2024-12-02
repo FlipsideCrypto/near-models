@@ -1,5 +1,6 @@
 {{ config(
-    severity = "error"
+    severity = "error",
+    tags = ["gap_test"]
 ) }}
 
 WITH transfer_actions AS (
