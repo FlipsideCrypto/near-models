@@ -138,7 +138,7 @@ append_tx_hash AS (
 FINAL AS (
     SELECT
         tx_hash,
-        receipt_id AS receipt_object_id,
+        receipt_id AS receipt_object_id, -- TODO upd this
         r.block_id,
         b.block_timestamp,
         receipt_index,
