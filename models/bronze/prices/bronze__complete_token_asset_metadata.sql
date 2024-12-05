@@ -24,8 +24,8 @@ FROM
         'crosschain_silver',
         'complete_token_asset_metadata'
     ) }}
-WHERE
-    blockchain IN (
-        'near',
-        'near protocol'
-    )
+-- WHERE
+--     blockchain IN (
+--         'near',
+--         'near protocol'
+--     )
