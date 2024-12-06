@@ -1,0 +1,109 @@
+version: 2
+
+models:
+  - name: silver__actions
+    description: |-
+      This table extracts and processes all action events from NEAR trransactions and receipts - storing the argument data under action_data. It combines transaction and receipt information to provide a comprehensive view on each of the actions events.
+
+    columns:
+      - name: BLOCK_ID
+        description: "{{ doc('block_id')}}"
+        tests:
+          - not_null:
+              where: _inserted_timestamp <= current_timestamp - interval '1 hour
+
+      - name: BLOCK_TIMESTAMP
+        description: "{{ doc('block_timestamp')}}"
+        tests:
+          - not_null:
+              where: _inserted_timestamp <= current_timestamp - interval '1 hour'
+
+      - name: TX_HASH
+        description: "{{ doc('tx_hash')}}"
+        tests:
+          - not_null:
+              where: _inserted_timestamp <= current_timestamp - interval '1 hour'
+
+      - name: TX_SUCCEEDED
+        description: "{{ doc('tx_succeeded')}}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - BOOLEAN
+          - not_null:
+              where: _inserted_timestamp <= current_timestamp - interval '1 hour'
+
+      - name: TX_RECEIVER
+        description: "{{ doc('tx_receiver')}}"
+
+      - name: TX_SIGNER
+        description: "{{ doc('tx_signer')}}"
+        
+      - name: TX_GAS_USED
+        description: "{{ doc('gas_used')}}"
+        tests:
+          - not_null:
+              where: _inserted_timestamp <= current_timestamp - interval '1 hour'
+
+      - name: RECEIPT_ID
+        description: "{{ doc('receipt_object_id')}}"
+
+      - name: RECEIPT_PREDECESSOR_ID
+        description: "{{ doc('predecessor_id')}}"
+
+      - name: RECEIPT_RECEIVER_ID
+        description: "{{ doc('receiver_id')}}"
+
+      - name: RECEIPT_SIGNER_ID
+        description: "{{ doc('signer_id')}}"
+
+      - name: RECEIPT_SUCCEEDED
+        description: "{{ doc('receipt_succeeded')}}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - BOOLEAN
+          - not_null:
+              where: _inserted_timestamp <= current_timestamp - interval '1 hour'
+
+      - name: RECEIPT_GAS_BURNT
+        description: "{{ doc('gas_burnt')}}"
+
+      - name: RECEIPT_STATUS_VALUE
+        description: "{{ doc('status_value')}}"
+    
+      - name: ACTION_INDEX
+        description: "{{ doc('action_index')}}"
+          
+      - name: ACTION_NAME
+        description: "{{ doc('action_name')}}"
+          
+      - name: ACTION_DATA
+        description: "{{ doc('action_data')}}"
+
+      - name: ACTION_GAS_PRICE
+        description: "{{ doc('action_gas_price')}}"
+
+      - name: RECEIPT_LOGS
+        description: "{{ doc('logs')}}"
+
+      - name: _PARTITION_BY_BLOCK_NUMBER
+        description: "{{ doc('_partition_by_block_number')}}"
+
+      - name: _INSERTED_TIMESTAMP
+        description: "{{ doc('_inserted_timestamp')}}"
+
+      - name: ACTIONS_ID
+        description: "{{ doc('action_id')}}"
+        tests:
+          - unique
+          - not_null  
+
+      - name: INSERTED_TIMESTAMP
+        description: "{{doc('inserted_timestamp')}}"
+
+      - name: MODIFIED_TIMESTAMP
+        description: "{{doc('modified_timestamp')}}"
+               
+      - name: _INVOCATION_ID
+        description: "{{doc('invocation_id')}}"
