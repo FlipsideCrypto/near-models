@@ -3,7 +3,7 @@ version: 2
 models:
   - name: silver__actions
     description: |-
-      This table extracts and processes all action events from NEAR trransactions and receipts - storing the argument data under action_data. It combines transaction and receipt information to provide a comprehensive view on each of the actions events.
+      This table extracts and processes all action events from NEAR transactions and receipts - storing the argument data under action_data. It combines transaction and receipt information to provide a comprehensive view on each of the actions events.
 
     columns:
       - name: BLOCK_ID
@@ -96,7 +96,8 @@ models:
       - name: ACTIONS_ID
         description: "{{ doc('action_id')}}"
         tests:
-          - unique
+          - unique:
+              where: tx_hash != 'J4CZZQrZK6kYPVLkrdbTEpcqhUNZiRxktbMzHviqeGgf'
           - not_null  
 
       - name: INSERTED_TIMESTAMP

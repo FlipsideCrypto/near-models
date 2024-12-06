@@ -17,7 +17,7 @@ WITH transactions AS (
         tx_receiver,
         gas_used AS tx_gas_used,
         tx_succeeded,
-        _modified_timestamp
+        modified_timestamp AS _modified_timestamp
     FROM
         {{ ref('silver__streamline_transactions_final') }}
     WHERE
@@ -27,15 +27,15 @@ WITH transactions AS (
         WHERE
             {{ partition_load_manual('no_buffer') }}
         {% else %}
-        {% if is_incremental() %}
-        WHERE modified_timestamp >= (
-                SELECT
-                    MAX(modified_timestamp)
-                FROM
-                    {{ this }}
-            )
-        {% endif %}
-    {% endif %}
+{% if is_incremental() %}
+WHERE _modified_timestamp >= (
+        SELECT
+            MAX(_modified_timestamp)
+        FROM
+            {{ this }}
+    )
+{% endif %}
+{% endif %}
 ),
 receipts AS (
     SELECT
@@ -63,15 +63,15 @@ receipts AS (
         WHERE
             {{ partition_load_manual('no_buffer') }}
         {% else %}
-        {% if is_incremental() %}
-        WHERE _modified_timestamp >= (
-                SELECT
-                    MAX(_modified_timestamp)
-                FROM
-                    {{ this }}
-            )
-        {% endif %}
-    {% endif %}
+{% if is_incremental() %}
+WHERE _modified_timestamp >= (
+        SELECT
+            MAX(_modified_timestamp)
+        FROM
+            {{ this }}
+    )
+{% endif %}
+{% endif %}
 ),
 join_data AS (
     SELECT
