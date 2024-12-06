@@ -18,6 +18,8 @@ SELECT
     receipt_object_id,
     receipt_outcome_id,
     receiver_id,
+    actions :predecessor_id :: STRING AS predecessor_id,
+    signer_id,
     receipt_actions AS actions,
     execution_outcome AS outcome,
     gas_burnt,
@@ -25,6 +27,7 @@ SELECT
     logs,
     proof,
     metadata,
+    receipt_succeeded,
     COALESCE(
         streamline_receipts_final_id,
         {{ dbt_utils.generate_surrogate_key(
