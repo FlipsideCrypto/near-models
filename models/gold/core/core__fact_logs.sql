@@ -22,6 +22,7 @@ SELECT
     clean_log,
     log_index,
     gas_burnt,
+    receipt_succeeded,
     COALESCE(
         logs_id,
         {{ dbt_utils.generate_surrogate_key(
