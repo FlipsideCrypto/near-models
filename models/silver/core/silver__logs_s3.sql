@@ -56,10 +56,10 @@ FINAL AS (
         predecessor_id,
         signer_id,
         COALESCE(
+            TRY_PARSE_JSON(SPLIT(VALUE, 'EVENT_JSON:') [1]),
             TRY_PARSE_JSON(VALUE), 
-            TRY_PARSE_JSON(SPLIT(VALUE, 'EVENT_JSON:') [1]), 
-            VALUE :: VARIANT) 
-        AS clean_log,
+            VALUE :: VARIANT
+        ) AS clean_log,
         VALUE ILIKE 'event_json:%' AS is_standard,
         gas_burnt,
         receipt_succeeded,

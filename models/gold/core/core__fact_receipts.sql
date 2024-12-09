@@ -19,7 +19,6 @@ SELECT
     receipt_outcome_id,
     receiver_id,
     actions :predecessor_id :: STRING AS predecessor_id,
-    signer_id,
     receipt_actions AS actions,
     execution_outcome AS outcome,
     gas_burnt,
