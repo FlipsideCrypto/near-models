@@ -65,6 +65,9 @@ models:
           - not_null
           - unique
 
+      - name: PREDECESSOR_ID
+        description: "{{ doc('predecessor_id')}}"
+
       - name: RECEIVER_ID
         description: "{{ doc('receiver_id')}}"
         tests:

@@ -2,7 +2,7 @@
     materialized = "incremental",
     merge_exclude_columns = ["inserted_timestamp"],
     incremental_predicates = ["COALESCE(DBT_INTERNAL_DEST.block_timestamp::DATE,'2099-12-31') >= (select min(block_timestamp::DATE) from " ~ generate_tmp_view_name(this) ~ ")"],
-    cluster_by = ["block_timestamp::DATE","_modified_timestamp::DATE"],
+    cluster_by = ["block_timestamp::DATE","modified_timestamp::DATE"],
     unique_key = "log_id",
     incremental_strategy = "merge",
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,receipt_object_id,receiver_id,predecessor_id,signer_id);",
@@ -23,8 +23,7 @@ WITH receipts AS (
         gas_burnt,
         receipt_succeeded,
         _partition_by_block_number,
-        _inserted_timestamp,
-        modified_timestamp AS _modified_timestamp
+        _inserted_timestamp
     FROM
         {{ ref('silver__streamline_receipts_final') }}
 
@@ -32,9 +31,9 @@ WITH receipts AS (
         WHERE {{ partition_load_manual('no_buffer') }}
         {% else %}
 {% if is_incremental() %}
-    WHERE _modified_timestamp >= (
+    WHERE modified_timestamp >= (
         SELECT
-            MAX(_modified_timestamp)
+            MAX(modified_timestamp)
         FROM
             {{ this }}
     )
@@ -65,8 +64,7 @@ FINAL AS (
         gas_burnt,
         receipt_succeeded,
         _partition_by_block_number,
-        _inserted_timestamp,
-        _modified_timestamp
+        _inserted_timestamp
     FROM
         receipts,
         LATERAL FLATTEN(

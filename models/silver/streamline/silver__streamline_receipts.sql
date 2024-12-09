@@ -95,6 +95,7 @@ FINAL AS (
         ) AS error_type_2,
         failure_message [error_type_0] :kind [error_type_1] [error_type_2] :: STRING AS error_message,
         execution_outcome :outcome :receipt_ids :: ARRAY AS outcome_receipts,
+        receipt :predecessor_id :: STRING AS predecessor_id,
         receipt :receiver_id :: STRING AS receiver_id,
         receipt :receipt :Action :signer_id :: STRING AS signer_id,
         LOWER(
