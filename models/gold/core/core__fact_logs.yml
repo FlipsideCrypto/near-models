@@ -87,6 +87,11 @@ models:
                 - OBJECT
                 - ARRAY
 
+      - name: LOG_INDEX
+        description: "{{ doc('index')}}"
+        tests:
+          - not_null
+
       - name: FACT_LOGS_ID
         description: "{{doc('id')}}"
         tests:
