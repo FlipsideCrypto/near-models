@@ -20,6 +20,7 @@ SELECT
     receiver_id,
     signer_id,
     clean_log,
+    log_index,
     gas_burnt,
     COALESCE(
         logs_id,
