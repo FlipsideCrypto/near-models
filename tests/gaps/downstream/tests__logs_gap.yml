@@ -1,0 +1,8 @@
+version: 2
+
+tests:
+  name: tests__logs_gap
+  description: |-
+    This test checks for gaps in logs by checking against the initial receipts model and receipts_final.
+    If there are gaps between receipts and receipts_final, that will likely lead to log gaps.
+    The user must look at the data to determine where the gap may be.

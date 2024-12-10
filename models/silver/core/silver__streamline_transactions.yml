@@ -31,13 +31,13 @@ models:
         tests:
           - not_null
 
-      - name: _MODIFIED_TIMESTAMP
-        description: "{{ doc('_modified_timestamp')}}"
-
       - name: CHUNK_HASH
         description: "{{ doc('chunk_hash')}}"
         tests:
           - not_null
+
+      - name: OUTCOME_RECEIPTS
+        description: "{{ doc('outcome')}}"
 
       - name: TX
         description: "{{ doc('tx')}}"
@@ -46,6 +46,33 @@ models:
               column_type_list:
                 - OBJECT
                 - VARIANT
+      
+      - name: _ACTIONS
+        description: "{{ doc('actions')}}"
+
+      - name: _HASH
+        description: "{{ doc('tx_hash')}}"
+
+      - name: _NONCE
+        description: "{{ doc('nonce')}}"
+
+      - name: _OUTCOME
+        description: "{{ doc('outcome')}}"
+
+      - name: _PUBLIC_KEY
+        description: "{{ doc('public_key')}}"
+
+      - name: _RECEIPT
+        description: "{{ doc('receipt')}}"
+
+      - name: _RECEIVER_ID
+        description: "{{ doc('tx_receiver')}}"
+
+      - name: _SIGNATURE
+        description: "{{ doc('signature')}}"
+
+      - name: _SIGNER_ID
+        description: "{{ doc('tx_signer')}}"
 
       - name: _INSERTED_TIMESTAMP
         description: "{{ doc('_inserted_timestamp')}}"

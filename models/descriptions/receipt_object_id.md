@@ -1,6 +1,6 @@
 {% docs receipt_object_id %}
 
-Unique identifier of the receipt object for this transaction.
+Please note this column is being deprecated in favor of simply "receipt_id".
 
 {% enddocs %}
 

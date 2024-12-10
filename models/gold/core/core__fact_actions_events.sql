@@ -14,7 +14,7 @@ WITH actions AS (
 SELECT
     action_id,
     tx_hash,
-    receipt_object_id,
+    receipt_object_id AS receipt_id,
     predecessor_id,
     receiver_id,
     signer_id,
@@ -31,6 +31,7 @@ SELECT
             ['receipt_object_id', 'action_index']
         ) }}
     ) AS fact_actions_events_id,
+    receipt_object_id,
     COALESCE(inserted_timestamp, _inserted_timestamp, '2000-01-01' :: TIMESTAMP_NTZ) AS inserted_timestamp,
     COALESCE(modified_timestamp, _inserted_timestamp, '2000-01-01' :: TIMESTAMP_NTZ) AS modified_timestamp
 FROM

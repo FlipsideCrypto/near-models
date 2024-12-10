@@ -57,10 +57,10 @@ shards AS (
             block_id :: STRING,
             _shard_number :: STRING
         ) AS shard_id,
-        e.value :chunk :: variant AS chunk,
-        e.value :receipt_execution_outcomes :: variant AS receipt_execution_outcomes,
+        e.value :chunk :: VARIANT AS chunk,
+        e.value :receipt_execution_outcomes :: VARIANT AS receipt_execution_outcomes,
         e.value :shard_id :: NUMBER AS shard_number,
-        e.value :state_changes :: variant AS state_changes,
+        e.value :state_changes :: VARIANT AS state_changes,
         e._partition_by_block_number,
         m._inserted_timestamp
     FROM

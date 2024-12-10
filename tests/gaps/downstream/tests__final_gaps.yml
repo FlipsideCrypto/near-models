@@ -1,0 +1,6 @@
+version: 2
+
+tests:
+  name: tests__final_gaps
+  description: |-
+    This test checks for gaps in the processing of receipts and transactions in to their final models.

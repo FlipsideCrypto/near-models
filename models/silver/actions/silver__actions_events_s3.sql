@@ -3,12 +3,12 @@
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
     incremental_predicates = ["COALESCE(DBT_INTERNAL_DEST.block_timestamp::DATE,'2099-12-31') >= (select min(block_timestamp::DATE) from " ~ generate_tmp_view_name(this) ~ ")"],
-    cluster_by = ['block_timestamp::DATE', '_modified_timestamp::DATE'],
+    cluster_by = ['block_timestamp::DATE', 'modified_timestamp::DATE'],
     unique_key = 'action_id',
-    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,action_id,signer_id,receipt_object_id,receiver_id);",
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,signer_id,receipt_object_id,receiver_id);",
     tags = ['actions', 'curated','scheduled_core', 'grail']
 ) }}
-
+-- todo deprecate this model
 WITH receipts AS (
 
     SELECT
@@ -25,8 +25,7 @@ WITH receipts AS (
         receipt_succeeded,
         gas_burnt,
         _partition_by_block_number,
-        _inserted_timestamp,
-        modified_timestamp AS _modified_timestamp
+        _inserted_timestamp
     FROM
         {{ ref('silver__streamline_receipts_final') }}
 
@@ -35,9 +34,9 @@ WITH receipts AS (
             {{ partition_load_manual('no_buffer') }}
         {% else %}
 {% if is_incremental() %}
-WHERE _modified_timestamp >= (
+WHERE modified_timestamp >= (
         SELECT
-            MAX(_modified_timestamp)
+            MAX(modified_timestamp)
         FROM
             {{ this }}
     )
@@ -64,8 +63,7 @@ flatten_actions AS (
         INDEX AS action_index,
         receipt_succeeded,
         _partition_by_block_number,
-        _inserted_timestamp,
-        _modified_timestamp
+        _inserted_timestamp
     FROM
         receipts,
         LATERAL FLATTEN(
@@ -96,8 +94,7 @@ FINAL AS (
         gas_burnt,
         tokens_burnt,
         _partition_by_block_number,
-        _inserted_timestamp,
-        _modified_timestamp
+        _inserted_timestamp
     FROM
         flatten_actions,
         LATERAL FLATTEN(
