@@ -3,9 +3,9 @@
     incremental_predicates = ["COALESCE(DBT_INTERNAL_DEST.block_timestamp::DATE,'2099-12-31') >= (select min(block_timestamp::DATE) from " ~ generate_tmp_view_name(this) ~ ")"],
     incremental_strategy = 'merge',
     merge_exclude_columns = ['inserted_timestamp'],
-    unique_key = 'receipt_object_id',
-    cluster_by = ['block_timestamp::DATE','_modified_timestamp::DATE', '_partition_by_block_number', ],
-    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,receipt_object_id,receiver_id,signer_id);",
+    unique_key = 'receipt_id',
+    cluster_by = ['block_timestamp::DATE','modified_timestamp::DATE', '_partition_by_block_number', ],
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,receipt_id,receiver_id,predecessor_id);",
     tags = ['receipt_map','scheduled_core'],
     full_refresh = False
 ) }}
@@ -28,6 +28,7 @@ base_receipts AS (
         receipt,
         execution_outcome,
         outcome_receipts,
+        predecessor_id,
         receiver_id,
         signer_id,
         receipt_type,
@@ -37,8 +38,7 @@ base_receipts AS (
         error_type_2,
         error_message,
         _partition_by_block_number,
-        _inserted_timestamp,
-        modified_timestamp AS _modified_timestamp
+        _inserted_timestamp
     FROM
         {{ ref('silver__streamline_receipts') }} r
 
@@ -62,9 +62,9 @@ base_receipts AS (
             )
             AND (
                 {% if is_incremental() %}
-                    _modified_timestamp >= (
+                    modified_timestamp >= (
                         SELECT
-                            MAX(_modified_timestamp)
+                            MAX(modified_timestamp)
                         FROM
                             {{ this }}
                     )
@@ -85,9 +85,6 @@ blocks AS (
         block_timestamp,
         _partition_by_block_number,
         _inserted_timestamp
-        {% if not var('IS_MIGRATION') %}
-        , modified_timestamp AS _modified_timestamp
-        {% endif %}
     FROM
         {{ ref('silver__streamline_blocks') }}
 
@@ -119,6 +116,7 @@ append_tx_hash AS (
         r.receipt,
         r.execution_outcome,
         r.outcome_receipts,
+        r.predecessor_id,
         r.receiver_id,
         r.signer_id,
         r.receipt_type,
@@ -128,8 +126,7 @@ append_tx_hash AS (
         r.error_type_2,
         r.error_message,
         r._partition_by_block_number,
-        r._inserted_timestamp,
-        r._modified_timestamp
+        r._inserted_timestamp
     FROM
         base_receipts r
         INNER JOIN {{ ref('silver__receipt_tx_hash_mapping') }}
@@ -138,7 +135,8 @@ append_tx_hash AS (
 FINAL AS (
     SELECT
         tx_hash,
-        receipt_id AS receipt_object_id, -- TODO upd this
+        receipt_id AS receipt_object_id, -- TODO drop this col after manual backfill of just receipt_id
+        receipt_id,
         r.block_id,
         b.block_timestamp,
         receipt_index,
@@ -146,6 +144,7 @@ FINAL AS (
         receipt AS receipt_actions,
         execution_outcome,
         outcome_receipts AS receipt_outcome_id,
+        predecessor_id, -- TODO manual backfill of this col required
         receiver_id,
         signer_id,
         receipt_type,
@@ -160,8 +159,7 @@ FINAL AS (
         error_type_2,
         error_message,
         _partition_by_block_number,
-        _inserted_timestamp,
-        _modified_timestamp
+        _inserted_timestamp
     FROM
         append_tx_hash r
         INNER JOIN blocks b USING (block_id)
@@ -169,7 +167,7 @@ FINAL AS (
 SELECT
     *,
     {{ dbt_utils.generate_surrogate_key(
-        ['receipt_object_id']
+        ['receipt_id']
     ) }} AS streamline_receipts_final_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,

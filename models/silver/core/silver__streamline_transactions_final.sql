@@ -2,11 +2,10 @@
   materialized = 'incremental',
   incremental_strategy = 'delete+insert',
   unique_key = 'tx_hash',
-  cluster_by = ['block_timestamp::DATE','_modified_timestamp::DATE', '_partition_by_block_number'],
+  cluster_by = ['block_timestamp::DATE','modified_timestamp::DATE', '_partition_by_block_number'],
   tags = ['receipt_map','scheduled_core']
 ) }}
--- TODO review
-    -- Dojw9TnLbTLTxeJAuGtiSTZGdruCAmdu1KsLgjLHwkkb incorrect tx fees / gas burnt?
+
 WITH int_txs AS (
 
   SELECT
@@ -25,8 +24,7 @@ WITH int_txs AS (
     _signature,
     _signer_id,
     _partition_by_block_number,
-    _inserted_timestamp,
-    modified_timestamp AS _modified_timestamp
+    _inserted_timestamp
   FROM
     {{ ref('silver__streamline_transactions') }}
 
@@ -55,8 +53,7 @@ int_receipts AS (
     receipt_succeeded,
     gas_burnt,
     _partition_by_block_number,
-    _inserted_timestamp,
-    modified_timestamp AS _modified_timestamp
+    _inserted_timestamp
   FROM
     {{ ref('silver__streamline_receipts_final') }}
 
@@ -83,8 +80,7 @@ int_blocks AS (
     block_hash,
     block_timestamp,
     _partition_by_block_number,
-    _inserted_timestamp,
-    modified_timestamp AS _modified_timestamp
+    _inserted_timestamp
   FROM
     {{ ref('silver__streamline_blocks') }}
   WHERE
@@ -116,34 +112,35 @@ base_transactions AS (
     outcome_receipts,
     OBJECT_CONSTRUCT(
       'actions',
-      _actions,
+      _actions, -- does not need to exist as col (in receipts) but fields used in gas calc!
       'hash',
-      _hash,
+      _hash, -- exists as col
       'nonce',
-      _nonce,
+      _nonce, -- exists as col
       'outcome',
-      _outcome,
+      _outcome, -- does not need to exist as col (in receipts) but fields used in gas calc!
       'public_key',
-      _public_key,
+      _public_key, -- does not exist as col
       'receipt',
-      r.receipt,
+      r.receipt, -- does not need to exist as col
       'receiver_id',
-      _receiver_id,
+      _receiver_id, -- exists as col
       'signature',
-      _signature,
+      _signature, -- exists as col
       'signer_id',
-      _signer_id
-    ) AS tx, -- TODO dropping this
+      _signer_id -- exists as col
+    ) AS tx, -- TODO dropping this object
     _partition_by_block_number,
-    t._inserted_timestamp,
-    GREATEST(
-      t._modified_timestamp,
-      b._modified_timestamp) AS _modified_timestamp
+    t._inserted_timestamp
   FROM
     int_txs t
     INNER JOIN receipt_array r USING (tx_hash)
     INNER JOIN int_blocks b USING (block_id)
 ),
+-- TODO review the below section in a subsequent PR. ~3y old at this point.
+-- it is calculating the gaas and fees. Largely accurate, but may have found an inaccuracy:
+-- Dojw9TnLbTLTxeJAuGtiSTZGdruCAmdu1KsLgjLHwkkb incorrect tx fees / gas burnt?
+
 {# The following steps were copied directly from legacy tx model to replicate columns #}
 actions AS (
   SELECT
@@ -173,8 +170,7 @@ transactions AS (
     tx :outcome :outcome :gas_burnt :: NUMBER AS transaction_gas_burnt,
     tx :outcome :outcome :tokens_burnt :: NUMBER AS transaction_tokens_burnt,
     _partition_by_block_number,
-    _inserted_timestamp,
-    _modified_timestamp
+    _inserted_timestamp
   FROM
     base_transactions
 ),
@@ -182,8 +178,7 @@ gas_burnt AS (
   SELECT
     tx_hash,
     SUM(gas_burnt) AS receipt_gas_burnt,
-    SUM(execution_outcome :outcome :tokens_burnt :: NUMBER) AS receipt_tokens_burnt,
-    MAX(_modified_timestamp) AS _modified_timestamp
+    SUM(execution_outcome :outcome :tokens_burnt :: NUMBER) AS receipt_tokens_burnt
   FROM
     int_receipts
   WHERE
@@ -228,11 +223,7 @@ FINAL AS (
       'Fail'
     ) AS tx_status, -- DEPRECATE TX_STATUS IN GOLD
     t._partition_by_block_number,
-    t._inserted_timestamp,
-    GREATEST(
-      t._modified_timestamp,
-      g._modified_timestamp
-    ) AS _modified_timestamp
+    t._inserted_timestamp
   FROM
     transactions AS t
     INNER JOIN determine_tx_status s
@@ -259,7 +250,6 @@ SELECT
   tx_status,
   _partition_by_block_number,
   _inserted_timestamp,
-  _modified_timestamp,
   {{ dbt_utils.generate_surrogate_key(
     ['tx_hash']
   ) }} AS streamline_transactions_final_id,

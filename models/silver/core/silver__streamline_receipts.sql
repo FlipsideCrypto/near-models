@@ -4,7 +4,7 @@
     incremental_strategy = 'merge',
     merge_exclude_columns = ['inserted_timestamp'],
     unique_key = 'receipt_id',
-    cluster_by = ['_inserted_timestamp::date', '_partition_by_block_number'],
+    cluster_by = ['modified_timestamp::date', '_partition_by_block_number'],
     tags = ['load', 'load_shards','scheduled_core']
 ) }}
 
@@ -16,8 +16,7 @@ WITH shards AS (
         receipt_execution_outcomes,
         chunk :header :chunk_hash :: STRING AS chunk_hash,
         _partition_by_block_number,
-        _inserted_timestamp,
-        modified_timestamp AS _modified_timestamp
+        _inserted_timestamp
     FROM
         {{ ref('silver__streamline_shards') }}
     WHERE
@@ -27,9 +26,9 @@ WITH shards AS (
             {{ partition_load_manual('no_buffer') }}
     {% else %}
         {% if is_incremental() %}
-            AND _modified_timestamp >= (
+            AND modified_timestamp >= (
                 SELECT
-                    MAX(_modified_timestamp)
+                    MAX(modified_timestamp)
                 FROM
                     {{ this }}
             )
@@ -53,8 +52,7 @@ flatten_receipts AS (
         VALUE :receipt :receipt_id :: STRING AS receipt_id,
         VALUE :execution_outcome :id :: STRING AS receipt_outcome_id,
         _partition_by_block_number,
-        _inserted_timestamp,
-        _modified_timestamp
+        _inserted_timestamp
     FROM
         shards,
         LATERAL FLATTEN(
@@ -96,7 +94,7 @@ FINAL AS (
         ) AS error_type_2,
         failure_message [error_type_0] :kind [error_type_1] [error_type_2] :: STRING AS error_message,
         execution_outcome :outcome :receipt_ids :: ARRAY AS outcome_receipts,
-        receipt :predecessor_id :: STRING AS predecessor_id,
+        receipt :predecessor_id :: STRING AS predecessor_id, -- TODO manual backfill of this col required
         receipt :receiver_id :: STRING AS receiver_id,
         receipt :receipt :Action :signer_id :: STRING AS signer_id,
         LOWER(
@@ -105,8 +103,7 @@ FINAL AS (
             ) [0] :: STRING
         ) AS receipt_type,
         _partition_by_block_number,
-        _inserted_timestamp,
-        _modified_timestamp
+        _inserted_timestamp
     FROM
         flatten_receipts
 )

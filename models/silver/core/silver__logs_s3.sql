@@ -18,7 +18,7 @@ WITH receipts AS (
         receipt_object_id,
         logs,
         receiver_id,
-        receipt_actions :predecessor_id :: STRING AS predecessor_id,
+        receipt_actions :predecessor_id :: STRING AS predecessor_id, -- TODO once exists in receipts final can select directly
         signer_id,
         gas_burnt,
         receipt_succeeded,
