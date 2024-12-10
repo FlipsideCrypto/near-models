@@ -5,7 +5,8 @@
   cluster_by = ['block_timestamp::DATE','_modified_timestamp::DATE', '_partition_by_block_number'],
   tags = ['receipt_map','scheduled_core']
 ) }}
-
+-- TODO review
+    -- Dojw9TnLbTLTxeJAuGtiSTZGdruCAmdu1KsLgjLHwkkb incorrect tx fees / gas burnt?
 WITH int_txs AS (
 
   SELECT
@@ -132,7 +133,7 @@ base_transactions AS (
       _signature,
       'signer_id',
       _signer_id
-    ) AS tx,
+    ) AS tx, -- TODO dropping this
     _partition_by_block_number,
     t._inserted_timestamp,
     GREATEST(

@@ -61,6 +61,7 @@ flatten_receipts AS (
             input => receipt_execution_outcomes
         )
 ),
+-- TODO review new keys like priority, input_data_ids, output_data_receivers
 FINAL AS (
     SELECT
         receipt :receipt_id :: STRING AS receipt_id,
