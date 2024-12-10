@@ -172,6 +172,7 @@ flatten_delegated_actions AS (
     SELECT
         tx_hash,
         True AS is_delegated,
+        INDEX AS delegated_action_index,
         object_keys(VALUE)[0] ::STRING AS delegated_action_name,
         IFF(
             VALUE = 'CreateAccount',
@@ -226,3 +227,4 @@ FROM
     ON fa.tx_hash = da.tx_hash
     AND fa.action_name = da.delegated_action_name
     AND fa.action_hash = da.delegated_action_hash
+    AND fa.action_index = da.delegated_action_index
