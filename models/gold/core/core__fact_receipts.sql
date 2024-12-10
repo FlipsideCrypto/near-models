@@ -15,9 +15,10 @@ SELECT
     block_timestamp,
     block_id,
     tx_hash,
-    receipt_object_id,
+    receipt_object_id AS receipt_id,
     receipt_outcome_id,
     receiver_id,
+    actions :predecessor_id :: STRING AS predecessor_id,
     receipt_actions AS actions,
     execution_outcome AS outcome,
     gas_burnt,
@@ -25,6 +26,8 @@ SELECT
     logs,
     proof,
     metadata,
+    receipt_succeeded,
+    receipt_object_id,
     COALESCE(
         streamline_receipts_final_id,
         {{ dbt_utils.generate_surrogate_key(
