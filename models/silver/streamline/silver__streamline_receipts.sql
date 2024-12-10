@@ -37,7 +37,7 @@ WITH shards AS (
     {% endif %}
 ),
 flatten_receipts AS (
-    -- TODO review new keys like priority, input_data_ids, output_data_receivers
+
     SELECT
         concat_ws(
             '-',
@@ -95,7 +95,6 @@ FINAL AS (
         ) AS error_type_2,
         failure_message [error_type_0] :kind [error_type_1] [error_type_2] :: STRING AS error_message,
         execution_outcome :outcome :receipt_ids :: ARRAY AS outcome_receipts,
-        -- TODO extract predecessor_id
         receipt :receiver_id :: STRING AS receiver_id,
         receipt :receipt :Action :signer_id :: STRING AS signer_id,
         LOWER(

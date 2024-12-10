@@ -200,8 +200,6 @@ determine_tx_status AS (
       ORDER BY
         block_id ASC
     ) AS tx_succeeded
-    -- TODO review
-    -- Dojw9TnLbTLTxeJAuGtiSTZGdruCAmdu1KsLgjLHwkkb incorrect
   FROM
     int_receipts
 ),
@@ -252,7 +250,7 @@ SELECT
   signature,
   tx_receiver,
   tx_signer,
-  tx, -- TODO dropping this
+  tx,
   gas_used,
   transaction_fee,
   attached_gas,
