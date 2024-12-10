@@ -70,7 +70,7 @@ join_data AS (
     SELECT
         r.block_id,
         r.block_timestamp,
-        t.tx_hash,
+        r.tx_hash,
         t.tx_signer,
         t.tx_receiver,
         t.tx_gas_used,
@@ -205,7 +205,10 @@ SELECT
     receipt_gas_burnt,
     receipt_status_value,
     action_index,
-    COALESCE(da.is_delegated, fa.is_delegated) AS is_delegated,
+    COALESCE(
+        da.is_delegated, 
+        fa.is_delegated
+    ) AS is_delegated,
     action_name,
     action_data_parsed AS action_data,
     action_gas_price,
