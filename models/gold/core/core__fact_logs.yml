@@ -82,6 +82,14 @@ models:
                 - STRING
                 - VARCHAR
 
+      - name: EVENT_STANDARD
+        description: "{{ doc('event_standard')}}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
       - name: GAS_BURNT
         description: "{{ doc('gas_burnt')}}"
         tests:
