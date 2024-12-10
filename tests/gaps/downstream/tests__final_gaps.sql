@@ -22,7 +22,7 @@ WITH r_receipts AS (
 ),
 f_receipts AS (
     SELECT
-        DISTINCT receipt_object_id,
+        DISTINCT receipt_object_id AS receipt_id,
         block_id
     FROM
         {{ ref('silver__streamline_receipts_final') }}
@@ -81,9 +81,9 @@ FROM
 LEFT JOIN
     f_receipts
 ON
-    r_receipts.receipt_id = f_receipts.receipt_object_id
+    r_receipts.receipt_id = f_receipts.receipt_id
 WHERE
-    f_receipts.receipt_object_id IS NULL
+    f_receipts.receipt_id IS NULL
 
 UNION ALL
 
