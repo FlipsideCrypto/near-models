@@ -20,7 +20,8 @@ SELECT
     receiver_id,
     signer_id,
     log_index,
-    clean_log AS log,
+    clean_log AS log, -- maybe on this renaming. The EVENT_JSON has been removed and that's all that's been "cleaned" ... as logs are technically str users still need to parse them...
+    iff(is_standard, try_parse_json(clean_log) :standard ::string, null) AS event_standard,
     gas_burnt,
     receipt_succeeded,
     COALESCE(
