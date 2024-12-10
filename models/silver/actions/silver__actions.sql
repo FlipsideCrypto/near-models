@@ -24,15 +24,15 @@ WITH transactions AS (
         WHERE
             {{ partition_load_manual('no_buffer') }}
         {% else %}
-{% if is_incremental() %}
-WHERE modified_timestamp >= (
-        SELECT
-            MAX(modified_timestamp)
-        FROM
-            {{ this }}
-    )
-{% endif %}
-{% endif %}
+        {% if is_incremental() %}
+            WHERE modified_timestamp >= (
+                    SELECT
+                        MAX(modified_timestamp)
+                    FROM
+                        {{ this }}
+                )
+        {% endif %}
+    {% endif %}
 ),
 receipts AS (
     SELECT
@@ -56,15 +56,15 @@ receipts AS (
         WHERE
             {{ partition_load_manual('no_buffer') }}
         {% else %}
-{% if is_incremental() %}
-WHERE modified_timestamp >= (
-        SELECT
-            MAX(modified_timestamp)
-        FROM
-            {{ this }}
-    )
-{% endif %}
-{% endif %}
+        {% if is_incremental() %}
+            WHERE modified_timestamp >= (
+                    SELECT
+                        MAX(modified_timestamp)
+                    FROM
+                        {{ this }}
+                )
+        {% endif %}
+    {% endif %}
 ),
 join_data AS (
     SELECT
@@ -108,28 +108,41 @@ flatten_actions AS (
         IFF(
             object_keys(status_value)[0] :: STRING = 'SuccessValue', 
             OBJECT_INSERT(
-                    status_value, 
-                    'SuccessValue',
-                    COALESCE(
-                        TRY_PARSE_JSON(
-                            TRY_BASE64_DECODE_STRING(
-                                GET(status_value, 'SuccessValue')
-                            )
-                        ), 
-                        GET(status_value, 'SuccessValue')
-                    ),
-                    TRUE 
-                ), 
-            status_value) as receipt_status_value,
+                status_value, 
+                'SuccessValue',
+                COALESCE(
+                    TRY_PARSE_JSON(
+                        TRY_BASE64_DECODE_STRING(
+                            GET(status_value, 'SuccessValue')
+                        )
+                    ), 
+                    GET(status_value, 'SuccessValue')
+                ),
+                TRUE 
+            ), 
+            status_value
+        ) as receipt_status_value,
         False AS is_delegated,
         INDEX AS action_index,
         receipt_actions :receipt :Action :gas_price :: NUMBER AS action_gas_price,
-        IFF(VALUE = 'CreateAccount', VALUE, object_keys(VALUE) [0] :: STRING) AS action_name,
+        IFF(
+            VALUE = 'CreateAccount', 
+            VALUE, 
+            object_keys(VALUE) [0] :: STRING
+        ) AS action_name,
         IFF(
             VALUE = 'CreateAccount',
             {},
             GET(VALUE, object_keys(VALUE) [0] :: STRING)
         ) AS action_data,
+        MD5(
+            CONCAT(
+                action_data:args::STRING, ',', 
+                action_data:deposit::STRING, ',', 
+                action_data:gas::STRING, ',', 
+                action_data:method_name::STRING
+            )
+        ) AS action_hash,
         IFF(
             action_name = 'FunctionCall',
             OBJECT_INSERT(
@@ -164,7 +177,15 @@ flatten_delegated_actions AS (
             VALUE = 'CreateAccount',
             {},
             GET(VALUE, object_keys(VALUE) [0] :: STRING)
-        ) AS delegated_action_data
+        ) AS delegated_action_data,
+        MD5(
+            CONCAT(
+                delegated_action_data:args::STRING, ',', 
+                delegated_action_data:deposit::STRING, ',', 
+                delegated_action_data:gas::STRING, ',', 
+                delegated_action_data:method_name::STRING
+            )
+        ) AS delegated_action_hash
     FROM flatten_actions, LATERAL FLATTEN(action_data :delegate_action :actions :: ARRAY)
     WHERE action_name = 'Delegate'
 )
@@ -184,6 +205,7 @@ SELECT
     receipt_gas_burnt,
     receipt_status_value,
     action_index,
+    COALESCE(da.is_delegated, fa.is_delegated) AS is_delegated,
     action_name,
     action_data_parsed AS action_data,
     action_gas_price,
@@ -200,4 +222,4 @@ FROM
     LEFT JOIN flatten_delegated_actions da
     ON fa.tx_hash = da.tx_hash
     AND fa.action_name = da.delegated_action_name
-    AND fa.action_data :: STRING = da.delegated_action_data :: STRING
+    AND fa.action_hash = da.delegated_action_hash
