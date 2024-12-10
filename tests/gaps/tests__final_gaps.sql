@@ -9,9 +9,15 @@ WITH r_receipts AS (
         block_id
     FROM
         {{ ref('silver__streamline_receipts') }}
-        -- todo add DBT_FULL_TEST logic
+
+    {% if var('DBT_FULL_TEST') %}
     WHERE
-        _inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '24 hour'
+        _inserted_timestamp < SYSDATE() - INTERVAL '1 hour'
+    {% else %}
+    WHERE
+        _inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days'
+        AND SYSDATE() - INTERVAL '1 hour'
+    {% endif %}
 ),
 f_receipts AS (
     SELECT
@@ -19,8 +25,15 @@ f_receipts AS (
         block_id
     FROM
         {{ ref('silver__streamline_receipts_final') }}
+    
+    {% if var('DBT_FULL_TEST') %}
     WHERE
-        _inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '24 hour'
+        _inserted_timestamp < SYSDATE() - INTERVAL '1 hour'
+    {% else %}
+    WHERE
+        _inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days'
+        AND SYSDATE() - INTERVAL '1 hour'
+    {% endif %}
 ),
 r_transactions AS (
     SELECT
@@ -28,10 +41,18 @@ r_transactions AS (
         block_id
     FROM
         {{ ref('silver__streamline_transactions') }}
+
+    {% if var('DBT_FULL_TEST') %}
     WHERE
-        _inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '24 hour'
-    AND
-        _actions[0] is not null
+        _inserted_timestamp < SYSDATE() - INTERVAL '1 hour'
+    {% else %}
+    WHERE
+        _inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days'
+        AND SYSDATE() - INTERVAL '1 hour'
+    {% endif %}
+
+    -- AND
+        -- _actions[0] is not null
 ),
 f_transactions AS (
     SELECT
@@ -39,8 +60,15 @@ f_transactions AS (
         block_id
     FROM
         {{ ref('silver__streamline_transactions_final') }}
+
+    {% if var('DBT_FULL_TEST') %}
     WHERE
-        _inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '24 hour'
+        _inserted_timestamp < SYSDATE() - INTERVAL '1 hour'
+    {% else %}
+    WHERE
+        _inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days'
+        AND SYSDATE() - INTERVAL '1 hour'
+    {% endif %}
 )
 
 SELECT
