@@ -15,7 +15,6 @@ SELECT
     block_id,
     block_timestamp,
     block_hash,
-    tx_count, -- TO DEPRECATE
     block_author,
     header,
     header :challenges_result :: ARRAY AS block_challenges_result,
@@ -28,7 +27,6 @@ SELECT
     header :chunks_included :: NUMBER AS chunks_included,
     epoch_id,
     header :epoch_sync_data_hash :: STRING AS epoch_sync_data_hash,
-    events, -- TO DEPRECATE
     gas_price,
     header :last_ds_final_block :: STRING AS last_ds_final_block,
     header :last_final_block :: STRING AS last_final_block,

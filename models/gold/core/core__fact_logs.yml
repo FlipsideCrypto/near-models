@@ -99,11 +99,6 @@ models:
         description: "{{ doc('index')}}"
         tests:
           - not_null
-      
-      - name: RECEIPT_SUCCEEDED
-        description: "{{ doc('receipt_succeeded')}}"
-        tests:
-          - not_null
 
       - name: FACT_LOGS_ID
         description: "{{doc('id')}}"

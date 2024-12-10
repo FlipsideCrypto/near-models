@@ -9,6 +9,7 @@ WITH r_receipts AS (
         block_id
     FROM
         {{ ref('silver__streamline_receipts') }}
+        -- todo add DBT_FULL_TEST logic
     WHERE
         _inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '24 hour'
 ),

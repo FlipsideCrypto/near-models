@@ -3,12 +3,12 @@
   incremental_strategy = 'merge',
   incremental_predicates = ["COALESCE(DBT_INTERNAL_DEST.block_timestamp::DATE,'2099-12-31') >= (select min(block_timestamp::DATE) from " ~ generate_tmp_view_name(this) ~ ")"],
   merge_exclude_columns = ["inserted_timestamp"],
-  cluster_by = ['block_timestamp::DATE', '_modified_timestamp::DATE'],
+  cluster_by = ['block_timestamp::DATE', 'modified_timestamp::DATE'],
   unique_key = 'action_id',
   post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(action_id,tx_hash,receiver_id,predecessor_id,signer_id,method_name);",
   tags = ['actions', 'curated','scheduled_core', 'grail']
 ) }}
-
+-- todo deprecate this model
 WITH action_events AS (
 
   SELECT
@@ -24,8 +24,7 @@ WITH action_events AS (
     logs,
     receipt_succeeded,
     _partition_by_block_number,
-    _inserted_timestamp,
-    modified_timestamp AS _modified_timestamp
+    _inserted_timestamp
   FROM
     {{ ref('silver__actions_events_s3') }}
   WHERE
@@ -35,9 +34,9 @@ WITH action_events AS (
       AND {{ partition_load_manual('no_buffer') }}
     {% else %}
 {% if is_incremental() %}
-AND _modified_timestamp >= (
+AND modified_timestamp >= (
   SELECT
-    MAX(_modified_timestamp)
+    MAX(modified_timestamp)
   FROM
     {{ this }}
 )
@@ -64,8 +63,7 @@ FINAL AS (
     logs,
     receipt_succeeded,
     _partition_by_block_number,
-    _inserted_timestamp,
-    _modified_timestamp
+    _inserted_timestamp
   FROM
     action_events
 )
