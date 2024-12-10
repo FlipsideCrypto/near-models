@@ -136,12 +136,39 @@ flatten_actions AS (
             GET(VALUE, object_keys(VALUE) [0] :: STRING)
         ) AS action_data,
         MD5(
-            CONCAT(
-                action_data:args::STRING, ',', 
-                action_data:deposit::STRING, ',', 
-                action_data:gas::STRING, ',', 
-                action_data:method_name::STRING
-            )
+            CASE action_name
+                WHEN 'FunctionCall' THEN
+                    CONCAT_WS(',',
+                    action_data :args :: STRING,
+                    action_data :deposit :: STRING,
+                    action_data :gas :: STRING,
+                    action_data :method_name :: STRING
+                )
+                WHEN 'AddKey' THEN
+                    CONCAT_WS(',',
+                    action_data :access_key :nonce :: STRING,
+                    action_data :access_key :permission :: STRING,
+                    action_data :public_key :: STRING
+                )
+                WHEN 'DeleteKey' THEN
+                    action_data :public_key :: STRING
+                WHEN 'CreateAccount' THEN
+                    'empty'  -- consistent hash for empty objects
+                WHEN 'DeleteAccount' THEN
+                    action_data :beneficiary_id :: STRING
+                WHEN 'DeployContract' THEN
+                    action_data :code :: STRING
+                WHEN 'Transfer' THEN
+                    action_data :deposit :: STRING
+                WHEN 'Stake' THEN
+                    CONCAT_WS(',',
+                    action_data :public_key :: STRING,
+                    action_data :stake :: STRING
+                )
+            ELSE
+                -- Fallback: convert entire variant to string
+                action_data :: STRING
+            END
         ) AS action_hash,
         IFF(
             action_name = 'FunctionCall',
@@ -173,19 +200,50 @@ flatten_delegated_actions AS (
         tx_hash,
         True AS is_delegated,
         INDEX AS delegated_action_index,
-        object_keys(VALUE)[0] ::STRING AS delegated_action_name,
+        IFF(
+            VALUE = 'CreateAccount', 
+            VALUE, 
+            object_keys(VALUE) [0] :: STRING
+        ) AS delegated_action_name,
         IFF(
             VALUE = 'CreateAccount',
             {},
             GET(VALUE, object_keys(VALUE) [0] :: STRING)
         ) AS delegated_action_data,
         MD5(
-            CONCAT(
-                delegated_action_data:args::STRING, ',', 
-                delegated_action_data:deposit::STRING, ',', 
-                delegated_action_data:gas::STRING, ',', 
-                delegated_action_data:method_name::STRING
-            )
+            CASE delegated_action_name
+                WHEN 'FunctionCall' THEN
+                    CONCAT_WS(',',
+                    delegated_action_data :args :: STRING,
+                    delegated_action_data :deposit :: STRING,
+                    delegated_action_data :gas :: STRING,
+                    delegated_action_data :method_name :: STRING
+                )
+                WHEN 'AddKey' THEN
+                    CONCAT_WS(',',
+                    delegated_action_data :access_key :nonce :: STRING,
+                    delegated_action_data :access_key :permission :: STRING,
+                    delegated_action_data :public_key :: STRING
+                )
+                WHEN 'DeleteKey' THEN
+                    delegated_action_data :public_key :: STRING
+                WHEN 'CreateAccount' THEN
+                    'empty'
+                WHEN 'DeleteAccount' THEN
+                    delegated_action_data :beneficiary_id :: STRING
+                WHEN 'DeployContract' THEN
+                    delegated_action_data :code :: STRING
+                WHEN 'Transfer' THEN
+                    delegated_action_data :deposit :: STRING
+                WHEN 'Stake' THEN
+                    CONCAT_WS(',',
+                    delegated_action_data :public_key :: STRING,
+                    delegated_action_data :stake :: STRING
+                )
+            ELSE
+                -- Fallback: convert entire variant to string
+                delegated_action_data :: STRING
+            END
         ) AS delegated_action_hash
     FROM flatten_actions, LATERAL FLATTEN(action_data :delegate_action :actions :: ARRAY)
     WHERE action_name = 'Delegate'

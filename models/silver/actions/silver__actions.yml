@@ -102,6 +102,14 @@ models:
         tests:
           - not_null
 
+      - name: IS_DELEGATED
+        description: "{{ doc('is_delegated')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - BOOLEAN
+
       - name: ACTION_NAME
         description: "{{ doc('action_name')}}"
         tests:
