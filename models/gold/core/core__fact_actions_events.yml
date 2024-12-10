@@ -29,8 +29,8 @@ models:
           - not_null:
               where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '2 hours'
 
-      - name: RECEIPT_OBJECT_ID
-        description: "{{ doc('receipt_object_id')}}"
+      - name: RECEIPT_ID
+        description: "{{ doc('receipt_id')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
