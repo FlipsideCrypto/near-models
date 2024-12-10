@@ -3,12 +3,12 @@
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
     incremental_predicates = ["COALESCE(DBT_INTERNAL_DEST.block_timestamp::DATE,'2099-12-31') >= (select min(block_timestamp::DATE) from " ~ generate_tmp_view_name(this) ~ ")"],
-    cluster_by = ['block_timestamp::DATE', '_modified_timestamp::DATE'],
+    cluster_by = ['block_timestamp::DATE', 'block_id'],
     unique_key = 'actions_id',
-    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,receipt_id,receipt_receiver_id,receipt_signer_id,receipt_predecessor_id,actions_id);",
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,receipt_id,receipt_receiver_id,receipt_signer_id,receipt_predecessor_id);",
     tags = ['actions', 'curated', 'scheduled_core', 'grail']
 ) }}
--- TODO: add back SO, incremental predicates
+
 WITH transactions AS (
 
     SELECT
@@ -16,21 +16,18 @@ WITH transactions AS (
         tx_signer,
         tx_receiver,
         gas_used AS tx_gas_used,
-        tx_succeeded,
-        modified_timestamp AS _modified_timestamp
+        tx_succeeded
     FROM
         {{ ref('silver__streamline_transactions_final') }}
-    WHERE
-        block_timestamp > CURRENT_DATE - 3
     
     {% if var("MANUAL_FIX") %}
         WHERE
             {{ partition_load_manual('no_buffer') }}
         {% else %}
 {% if is_incremental() %}
-WHERE _modified_timestamp >= (
+WHERE modified_timestamp >= (
         SELECT
-            MAX(_modified_timestamp)
+            MAX(modified_timestamp)
         FROM
             {{ this }}
     )
@@ -50,23 +47,19 @@ receipts AS (
         gas_burnt AS receipt_gas_burnt,
         status_value,
         receipt_actions,
-        logs AS receipt_logs,
         _partition_by_block_number,
-        _inserted_timestamp,
-        modified_timestamp AS _modified_timestamp
+        _inserted_timestamp
     FROM
         {{ ref('silver__streamline_receipts_final') }}
-    WHERE
-        block_timestamp > CURRENT_DATE - 30
 
     {% if var("MANUAL_FIX") %}
         WHERE
             {{ partition_load_manual('no_buffer') }}
         {% else %}
 {% if is_incremental() %}
-WHERE _modified_timestamp >= (
+WHERE modified_timestamp >= (
         SELECT
-            MAX(_modified_timestamp)
+            MAX(modified_timestamp)
         FROM
             {{ this }}
     )
@@ -90,13 +83,12 @@ join_data AS (
         r.receipt_gas_burnt,
         r.status_value,
         r.receipt_actions,
-        r.receipt_logs,
         r._partition_by_block_number,
         r._inserted_timestamp
     FROM
-        transactions t
-        LEFT JOIN receipts r
-        ON t.tx_hash = r.tx_hash
+        receipts r
+        LEFT JOIN transactions t
+        ON r.tx_hash = t.tx_hash
 ),
 flatten_actions AS (
     SELECT
@@ -129,7 +121,6 @@ flatten_actions AS (
                     TRUE 
                 ), 
             status_value) as receipt_status_value,
-        receipt_logs, -- TODO review logs, clean logs?
         False AS is_delegated,
         INDEX AS action_index,
         receipt_actions :receipt :Action :gas_price :: NUMBER AS action_gas_price,
@@ -196,7 +187,6 @@ SELECT
     action_name,
     action_data_parsed AS action_data,
     action_gas_price,
-    receipt_logs,
     _partition_by_block_number,
     _inserted_timestamp,
     {{ dbt_utils.generate_surrogate_key(
