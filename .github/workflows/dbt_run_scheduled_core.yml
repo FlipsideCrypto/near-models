@@ -30,6 +30,8 @@ jobs:
       name: workflow_prod
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: quickfix-incr-strat
       - uses: actions/setup-python@v4
         with:
           python-version: "3.10"
