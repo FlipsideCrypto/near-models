@@ -40,6 +40,7 @@ flatten_transactions AS (
         VALUE :transaction :hash :: STRING AS tx_hash,
         block_id,
         shard_id,
+        chunk :header :shard_id :: INT AS shard_number,
         INDEX AS transactions_index,
         chunk :header :chunk_hash :: STRING AS chunk_hash,
         VALUE :outcome :execution_outcome :outcome :receipt_ids :: ARRAY AS outcome_receipts,
@@ -57,6 +58,7 @@ txs AS (
         tx_hash,
         block_id,
         shard_id,
+        shard_number,
         transactions_index,
         chunk_hash,
         outcome_receipts,
@@ -80,6 +82,7 @@ FINAL AS (
         tx_hash,
         block_id,
         shard_id,
+        shard_number,
         transactions_index,
         chunk_hash,
         outcome_receipts,
@@ -109,4 +112,7 @@ SELECT
 FROM
     FINAL
 
-QUALIFY(row_number() over (partition by tx_hash order by modified_timestamp desc)) = 1
+QUALIFY(row_number() over 
+    (partition by tx_hash 
+        order by shard_number = split(shard_id, '-')[1] :: INT desc, modified_timestamp desc
+    )) = 1

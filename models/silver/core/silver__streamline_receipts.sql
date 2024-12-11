@@ -15,6 +15,7 @@ WITH shards AS (
         shard_id,
         receipt_execution_outcomes,
         chunk :header :chunk_hash :: STRING AS chunk_hash,
+        chunk :header :shard_id :: INT AS shard_number,
         _partition_by_block_number,
         _inserted_timestamp
     FROM
@@ -45,6 +46,7 @@ flatten_receipts AS (
         ) AS receipt_execution_outcome_id,
         block_id,
         shard_id,
+        shard_number,
         chunk_hash,
         INDEX AS receipt_outcome_execution_index,
         VALUE :execution_outcome :: OBJECT AS execution_outcome,
@@ -65,6 +67,7 @@ FINAL AS (
         receipt :receipt_id :: STRING AS receipt_id,
         block_id,
         shard_id,
+        shard_number
         receipt_outcome_execution_index AS receipt_index,
         chunk_hash,
         receipt,
@@ -118,4 +121,7 @@ SELECT
 FROM
     FINAL
     
-QUALIFY(row_number() over (partition by receipt_id order by modified_timestamp desc)) = 1
+QUALIFY(row_number() over 
+    (partition by receipt_id 
+        order by shard_number = split(shard_id, '-')[1] :: INT desc, modified_timestamp desc
+    )) = 1
