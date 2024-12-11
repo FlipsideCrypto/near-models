@@ -26,7 +26,7 @@ WITH receipts AS (
             {% if var('IS_MIGRATION') %}
                 _inserted_timestamp >= (
                     SELECT 
-                        MAX(_inserted_timestamp) - INTERVAL '{{ var('STREAMLINE_LOAD_LOOKBACK_HOURS') }} hours'
+                        MAX(_inserted_timestamp) - INTERVAL '{{ var('STREAMLINE_LOAD_LOOKBACK_HOURS', 3) }} hours'
                     FROM 
                         {{ target.database }}.silver.streamline_receipts_final
                 )

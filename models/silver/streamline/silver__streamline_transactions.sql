@@ -26,9 +26,9 @@ WITH chunks AS (
             {{ partition_load_manual('no_buffer') }}
     {% else %}
         {% if is_incremental() %}
-            AND _modified_timestamp >= (
+            AND modified_timestamp >= (
                 SELECT
-                    MAX(_modified_timestamp)
+                    MAX(modified_timestamp)
                 FROM
                     {{ this }}
             )
