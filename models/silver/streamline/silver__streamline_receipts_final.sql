@@ -1,7 +1,6 @@
 {{ config(
     materialized = 'incremental',
-    incremental_predicates = ["COALESCE(DBT_INTERNAL_DEST.block_timestamp::DATE,'2099-12-31') >= (select min(block_timestamp::DATE) from " ~ generate_tmp_view_name(this) ~ ")"],
-    incremental_strategy = 'merge',
+    incremental_strategy = 'delete+insert',
     merge_exclude_columns = ['inserted_timestamp'],
     unique_key = 'receipt_object_id',
     cluster_by = ['block_timestamp::DATE','_modified_timestamp::DATE', '_partition_by_block_number', ],
