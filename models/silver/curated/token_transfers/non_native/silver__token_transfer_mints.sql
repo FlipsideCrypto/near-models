@@ -1,10 +1,9 @@
 {{ config(
     materialized = 'incremental',
     merge_exclude_columns = ["inserted_timestamp"],
-    incremental_predicates = ["COALESCE(DBT_INTERNAL_DEST.block_timestamp::DATE,'2099-12-31') >= (select min(block_timestamp::DATE) from " ~ generate_tmp_view_name(this) ~ ")"],
     cluster_by = ['block_timestamp::DATE','_modified_timestamp::Date'],
     unique_key = 'mint_id',
-    incremental_strategy = 'merge',
+    incremental_strategy = 'delete+insert',
     tags = ['curated','scheduled_non_core']
 ) }}
 
@@ -102,3 +101,5 @@ FROM
     ft_mints_final
 WHERE
     mint_id IS NOT NULL
+
+qualify(row_number() over (partition by mint_id order by modified_timestamp desc)) = 1

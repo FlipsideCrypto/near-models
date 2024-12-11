@@ -1,10 +1,9 @@
 {{ config(
     materialized = 'incremental',
-    incremental_predicates = ["COALESCE(DBT_INTERNAL_DEST.block_timestamp::DATE,'2099-12-31') >= (select min(block_timestamp::DATE) from " ~ generate_tmp_view_name(this) ~ ")"],
     merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = ['block_timestamp::DATE','_modified_timestamp::Date'],
     unique_key = 'transfers_id',
-    incremental_strategy = 'merge',
+    incremental_strategy = 'delete+insert',
     tags = ['curated','scheduled_non_core']
 ) }}
 
@@ -91,3 +90,5 @@ SELECT
   '{{ invocation_id }}' AS _invocation_id
 FROM
     ft_transfers_method
+
+qualify(row_number() over (partition by transfers_id order by modified_timestamp desc)) = 1
