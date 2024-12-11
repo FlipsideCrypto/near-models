@@ -8,83 +8,46 @@
     tags = ['load', 'load_blocks','scheduled_core'],
     full_refresh = False
 ) }}
-
-WITH external_blocks AS (
-
-    SELECT
-        metadata$filename AS _filename,
-        VALUE,
-        _partition_by_block_number
-    FROM
-        {{ source(
-            "streamline",
-            "blocks"
-        ) }}
-    WHERE
-        _partition_by_block_number >= (
-            SELECT
-                MAX(_partition_by_block_number) - (3000 * {{ var('STREAMLINE_LOAD_LOOKBACK_HOURS') }})
-            FROM
-                {{ this }}
-        )
-),
-meta AS (
-    SELECT
-        job_created_time AS _inserted_timestamp,
-        file_name AS _filename
-    FROM
-        TABLE(
-            information_schema.external_table_file_registration_history(
-                start_time => DATEADD(
-                    'hour', 
-                    -{{ var('STREAMLINE_LOAD_LOOKBACK_HOURS') }},
-                    SYSDATE()
-                ),
-                table_name => '{{ source( 'streamline', 'blocks' ) }}'
-            )
-        ) A
-),
+-- depends on {{ ref('bronze__blocks') }}
+-- depends on {{ ref('bronze__FR_blocks') }}
+WITH
 blocks AS (
     SELECT
-        e.value :header :height :: NUMBER AS block_id,
+        value :header :height :: NUMBER AS block_id,
         TO_TIMESTAMP_NTZ(
-            e.value :header :timestamp :: STRING
+            value :header :timestamp :: STRING
         ) AS block_timestamp,
-        e.value :header :hash :: STRING AS block_hash,
-        e.value :header :prev_hash :: STRING AS prev_hash,
-        e.value :author :: STRING AS block_author,
-        e.value :header :gas_price :: NUMBER AS gas_price,
-        e.value :header :total_supply :: NUMBER AS total_supply,
-        e.value :header :validator_proposals :: ARRAY AS validator_proposals,
-        e.value :header :validator_reward :: NUMBER AS validator_reward,
-        e.value :header :latest_protocol_version :: NUMBER AS latest_protocol_version,
-        e.value :header :epoch_id :: STRING AS epoch_id,
-        e.value :header :next_epoch_id :: STRING AS next_epoch_id,
+        value :header :hash :: STRING AS block_hash,
+        value :header :prev_hash :: STRING AS prev_hash,
+        value :author :: STRING AS block_author,
+        value :header :gas_price :: NUMBER AS gas_price,
+        value :header :total_supply :: NUMBER AS total_supply,
+        value :header :validator_proposals :: ARRAY AS validator_proposals,
+        value :header :validator_reward :: NUMBER AS validator_reward,
+        value :header :latest_protocol_version :: NUMBER AS latest_protocol_version,
+        value :header :epoch_id :: STRING AS epoch_id,
+        value :header :next_epoch_id :: STRING AS next_epoch_id,
         NULL AS tx_count,
         -- tx_count is legacy field, deprecate from core view
         [] AS events,
         -- events does not exist, Figment created this
-        e.value :chunks :: ARRAY AS chunks,
-        e.value :header :: OBJECT AS header,
-        e._partition_by_block_number,
-        m._inserted_timestamp
+        value :chunks :: ARRAY AS chunks,
+        value :header :: OBJECT AS header,
+        _partition_by_block_number,
+        _inserted_timestamp
     FROM
-        external_blocks e
-        LEFT JOIN meta m USING (
-            _filename
-        )
         
-    {% if not var('MANUAL_FIX') %}
-
     {% if is_incremental() %}
+    {{ ref('bronze__blocks') }}
         WHERE
             _inserted_timestamp >= (
                 SELECT
-                    MAX(_inserted_timestamp)
+                    MAX(_inserted_timestamp) _inserted_timestamp
                 FROM
                     {{ this }}
             )
-    {% endif %}
+    {% else %}
+        {{ ref('bronze__FR_blocks') }}
     {% endif %}
 
 )

@@ -27,3 +27,10 @@ sources:
     tables:
       - name: blocks
       - name: shards
+
+  - name: bronze_streamline
+    database: streamline
+    schema: near_lake
+    tables:
+      - name: blocks
+      - name: shards
