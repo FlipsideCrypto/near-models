@@ -1,10 +1,9 @@
 {{ config(
     materialized = "incremental",
     merge_exclude_columns = ["inserted_timestamp"],
-    incremental_predicates = ["COALESCE(DBT_INTERNAL_DEST.block_timestamp::DATE,'2099-12-31') >= (select min(block_timestamp::DATE) from " ~ generate_tmp_view_name(this) ~ ")"],
     cluster_by = ["block_timestamp::DATE","_modified_timestamp::DATE"],
     unique_key = "log_id",
-    incremental_strategy = "merge",
+    incremental_strategy = "delete+insert",
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,receipt_object_id,receiver_id,predecessor_id,signer_id);",
     tags = ['curated', 'scheduled_core']
 ) }}
@@ -79,3 +78,5 @@ SELECT
     '{{ invocation_id }}' AS _invocation_id
 FROM
     FINAL
+
+qualify(row_number() over (partition by log_id order by modified_timestamp desc)) = 1

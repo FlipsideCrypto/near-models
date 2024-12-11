@@ -268,3 +268,4 @@ SELECT
 FROM
   FINAL 
 
+qualify(row_number() over (partition by tx_hash order by modified_timestamp desc)) = 1

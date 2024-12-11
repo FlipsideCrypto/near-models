@@ -41,6 +41,9 @@ models:
 
       - name: RECEIPT_OBJECT_ID
         description: "{{ doc('receipt_object_id')}}"
+        tests:
+          - unique:
+              where: inserted_timestamp >= sysdate() - interval '7 days'
 
       - name: RECEIPT_OUTCOME_ID
         description: "{{ doc('receipt_outcome_id')}}"

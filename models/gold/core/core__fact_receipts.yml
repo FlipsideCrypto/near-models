@@ -17,7 +17,7 @@ models:
               column_type_list:
                 - TIMESTAMP_NTZ
           - not_null:
-              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '2 hours'
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
 
       - name: BLOCK_ID
         description: "{{ doc('block_id')}}"
@@ -35,11 +35,15 @@ models:
                 - STRING
                 - VARCHAR
           - not_null:
-              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '2 hours'
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
 
       - name: RECEIPT_OBJECT_ID
         description: "{{ doc('receipt_object_id')}}"
         tests:
+          - unique:
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
+          - not_null:
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
@@ -126,9 +130,9 @@ models:
         description: "{{doc('id')}}"
         tests:
           - unique:
-              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '2 hours'
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
           - not_null:
-              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '2 hours'
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
 
       - name: INSERTED_TIMESTAMP
         description: "{{doc('inserted_timestamp')}}"

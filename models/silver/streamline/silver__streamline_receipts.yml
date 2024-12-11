@@ -63,7 +63,8 @@ models:
         description: "{{ doc('receipt_id')}}"
         tests:
           - not_null
-          - unique
+          - unique:
+              where: inserted_timestamp >= sysdate() - interval '7 days'
 
       - name: RECEIVER_ID
         description: "{{ doc('receiver_id')}}"

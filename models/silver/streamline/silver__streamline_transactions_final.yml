@@ -8,6 +8,9 @@ models:
     columns:
       - name: TX_HASH
         description: "{{ doc('tx_hash')}}"
+        tests:
+          - unique:
+              where: inserted_timestamp >= sysdate() - interval '7 days'
 
       - name: BLOCK_ID
         description: "{{ doc('block_id')}}"

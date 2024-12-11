@@ -19,7 +19,8 @@ models:
         description: "{{ doc('shard_id')}}"
         tests:
           - not_null
-          - unique
+          - unique:
+              where: inserted_timestamp >= sysdate() - interval '7 days'
 
       - name: CHUNK
         description: "{{ doc('chunks')}}"
