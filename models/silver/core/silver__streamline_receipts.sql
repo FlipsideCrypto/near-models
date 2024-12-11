@@ -117,3 +117,5 @@ SELECT
     '{{ invocation_id }}' AS _invocation_id
 FROM
     FINAL
+    
+QUALIFY(row_number() over (partition by receipt_id order by modified_timestamp desc)) = 1
