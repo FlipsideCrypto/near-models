@@ -66,8 +66,7 @@ models:
       - name: _INSERTED_TIMESTAMP
         description: "{{ doc('_inserted_timestamp')}}"
 
-      - name: _MODIFIED_TIMESTAMP
-        description: "{{ doc('_modified_timestamp')}}"
+
 
       - name: HORIZON_RECEIPTS_ID
         description: "{{doc('id')}}"

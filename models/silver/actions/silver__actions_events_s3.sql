@@ -33,15 +33,15 @@ WITH receipts AS (
         WHERE
             {{ partition_load_manual('no_buffer') }}
         {% else %}
-{% if is_incremental() %}
-WHERE modified_timestamp >= (
-        SELECT
-            MAX(modified_timestamp)
-        FROM
-            {{ this }}
-    )
-{% endif %}
-{% endif %}
+        {% if is_incremental() %}
+        WHERE modified_timestamp >= (
+                SELECT
+                    MAX(modified_timestamp)
+                FROM
+                    {{ this }}
+            )
+        {% endif %}
+        {% endif %}
 ),
 flatten_actions AS (
     SELECT

@@ -4,7 +4,7 @@
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
     unique_key = 'bridge_rainbow_id',
-    cluster_by = ['block_timestamp::DATE', '_modified_timestamp::DATE'],
+    cluster_by = ['block_timestamp::DATE', 'modified_timestamp::DATE'],
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,destination_address,source_address);",
     tags = ['curated','scheduled_non_core', 'grail'],
 ) }}
@@ -22,24 +22,23 @@ WITH functioncall AS (
         signer_id,
         receipt_succeeded,
         _inserted_timestamp,
-        _partition_by_block_number,
-        modified_timestamp AS _modified_timestamp
+        _partition_by_block_number
     FROM
         {{ ref('silver__actions_events_function_call_s3') }}
 
         {% if var("MANUAL_FIX") %}
-        WHERE {{ partition_load_manual('no_buffer') }}
+        WHERE
+            {{ partition_load_manual('no_buffer') }}
         {% else %}
-
-{% if is_incremental() %}
-WHERE _modified_timestamp >= (
-        SELECT
-            MAX(_modified_timestamp)
-        FROM
-            {{ this }}
-    )
-{% endif %}
-{% endif %}
+        {% if is_incremental() %}
+        WHERE modified_timestamp >= (
+                SELECT
+                    MAX(modified_timestamp)
+                FROM
+                    {{ this }}
+            )
+        {% endif %}
+        {% endif %}
 ),
 outbound_near_to_aurora AS (
     -- ft_transfer_call sends token to aurora
@@ -64,8 +63,7 @@ outbound_near_to_aurora AS (
         'aurora' AS bridge_address,
         'outbound' AS direction,
         _inserted_timestamp,
-        _partition_by_block_number,
-        _modified_timestamp
+        _partition_by_block_number
     FROM
         functioncall
     WHERE
@@ -96,8 +94,7 @@ inbound_aurora_to_near AS (
         'inbound' AS direction,
         _inserted_timestamp,
         _partition_by_block_number,
-        args,
-        _modified_timestamp
+        args
     FROM
         functioncall
     WHERE
@@ -149,8 +146,7 @@ inbound_a2n_final AS (
         A.bridge_address,
         A.direction,
         A._inserted_timestamp,
-        A._partition_by_block_number,
-        A._modified_timestamp
+        A._partition_by_block_number
     FROM
         inbound_aurora_to_near A
         LEFT JOIN inbound_a2n_src_address b
@@ -188,8 +184,7 @@ outbound_near_to_eth AS (
         'factory.bridge.near' AS bridge_address,
         'outbound' AS direction,
         _inserted_timestamp,
-        _partition_by_block_number,
-        _modified_timestamp
+        _partition_by_block_number
     FROM
         functioncall
     WHERE
@@ -225,8 +220,7 @@ inbound_eth_to_near AS (
         ) AS actions,
         booland_agg(receipt_succeeded) AS receipt_succeeded,
         MIN(_inserted_timestamp) AS _inserted_timestamp,
-        MIN(_partition_by_block_number) AS _partition_by_block_number,
-        MIN(_modified_timestamp) AS _modified_timestamp
+        MIN(_partition_by_block_number) AS _partition_by_block_number
     FROM
         functioncall
     WHERE
@@ -288,8 +282,7 @@ inbound_e2n_final_ft AS (
         'factory.bridge.near' AS bridge_address,
         'inbound' AS direction,
         _inserted_timestamp,
-        _partition_by_block_number,
-        _modified_timestamp
+        _partition_by_block_number
     FROM
         inbound_eth_to_near
     WHERE
@@ -322,8 +315,7 @@ inbound_e2n_final_eth AS (
         'prover.bridge.near' AS bridge_address,
         'inbound' AS direction,
         _inserted_timestamp,
-        _partition_by_block_number,
-        _modified_timestamp
+        _partition_by_block_number
     FROM
         inbound_eth_to_near
     WHERE
@@ -347,8 +339,7 @@ FINAL AS (
         bridge_address,
         direction,
         _inserted_timestamp,
-        _partition_by_block_number,
-        _modified_timestamp
+        _partition_by_block_number
     FROM
         outbound_near_to_aurora
     UNION ALL
@@ -368,8 +359,7 @@ FINAL AS (
         bridge_address,
         direction,
         _inserted_timestamp,
-        _partition_by_block_number,
-        _modified_timestamp
+        _partition_by_block_number
     FROM
         inbound_a2n_final
     UNION ALL
@@ -389,8 +379,7 @@ FINAL AS (
         bridge_address,
         direction,
         _inserted_timestamp,
-        _partition_by_block_number,
-        _modified_timestamp
+        _partition_by_block_number
     FROM
         outbound_near_to_eth
     UNION ALL
@@ -410,8 +399,7 @@ FINAL AS (
         bridge_address,
         direction,
         _inserted_timestamp,
-        _partition_by_block_number,
-        _modified_timestamp
+        _partition_by_block_number
     FROM
         inbound_e2n_final_ft
     UNION ALL
@@ -431,8 +419,7 @@ FINAL AS (
         bridge_address,
         direction,
         _inserted_timestamp,
-        _partition_by_block_number,
-        _modified_timestamp
+        _partition_by_block_number
     FROM
         inbound_e2n_final_eth
 )

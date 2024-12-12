@@ -32,7 +32,6 @@ WITH mintbase_nft_sales AS (
         royalties,
         platform_fee,
         _inserted_timestamp,
-        _modified_timestamp,
         _partition_by_block_number
     FROM
         {{ ref('silver__nft_mintbase_sales') }}
@@ -40,9 +39,9 @@ WITH mintbase_nft_sales AS (
         WHERE {{ partition_load_manual('no_buffer') }}
         {% else %}
             {% if is_incremental() %}
-            WHERE _modified_timestamp >= (
+            WHERE modified_timestamp >= (
                 SELECT
-                    MAX(_modified_timestamp)
+                    MAX(modified_timestamp)
                 FROM
                     {{ this }}
             )
@@ -71,7 +70,6 @@ paras_nft_sales AS (
         royalties,
         platform_fee,
         _inserted_timestamp,
-        _modified_timestamp,
         _partition_by_block_number
     FROM
         {{ ref('silver__nft_paras_sales') }}
@@ -79,9 +77,9 @@ paras_nft_sales AS (
       WHERE {{ partition_load_manual('no_buffer') }}
     {% else %}
         {% if is_incremental() %}
-        WHERE _modified_timestamp >= (
+        WHERE modified_timestamp >= (
             SELECT
-                MAX(_modified_timestamp)
+                MAX(modified_timestamp)
             FROM
                 {{ this }}
         )
@@ -110,7 +108,6 @@ other_nft_sales AS (
         royalties,
         platform_fee,
         _inserted_timestamp,
-        _modified_timestamp,
         _partition_by_block_number
     FROM
         {{ ref('silver__nft_other_sales') }}
@@ -118,9 +115,9 @@ other_nft_sales AS (
       WHERE {{ partition_load_manual('no_buffer') }}
     {% else %}
         {% if is_incremental() %}
-        WHERE _modified_timestamp >= (
+        WHERE modified_timestamp >= (
             SELECT
-                MAX(_modified_timestamp)
+                MAX(modified_timestamp)
             FROM
                 {{ this }}
         )
@@ -188,7 +185,6 @@ FINAL AS (
         platform_fee AS platform_fee,
         platform_fee * p.price_usd AS platform_fee_usd,
         _inserted_timestamp,
-        _modified_timestamp,
         _partition_by_block_number
     FROM
         sales_union s

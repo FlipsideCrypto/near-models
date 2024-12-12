@@ -4,7 +4,7 @@
     incremental_predicates = ["COALESCE(DBT_INTERNAL_DEST.block_timestamp::DATE,'2099-12-31') >= (select min(block_timestamp::DATE) from " ~ generate_tmp_view_name(this) ~ ")"],
     merge_exclude_columns = ["inserted_timestamp"],
     unique_key = 'bridge_allbridge_id',
-    cluster_by = ['block_timestamp::DATE', '_modified_timestamp::DATE'],
+    cluster_by = ['block_timestamp::DATE', 'modified_timestamp::DATE'],
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,destination_address,source_address);",
     tags = ['curated','scheduled_non_core', 'grail'],
 ) }}
@@ -22,26 +22,25 @@ WITH functioncall AS (
         signer_id,
         receipt_succeeded,
         _inserted_timestamp,
-        _partition_by_block_number,
-        modified_timestamp
+        _partition_by_block_number
     FROM
         {{ ref('silver__actions_events_function_call_s3') }}
     WHERE
         receiver_id = 'bridge.a11bd.near' 
         
         {% if var("MANUAL_FIX") %}
-            AND {{ partition_load_manual('no_buffer') }}
-        {% else %}  
-{% if is_incremental() %}
-
-        AND 
-            modified_timestamp >= (
-                SELECT MAX(_modified_timestamp) FROM {{ this }}
-)
-
-{% endif %}
-
-{% endif %}
+        AND
+            {{ partition_load_manual('no_buffer') }}
+        {% else %}
+        {% if is_incremental() %}
+        AND modified_timestamp >= (
+                SELECT
+                    MAX(modified_timestamp)
+                FROM
+                    {{ this }}
+            )
+        {% endif %}
+        {% endif %}
 ),
 metadata  AS (
     SELECT
@@ -73,8 +72,7 @@ outbound_near AS (
         method_name,
         'outbound' AS direction,
         _inserted_timestamp,
-        _partition_by_block_number,
-        modified_timestamp AS _modified_timestamp
+        _partition_by_block_number
     FROM
         functioncall
     WHERE
@@ -101,8 +99,7 @@ inbound_to_near AS (
         method_name,
         'inbound' AS direction,
         _inserted_timestamp,
-        _partition_by_block_number,
-        modified_timestamp AS _modified_timestamp
+        _partition_by_block_number
     FROM
         functioncall
     WHERE

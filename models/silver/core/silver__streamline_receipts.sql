@@ -67,7 +67,7 @@ FINAL AS (
         receipt :receipt_id :: STRING AS receipt_id,
         block_id,
         shard_id,
-        shard_number
+        shard_number,
         receipt_outcome_execution_index AS receipt_index,
         chunk_hash,
         receipt,

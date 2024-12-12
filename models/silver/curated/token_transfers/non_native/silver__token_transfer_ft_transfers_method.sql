@@ -2,7 +2,7 @@
     materialized = 'incremental',
     incremental_predicates = ["COALESCE(DBT_INTERNAL_DEST.block_timestamp::DATE,'2099-12-31') >= (select min(block_timestamp::DATE) from " ~ generate_tmp_view_name(this) ~ ")"],
     merge_exclude_columns = ["inserted_timestamp"],
-    cluster_by = ['block_timestamp::DATE','_modified_timestamp::Date'],
+    cluster_by = ['block_timestamp::DATE','modified_timestamp::Date'],
     unique_key = 'transfers_id',
     incremental_strategy = 'merge',
     tags = ['curated','scheduled_non_core']
@@ -23,16 +23,15 @@ WITH actions_events AS (
         logs,
         receipt_succeeded,
         _inserted_timestamp,
-        modified_timestamp as _modified_timestamp,
         _partition_by_block_number
     FROM
         {{ ref('silver__token_transfer_base') }}
     {% if var("MANUAL_FIX") %}
             WHERE {{ partition_load_manual('no_buffer') }}            
     {% elif is_incremental() %}
-    WHERE _modified_timestamp >= (
+    WHERE modified_timestamp >= (
         SELECT
-            MAX(_modified_timestamp)
+            MAX(modified_timestamp)
         FROM
             {{ this }}
     )
@@ -68,7 +67,6 @@ ft_transfers_method AS (
         '' AS memo,
         b.index AS rn,
         _inserted_timestamp,
-        _modified_timestamp,
         _partition_by_block_number
     FROM
         actions_events

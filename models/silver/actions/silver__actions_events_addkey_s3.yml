@@ -42,9 +42,6 @@ models:
       - name: _INSERTED_TIMESTAMP
         description: "{{ doc('_inserted_timestamp')}}"
 
-      - name: _MODIFIED_TIMESTAMP
-        description: "{{ doc('_modified_timestamp')}}"
-
       - name: actions_events_addkey_id
         description: "{{doc('id')}}"
 

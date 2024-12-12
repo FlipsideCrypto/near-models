@@ -12,11 +12,19 @@ WITH pool_events AS (
         *
     FROM
         {{ ref('silver__pool_events') }}
-    WHERE
+
         {% if var("MANUAL_FIX") %}
+        WHERE
             {{ partition_load_manual('no_buffer') }}
         {% else %}
-            {{ incremental_load_filter('_inserted_timestamp') }}
+        {% if is_incremental() %}
+        WHERE modified_timestamp >= (
+                SELECT
+                    MAX(modified_timestamp)
+                FROM
+                    {{ this }}
+            )
+        {% endif %}
         {% endif %}
 ),
 FINAL AS (

@@ -23,8 +23,7 @@ withdraws AS (
         receiver_id,
         receipt_succeeded,
         _inserted_timestamp,
-        _partition_by_block_number,
-        modified_timestamp AS _modified_timestamp
+        _partition_by_block_number
     FROM
         {{ ref('silver__actions_events_function_call_s3') }}
     WHERE
@@ -36,9 +35,9 @@ withdraws AS (
         AND {{ partition_load_manual('no_buffer') }}
         {% else %}
             {% if is_incremental() %}
-            AND _modified_timestamp >= (
+            AND modified_timestamp >= (
                 SELECT
-                    MAX(_modified_timestamp)
+                    MAX(modified_timestamp)
                 FROM
                     {{ this }}
             )
@@ -68,7 +67,6 @@ SELECT
     amount_raw,
     token_contract_address,
     _inserted_timestamp,
-    _modified_timestamp,
     _partition_by_block_number,
     {{ dbt_utils.generate_surrogate_key(
         ['action_id']

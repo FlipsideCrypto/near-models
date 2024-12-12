@@ -22,8 +22,7 @@ WITH actions_events AS (
         logs,
         attached_gas,
         _partition_by_block_number,
-        _inserted_timestamp,
-        modified_timestamp AS _modified_timestamp
+        _inserted_timestamp
     FROM
         {{ ref('silver__actions_events_function_call_s3') }}
     WHERE
@@ -34,9 +33,9 @@ WITH actions_events AS (
       AND {{ partition_load_manual('no_buffer') }}
     {% else %}
         {% if is_incremental() %}
-        AND _modified_timestamp >= (
+        AND modified_timestamp >= (
             SELECT
-                MAX(_modified_timestamp)
+                MAX(modified_timestamp)
             FROM
                 {{ this }}
         )
@@ -75,7 +74,6 @@ mintbase_nft_sales AS (
         args AS LOG,
         logs_index,
         _inserted_timestamp,
-        _modified_timestamp,
         _partition_by_block_number
     FROM
         raw_logs

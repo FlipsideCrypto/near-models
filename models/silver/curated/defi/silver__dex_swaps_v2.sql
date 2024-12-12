@@ -21,8 +21,7 @@ WITH swap_logs AS (
         log_index,
         clean_log,
         _partition_by_block_number,
-        _inserted_timestamp,
-        modified_timestamp AS _modified_timestamp
+        _inserted_timestamp
     FROM
         {{ ref('silver__logs_s3') }}
     WHERE
@@ -34,9 +33,9 @@ WITH swap_logs AS (
             AND {{ partition_load_manual('no_buffer') }}
         {% else %}
 {% if is_incremental() %}
-AND _modified_timestamp >= (
+AND modified_timestamp >= (
     SELECT
-        MAX(_modified_timestamp)
+        MAX(modified_timestamp)
     FROM
         {{ this }}
 )
@@ -50,8 +49,7 @@ receipts AS (
         receiver_id,
         signer_id,
         _partition_by_block_number,
-        _inserted_timestamp,
-        modified_timestamp AS _modified_timestamp
+        _inserted_timestamp
     FROM
         {{ ref('silver__streamline_receipts_final') }}
     WHERE
@@ -65,9 +63,9 @@ receipts AS (
             AND {{ partition_load_manual('no_buffer') }}
         {% else %}
 {% if is_incremental() %}
-AND _modified_timestamp >= (
+AND modified_timestamp >= (
     SELECT
-        MAX(_modified_timestamp)
+        MAX(modified_timestamp)
     FROM
         {{ this }}
 )
@@ -109,8 +107,7 @@ swap_outcome AS (
             '\\1'
         ) :: STRING AS token_out,
         _partition_by_block_number,
-        _inserted_timestamp,
-        _modified_timestamp
+        _inserted_timestamp
     FROM
         swap_logs
 ),
@@ -165,8 +162,7 @@ parse_actions AS (
         r.receiver_id AS receipt_receiver_id,
         r.signer_id AS receipt_signer_id,
         o._partition_by_block_number,
-        o._inserted_timestamp,
-        o._modified_timestamp
+        o._inserted_timestamp
     FROM
         swap_outcome o
         LEFT JOIN receipts r USING (receipt_object_id)
@@ -187,8 +183,7 @@ FINAL AS (
         swap_input_data,
         LOG,
         _partition_by_block_number,
-        _inserted_timestamp,
-        _modified_timestamp
+        _inserted_timestamp
     FROM
         parse_actions
 )

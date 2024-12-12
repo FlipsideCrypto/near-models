@@ -18,17 +18,16 @@ WITH txs AS (
         tx,
         tx_status,
         _partition_by_block_number,
-        _inserted_timestamp,
-        modified_timestamp AS _modified_timestamp
+        _inserted_timestamp
     FROM
         {{ ref('silver__streamline_transactions_final') }}
 
     {% if var("MANUAL_FIX") %}
       WHERE {{ partition_load_manual('no_buffer') }}
     {% else %}
-        WHERE _modified_timestamp >= (
+        WHERE modified_timestamp >= (
             SELECT
-                MAX(_modified_timestamp)
+                MAX(modified_timestamp)
             FROM
                 {{ this }}
         )
@@ -48,8 +47,7 @@ function_calls AS (
         method_name,
         args,
         _partition_by_block_number,
-        _inserted_timestamp,
-        modified_timestamp AS _modified_timestamp
+        _inserted_timestamp
     FROM
         {{ ref('silver__actions_events_function_call_s3') }}
     WHERE
@@ -63,9 +61,9 @@ function_calls AS (
       AND {{ partition_load_manual('no_buffer') }}
     {% else %}
             {% if is_incremental() %}
-        AND _modified_timestamp >= (
+        AND modified_timestamp >= (
             SELECT
-                MAX(_modified_timestamp)
+                MAX(modified_timestamp)
             FROM
                 {{ this }}
         )
@@ -86,8 +84,7 @@ add_addresses_from_tx AS (
         args,
         tx_status,
         txs._partition_by_block_number,
-        txs._inserted_timestamp,
-        txs._modified_timestamp
+        txs._inserted_timestamp
     FROM
         function_calls fc
         LEFT JOIN txs USING (tx_hash)
@@ -104,8 +101,7 @@ new_pools AS (
         ) AS reward_fee_fraction,
         'Create' AS tx_type,
         _partition_by_block_number,
-        _inserted_timestamp,
-        _modified_timestamp
+        _inserted_timestamp
     FROM
         add_addresses_from_tx
     WHERE
@@ -131,8 +127,7 @@ updated_pools AS (
         ) AS reward_fee_fraction,
         'Update' AS tx_type,
         _partition_by_block_number,
-        _inserted_timestamp,
-        _modified_timestamp
+        _inserted_timestamp
     FROM
         add_addresses_from_tx
     WHERE

@@ -14,8 +14,7 @@ WITH txs AS (
         tx_hash,
         tx_succeeded,
         _partition_by_block_number,
-        _inserted_timestamp,
-        modified_timestamp AS _modified_timestamp
+        _inserted_timestamp
     FROM
         {{ ref('silver__streamline_transactions_final') }}
 
@@ -23,9 +22,9 @@ WITH txs AS (
       WHERE {{ partition_load_manual('no_buffer') }}
     {% else %}
             {% if is_incremental() %}
-        WHERE _modified_timestamp >= (
+        WHERE modified_timestamp >= (
             SELECT
-                MAX(_modified_timestamp)
+                MAX(modified_timestamp)
             FROM
                 {{ this }}
         )
@@ -44,8 +43,7 @@ function_calls AS (
         deposit,
         method_name,
         _partition_by_block_number,
-        _inserted_timestamp,
-        modified_timestamp AS _modified_timestamp
+        _inserted_timestamp
     FROM
         {{ ref('silver__actions_events_function_call_s3') }}
     WHERE 
@@ -55,9 +53,9 @@ function_calls AS (
       AND {{ partition_load_manual('no_buffer') }}
     {% else %}
             {% if is_incremental() %}
-        AND _modified_timestamp >= (
+        AND modified_timestamp >= (
             SELECT
-                MAX(_modified_timestamp)
+                MAX(modified_timestamp)
             FROM
                 {{ this }}
         )
@@ -73,8 +71,7 @@ xfers AS (
         block_id,
         amount_unadj :: INT AS deposit,
         _partition_by_block_number,
-        _inserted_timestamp,
-        modified_timestamp AS _modified_timestamp
+        _inserted_timestamp
     FROM
         {{ ref('silver__token_transfer_native') }}
 
@@ -82,9 +79,9 @@ xfers AS (
       WHERE {{ partition_load_manual('no_buffer') }}
     {% else %}
             {% if is_incremental() %}
-        WHERE _modified_timestamp >= (
+        WHERE modified_timestamp >= (
             SELECT
-                MAX(_modified_timestamp)
+                MAX(modified_timestamp)
             FROM
                 {{ this }}
         )
@@ -107,8 +104,7 @@ lockup_actions AS (
         deposit,
         method_name,
         _partition_by_block_number,
-        _inserted_timestamp,
-        _modified_timestamp
+        _inserted_timestamp
     FROM
         function_calls
     WHERE
@@ -149,8 +145,7 @@ agg_arguments AS (
             DISTINCT method_name
         ) AS method_count,
         MIN(_partition_by_block_number) AS _partition_by_block_number,
-        MIN(_inserted_timestamp) AS _inserted_timestamp,
-        MIN(_modified_timestamp) AS _modified_timestamp
+        MIN(_inserted_timestamp) AS _inserted_timestamp
     FROM
         lockup_actions
     GROUP BY
@@ -168,8 +163,7 @@ lockup_xfers AS (
         block_id,
         deposit,
         _partition_by_block_number,
-        _inserted_timestamp,
-        _modified_timestamp
+        _inserted_timestamp
     FROM
         xfers
     WHERE
@@ -217,8 +211,7 @@ parse_args_json AS (
         args_all :new :transfers_information :: STRING AS transfers_information,
         args_all,
         A._partition_by_block_number,
-        A._inserted_timestamp,
-        A._modified_timestamp
+        A._inserted_timestamp
     FROM
         agg_arguments A
         LEFT JOIN lockup_xfers x
@@ -241,8 +234,7 @@ FINAL AS (
         transfers_information,
         args_all,
         f._partition_by_block_number,
-        f._inserted_timestamp,
-        f._modified_timestamp
+        f._inserted_timestamp
     FROM
         parse_args_json f
         LEFT JOIN txs USING (tx_hash)
