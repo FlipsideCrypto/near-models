@@ -1,0 +1,162 @@
+version: 2
+
+models:
+  - name: core__ez_actions
+    description: |-
+      This table extracts and processes executed Actions from NEAR receipts - storing the argument data under action_data. FunctionCall data is decoded, where possible, and returned to the action_data object under args.
+      It combines transaction and receipt information to provide a comprehensive view on each of the actions events.
+
+    tests:
+      - dbt_utils.recency:
+          datepart: hours
+          field: block_timestamp
+          interval: 2
+
+    columns:
+      - name: BLOCK_ID
+        description: "{{ doc('block_id')}}"
+        tests:
+          - not_null:
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
+
+      - name: BLOCK_TIMESTAMP
+        description: "{{ doc('block_timestamp')}}"
+        tests:
+          - not_null:
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
+
+      - name: TX_HASH
+        description: "{{ doc('tx_hash')}}"
+        tests:
+          - not_null:
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
+
+      - name: TX_SUCCEEDED
+        description: "{{ doc('tx_succeeded')}}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - BOOLEAN
+          - not_null:
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
+
+      - name: TX_RECEIVER
+        description: "{{ doc('tx_receiver')}}"
+        tests:
+          - not_null:
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
+
+      - name: TX_SIGNER
+        description: "{{ doc('tx_signer')}}"
+        tests:
+          - not_null
+
+      - name: TX_GAS_USED
+        description: "{{ doc('gas_used')}}"
+        tests:
+          - not_null:
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - INTEGER
+
+      - name: RECEIPT_ID
+        description: "{{ doc('receipt_object_id')}}"
+        tests:
+          - not_null:
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
+
+      - name: RECEIPT_PREDECESSOR_ID
+        description: "{{ doc('predecessor_id')}}"
+        tests:
+          - not_null
+
+      - name: RECEIPT_RECEIVER_ID
+        description: "{{ doc('receiver_id')}}"
+        tests:
+          - not_null
+
+      - name: RECEIPT_SIGNER_ID
+        description: "{{ doc('signer_id')}}"
+        tests:
+          - not_null
+
+      - name: RECEIPT_SUCCEEDED
+        description: "{{ doc('receipt_succeeded')}}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - BOOLEAN
+          - not_null
+
+      - name: RECEIPT_GAS_BURNT
+        description: "{{ doc('gas_burnt')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - INTEGER
+
+      - name: RECEIPT_STATUS_VALUE
+        description: "{{ doc('status_value')}}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - VARIANT
+                - OBJECT
+    
+      - name: ACTION_INDEX
+        description: "{{ doc('action_index')}}"
+        tests:
+          - not_null
+
+      - name: IS_DELEGATED
+        description: "{{ doc('is_delegated')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - BOOLEAN
+
+      - name: ACTION_NAME
+        description: "{{ doc('action_name')}}"
+        tests:
+          - not_null
+
+      - name: ACTION_DATA
+        description: "{{ doc('action_data')}}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - VARIANT
+                - OBJECT
+
+      - name: ACTION_GAS_PRICE
+        description: "{{ doc('action_gas_price')}}"
+        tests:
+          - not_null
+
+      - name: _PARTITION_BY_BLOCK_NUMBER
+        description: "{{ doc('_partition_by_block_number')}}"
+
+      - name: _INSERTED_TIMESTAMP
+        description: "{{ doc('_inserted_timestamp')}}"
+
+      - name: ACTIONS_ID
+        description: "{{ doc('action_id')}}"
+        tests:
+          - unique:
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
+          - not_null:
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
+
+      - name: INSERTED_TIMESTAMP
+        description: "{{doc('inserted_timestamp')}}"
+
+      - name: MODIFIED_TIMESTAMP
+        description: "{{doc('modified_timestamp')}}"
+               
+      - name: _INVOCATION_ID
+        description: "{{doc('invocation_id')}}"
