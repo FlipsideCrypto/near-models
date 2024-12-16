@@ -6,6 +6,8 @@
     tags = ['curated', 'social','scheduled_non_core']
 ) }}
 {# Note - multisource model #}
+-- TODO ez_actions refactor
+
 WITH all_social_receipts AS (
 
     SELECT

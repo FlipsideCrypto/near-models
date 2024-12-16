@@ -9,6 +9,9 @@
     tags = ['curated','scheduled_non_core']
 ) }}
 {# Note - multisource model #}
+-- NOTE - does not need to depend on txs final after ez actions table is deployed
+-- will update with if_execute block after that is merged to migrate this model to new ez_actions
+
 WITH logs AS (
 
     SELECT

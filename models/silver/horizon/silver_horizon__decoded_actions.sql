@@ -6,6 +6,8 @@
     tags = ['curated', 'horizon','scheduled_non_core']
 ) }}
 {# Note - multisource model #}
+-- TODO ez_actions refactor
+
 WITH all_horizon_receipts AS (
 
     SELECT
