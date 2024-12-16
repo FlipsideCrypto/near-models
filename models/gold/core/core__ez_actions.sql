@@ -73,12 +73,10 @@ WITH transactions AS (
         tx_receiver,
         gas_used AS tx_gas_used,
         tx_succeeded,
+        transaction_fee AS tx_fee,
         modified_timestamp
     FROM
         {{ ref('silver__streamline_transactions_final') }}
-    
-    -- temp for dev
-    -- where modified_timestamp :: date >= current_date - 14
 
     {% if var("MANUAL_FIX") %}
         WHERE
@@ -108,9 +106,6 @@ receipts AS (
     FROM
         {{ ref('silver__streamline_receipts_final') }}
 
-    -- temp for dev
-    -- where modified_timestamp :: date >= current_date - 14
-
     {% if var("MANUAL_FIX") %}
         WHERE
             {{ partition_load_manual('no_buffer') }}
@@ -129,6 +124,7 @@ join_data AS (
         t.tx_receiver,
         t.tx_gas_used,
         t.tx_succeeded,
+        t.tx_fee,
         r.receipt_id,
         r.receipt_receiver_id,
         r.receipt_signer_id,
@@ -162,6 +158,7 @@ flatten_actions AS (
         tx_receiver,
         tx_gas_used,
         tx_succeeded,
+        tx_fee,
         receipt_id,
         receipt_receiver_id,
         receipt_signer_id,
@@ -319,6 +316,7 @@ SELECT
     tx_receiver,
     tx_signer,
     tx_gas_used,
+    tx_fee,
     fa.receipt_id,
     receipt_predecessor_id,
     receipt_receiver_id,
