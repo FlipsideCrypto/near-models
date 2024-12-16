@@ -146,9 +146,9 @@ join_data AS (
 
     {% if is_incremental() and not var("MANUAL_FIX") %}
         WHERE
-        GREATEST(
-            r.modified_timestamp,
-            t.modified_timestamp
+            GREATEST(
+                COALESCE(r.modified_timestamp, '1970-01-01'),
+                COALESCE(t.modified_timestamp, '1970-01-01')   
             ) >= '{{max_mod}}'
     {% endif %}
 
