@@ -28,8 +28,7 @@ WITH all_horizon_receipts AS (
         proof,
         metadata,
         _partition_by_block_number,
-        _inserted_timestamp,
-        modified_timestamp AS _modified_timestamp
+        _inserted_timestamp
     FROM
         {{ ref('silver__streamline_receipts_final') }}
 
@@ -43,9 +42,9 @@ WITH all_horizon_receipts AS (
         AND {{ partition_load_manual('no_buffer') }}
         {% else %}
             {% if is_incremental() %}
-            AND _modified_timestamp >= (
+            AND modified_timestamp >= (
                 SELECT
-                    MAX(_modified_timestamp)
+                    MAX(modified_timestamp)
                 FROM
                     {{ this }}
             )

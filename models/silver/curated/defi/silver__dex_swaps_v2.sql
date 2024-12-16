@@ -9,6 +9,63 @@
     tags = ['curated','scheduled_non_core'],
 ) }}
 {# Note - multisource model #}
+-- depends on {{ ref('silver__logs_s3') }}
+-- depends on {{ ref('silver__streamline_receipts_final') }}
+
+{% if execute %}
+
+    {% if is_incremental() and not var("MANUAL_FIX") %}
+    {% do log("Incremental and not MANUAL_FIX", info=True) %}
+    {% set max_mod_query %}
+
+    SELECT
+        MAX(modified_timestamp) modified_timestamp
+    FROM
+        {{ this }}
+
+    {% endset %}
+
+        {% set max_mod = run_query(max_mod_query) [0] [0] %}
+        {% if not max_mod or max_mod == 'None' %}
+            {% set max_mod = '2099-01-01' %}
+        {% endif %}
+
+        {% do log("max_mod: " ~ max_mod, info=True) %}
+
+        {% set min_block_date_query %}
+    SELECT
+        MIN(
+            block_timestamp :: DATE
+        )
+    FROM
+        (
+            SELECT
+                MIN(block_timestamp) block_timestamp
+            FROM
+                {{ ref('silver__logs_s3') }} A
+            WHERE
+                modified_timestamp >= '{{max_mod}}'
+            UNION ALL
+            SELECT
+                MIN(block_timestamp) block_timestamp
+            FROM
+                {{ ref('silver__streamline_receipts_final') }} A
+            WHERE
+                modified_timestamp >= '{{max_mod}}'
+        ) 
+    {% endset %}
+
+        {% set min_bd = run_query(min_block_date_query) [0] [0] %}
+        {% if not min_bd or min_bd == 'None' %}
+            {% set min_bd = '2099-01-01' %}
+        {% endif %}
+
+        {% do log("min_bd: " ~ min_bd, info=True) %}
+
+    {% endif %}
+
+{% endif %}
+
 WITH swap_logs AS (
 
     SELECT
@@ -22,7 +79,7 @@ WITH swap_logs AS (
         clean_log,
         _partition_by_block_number,
         _inserted_timestamp,
-        modified_timestamp AS _modified_timestamp
+        modified_timestamp
     FROM
         {{ ref('silver__logs_s3') }}
     WHERE
@@ -30,18 +87,13 @@ WITH swap_logs AS (
         AND clean_log LIKE 'Swapped%'
         AND receiver_id NOT LIKE '%dragon_bot.near' 
         
-        {% if var("MANUAL_FIX") %}
-            AND {{ partition_load_manual('no_buffer') }}
-        {% else %}
-{% if is_incremental() %}
-AND _modified_timestamp >= (
-    SELECT
-        MAX(_modified_timestamp)
-    FROM
-        {{ this }}
-)
-{% endif %}
-{% endif %}
+    {% if var("MANUAL_FIX") %}
+        AND {{ partition_load_manual('no_buffer') }}
+    {% else %}
+        {% if is_incremental() %}
+            AND block_timestamp :: DATE >= '{{min_bd}}'
+        {% endif %}
+    {% endif %}
 ),
 receipts AS (
     SELECT
@@ -51,7 +103,7 @@ receipts AS (
         signer_id,
         _partition_by_block_number,
         _inserted_timestamp,
-        modified_timestamp AS _modified_timestamp
+        modified_timestamp
     FROM
         {{ ref('silver__streamline_receipts_final') }}
     WHERE
@@ -61,18 +113,14 @@ receipts AS (
             FROM
                 swap_logs
         ) 
-        {% if var("MANUAL_FIX") %}
-            AND {{ partition_load_manual('no_buffer') }}
-        {% else %}
-{% if is_incremental() %}
-AND _modified_timestamp >= (
-    SELECT
-        MAX(_modified_timestamp)
-    FROM
-        {{ this }}
-)
-{% endif %}
-{% endif %}
+
+    {% if var("MANUAL_FIX") %}
+        AND {{ partition_load_manual('no_buffer') }}
+    {% else %}
+        {% if is_incremental() %}
+        AND block_timestamp :: DATE >= '{{min_bd}}'
+        {% endif %}
+    {% endif %}
 ),
 swap_outcome AS (
     SELECT
@@ -110,7 +158,7 @@ swap_outcome AS (
         ) :: STRING AS token_out,
         _partition_by_block_number,
         _inserted_timestamp,
-        _modified_timestamp
+        modified_timestamp
     FROM
         swap_logs
 ),
@@ -165,11 +213,18 @@ parse_actions AS (
         r.receiver_id AS receipt_receiver_id,
         r.signer_id AS receipt_signer_id,
         o._partition_by_block_number,
-        o._inserted_timestamp,
-        o._modified_timestamp
+        o._inserted_timestamp
     FROM
         swap_outcome o
         LEFT JOIN receipts r USING (receipt_object_id)
+
+    {% if is_incremental() and not var("MANUAL_FIX") %}
+        WHERE
+            GREATEST(
+                COALESCE(o.modified_timestamp, '1970-01-01'),
+                COALESCE(r.modified_timestamp, '1970-01-01')   
+            ) >= '{{max_mod}}'
+    {% endif %}
 ),
 FINAL AS (
     SELECT
@@ -187,8 +242,7 @@ FINAL AS (
         swap_input_data,
         LOG,
         _partition_by_block_number,
-        _inserted_timestamp,
-        _modified_timestamp
+        _inserted_timestamp
     FROM
         parse_actions
 )

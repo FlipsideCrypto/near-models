@@ -1,5 +1,6 @@
 {{ config(
-    materialized = 'view'
+    materialized = 'view',
+    tags = ['scheduled_non_core']
 ) }}
 
 SELECT
@@ -12,7 +13,7 @@ SELECT
     address_name,
     project_name,
     insert_date as _inserted_timestamp,
-    modified_timestamp AS _modified_timestamp,
+    modified_timestamp,
     _is_deleted,
     labels_combined_id
 FROM

@@ -6,6 +6,8 @@
     incremental_strategy = 'merge',
     tags = ['curated','scheduled_non_core']
 ) }}
+{# Note - multisource model #}
+-- TODO ez_actions refactor
 
 WITH actions_events AS (
 
@@ -23,8 +25,7 @@ WITH actions_events AS (
         logs,
         attached_gas,
         _partition_by_block_number,
-        _inserted_timestamp,
-        modified_timestamp AS _modified_timestamp
+        _inserted_timestamp
     FROM
         {{ ref('silver__actions_events_function_call_s3') }}
     WHERE
@@ -39,9 +40,9 @@ WITH actions_events AS (
       AND {{ partition_load_manual('no_buffer') }}
     {% else %}
         {% if is_incremental() %}
-        AND _modified_timestamp >= (
+        AND modified_timestamp >= (
             SELECT
-                MAX(_modified_timestamp)
+                MAX(modified_timestamp)
             FROM
                 {{ this }}
         )
@@ -56,8 +57,7 @@ status_value AS (
         TRY_PARSE_JSON(REPLACE(LOGS[0] :: STRING, 'EVENT_JSON:', '')) AS event,
         PARSE_JSON(BASE64_DECODE_STRING(status_value:SuccessValue)) as SuccessValue,
         _partition_by_block_number,
-        _inserted_timestamp,
-        modified_timestamp AS _modified_timestamp
+        _inserted_timestamp
     FROM
         {{ ref('silver__streamline_receipts_final') }}
     WHERE
@@ -69,9 +69,9 @@ status_value AS (
       AND {{ partition_load_manual('no_buffer') }}
     {% else %}
         {% if is_incremental() %}
-        AND _modified_timestamp >= (
+        AND modified_timestamp >= (
             SELECT
-                MAX(_modified_timestamp)
+                MAX(modified_timestamp)
             FROM
                 {{ this }}
         )
@@ -125,7 +125,6 @@ paras_nft AS (
         args AS LOG,
         logs_index,
         _inserted_timestamp,
-        _modified_timestamp,
         _partition_by_block_number
     FROM
         raw_logs

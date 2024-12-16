@@ -17,8 +17,7 @@ WITH decoded_actions AS (
         signer_id,
         node_data,
         _partition_by_block_number,
-        _inserted_timestamp,
-        modified_timestamp AS _modified_timestamp
+        _inserted_timestamp
     FROM
         {{ ref('silver_social__decoded_actions') }}
     WHERE
@@ -28,9 +27,9 @@ WITH decoded_actions AS (
       AND {{ partition_load_manual('no_buffer') }}
     {% else %}
         {% if is_incremental() %}
-        AND _modified_timestamp >= (
+        AND modified_timestamp >= (
             SELECT
-                MAX(_modified_timestamp)
+                MAX(modified_timestamp)
             FROM
                 {{ this }}
         )
@@ -57,8 +56,7 @@ widgets AS (
             widget_name
         ) AS widget_url,
         _partition_by_block_number,
-        _inserted_timestamp,
-        _modified_timestamp
+        _inserted_timestamp
     FROM
         decoded_actions,
     LATERAL FLATTEN(
@@ -87,7 +85,6 @@ SELECT
     node_data AS _node_data,
     _partition_by_block_number,
     _inserted_timestamp,
-    _modified_timestamp,
     {{ dbt_utils.generate_surrogate_key(
         ['action_id_social', 'widget_name']
     ) }} AS social_widgets_id,

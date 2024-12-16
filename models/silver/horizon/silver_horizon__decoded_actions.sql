@@ -6,6 +6,8 @@
     tags = ['curated', 'horizon','scheduled_non_core']
 ) }}
 {# Note - multisource model #}
+-- TODO ez_actions refactor
+
 WITH all_horizon_receipts AS (
 
     SELECT
@@ -16,8 +18,7 @@ WITH all_horizon_receipts AS (
         receipt_succeeded,
         logs,
         _partition_by_block_number,
-        _inserted_timestamp,
-        modified_timestamp AS _modified_timestamp
+        _inserted_timestamp
     FROM
         {{ ref('silver_horizon__receipts') }}
 
@@ -25,9 +26,9 @@ WITH all_horizon_receipts AS (
         WHERE {{ partition_load_manual('no_buffer') }}
         {% else %}
             {% if is_incremental() %}
-            WHERE _modified_timestamp >= (
+            WHERE modified_timestamp >= (
                 SELECT
-                    MAX(_modified_timestamp)
+                    MAX(modified_timestamp)
                 FROM
                     {{ this }}
             )
@@ -49,8 +50,7 @@ decoded_function_calls AS (
         deposit,
         attached_gas,
         _partition_by_block_number,
-        _inserted_timestamp,
-        modified_timestamp AS _modified_timestamp
+        _inserted_timestamp
     FROM
         {{ ref('silver__actions_events_function_call_s3') }}
     WHERE
@@ -69,9 +69,9 @@ decoded_function_calls AS (
         AND {{ partition_load_manual('no_buffer') }}
         {% else %}
             {% if is_incremental() %}
-            AND _modified_timestamp >= (
+            AND modified_timestamp >= (
                 SELECT
-                    MAX(_modified_timestamp)
+                    MAX(modified_timestamp)
                 FROM
                     {{ this }}
             )
@@ -94,8 +94,7 @@ FINAL AS (
         r.receipt_succeeded,
         r.logs,
         fc._partition_by_block_number,
-        fc._inserted_timestamp,
-        fc._modified_timestamp
+        fc._inserted_timestamp
     FROM
         decoded_function_calls fc
         LEFT JOIN all_horizon_receipts r USING (receipt_object_id)
@@ -115,7 +114,6 @@ SELECT
     receipt_succeeded,
     _partition_by_block_number,
     _inserted_timestamp,
-    _modified_timestamp,
     {{ dbt_utils.generate_surrogate_key(
         ['action_id_horizon']
     ) }} AS horizon_decoded_actions_id,

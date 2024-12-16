@@ -22,19 +22,21 @@ WITH pool_events AS (
         logs,
         LOG,
         _partition_by_block_number,
-        _inserted_timestamp,
-        modified_timestamp AS _modified_timestamp
+        _inserted_timestamp
     FROM
         {{ ref('silver__pool_events') }}
-    WHERE
         {% if var("MANUAL_FIX") %}
+        WHERE
             {{ partition_load_manual('no_buffer') }}
         {% else %}
-            {% if var('IS_MIGRATION') %}
-                {{ incremental_load_filter('_inserted_timestamp') }}
-            {% else %}
-                {{ incremental_load_filter('_modified_timestamp') }}
-            {% endif %}
+        {% if is_incremental() %}
+        WHERE modified_timestamp >= (
+                SELECT
+                    MAX(modified_timestamp)
+                FROM
+                    {{ this }}
+            )
+        {% endif %}
         {% endif %}
 ),
 staking_actions AS (
@@ -71,8 +73,7 @@ staking_actions AS (
         ) AS decimals,
         signer_id = log_signer_id AS _log_signer_id_match,
         _partition_by_block_number,
-        _inserted_timestamp,
-        _modified_timestamp
+        _inserted_timestamp
     FROM
         pool_events
     WHERE
@@ -99,8 +100,7 @@ FINAL AS (
         decimals,
         _log_signer_id_match,
         _partition_by_block_number,
-        _inserted_timestamp,
-        _modified_timestamp
+        _inserted_timestamp
     FROM
         staking_actions
 )

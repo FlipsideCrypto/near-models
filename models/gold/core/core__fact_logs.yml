@@ -11,21 +11,6 @@ models:
           interval: 2
 
     columns:
-      - name: TX_HASH
-        description: "{{ doc('tx_hash')}}"
-        tests:
-          - not_null:
-              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '2 hours'
-
-      - name: RECEIPT_OBJECT_ID
-        description: "{{ doc('receipt_object_id')}}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
-
       - name: BLOCK_ID
         description: "{{ doc('block_id')}}"
         tests:
@@ -39,12 +24,19 @@ models:
         description: "{{ doc('block_timestamp')}}"
         tests:
           - not_null:
-              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '2 hours'
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
 
-      - name: RECEIVER_ID
-        description: "{{ doc('receiver_id')}}"
+      - name: TX_HASH
+        description: "{{ doc('tx_hash')}}"
         tests:
-          - not_null
+          - not_null:
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
+
+      - name: RECEIPT_ID
+        description: "{{ doc('receipt_id')}}"
+        tests:
+          - not_null:
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
@@ -59,14 +51,14 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: GAS_BURNT
-        description: "{{ doc('gas_burnt')}}"
+      - name: RECEIVER_ID
+        description: "{{ doc('receiver_id')}}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - NUMBER
-                - FLOAT
+                - STRING
+                - VARCHAR
 
       - name: SIGNER_ID
         description: "{{ doc('signer_id')}}"
@@ -77,6 +69,11 @@ models:
                 - STRING
                 - VARCHAR
 
+      - name: LOG_INDEX
+        description: "{{ doc('index')}}"
+        tests:
+          - not_null
+
       - name: CLEAN_LOG
         description: "{{ doc('clean_log')}}"
         tests:
@@ -84,26 +81,39 @@ models:
               column_type_list:
                 - STRING
                 - VARCHAR
-                - OBJECT
-                - ARRAY
 
-      - name: LOG_INDEX
-        description: "{{ doc('index')}}"
+      - name: EVENT_STANDARD
+        description: "{{ doc('event_standard')}}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: GAS_BURNT
+        description: "{{ doc('gas_burnt')}}"
         tests:
           - not_null
-      
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
+
       - name: RECEIPT_SUCCEEDED
         description: "{{ doc('receipt_succeeded')}}"
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - BOOLEAN
 
       - name: FACT_LOGS_ID
         description: "{{doc('id')}}"
         tests:
           - unique:
-              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '2 hours'
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
           - not_null:
-              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '2 hours'
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
 
       - name: INSERTED_TIMESTAMP
         description: "{{doc('inserted_timestamp')}}"

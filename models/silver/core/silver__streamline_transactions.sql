@@ -4,7 +4,7 @@
     incremental_strategy = 'merge',
     merge_exclude_columns = ['inserted_timestamp'],
     unique_key = 'tx_hash',
-    cluster_by = ['_inserted_timestamp::date', '_partition_by_block_number'],
+    cluster_by = ['modified_timestamp::date', '_partition_by_block_number'],
     tags = ['load', 'load_shards','scheduled_core']
 ) }}
 
@@ -15,21 +15,20 @@ WITH chunks AS (
         shard_id,
         chunk,
         _partition_by_block_number,
-        _inserted_timestamp,
-        modified_timestamp AS _modified_timestamp
+        _inserted_timestamp
     FROM
         {{ ref('silver__streamline_shards') }}
     WHERE
-        chunk != 'null' -- why are we using this condition and not ARRAY_SIZE(chunk :transactions) > 0?
+        array_size(chunk :transactions :: ARRAY) > 0
 
     {% if var('MANUAL_FIX') %}
         AND
             {{ partition_load_manual('no_buffer') }}
     {% else %}
         {% if is_incremental() %}
-            AND _modified_timestamp >= (
+            AND modified_timestamp >= (
                 SELECT
-                    MAX(_modified_timestamp)
+                    MAX(modified_timestamp)
                 FROM
                     {{ this }}
             )
@@ -41,13 +40,13 @@ flatten_transactions AS (
         VALUE :transaction :hash :: STRING AS tx_hash,
         block_id,
         shard_id,
+        chunk :header :shard_id :: INT AS shard_number,
         INDEX AS transactions_index,
         chunk :header :chunk_hash :: STRING AS chunk_hash,
         VALUE :outcome :execution_outcome :outcome :receipt_ids :: ARRAY AS outcome_receipts,
         VALUE AS tx,
         _partition_by_block_number,
-        _inserted_timestamp,
-        _modified_timestamp
+        _inserted_timestamp
     FROM
         chunks,
         LATERAL FLATTEN(
@@ -59,22 +58,22 @@ txs AS (
         tx_hash,
         block_id,
         shard_id,
+        shard_number,
         transactions_index,
         chunk_hash,
         outcome_receipts,
         tx,
-        tx :transaction :actions :: variant AS _actions,
+        tx :transaction :actions :: VARIANT AS _actions,
         tx :transaction :hash :: STRING AS _hash,
         tx :transaction :nonce :: STRING AS _nonce,
-        tx :outcome :execution_outcome :: variant AS _outcome,
+        tx :outcome :execution_outcome :: VARIANT AS _outcome,
         tx :transaction :public_key :: STRING AS _public_key,
         [] AS _receipt,
         tx :transaction :receiver_id :: STRING AS _receiver_id,
         tx :transaction :signature :: STRING AS _signature,
         tx :transaction :signer_id :: STRING AS _signer_id,
         _partition_by_block_number,
-        _inserted_timestamp,
-        _modified_timestamp
+        _inserted_timestamp
     FROM
         flatten_transactions
 ),
@@ -83,6 +82,7 @@ FINAL AS (
         tx_hash,
         block_id,
         shard_id,
+        shard_number,
         transactions_index,
         chunk_hash,
         outcome_receipts,
@@ -97,8 +97,7 @@ FINAL AS (
         _signature,
         _signer_id,
         _partition_by_block_number,
-        _inserted_timestamp,
-        _modified_timestamp
+        _inserted_timestamp
     FROM
         txs
 )
@@ -112,3 +111,8 @@ SELECT
     '{{ invocation_id }}' AS _invocation_id
 FROM
     FINAL
+
+QUALIFY(row_number() over 
+    (partition by tx_hash 
+        order by shard_number = split(shard_id, '-')[1] :: INT desc, modified_timestamp desc
+    )) = 1

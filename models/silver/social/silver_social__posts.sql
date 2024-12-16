@@ -16,8 +16,7 @@ WITH decoded_actions AS (
         signer_id,
         node_data,
         _partition_by_block_number,
-        _inserted_timestamp,
-        modified_timestamp AS _modified_timestamp
+        _inserted_timestamp
     FROM
         {{ ref('silver_social__decoded_actions') }}
     WHERE
@@ -27,9 +26,9 @@ WITH decoded_actions AS (
       AND {{ partition_load_manual('no_buffer') }}
     {% else %}
             {% if is_incremental() %}
-        AND _modified_timestamp >= (
+        AND modified_timestamp >= (
             SELECT
-                MAX(_modified_timestamp)
+                MAX(modified_timestamp)
             FROM
                 {{ this }}
         )
@@ -50,8 +49,7 @@ posts AS (
         parsed_node_data :text :: STRING AS post_text,
         parsed_node_data :image :: STRING AS post_image,
         _partition_by_block_number,
-        _inserted_timestamp,
-        _modified_timestamp
+        _inserted_timestamp
     FROM
         decoded_actions
     WHERE
@@ -70,7 +68,6 @@ SELECT
     post_image,
     _partition_by_block_number,
     _inserted_timestamp,
-    _modified_timestamp,
     {{ dbt_utils.generate_surrogate_key(
         ['action_id_social']
     ) }} AS social_posts_id,

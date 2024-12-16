@@ -4,7 +4,7 @@
     incremental_strategy = 'merge',
     merge_exclude_columns = ['inserted_timestamp'],
     unique_key = 'receipt_id',
-    cluster_by = ['_inserted_timestamp::date', '_partition_by_block_number'],
+    cluster_by = ['modified_timestamp::date', '_partition_by_block_number'],
     tags = ['load', 'load_shards','scheduled_core']
 ) }}
 
@@ -15,9 +15,9 @@ WITH shards AS (
         shard_id,
         receipt_execution_outcomes,
         chunk :header :chunk_hash :: STRING AS chunk_hash,
+        chunk :header :shard_id :: INT AS shard_number,
         _partition_by_block_number,
-        _inserted_timestamp,
-        modified_timestamp AS _modified_timestamp
+        _inserted_timestamp
     FROM
         {{ ref('silver__streamline_shards') }}
     WHERE
@@ -27,9 +27,9 @@ WITH shards AS (
             {{ partition_load_manual('no_buffer') }}
     {% else %}
         {% if is_incremental() %}
-            AND _modified_timestamp >= (
+            AND modified_timestamp >= (
                 SELECT
-                    MAX(_modified_timestamp)
+                    MAX(modified_timestamp)
                 FROM
                     {{ this }}
             )
@@ -46,6 +46,7 @@ flatten_receipts AS (
         ) AS receipt_execution_outcome_id,
         block_id,
         shard_id,
+        shard_number,
         chunk_hash,
         INDEX AS receipt_outcome_execution_index,
         VALUE :execution_outcome :: OBJECT AS execution_outcome,
@@ -53,19 +54,20 @@ flatten_receipts AS (
         VALUE :receipt :receipt_id :: STRING AS receipt_id,
         VALUE :execution_outcome :id :: STRING AS receipt_outcome_id,
         _partition_by_block_number,
-        _inserted_timestamp,
-        _modified_timestamp
+        _inserted_timestamp
     FROM
         shards,
         LATERAL FLATTEN(
             input => receipt_execution_outcomes
         )
 ),
+-- TODO review new keys like priority, input_data_ids, output_data_receivers
 FINAL AS (
     SELECT
         receipt :receipt_id :: STRING AS receipt_id,
         block_id,
         shard_id,
+        shard_number,
         receipt_outcome_execution_index AS receipt_index,
         chunk_hash,
         receipt,
@@ -95,6 +97,7 @@ FINAL AS (
         ) AS error_type_2,
         failure_message [error_type_0] :kind [error_type_1] [error_type_2] :: STRING AS error_message,
         execution_outcome :outcome :receipt_ids :: ARRAY AS outcome_receipts,
+        receipt :predecessor_id :: STRING AS predecessor_id, -- TODO manual backfill of this col required
         receipt :receiver_id :: STRING AS receiver_id,
         receipt :receipt :Action :signer_id :: STRING AS signer_id,
         LOWER(
@@ -103,8 +106,7 @@ FINAL AS (
             ) [0] :: STRING
         ) AS receipt_type,
         _partition_by_block_number,
-        _inserted_timestamp,
-        _modified_timestamp
+        _inserted_timestamp
     FROM
         flatten_receipts
 )
@@ -118,3 +120,8 @@ SELECT
     '{{ invocation_id }}' AS _invocation_id
 FROM
     FINAL
+    
+QUALIFY(row_number() over 
+    (partition by receipt_id 
+        order by shard_number = split(shard_id, '-')[1] :: INT desc, modified_timestamp desc
+    )) = 1

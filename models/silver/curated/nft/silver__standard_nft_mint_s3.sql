@@ -9,6 +9,8 @@
     tags = ['curated','scheduled_non_core']
 ) }}
 {# Note - multisource model #}
+-- TODO ez_actions refactor
+
 WITH logs AS (
 
     SELECT
@@ -23,17 +25,16 @@ WITH logs AS (
         clean_log,
         is_standard,
         _partition_by_block_number,
-        _inserted_timestamp,
-        modified_timestamp AS _modified_timestamp
+        _inserted_timestamp
     FROM
         {{ ref('silver__logs_s3') }}
     {% if var("MANUAL_FIX") %}
       WHERE {{ partition_load_manual('no_buffer') }}
     {% else %}
             {% if is_incremental() %}
-        WHERE _modified_timestamp >= (
+        WHERE modified_timestamp >= (
             SELECT
-                MAX(_modified_timestamp)
+                MAX(modified_timestamp)
             FROM
                 {{ this }}
         )
@@ -47,17 +48,16 @@ tx AS (
         tx_receiver,
         tx_succeeded,
         tx_status, -- TODO deprecate col
-        transaction_fee,
-        modified_timestamp AS _modified_timestamp
+        transaction_fee
     FROM
         {{ ref('silver__streamline_transactions_final') }}
     {% if var("MANUAL_FIX") %}
       WHERE {{ partition_load_manual('no_buffer') }}
     {% else %}
             {% if is_incremental() %}
-        WHERE _modified_timestamp >= (
+        WHERE modified_timestamp >= (
             SELECT
-                MAX(_modified_timestamp)
+                MAX(modified_timestamp)
             FROM
                 {{ this }}
         )
@@ -70,17 +70,16 @@ function_call AS (
         tx_hash,
         TRY_PARSE_JSON(args) AS args_json,
         method_name,
-        deposit,
-        modified_timestamp AS _modified_timestamp
+        deposit
     FROM
         {{ ref("silver__actions_events_function_call_s3") }}
     {% if var("MANUAL_FIX") %}
       WHERE {{ partition_load_manual('no_buffer') }}
     {% else %}
             {% if is_incremental() %}
-        WHERE _modified_timestamp >= (
+        WHERE modified_timestamp >= (
             SELECT
-                MAX(_modified_timestamp)
+                MAX(modified_timestamp)
             FROM
                 {{ this }}
         )
@@ -107,8 +106,7 @@ standard_logs AS (
             PARTITION BY tx_hash
         ) AS log_counter,
         _partition_by_block_number,
-        _inserted_timestamp,
-        _modified_timestamp
+        _inserted_timestamp
     FROM
         logs
     WHERE
@@ -156,8 +154,7 @@ raw_mint_events AS (
         ) AS memo,
         log_counter,
         _partition_by_block_number,
-        _inserted_timestamp,
-        _modified_timestamp
+        _inserted_timestamp
     FROM
         nft_events,
         LATERAL FLATTEN(
@@ -204,8 +201,7 @@ mint_events AS (
         ) AS mint_action_id,
         log_counter,
         _partition_by_block_number,
-        _inserted_timestamp,
-        _modified_timestamp
+        _inserted_timestamp
     FROM
         raw_mint_events,
         LATERAL FLATTEN(
@@ -261,8 +257,7 @@ FINAL AS (
             mint_events.deposit / mint_events.log_counter
         ) :: FLOAT AS implied_price,
         mint_events._partition_by_block_number,
-        mint_events._inserted_timestamp,
-        mint_events._modified_timestamp
+        mint_events._inserted_timestamp
     FROM
         mint_events
         INNER JOIN mint_tx
