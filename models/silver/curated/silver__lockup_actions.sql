@@ -8,6 +8,8 @@
     tags = ['curated', 'scheduled_non_core'],
 ) }}
 {# Note - multisource model #}
+-- TODO ez_actions refactor
+
 WITH txs AS (
 
     SELECT

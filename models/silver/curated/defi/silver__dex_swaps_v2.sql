@@ -11,6 +11,7 @@
 {# Note - multisource model #}
 -- depends on {{ ref('silver__logs_s3') }}
 -- depends on {{ ref('silver__streamline_receipts_final') }}
+
 {% if execute %}
 
     {% if is_incremental() and not var("MANUAL_FIX") %}
