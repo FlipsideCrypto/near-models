@@ -3,7 +3,7 @@
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
     incremental_predicates = ["COALESCE(DBT_INTERNAL_DEST.block_timestamp::DATE,'2099-12-31') >= (select min(block_timestamp::DATE) from " ~ generate_tmp_view_name(this) ~ ")"],
-    cluster_by = ['block_timestamp::DATE', 'block_id'],
+    cluster_by = ['block_timestamp::DATE', 'modified_timestamp::DATE'],
     unique_key = 'actions_id',
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,receipt_id,receipt_receiver_id,receipt_signer_id,receipt_predecessor_id);",
     tags = ['actions', 'curated', 'scheduled_core', 'grail']
