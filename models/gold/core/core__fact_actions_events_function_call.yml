@@ -3,7 +3,8 @@ version: 2
 models:
   - name: core__fact_actions_events_function_call
     description: |-
-      This table extracts all FunctionCall events from actions and decodes the arguments for easy use. If further nested arguments are encoded, the snowflake function `try_base64_decode_string()` will likely work.
+      Deprecating soon! Please migrate to using the new `core__ez_actions` table. All FunctionCalls are decoded in the args element where action_name = 'FunctionCall'.
+      This view will be removed in Q1 2025.
     tests:
       - dbt_utils.recency:
           datepart: hours
