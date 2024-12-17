@@ -5,6 +5,70 @@
   cluster_by = ['block_timestamp::DATE','modified_timestamp::DATE', '_partition_by_block_number'],
   tags = ['receipt_map','scheduled_core']
 ) }}
+-- depends_on: {{ ref('silver__streamline_blocks') }}
+-- depends_on: {{ ref('silver__streamline_transactions') }}
+-- depends_on: {{ ref('silver__streamline_receipts_final') }}
+
+{% if execute %}
+
+    {% if is_incremental() and not var("MANUAL_FIX") %}
+    {% do log("Incremental and not MANUAL_FIX", info=True) %}
+    {% set max_mod_query %}
+
+    SELECT
+        MAX(modified_timestamp) modified_timestamp
+    FROM
+        {{ this }}
+
+    {% endset %}
+
+        {% set max_mod = run_query(max_mod_query) [0] [0] %}
+        {% if not max_mod or max_mod == 'None' %}
+            {% set max_mod = '2099-01-01' %}
+        {% endif %}
+
+        {% do log("max_mod: " ~ max_mod, info=True) %}
+
+        {% set min_block_date_query %}
+    SELECT
+        MIN(
+            block_timestamp :: DATE
+        )
+    FROM
+        (
+            SELECT
+                MIN(_partition_by_block_number) _partition_by_block_number
+            FROM
+                {{ ref('silver__streamline_transactions') }} A
+            WHERE
+                modified_timestamp >= '{{max_mod}}'
+            UNION ALL
+            SELECT
+                MIN(_partition_by_block_number) _partition_by_block_number
+            FROM
+                {{ ref('silver__streamline_receipts_final') }} A
+            WHERE
+                modified_timestamp >= '{{max_mod}}'
+            UNION ALL
+            SELECT
+                MIN(_partition_by_block_number) _partition_by_block_number
+            FROM
+                {{ ref('silver__streamline_blocks') }} A
+            WHERE
+                modified_timestamp >= '{{max_mod}}'
+        ) 
+    {% endset %}
+
+        {% set min_partition = run_query(min_block_date_query) [0] [0] %}
+        {% if not min_partition or min_partition == 'None' %}
+            {% set min_partition = 999999999999 %}
+        {% endif %}
+
+        {% do log("min_partition: " ~ min_partition, info=True) %}
+
+    {% endif %}
+
+{% endif %}
 
 WITH int_txs AS (
 
@@ -24,7 +88,8 @@ WITH int_txs AS (
     _signature,
     _signer_id,
     _partition_by_block_number,
-    _inserted_timestamp
+    _inserted_timestamp,
+    modified_timestamp
   FROM
     {{ ref('silver__streamline_transactions') }}
 
@@ -34,13 +99,7 @@ WITH int_txs AS (
             {{ partition_load_manual('no_buffer') }}
             
     {% else %}
-      WHERE
-        {{ partition_incremental_load(
-          6000,
-          6000,
-          0
-        ) }}
-
+        WHERE _partition_by_block_number >= '{{min_partition}}'
     {% endif %}
 ),
 int_receipts AS (
@@ -53,7 +112,8 @@ int_receipts AS (
     receipt_succeeded,
     gas_burnt,
     _partition_by_block_number,
-    _inserted_timestamp
+    _inserted_timestamp,
+    modified_timestamp
   FROM
     {{ ref('silver__streamline_receipts_final') }}
 
@@ -63,14 +123,7 @@ int_receipts AS (
             {{ partition_load_manual('end') }}
             
     {% else %}
-
-      WHERE
-        {{ partition_incremental_load(
-          6000,
-          6000,
-          0
-        ) }}
-
+        WHERE _partition_by_block_number >= '{{min_partition}}'
     {% endif %}
 
 ),
@@ -80,13 +133,19 @@ int_blocks AS (
     block_hash,
     block_timestamp,
     _partition_by_block_number,
-    _inserted_timestamp
+    _inserted_timestamp,
+    modified_timestamp
   FROM
     {{ ref('silver__streamline_blocks') }}
-  WHERE
-    _partition_by_block_number >= (
-      SELECT MIN(_partition_by_block_number) FROM int_txs
-    )
+
+    {% if var('MANUAL_FIX') %}
+
+        WHERE
+            {{ partition_load_manual('front') }}
+            
+    {% else %}
+        WHERE _partition_by_block_number >= '{{min_partition}}'
+    {% endif %}
 ),
 receipt_array AS (
   SELECT
@@ -136,6 +195,15 @@ base_transactions AS (
     int_txs t
     INNER JOIN receipt_array r USING (tx_hash)
     INNER JOIN int_blocks b USING (block_id)
+
+    {% if is_incremental() and not var("MANUAL_FIX") %}
+        WHERE
+            GREATEST(
+                COALESCE(r.modified_timestamp, '1970-01-01'),
+                COALESCE(t.modified_timestamp, '1970-01-01'),
+                COALESCE(b.modified_timestamp, '1970-01-01')
+            ) >= '{{max_mod}}'
+    {% endif %}
 ),
 -- TODO review the below section in a subsequent PR. ~3y old at this point.
 -- it is calculating the gaas and fees. Largely accurate, but may have found an inaccuracy:
