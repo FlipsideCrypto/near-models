@@ -4,8 +4,8 @@ run-name: dbt_run_scheduled_core
 on:
   workflow_dispatch:
   schedule:
-    # Runs "every 55 mins" (see https://crontab.guru)
-    - cron: "55 * * * *"
+    # Runs hourly (see https://crontab.guru)
+    - cron: "0 * * * *"
 
 env:
   USE_VARS: "${{ vars.USE_VARS }}"
@@ -21,7 +21,7 @@ env:
   SCHEMA: "${{ vars.SCHEMA }}"
 
 concurrency:
-  group: ${{ github.workflow }}
+  group: dbt_scheduled
 
 jobs:
   dbt:
