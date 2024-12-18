@@ -7,8 +7,7 @@
 WITH r_receipts AS (
     SELECT
         DISTINCT receipt_id,
-        block_id,
-        predecessor_id AS signer_id
+        block_id
     FROM
         {{ ref('silver__streamline_receipts') }}
 
@@ -24,8 +23,7 @@ WITH r_receipts AS (
 f_receipts AS (
     SELECT
         DISTINCT receipt_object_id AS receipt_id,
-        block_id,
-        receipt_actions :predecessor_id :: STRING AS signer_id
+        block_id
     FROM
         {{ ref('silver__streamline_receipts_final') }}
     
@@ -40,8 +38,7 @@ f_receipts AS (
 )
 SELECT
     r_receipts.receipt_id AS receipt_id,
-    r_receipts.block_id,
-    r_receipts.signer_id
+    r_receipts.block_id
 FROM
     r_receipts
 LEFT JOIN
