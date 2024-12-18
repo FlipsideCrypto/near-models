@@ -9,6 +9,26 @@
     full_refresh = False
 ) }}
 
+{% if execute and var('MANUAL_FIX') %}
+-- NOTE "STREAMLINE_LOAD_LOOKBACK_HOURS" in metadata needs to be set as well
+-- or _inserted_timestamp will be null
+
+    {% set missing_blocks %}
+        SELECT
+            min(floor(prior_block_id, -3)) as min_partition,
+            max(floor(block_id, -3)) as max_partition,
+            min(prior_block_id) as min_block_id,
+            max(block_id) as max_block_id
+        FROM near.tests.block_gaps
+    {% endset %}
+
+    {% set missing_blocks_result = run_query(missing_blocks) %}
+    {% set min_partition = missing_blocks_result[0][0] %}
+    {% set max_partition = missing_blocks_result[0][1] %}
+    {% set min_block_id = missing_blocks_result[0][2] %}
+    {% set max_block_id = missing_blocks_result[0][3] %}
+{% endif %}
+
 WITH external_blocks AS (
 
     SELECT
@@ -20,13 +40,18 @@ WITH external_blocks AS (
             "streamline",
             "blocks"
         ) }}
-    WHERE
-        _partition_by_block_number >= (
-            SELECT
-                MAX(_partition_by_block_number) - (3000 * {{ var('STREAMLINE_LOAD_LOOKBACK_HOURS') }})
-            FROM
-                {{ this }}
-        )
+    {% if var('MANUAL_FIX') %}
+        WHERE
+            _partition_by_block_number BETWEEN {{ min_partition }} AND {{ max_partition }}
+    {% else %}
+        WHERE
+            _partition_by_block_number >= (
+                SELECT
+                    MAX(_partition_by_block_number) - (3000 * {{ var('STREAMLINE_LOAD_LOOKBACK_HOURS') }})
+                FROM
+                    {{ this }}
+            )
+    {% endif %}
 ),
 meta AS (
     SELECT
@@ -74,22 +99,40 @@ blocks AS (
             _filename
         )
         
-    {% if not var('MANUAL_FIX') %}
-
-    {% if is_incremental() %}
+    {% if var('MANUAL_FIX') %}
         WHERE
-            _inserted_timestamp >= (
-                SELECT
-                    MAX(_inserted_timestamp)
-                FROM
-                    {{ this }}
-            )
+            block_id BETWEEN {{ min_block_id }} AND {{ max_block_id }}
+    {% else%}
+        {% if is_incremental() %}
+            WHERE
+                _inserted_timestamp >= (
+                    SELECT
+                        MAX(_inserted_timestamp)
+                    FROM
+                        {{ this }}
+                )
+        {% endif %}
     {% endif %}
-    {% endif %}
-
 )
 SELECT
-    *,
+    block_id,
+    block_timestamp,
+    block_hash,
+    prev_hash,
+    block_author,
+    gas_price,
+    total_supply,
+    validator_proposals,
+    validator_reward,
+    latest_protocol_version,
+    epoch_id,
+    next_epoch_id,
+    tx_count,
+    events,
+    chunks,
+    header,
+    _partition_by_block_number,
+    {% if var('MANUAL_FIX') %}COALESCE(_inserted_timestamp, SYSDATE()) AS _inserted_timestamp,{% else %} _inserted_timestamp,{% endif %}
     {{ dbt_utils.generate_surrogate_key(
         ['block_id']
     ) }} AS streamline_blocks_id,

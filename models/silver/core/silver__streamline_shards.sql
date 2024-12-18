@@ -9,6 +9,25 @@
     full_refresh = False
 ) }}
 
+{% if execute and var('MANUAL_FIX') %}
+
+    {% set missing_shards %}
+        SELECT
+            min(_partition_by_block_number) as min_partition,
+            max(_partition_by_block_number) as max_partition,
+            min(block_id) as min_block_id,
+            max(block_id) as max_block_id
+        FROM near.tests.chunk_gaps
+    {% endset %}
+
+    {% set missing_shards_result = run_query(missing_shards) %}
+    {% set min_partition = missing_shards_result[0][0] %}
+    {% set max_partition = missing_shards_result[0][1] %}
+    {% set min_block_id = missing_shards_result[0][2] %}
+    {% set max_block_id = missing_shards_result[0][3] %}
+
+{% endif %}
+
 WITH external_shards AS (
 
     SELECT
@@ -20,13 +39,18 @@ WITH external_shards AS (
             "streamline",
             "shards"
         ) }}
-    WHERE
-        _partition_by_block_number >= (
-            SELECT
+    {% if var('MANUAL_FIX') %}
+        WHERE
+            _partition_by_block_number BETWEEN {{ min_partition }} AND {{ max_partition }}
+    {% else %}
+        WHERE
+            _partition_by_block_number >= (
+                SELECT
                 MAX(_partition_by_block_number) - (3000 * {{ var('STREAMLINE_LOAD_LOOKBACK_HOURS') }})
             FROM
                 {{ this }}
         )
+    {% endif %}
 ),
 meta AS (
     SELECT
@@ -67,9 +91,12 @@ shards AS (
         external_shards e
         LEFT JOIN meta m USING (_filename)
 
-    {% if not var('MANUAL_FIX') %}
-    {% if is_incremental() %}
+    {% if var('MANUAL_FIX') %}
         WHERE
+            block_id BETWEEN {{ min_block_id }} AND {{ max_block_id }}
+    {% else %}
+        {% if is_incremental() %}
+            WHERE
             _inserted_timestamp >= (
                 SELECT
                     MAX(_inserted_timestamp)
@@ -80,7 +107,15 @@ shards AS (
     {% endif %}
 )
 SELECT
-    *,
+    _filename,
+    _shard_number,
+    shard_id,
+    chunk,
+    receipt_execution_outcomes,
+    shard_number,
+    state_changes,
+    _partition_by_block_number,
+    {% if var('MANUAL_FIX') %}COALESCE(_inserted_timestamp, SYSDATE()) AS _inserted_timestamp,{% else %} _inserted_timestamp,{% endif %}
     {{ dbt_utils.generate_surrogate_key(
         ['shard_id']
     ) }} AS streamline_shards_id,
