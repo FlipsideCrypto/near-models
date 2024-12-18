@@ -7,7 +7,8 @@
 WITH r_receipts AS (
     SELECT
         DISTINCT receipt_id,
-        block_id
+        block_id,
+        predecessor_id AS signer_id
     FROM
         {{ ref('silver__streamline_receipts') }}
 
@@ -23,7 +24,8 @@ WITH r_receipts AS (
 f_receipts AS (
     SELECT
         DISTINCT receipt_object_id AS receipt_id,
-        block_id
+        block_id,
+        receipt_actions :predecessor_id :: STRING AS signer_id
     FROM
         {{ ref('silver__streamline_receipts_final') }}
     
@@ -39,7 +41,8 @@ f_receipts AS (
 r_transactions AS (
     SELECT
         DISTINCT tx_hash,
-        block_id
+        block_id,
+        _signer_id AS signer_id
     FROM
         {{ ref('silver__streamline_transactions') }}
 
@@ -58,7 +61,8 @@ r_transactions AS (
 f_transactions AS (
     SELECT
         DISTINCT tx_hash,
-        block_id
+        block_id,
+        tx_signer AS signer_id
     FROM
         {{ ref('silver__streamline_transactions_final') }}
 
@@ -75,7 +79,8 @@ f_transactions AS (
 SELECT
     'receipt_id' AS hash_type,
     r_receipts.receipt_id AS missing,
-    r_receipts.block_id
+    r_receipts.block_id,
+    r_receipts.signer_id
 FROM
     r_receipts
 LEFT JOIN
@@ -90,7 +95,8 @@ UNION ALL
 SELECT
     'tx_hash' AS hash_type,
     r_transactions.tx_hash AS missing,
-    r_transactions.block_id
+    r_transactions.block_id,
+    r_transactions.signer_id
 FROM
    r_transactions
 LEFT JOIN
