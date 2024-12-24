@@ -14,6 +14,11 @@ WITH silver_blocks AS (
     ) AS prior_block_id,
     block_id - prior_block_id AS gap_size,
     block_timestamp,
+    LAG(block_timestamp) over (
+      ORDER BY
+        block_timestamp ASC,
+        block_id ASC
+    ) AS prior_block_timestamp,
     block_hash,
     prev_hash,
     LAG(block_hash) over (
