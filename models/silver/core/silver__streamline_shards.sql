@@ -11,20 +11,25 @@
 
 {% if execute and var('MANUAL_FIX') %}
 
-    {% set missing_shards %}
-        SELECT
-            min(_partition_by_block_number) as min_partition,
-            max(_partition_by_block_number) as max_partition,
-            min(block_id) as min_block_id,
-            max(block_id) as max_block_id
-        FROM near.tests.chunk_gaps
-    {% endset %}
+    -- {% set missing_shards %}
+    --     SELECT
+    --         min(_partition_by_block_number) as min_partition,
+    --         max(_partition_by_block_number) as max_partition,
+    --         min(block_id) as min_block_id,
+    --         max(block_id) as max_block_id
+    --     FROM near.tests.chunk_gaps
+    -- {% endset %}
 
-    {% set missing_shards_result = run_query(missing_shards) %}
-    {% set min_partition = missing_shards_result[0][0] %}
-    {% set max_partition = missing_shards_result[0][1] %}
-    {% set min_block_id = missing_shards_result[0][2] %}
-    {% set max_block_id = missing_shards_result[0][3] %}
+    -- {% set missing_shards_result = run_query(missing_shards) %}
+    -- {% set min_partition = missing_shards_result[0][0] %}
+    -- {% set max_partition = missing_shards_result[0][1] %}
+    -- {% set min_block_id = missing_shards_result[0][2] %}
+    -- {% set max_block_id = missing_shards_result[0][3] %}
+
+    {% set min_partition = 135296000 %}
+    {% set max_partition = 135303000 %}
+    {% set min_block_id = 135296000 %}
+    {% set max_block_id = 135303000 %}
 
 {% endif %}
 
