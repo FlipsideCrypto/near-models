@@ -9,29 +9,6 @@
     full_refresh = False
 ) }}
 
-{% if execute and var('MANUAL_FIX') %}
-
-    -- {% set missing_shards %}
-    --     SELECT
-    --         min(_partition_by_block_number) as min_partition,
-    --         max(_partition_by_block_number) as max_partition,
-    --         min(block_id) as min_block_id,
-    --         max(block_id) as max_block_id
-    --     FROM near.tests.chunk_gaps
-    -- {% endset %}
-
-    -- {% set missing_shards_result = run_query(missing_shards) %}
-    -- {% set min_partition = missing_shards_result[0][0] %}
-    -- {% set max_partition = missing_shards_result[0][1] %}
-    -- {% set min_block_id = missing_shards_result[0][2] %}
-    -- {% set max_block_id = missing_shards_result[0][3] %}
-
-    {% set min_partition = 135296000 %}
-    {% set max_partition = 135303000 %}
-    {% set min_block_id = 135296000 %}
-    {% set max_block_id = 135303000 %}
-
-{% endif %}
 
 WITH external_shards AS (
 
@@ -44,18 +21,10 @@ WITH external_shards AS (
             "streamline",
             "shards"
         ) }}
-    {% if var('MANUAL_FIX') %}
+
         WHERE
-            _partition_by_block_number BETWEEN {{ min_partition }} AND {{ max_partition }}
-    {% else %}
-        WHERE
-            _partition_by_block_number >= (
-                SELECT
-                MAX(_partition_by_block_number) - (3000 * {{ var('STREAMLINE_LOAD_LOOKBACK_HOURS') }})
-            FROM
-                {{ this }}
-        )
-    {% endif %}
+            _partition_by_block_number BETWEEN 135296000 AND 135303000
+  
 ),
 meta AS (
     SELECT
@@ -66,7 +35,7 @@ meta AS (
             information_schema.external_table_file_registration_history(
                 start_time => DATEADD(
                     'hour', 
-                    -{{ var('STREAMLINE_LOAD_LOOKBACK_HOURS') }},
+                    -138,
                     SYSDATE()
                 ),
                 table_name => '{{ source( 'streamline', 'shards' ) }}'
@@ -95,21 +64,6 @@ shards AS (
     FROM
         external_shards e
         LEFT JOIN meta m USING (_filename)
-
-    {% if var('MANUAL_FIX') %}
-        WHERE
-            block_id BETWEEN {{ min_block_id }} AND {{ max_block_id }}
-    {% else %}
-        {% if is_incremental() %}
-            WHERE
-            _inserted_timestamp >= (
-                SELECT
-                    MAX(_inserted_timestamp)
-                FROM
-                    {{ this }}
-            )
-    {% endif %}
-    {% endif %}
 )
 SELECT
     _filename,
@@ -120,7 +74,7 @@ SELECT
     shard_number,
     state_changes,
     _partition_by_block_number,
-    {% if var('MANUAL_FIX') %}COALESCE(_inserted_timestamp, SYSDATE()) AS _inserted_timestamp,{% else %} _inserted_timestamp,{% endif %}
+    COALESCE(_inserted_timestamp, SYSDATE()) AS _inserted_timestamp,
     {{ dbt_utils.generate_surrogate_key(
         ['shard_id']
     ) }} AS streamline_shards_id,
