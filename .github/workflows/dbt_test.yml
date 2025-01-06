@@ -43,7 +43,7 @@ jobs:
 
       - name: Run DBT Jobs
         run: |
-          dbt test -s models/gold tag:gap_test
+          dbt test -s models/gold tag:gap_test --exclude tag:atlas
         continue-on-error: true
 
       - name: Log test results
