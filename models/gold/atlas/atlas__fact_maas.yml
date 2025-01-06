@@ -3,7 +3,8 @@ version: 2
 models:
   - name: atlas__fact_maas
     description: |-
-      Monthly Active Accounts (wallets) on NEAR, including new and returning wallets, calculated over a rolling 30 day window. An active account, here, is defined as the signing of at least one transaction.
+      Deprecating Soon - these tables previously supported NEAR Atlas which is no longer live. These tables will be removed on Febreary 1, 2025.
+      Please cease using these tables.
     tests:
       - dbt_utils.recency:
           datepart: days

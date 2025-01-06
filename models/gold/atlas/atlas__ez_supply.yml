@@ -3,7 +3,8 @@ version: 2
 models:
   - name: atlas__ez_supply
     description: |-
-      A table represeting calculations for the supply of NEAR across various categories, such as staked and locked.
+      Deprecating Soon - these tables previously supported NEAR Atlas which is no longer live. These tables will be removed on Febreary 1, 2025.
+      This EZ_SUPPLY table will be retained and migrated to CORE.
     tests:
       - dbt_utils.recency:
           datepart: days
