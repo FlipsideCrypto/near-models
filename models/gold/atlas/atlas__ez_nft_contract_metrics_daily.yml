@@ -3,7 +3,8 @@ version: 2
 models:
   - name: atlas__ez_nft_contract_metrics_daily
     description: |-
-      Overview of NFT transactions in NEAR.
+      Deprecating Soon - these tables previously supported NEAR Atlas which is no longer live. These tables will be removed on Febreary 1, 2025.
+      Please cease using these tables.
     tests:
       - dbt_utils.recency:
           datepart: days
