@@ -4,7 +4,7 @@ version: 2
 models:
   - name: horizon__fact_decoded_actions
     description: |-
-      Decoded FunctionCall events for receipts where the contract nearhorizon.near was called.
+      Deprecating Soon - please cease using this table by February 1, 2025.
 
     columns:
       - name: ACTION_ID_HORIZON
