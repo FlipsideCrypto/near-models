@@ -29,14 +29,29 @@ WITH fact_bridging AS (
     FROM
         {{ ref('defi__fact_bridge_activity') }}
 ),
+seed_wormhole_labels AS (
+    SELECT * FROM {{ ref ('seeds__portalbridge_tokenids') }}
+),
 labels AS (
-    SELECT
+    SELECT 
         contract_address,
-        NAME,
+        name,
         symbol,
-        decimals
-    FROM
-        {{ ref('silver__ft_contract_metadata') }}
+        decimals 
+    FROM near.silver.ft_contract_metadata
+    UNION ALL 
+    SELECT 
+        contract_address,
+        'USD Coin (Wormhole)' as name,
+        'USDC' as symbol,
+        6 as decimals
+    FROM (VALUES
+        ('37.contract.portalbridge.near'),
+        ('38.contract.portalbridge.near'),
+        ('39.contract.portalbridge.near'),
+        ('40.contract.portalbridge.near'),
+        ('41.contract.portalbridge.near')
+    ) AS t(contract_address)
 ),
 prices AS (
         SELECT
@@ -69,6 +84,21 @@ prices_mapping AS (
     FROM
         prices
 ),
+wormhole_price_mapping AS (
+    SELECT DISTINCT
+        p.block_timestamp,
+        w.wormhole_contract_address as contract_address,
+        p.symbol,
+        p.price_usd
+    FROM prices p
+    JOIN seed_wormhole_labels w 
+        ON p.contract_address = w.near_contract_address
+),
+combined_prices AS (
+    SELECT * FROM prices_mapping
+    UNION ALL
+    SELECT * FROM wormhole_price_mapping
+),
 FINAL AS (
     SELECT
         b.block_id,
@@ -97,7 +127,7 @@ FINAL AS (
         b.modified_timestamp
     FROM
         fact_bridging b
-        LEFT JOIN prices_mapping p1
+        LEFT JOIN combined_prices p1
         ON b.token_address = p1.contract_address
         AND DATE_TRUNC(
             'hour',
