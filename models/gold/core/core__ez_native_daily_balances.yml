@@ -12,7 +12,7 @@ models:
           interval: 48
 
     columns:
-      - name: address
+      - name: account_id
         description: The NEAR account address for which the balance is recorded.
         tests:
           - not_null:
@@ -36,7 +36,7 @@ models:
           - not_null:
               where: epoch_date > SYSDATE() - INTERVAL '7 days' 
 
-      - name: lockup_address
+      - name: lockup_account_id
         description: The lockup delegator account ID for the NEAR account, if one exists.
 
       - name: lockup_liquid

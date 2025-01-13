@@ -3,11 +3,11 @@
 ) }}
 
 SELECT
-    account_id AS address,
+    account_id,
     epoch_block_height :: INT AS epoch_block_id,
     epoch_date :: DATE AS epoch_date,
     liquid,
-    lockup_account_id AS lockup_address,
+    lockup_account_id,
     lockup_liquid,
     lockup_reward,
     lockup_staked,
