@@ -27,3 +27,9 @@ sources:
     tables:
       - name: blocks
       - name: shards
+
+  - name: hevo
+    schema: near
+    database: hevo
+    tables:
+      - name: flipsidecrypto_near_ft_balances_daily

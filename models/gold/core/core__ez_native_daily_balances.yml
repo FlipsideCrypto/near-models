@@ -1,0 +1,81 @@
+version: 2
+
+models:
+  - name: core__ez_native_daily_balances
+    description: |
+      This table records daily balances for NEAR Accounts, according to the parameters set by the Near team's balances indexer. More details around the source data can be found by reading about the NEAR Public Lakehouse on their documentation site: https://docs.near.org/tools/indexing.
+      Please Note - Flipside does not index or curate the data in this table, we simply provide it as-is from the NEAR Public Lakehouse with a daily sync from the public access table located at `bigquery-public-data.crypto_near_mainnet_us.ft_balances_daily`.
+    tests:
+      - dbt_utils.recency:
+          datepart: hour
+          field: epoch_date
+          interval: 48
+
+    columns:
+      - name: account_id
+        description: The NEAR account address for which the balance is recorded.
+        tests:
+          - not_null:
+              where: epoch_date > SYSDATE() - INTERVAL '7 days' 
+
+      - name: epoch_block_id
+        description: The max block id in for the epoch.
+        tests:
+          - not_null:
+              where: epoch_date > SYSDATE() - INTERVAL '7 days'  
+
+      - name: epoch_date
+        description: The date and time at which the epoch began
+        tests:
+          - not_null:
+              where: epoch_date > SYSDATE() - INTERVAL '7 days' 
+
+      - name: liquid
+        description: The liquid balance of the NEAR account at this epoch.
+        tests:
+          - not_null:
+              where: epoch_date > SYSDATE() - INTERVAL '7 days' 
+
+      - name: lockup_account_id
+        description: The lockup delegator account ID for the NEAR account, if one exists.
+
+      - name: lockup_liquid
+        description: Liquid balance of the lockup account at this epoch.
+
+      - name: lockup_reward
+        description: Lockup reward balance of the lockup account at this epoch.
+
+      - name: lockup_staked
+        description: Lockup staked balance of the lockup account at this epoch.
+
+      - name: lockup_unstaked_not_liquid
+        description: Lockup unstaked but not liquid balance of the lockup account at this epoch.
+
+      - name: reward
+        description: The accumulated reward balance of the NEAR account earned from staking at this epoch.
+
+      - name: staked
+        description: The staked balance of the NEAR account at this epoch.
+        tests:
+          - not_null:
+              where: epoch_date > SYSDATE() - INTERVAL '7 days' 
+
+      - name: storage_usage
+        description: Storage usage of the NEAR account at this epoch.
+
+      - name: unstaked_not_liquid
+        description: Unstaked but not liquid balance of the NEAR account at this epoch.
+
+      - name: ez_near_daily_balances_id
+        description: "{{doc('id')}}"
+        tests:
+          - unique:
+              where: epoch_date > SYSDATE() - INTERVAL '7 days' 
+          - not_null:
+              where: epoch_date > SYSDATE() - INTERVAL '7 days' 
+
+      - name: INSERTED_TIMESTAMP
+        description: "{{doc('inserted_timestamp')}}"
+
+      - name: MODIFIED_TIMESTAMP
+        description: "{{doc('modified_timestamp')}}"
