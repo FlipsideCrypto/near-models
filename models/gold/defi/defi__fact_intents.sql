@@ -8,11 +8,11 @@ with intent_txs as (
         and block_timestamp >= '2024-11-01'
         and block_timestamp < current_date() - 7
 ),
-with nep245_logs as (
+nep245_logs as (
   select
     block_timestamp,
     block_id,
-    tx_hash,
+    l.tx_hash,
     receipt_object_id AS receipt_id,
     receiver_id,
     predecessor_id,
@@ -22,7 +22,7 @@ with nep245_logs as (
     log_index,
     receipt_succeeded
   from
-    near.core.fact_logs
+    near.core.fact_logs l
   join intent_txs i
     on l.tx_hash = i.tx_hash
   where
@@ -113,7 +113,7 @@ parse_logs as (
   FROM
     flatten_arrays
 )
-select
+  select
     block_timestamp,
     block_id,
     tx_hash,
@@ -139,4 +139,48 @@ select
       lower(A.token_address)
     ) AS token_address,
     log_index,
-    receipt_succeeded;
+    receipt_succeeded
+  from
+    parse_logs A
+    left join (
+      select
+        *
+      from
+        (
+          values
+            (
+              'arb',
+              '0xb50721bcf8d664c30412cfbc6cf7a15145234ad1'
+            ),
+            -- arb on eth
+            (
+              'aurora',
+              '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
+            ),
+            -- weth
+            (
+              'base',
+              '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
+            ),
+            -- weth (?)
+            (
+              'btc',
+              '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599'
+            ),
+            -- wbtc
+            (
+              'doge',
+              '0xba2ae424d960c26247dd6c32edc70b295c744c43'
+            ),
+            -- binance-peg-dogecoin
+            (
+              'eth',
+              '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
+            ),
+            --weth
+            (
+              'sol',
+              '0xd31a59c85ae9d8edefec411d448f90841571b89c'
+            ) --wsol on eth
+        ) as l (token_address, token_address_fixed)
+    ) B on lower(A.token_address) = lower(B.token_address);
