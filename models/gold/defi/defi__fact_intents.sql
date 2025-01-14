@@ -29,6 +29,7 @@ nep245_logs as (
     receiver_id = 'intents.near'
     and block_timestamp >= '2024-11-01'
     and try_parse_json(clean_log) :standard :: STRING = 'nep245'
+    and block_timestamp < current_date() - 7
 ),
 flatten_logs AS (
   SELECT
