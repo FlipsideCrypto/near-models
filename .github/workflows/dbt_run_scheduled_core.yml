@@ -46,7 +46,7 @@ jobs:
           dbt seed;
           dbt run -s tag:scheduled_core --vars "{ 'RECEIPT_MAP_LOOKBACK_HOURS': 1.25}";
           dbt run -s tag:scheduled_non_core models/gold;
-      - name: Store logs
+      - name: actions/upload-artifact@v4
         uses: actions/upload-artifact@v3
         with:
           name: dbt-logs
