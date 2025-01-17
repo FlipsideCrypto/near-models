@@ -30,12 +30,12 @@ WITH fact_bridging AS (
         {{ ref('defi__fact_bridge_activity') }}
 ),
 labels AS (
-    SELECT
+    SELECT 
         contract_address,
-        NAME,
+        name,
         symbol,
-        decimals
-    FROM
+        decimals 
+    FROM 
         {{ ref('silver__ft_contract_metadata') }}
 ),
 prices AS (
@@ -74,10 +74,10 @@ FINAL AS (
         b.block_id,
         b.block_timestamp,
         b.tx_hash,
-        b.token_address,
+        COALESCE(w.near_contract_address, b.token_address) AS token_address,
         b.amount_unadj,
         b.amount_adj,
-        l1.symbol,
+        COALESCE(w.symbol, l1.symbol) as symbol,
         b.amount_adj / pow(
             10,
             l1.decimals
@@ -95,16 +95,14 @@ FINAL AS (
         b.ez_bridge_activity_id,
         b.inserted_timestamp,
         b.modified_timestamp
-    FROM
-        fact_bridging b
-        LEFT JOIN prices_mapping p1
-        ON b.token_address = p1.contract_address
-        AND DATE_TRUNC(
-            'hour',
-            b.block_timestamp
-        ) = p1.block_timestamp
+    FROM fact_bridging b
+        LEFT JOIN {{ ref('seeds__portalbridge_tokenids') }} w
+            ON b.token_address = w.wormhole_contract_address
         LEFT JOIN labels l1
-        ON b.token_address = l1.contract_address
+            ON COALESCE(w.near_contract_address, b.token_address) = l1.contract_address
+        LEFT JOIN prices_mapping p1
+            ON COALESCE(w.near_contract_address, b.token_address) = p1.contract_address
+            AND DATE_TRUNC('hour', b.block_timestamp) = p1.block_timestamp
 )
 SELECT
     *
