@@ -35,7 +35,8 @@ labels AS (
         name,
         symbol,
         decimals 
-    FROM {{ ref('silver__ft_contract_metadata') }}
+    FROM 
+        {{ ref('silver__ft_contract_metadata') }}
 ),
 prices AS (
         SELECT
