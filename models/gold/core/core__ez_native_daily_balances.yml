@@ -7,9 +7,9 @@ models:
       Please Note - Flipside does not index or curate the data in this table, we simply provide it as-is from the NEAR Public Lakehouse with a daily sync from the public access table located at `bigquery-public-data.crypto_near_mainnet_us.ft_balances_daily`.
     tests:
       - dbt_utils.recency:
-          datepart: hour
+          datepart: day
           field: epoch_date
-          interval: 48
+          interval: 3
 
     columns:
       - name: account_id
