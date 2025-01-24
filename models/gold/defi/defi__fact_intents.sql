@@ -26,7 +26,7 @@
         {%set max_mod = run_query(max_mod_query) [0] [0] %}
         {% if not max_mod or max_mod == 'None' %}
             {% set max_mod = '2099-01-01' %}
-        {% end if %}
+        {% endif %}
 
         {% do log("max_mod: " ~ max_mod, info=True) %}
         {% set min_block_date_query %}
