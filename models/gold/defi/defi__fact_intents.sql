@@ -64,8 +64,9 @@
 
 WITH intent_txs AS (
 
-    SELECT
-        DISTINCT tx_hash
+    SELECT DISTINCT
+         tx_hash, 
+         modified_timestamp
     FROM
         {{ ref('silver__streamline_receipts_final') }}
     WHERE
@@ -74,11 +75,11 @@ WITH intent_txs AS (
         AND receipt_actions :receipt :Action :actions [0] :FunctionCall :method_name :: STRING = 'execute_intents'
 
     {% if var("MANUAL_FIX") %}
-        WHERE
+        AND
             {{ partition_load_manual('no_buffer') }}
         {% else %}
         {% if is_incremental() %}
-            WHERE block_timestamp::DATE >= '{{min_bd}}'
+            AND block_timestamp::DATE >= '{{min_bd}}'
         {% endif %}
     {% endif %}
 ),
@@ -108,7 +109,7 @@ nep245_logs AS (
         AND TRY_PARSE_JSON(clean_log) :standard :: STRING = 'nep245'
 
         {% if is_incremental() and not var("MANUAL_FIX") %}
-        WHERE
+        AND
             GREATEST(
                 COALESCE(l.modified_timestamp, '1970-01-01'),
                 COALESCE(r.modified_timestamp, '1970-01-01')   
