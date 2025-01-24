@@ -8,7 +8,60 @@
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,receipt_id,token_id);",
     tags = ['intents','curated','scheduled_non_core']
 ) }}
--- incremental logic if execute block
+-- depends_on: {{ ref('silver__streamline_receipts_final') }}
+-- depends_on: {{ ref('silver__logs_s3') }}
+
+{% if execute %}
+    {% if is_incremental() and not var("MANUAL_FIX") %}
+    {% do log("Incremental and NOT MANUAL_FIX", info=True) %}
+    {% set max_mod_query %}
+
+    SELECT  
+        MAX(modified_timestamp) modified_timestamp
+    FROM
+        {{ this }}
+
+    {% endset %}
+
+        {%set max_mod = run_query(max_mod_query) [0] [0] %}
+        {% if not max_mod or max_mod == 'None' %}
+            {% set max_mod = '2099-01-01' %}
+        {% end if %}
+
+        {% do log("max_mod: " ~ max_mod, info=True) %}
+        {% set min_block_date_query %}
+
+    SELECT 
+        MIN(
+            block_timestamp::DATE
+        )
+    FROM
+        (
+            SELECT
+                MIN(block_timestamp) block_timestamp
+            FROM  
+                {{ ref('silver__streamline_receipts_final') }}
+            WHERE
+                modified_timestamp >= '{{max_mod}}'
+            UNION ALL
+            SELECT
+                MIN(block_timestamp) block_timestamp
+            FROM
+                {{ ref('silver__logs_s3') }}
+            WHERE
+                modified_timestamp >= '{{max_mod}}'
+        )
+    {% endset %}
+
+        {% set min_bd = run_query(min_block_date_query) [0] [0] %}
+        {% if not min_bd or min_bd == 'None' %}
+            {% set min_bd = '2099-01-01' %}
+        {% endif %}
+
+        {% do log("min_bd: " ~ min_bd, info=True) %}
+    {% endif %}
+{% endif %}
+
 WITH intent_txs AS (
 
     SELECT
@@ -18,7 +71,16 @@ WITH intent_txs AS (
     WHERE
         block_timestamp >= '2024-11-01'
         AND receiver_id = 'intents.near'
-        AND receipt_actions :receipt :Action :actions [0] :FunctionCall :method_name :: STRING = 'execute_intents' -- incremental logic
+        AND receipt_actions :receipt :Action :actions [0] :FunctionCall :method_name :: STRING = 'execute_intents'
+
+    {% if var("MANUAL_FIX") %}
+        WHERE
+            {{ partition_load_manual('no_buffer') }}
+        {% else %}
+        {% if is_incremental() %}
+            WHERE block_timestamp::DATE >= '{{min_bd}}'
+        {% endif %}
+    {% endif %}
 ),
 nep245_logs AS (
     SELECT
@@ -43,7 +105,15 @@ nep245_logs AS (
     WHERE
         receiver_id = 'intents.near'
         AND block_timestamp >= '2024-11-01'
-        AND TRY_PARSE_JSON(clean_log) :standard :: STRING = 'nep245' -- incremental logic
+        AND TRY_PARSE_JSON(clean_log) :standard :: STRING = 'nep245'
+
+        {% if is_incremental() and not var("MANUAL_FIX") %}
+        WHERE
+            GREATEST(
+                COALESCE(l.modified_timestamp, '1970-01-01'),
+                COALESCE(r.modified_timestamp, '1970-01-01')   
+            ) >= '{{max_mod}}'
+    {% endif %}
 ),
 flatten_logs AS (
     SELECT
