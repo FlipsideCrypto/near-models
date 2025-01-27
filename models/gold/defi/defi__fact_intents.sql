@@ -68,11 +68,11 @@ WITH intent_txs AS (
          tx_hash, 
          modified_timestamp
     FROM
-        {{ ref('silver__streamline_receipts_final') }}
+        {{ ref('core__ez_actions') }}
     WHERE
         block_timestamp >= '2024-11-01'
-        AND receiver_id = 'intents.near'
-        AND receipt_actions :receipt :Action :actions [0] :FunctionCall :method_name :: STRING = 'execute_intents'
+        AND receipt_receiver_id = 'intents.near'
+        AND action_data:method_name::string = 'execute_intents'
 
     {% if var("MANUAL_FIX") %}
         AND
