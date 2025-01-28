@@ -8,7 +8,7 @@
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,receipt_id,token_id);",
     tags = ['intents','curated','scheduled_non_core']
 ) }}
--- depends_on: {{ ref('silver__streamline_receipts_final') }}
+-- depends_on: {{ ref('core__ez_actions') }}
 -- depends_on: {{ ref('silver__logs_s3') }}
 
 {% if execute %}
@@ -40,7 +40,7 @@
             SELECT
                 MIN(block_timestamp) block_timestamp
             FROM  
-                {{ ref('silver__streamline_receipts_final') }}
+                {{ ref('core__ez_actions') }}
             WHERE
                 modified_timestamp >= '{{max_mod}}'
             UNION ALL
@@ -109,11 +109,7 @@ nep245_logs AS (
         AND TRY_PARSE_JSON(clean_log) :standard :: STRING = 'nep245'
 
         {% if is_incremental() and not var("MANUAL_FIX") %}
-        AND
-            GREATEST(
-                COALESCE(l.modified_timestamp, '1970-01-01'),
-                COALESCE(r.modified_timestamp, '1970-01-01')   
-            ) >= '{{max_mod}}'
+        AND block_timestamp::DATE >= '{{min_bd}}'
     {% endif %}
 ),
 flatten_logs AS (
