@@ -117,11 +117,9 @@ nep245_logs AS (
         logs_base lb
     JOIN 
         intent_txs r ON r.tx_hash = lb.tx_hash
-    WHERE 
-        TRUE
 
     {% if is_incremental() and not var("MANUAL_FIX") %}
-        AND lb.modified_timestamp >= '{{max_mod}}'
+        WHERE lb.modified_timestamp >= '{{max_mod}}'
     {% endif %}
 ),
 flatten_logs AS (
