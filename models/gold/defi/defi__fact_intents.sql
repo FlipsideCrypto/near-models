@@ -83,11 +83,11 @@ WITH intent_txs AS (
         {% endif %}
     {% endif %}
 ),
-nep245_logs AS (
+logs_base AS(
     SELECT
         block_timestamp,
         block_id,
-        l.tx_hash,
+        tx_hash,
         receipt_object_id AS receipt_id,
         log_index,
         receiver_id,
@@ -97,19 +97,31 @@ nep245_logs AS (
         TRY_PARSE_JSON(clean_log) :event :: STRING AS log_event,
         TRY_PARSE_JSON(clean_log) :data :: ARRAY AS log_data,
         ARRAY_SIZE(log_data) AS log_data_len,
-        receipt_succeeded
-    FROM
+        receipt_succeeded,
+        modified_timestamp
+    FROM 
         {{ ref('silver__logs_s3') }}
-        l
-        JOIN intent_txs r
-        ON r.tx_hash = l.tx_hash
-    WHERE
+    WHERE 
         receiver_id = 'intents.near'
         AND block_timestamp >= '2024-11-01'
         AND TRY_PARSE_JSON(clean_log) :standard :: STRING = 'nep245'
 
-        {% if is_incremental() and not var("MANUAL_FIX") %}
+    {% if is_incremental() and not var("MANUAL_FIX") %}
         AND block_timestamp::DATE >= '{{min_bd}}'
+    {% endif %}
+),
+nep245_logs AS (
+    SELECT 
+        lb.*
+    FROM 
+        logs_base lb
+    JOIN 
+        intent_txs r ON r.tx_hash = lb.tx_hash
+    WHERE 
+        TRUE
+
+    {% if is_incremental() and not var("MANUAL_FIX") %}
+        AND lb.modified_timestamp >= '{{max_mod}}'
     {% endif %}
 ),
 flatten_logs AS (
