@@ -119,7 +119,11 @@ nep245_logs AS (
         intent_txs r ON r.tx_hash = lb.tx_hash
 
     {% if is_incremental() and not var("MANUAL_FIX") %}
-        WHERE lb.modified_timestamp >= '{{max_mod}}'
+        WHERE 
+            GREATEST(
+                COALESCE(lb.modified_timestamp, '1970-01-01'),
+                COALESCE(r.modified_timestamp, '1970-01-01')   
+            ) >= '{{max_mod}}'
     {% endif %}
 ),
 flatten_logs AS (
