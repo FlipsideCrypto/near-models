@@ -94,6 +94,7 @@ logs_base AS(
         predecessor_id,
         signer_id,
         gas_burnt,
+        clean_log,
         TRY_PARSE_JSON(clean_log) :event :: STRING AS log_event,
         TRY_PARSE_JSON(clean_log) :data :: ARRAY AS log_data,
         ARRAY_SIZE(log_data) AS log_data_len,
@@ -104,7 +105,7 @@ logs_base AS(
     WHERE 
         receiver_id = 'intents.near'
         AND block_timestamp >= '2024-11-01'
-        AND TRY_PARSE_JSON(clean_log) :standard :: STRING = 'nep245'
+        AND TRY_PARSE_JSON(clean_log) :standard :: STRING in ('nep245', 'dip4')
 
     {% if is_incremental() and not var("MANUAL_FIX") %}
         AND block_timestamp::DATE >= '{{min_bd}}'
@@ -117,6 +118,8 @@ nep245_logs AS (
         logs_base lb
     JOIN 
         intent_txs r ON r.tx_hash = lb.tx_hash
+    WHERE
+        TRY_PARSE_JSON(lb.clean_log) :standard :: STRING = 'nep245'
 
     {% if is_incremental() and not var("MANUAL_FIX") %}
         WHERE 
@@ -125,6 +128,20 @@ nep245_logs AS (
                 COALESCE(r.modified_timestamp, '1970-01-01')   
             ) >= '{{max_mod}}'
     {% endif %}
+),
+dip4_logs AS (
+    SELECT 
+        lb.*,
+        try_parse_json(lb.clean_log):data[0]:referral::string as referral,
+        try_parse_json(lb.clean_log):version :: string as version
+    FROM 
+        logs_base lb
+    JOIN 
+        intent_txs r ON r.tx_hash = lb.tx_hash
+    WHERE
+        TRY_PARSE_JSON(lb.clean_log) :standard :: STRING = 'dip4'
+
+    qualify(row_number() over (partition by lb.receipt_id order by referral is not null desc) = 1)
 ),
 flatten_logs AS (
     SELECT
@@ -181,12 +198,34 @@ flatten_arrays AS (
         )
 )
 SELECT
-    *,
+    final.block_timestamp,
+    final.block_id,
+    final.tx_hash,
+    final.receipt_id,
+    final.receiver_id,
+    final.predecessor_id,
+    final.log_event,
+    final.log_index,
+    final.log_event_index,
+    final.owner_id,
+    final.old_owner_id,
+    final.new_owner_id,
+    final.memo,
+    final.amount_index,
+    final.amount_raw,
+    final.token_id,
+    dip4.referral,
+    dip4.version AS dip4_version,
+    final.gas_burnt,
+    final.receipt_succeeded,
     {{ dbt_utils.generate_surrogate_key(
-        ['tx_hash', 'receipt_id', 'log_index', 'log_event_index', 'amount_index']
+        ['final.tx_hash', 'final.receipt_id', 'final.log_index', 'final.log_event_index', 'final.amount_index']
     ) }} AS fact_intents_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
 FROM
-    flatten_arrays
+    flatten_arrays final
+LEFT JOIN 
+    dip4_logs dip4 ON dip4.tx_hash = final.tx_hash
+    AND dip4.receipt_id = final.receipt_id
