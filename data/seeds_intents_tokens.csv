@@ -1,0 +1,8 @@
+blockchain,token_address,symbol,description
+ethereum,0xb50721bcf8d664c30412cfbc6cf7a15145234ad1,ARB,Arbitrum Token on Ethereum Blockhain
+aurora,0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2,WETH,Wrapped Ether on Aurora Blockchain
+base,0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2,WETH,Wrapped Ether on Base Blockchain
+btc,0x2260fac5e5542a773aa44fbcfedf7c193bc2c599,WBTC,Wrapped Bitcoin on BTC Blockchain
+bsc,0xba2ae424d960c26247dd6c32edc70b295c744c43,DOGE,Binance-pegged Dogecoin on BSC Blockchain
+eth,0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2,WETH,Wrapped Ether on Ethereum Blockchain
+sol,0xd31a59c85ae9d8edefec411d448f90841571b89c,WSOL,Wrapped Solana on Ethereum Blockchain
