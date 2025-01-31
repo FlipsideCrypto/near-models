@@ -107,8 +107,13 @@ logs_base AS(
         AND block_timestamp >= '2024-11-01'
         AND TRY_PARSE_JSON(clean_log) :standard :: STRING in ('nep245', 'dip4')
 
-    {% if is_incremental() and not var("MANUAL_FIX") %}
-        AND block_timestamp::DATE >= '{{min_bd}}'
+    {% if var("MANUAL_FIX") %}
+        AND
+            {{ partition_load_manual('no_buffer') }}
+        {% else %}
+        {% if is_incremental() %}
+            AND block_timestamp::DATE >= '{{min_bd}}'
+        {% endif %}
     {% endif %}
 ),
 nep245_logs AS (
@@ -122,7 +127,7 @@ nep245_logs AS (
         TRY_PARSE_JSON(lb.clean_log) :standard :: STRING = 'nep245'
 
     {% if is_incremental() and not var("MANUAL_FIX") %}
-        WHERE 
+        AND 
             GREATEST(
                 COALESCE(lb.modified_timestamp, '1970-01-01'),
                 COALESCE(r.modified_timestamp, '1970-01-01')   
