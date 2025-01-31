@@ -21,12 +21,7 @@ WITH external_blocks AS (
             "blocks"
         ) }}
     WHERE
-        _partition_by_block_number >= (
-            SELECT
-                MAX(_partition_by_block_number) - (3000 * {{ var('STREAMLINE_LOAD_LOOKBACK_HOURS') }})
-            FROM
-                {{ this }}
-        )
+        _partition_by_block_number BETWEEN 138618000 AND 138647000
 ),
 meta AS (
     SELECT
@@ -37,7 +32,7 @@ meta AS (
             information_schema.external_table_file_registration_history(
                 start_time => DATEADD(
                     'hour', 
-                    -{{ var('STREAMLINE_LOAD_LOOKBACK_HOURS') }},
+                    -24,
                     SYSDATE()
                 ),
                 table_name => '{{ source( 'streamline', 'blocks' ) }}'
@@ -73,19 +68,6 @@ blocks AS (
         LEFT JOIN meta m USING (
             _filename
         )
-        
-    {% if not var('MANUAL_FIX') %}
-
-    {% if is_incremental() %}
-        WHERE
-            _inserted_timestamp >= (
-                SELECT
-                    MAX(_inserted_timestamp)
-                FROM
-                    {{ this }}
-            )
-    {% endif %}
-    {% endif %}
 
 )
 SELECT
