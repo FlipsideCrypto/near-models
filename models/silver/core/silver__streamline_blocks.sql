@@ -21,7 +21,7 @@ WITH external_blocks AS (
             "blocks"
         ) }}
     WHERE
-        _partition_by_block_number BETWEEN 138618000 AND 138647000
+        _partition_by_block_number BETWEEN 138656000 AND 138665000
 ),
 meta AS (
     SELECT
