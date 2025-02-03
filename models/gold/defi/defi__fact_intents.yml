@@ -10,7 +10,7 @@ models:
       - dbt_utils.recency:
           datepart: hours
           field: block_timestamp
-          interval: 2
+          interval: 3
 
     columns:
       - name: BLOCK_ID
