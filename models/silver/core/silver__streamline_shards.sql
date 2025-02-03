@@ -21,7 +21,7 @@ WITH external_shards AS (
             "shards"
         ) }}
     WHERE
-        _partition_by_block_number BETWEEN 138618000 AND 138621000
+        _partition_by_block_number BETWEEN 138655000 AND 138665000
 ),
 meta AS (
     SELECT
@@ -32,7 +32,7 @@ meta AS (
             information_schema.external_table_file_registration_history(
                 start_time => DATEADD(
                     'hour', 
-                    -24,
+                    -72,
                     SYSDATE()
                 ),
                 table_name => '{{ source( 'streamline', 'shards' ) }}'
