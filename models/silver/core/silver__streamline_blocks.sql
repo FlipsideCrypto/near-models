@@ -32,7 +32,7 @@ meta AS (
             information_schema.external_table_file_registration_history(
                 start_time => DATEADD(
                     'hour', 
-                    -24,
+                    -72,
                     SYSDATE()
                 ),
                 table_name => '{{ source( 'streamline', 'blocks' ) }}'
