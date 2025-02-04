@@ -27,6 +27,10 @@ SELECT
         DATA :transactions :: ARRAY,
         'hash'
     ) AS transaction_ids,
+    {{ target.database }}.streamline.udf_extract_hash_array(
+        DATA :transactions :: ARRAY,
+        'signer_id'
+    ) AS signer_ids,
     partition_key,
     _inserted_timestamp,
     DATA :header :chunk_hash :: STRING AS complete_chunks_id,

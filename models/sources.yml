@@ -41,4 +41,4 @@ sources:
     tables:
       - name: blocks_v2
       - name: chunks_v2
-      - name: tx_status_v2
+      - name: transactions_v2
