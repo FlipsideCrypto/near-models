@@ -1,3 +1,4 @@
+-- TODO slated for deprecation and drop
 {% macro incremental_load_filter(time_col) -%}
 
 {% if is_incremental() %}

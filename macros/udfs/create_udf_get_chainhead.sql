@@ -7,18 +7,19 @@
             SELECT
                 {{ target.database }}.live.udf_api(
                     'POST',
-                    'https://rpc.mainnet.near.org',
-                    { 
-                        'Content-Type': 'application/json' 
-                    },
-                    { 
-                        'jsonrpc': '2.0',
-                        'id': 'dontcare',
-                        'method' :'status',
-                        'params':{
-                            'finality': 'final' 
-                            }
-                    }
+                    '{Service}',
+                    OBJECT_CONSTRUCT(
+                        'Content-Type', 'application/json'
+                    ),
+                    OBJECT_CONSTRUCT(
+                        'jsonrpc', '2.0',
+                        'id', 'Flipside/getChainhead/0.1',
+                        'method', 'status',
+                        'params', OBJECT_CONSTRUCT(
+                            'finality', 'final' 
+                        )
+                    ),
+                    'Vault/prod/near/quicknode/mainnet'
             ) :data :result :sync_info :latest_block_height :: INT AS block_id
         
         $$ 
