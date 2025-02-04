@@ -1,36 +1,42 @@
--- depends_on: {{ ref('bronze__blocks') }}
--- depends_on: {{ ref('bronze__FR_blocks') }}
+-- depends_on: {{ ref('bronze__chunks') }}
+-- depends_on: {{ ref('bronze__FR_chunks') }}
 {{ config (
     materialized = "incremental",
-    unique_key = "block_number",
+    unique_key = "chunk_hash",
     cluster_by = "ROUND(block_number, -3)",
     merge_exclude_columns = ["inserted_timestamp"],
-    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(block_number)",
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(chunk_hash)",
     tags = ['streamline_complete']
 ) }}
 
 SELECT
     VALUE :BLOCK_NUMBER :: INT AS block_number,
-    DATA :header :hash :: STRING AS block_hash,
-    DATA :header :chunks_included :: INT AS chunks_expected,
+    VALUE :CHUNK_HASH :: STRING AS chunk_hash,
+    DATA :header: shard_id :: INT AS shard_id,
     ARRAY_SIZE(
-        DATA :chunks :: ARRAY
-    ) AS chunks_included,
+        DATA :receipts :: ARRAY
+    ) AS receipts_count,
+    ARRAY_SIZE(
+        DATA :transactions :: ARRAY
+    ) AS transactions_count,
     {{ target.database }}.streamline.udf_extract_hash_array(
-        DATA :chunks :: ARRAY,
-        'chunk_hash'
-    ) AS chunk_ids,
-    -- array_size(chunk_ids) = chunks_included as array_is_complete ?
+        DATA :receipts :: ARRAY,
+        'receipt_id'
+    ) AS receipt_ids,
+    {{ target.database }}.streamline.udf_extract_hash_array(
+        DATA :transactions :: ARRAY,
+        'hash'
+    ) AS transaction_ids,
     partition_key,
     _inserted_timestamp,
-    DATA :header :hash :: STRING AS complete_blocks_id,
+    DATA :header :chunk_hash :: STRING AS complete_chunks_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
 FROM
 
 {% if is_incremental() %}
-{{ ref('bronze__blocks') }}
+{{ ref('bronze__chunks') }}
 WHERE
     _inserted_timestamp >= COALESCE(
         (
@@ -43,11 +49,11 @@ WHERE
     )
     AND DATA IS NOT NULL
 {% else %}
-    {{ ref('bronze__FR_blocks') }}
+    {{ ref('bronze__FR_chunks') }}
 WHERE
     DATA IS NOT NULL
 {% endif %}
 
-qualify(ROW_NUMBER() over (PARTITION BY block_number
+qualify(ROW_NUMBER() over (PARTITION BY chunk_hash
 ORDER BY
     _inserted_timestamp DESC)) = 1
