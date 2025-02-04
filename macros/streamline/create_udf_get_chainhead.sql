@@ -1,3 +1,5 @@
+-- todo, what if we receive a bad response?
+-- ask for backend deployment?
 {% macro create_UDF_GET_CHAINHEAD() %}
     {% set sql %}
         CREATE
