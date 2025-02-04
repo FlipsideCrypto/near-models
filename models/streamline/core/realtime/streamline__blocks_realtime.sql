@@ -4,7 +4,7 @@
         func = '{{this.schema}}.udf_bulk_rest_api_v2',
         target = "{{this.schema}}.{{this.identifier}}",
         params = {
-            "external_table": "blocks",
+            "external_table": "blocks_v2",
             "sql_limit": "100",
             "producer_batch_size": "100",
             "worker_batch_size": "100",
@@ -31,6 +31,6 @@ SELECT
                 'block_id',  block_number
             )
         ),
-        'Vault/prod/near/quicknode/mainneet'
+        'Vault/prod/near/quicknode/mainnet'
     ) AS request
 
