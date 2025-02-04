@@ -1,3 +1,4 @@
+-- TODO - v2 naming?
 {{ config (
     materialized = 'view',
     tags = ['streamline_helper']

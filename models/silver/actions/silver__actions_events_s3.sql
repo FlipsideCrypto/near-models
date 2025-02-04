@@ -1,3 +1,5 @@
+-- TODO slated for deprecation and drop
+-- Note - must migrate curated to new ez_actions first
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'merge',

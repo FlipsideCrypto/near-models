@@ -5,10 +5,11 @@
         target = "{{this.schema}}.{{this.identifier}}",
         params = {
             "external_table": "blocks_v2",
-            "sql_limit": "100",
-            "producer_batch_size": "100",
-            "worker_batch_size": "100",
-            "sql_source": "{{this.identifier}}"
+            "sql_limit": "3000",
+            "producer_batch_size": "3000",
+            "worker_batch_size": "3000",
+            "sql_source": "{{this.identifier}}",
+            "order_by_column": "block_number DESC"
         }
     ),
     tags = ['streamline_realtime']
@@ -53,7 +54,7 @@ tbl AS (
             -4,
             SYSDATE()
         )
-        -- AND {} IS NOT NULL -- TODO, determine identifier for bad response
+        AND block_hash IS NOT NULL
 )
 SELECT
     block_number,
@@ -75,5 +76,3 @@ SELECT
         'Vault/prod/near/quicknode/mainnet'
     ) AS request
 FROM tbl
-ORDER BY 
-    block_number DESC

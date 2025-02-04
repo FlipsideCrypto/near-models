@@ -1,3 +1,5 @@
+-- TODO slated for deprecation and drop
+
 {{ config(
     materialized = 'incremental',
     incremental_stratege = 'merge',

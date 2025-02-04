@@ -1,3 +1,5 @@
+-- TODO slated for deprecation and drop
+
 {{ config(
     materialized = 'table',
     unique_key = 'atlas_nft_detailed_id',
