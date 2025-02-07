@@ -8,8 +8,8 @@
         params = {
             "external_table": "chunks_v2",
             "sql_limit": "210000",
-            "producer_batch_size": "70000",
-            "worker_batch_size": "35000",
+            "producer_batch_size": "42000",
+            "worker_batch_size": "21000",
             "sql_source": "{{this.identifier}}",
             "order_by_column": "block_id DESC"
         }

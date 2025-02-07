@@ -7,8 +7,8 @@
         target = "{{this.schema}}.{{this.identifier}}",
         params = {
             "external_table": "blocks_v2",
-            "sql_limit": "490000",
-            "producer_batch_size": "70000",
+            "sql_limit": "70000",
+            "producer_batch_size": "35000",
             "worker_batch_size": "35000",
             "sql_source": "{{this.identifier}}",
             "order_by_column": "block_id DESC"
