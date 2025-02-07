@@ -12,7 +12,7 @@
 WITH bronze_chunks AS (
 
     SELECT
-        VALUE :BLOCK_NUMBER :: INT AS block_number,
+        VALUE :BLOCK_ID :: INT AS block_id,
         DATA :header :shard_id :: INT AS shard_id,
         DATA :header :chunk_hash :: STRING AS chunk_hash,
         partition_key,
@@ -36,7 +36,7 @@ WHERE
         {% endif %}
     )
 SELECT
-    block_number,
+    block_id,
     shard_id,
     chunk_hash,
     partition_key,

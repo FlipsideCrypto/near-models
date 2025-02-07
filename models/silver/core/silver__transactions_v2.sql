@@ -12,7 +12,7 @@
 WITH bronze_transactions AS (
 
     SELECT
-        VALUE :BLOCK_NUMBER :: INT AS block_number,
+        VALUE :BLOCK_ID :: INT AS block_id,
         DATA :transaction :hash :: STRING AS tx_hash,
         DATA :transaction :signer_id :: STRING AS signer_id,
         partition_key,
@@ -36,7 +36,7 @@ WHERE
         {% endif %}
     )
 SELECT
-    block_number,
+    block_id,
     tx_hash,
     signer_id,
     partition_key,

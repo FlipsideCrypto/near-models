@@ -3,14 +3,14 @@
 {{ config (
     materialized = "incremental",
     unique_key = "chunk_hash",
-    cluster_by = "ROUND(block_number, -3)",
+    cluster_by = "ROUND(block_id, -3)",
     merge_exclude_columns = ["inserted_timestamp"],
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(chunk_hash)",
     tags = ['streamline_complete']
 ) }}
 
 SELECT
-    VALUE :BLOCK_NUMBER :: INT AS block_number,
+    VALUE :BLOCK_ID :: INT AS block_id,
     VALUE :CHUNK_HASH :: STRING AS chunk_hash,
     DATA :header: shard_id :: INT AS shard_id,
     ARRAY_SIZE(
@@ -19,10 +19,6 @@ SELECT
     ARRAY_SIZE(
         DATA :transactions :: ARRAY
     ) AS transactions_count,
-    {{ target.database }}.streamline.udf_extract_hash_array(
-        DATA :receipts :: ARRAY,
-        'receipt_id'
-    ) AS receipt_ids,
     {{ target.database }}.streamline.udf_extract_hash_array(
         DATA :transactions :: ARRAY,
         'hash'

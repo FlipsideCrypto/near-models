@@ -3,14 +3,14 @@
 {{ config (
     materialized = "incremental",
     unique_key = "tx_hash",
-    cluster_by = "ROUND(block_number, -3)",
+    cluster_by = "ROUND(block_id, -3)",
     merge_exclude_columns = ["inserted_timestamp"],
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(tx_hash)",
     tags = ['streamline_complete']
 ) }}
 
 SELECT
-    VALUE :BLOCK_NUMBER :: INT AS block_number,
+    VALUE :BLOCK_ID :: INT AS block_id,
     VALUE :TX_HASH :: STRING AS tx_hash,
     DATA :transaction :signer_id :: STRING AS signer_id,
     partition_key,

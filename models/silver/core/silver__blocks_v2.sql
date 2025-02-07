@@ -12,7 +12,7 @@
 WITH bronze_blocks AS (
 
     SELECT
-        VALUE :BLOCK_NUMBER :: INT AS block_number,
+        VALUE :BLOCK_ID :: INT AS block_id,
         DATA :header :hash :: STRING AS block_hash,
         DATA :header :timestamp :: timestamp_ntz AS block_timestamp,
         partition_key,
@@ -36,7 +36,7 @@ WHERE
         {% endif %}
     )
 SELECT
-    block_number,
+    block_id,
     block_hash,
     block_timestamp,
     partition_key,

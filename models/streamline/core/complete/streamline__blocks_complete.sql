@@ -2,15 +2,15 @@
 -- depends_on: {{ ref('bronze__FR_blocks') }}
 {{ config (
     materialized = "incremental",
-    unique_key = "block_number",
-    cluster_by = "ROUND(block_number, -3)",
+    unique_key = "block_id",
+    cluster_by = "ROUND(block_id, -3)",
     merge_exclude_columns = ["inserted_timestamp"],
-    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(block_number)",
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(block_id)",
     tags = ['streamline_complete']
 ) }}
 
 SELECT
-    VALUE :BLOCK_NUMBER :: INT AS block_number,
+    VALUE :BLOCK_ID :: INT AS block_id,
     DATA :header :hash :: STRING AS block_hash,
     DATA :header :chunks_included :: INT AS chunks_expected,
     ARRAY_SIZE(
@@ -48,6 +48,6 @@ WHERE
     DATA IS NOT NULL
 {% endif %}
 
-qualify(ROW_NUMBER() over (PARTITION BY block_number
+qualify(ROW_NUMBER() over (PARTITION BY block_id
 ORDER BY
     _inserted_timestamp DESC)) = 1

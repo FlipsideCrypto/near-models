@@ -7,11 +7,11 @@
         target = "{{this.schema}}.{{this.identifier}}",
         params = {
             "external_table": "transactions_v2",
-            "sql_limit": "100000",
-            "producer_batch_size": "10000",
-            "worker_batch_size": "10000",
+            "sql_limit": "1500000",
+            "producer_batch_size": "500000",
+            "worker_batch_size": "250000",
             "sql_source": "{{this.identifier}}",
-            "order_by_column": "block_number DESC"
+            "order_by_column": "block_id DESC"
         }
     ),
     tags = ['streamline_realtime']
@@ -23,25 +23,33 @@
 -- TODO reminder that we are waiting for FINAL status so retry on some will be required
 
 
-WITH last_3_days AS (
+WITH 
+{% if var('STREAMLINE_PARTIAL_BACKFILL', false) %}
+last_3_days AS (
+    SELECT
+        120960000 as block_id
+),
+{% else %}
+last_3_days AS (
 
     SELECT
-        ZEROIFNULL(block_number) AS block_number
+        ZEROIFNULL(block_id) AS block_id
     FROM
         {{ ref("_block_lookback") }}
 ),
+{% endif %}
 tbl AS (
     SELECT
-        block_number,
+        block_id,
         tx_hash,
         signer_id
     FROM
         {{ ref('streamline__transactions') }}
     WHERE
         (
-            block_number >= (
+            block_id >= (
                 SELECT
-                    block_number
+                    block_id
                 FROM
                     last_3_days
             )
@@ -50,15 +58,15 @@ tbl AS (
         AND signer_id IS NOT NULL
     EXCEPT
     SELECT
-        block_number,
+        block_id,
         tx_hash,
         signer_id
     FROM
         {{ ref('streamline__transactions_complete') }}
     WHERE
-        block_number >= (
+        block_id >= (
             SELECT
-                block_number
+                block_id
             FROM
                 last_3_days
         )
@@ -71,7 +79,7 @@ tbl AS (
         AND signer_id IS NOT NULL
 )
 SELECT
-    block_number,
+    block_id,
     tx_hash,
     DATE_PART('EPOCH', SYSDATE()) :: INTEGER AS partition_key,
     {{ target.database }}.live.udf_api(
@@ -87,7 +95,7 @@ SELECT
             'method',
             'EXPERIMENTAL_tx_status',
             'id',
-            'Flipside/getTransactionWithStatus/0.1',
+            'Flipside/getTransactionWithStatus/' || tx_hash :: STRING,
             'params',
             OBJECT_CONSTRUCT(
                 'tx_hash',

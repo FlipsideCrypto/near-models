@@ -3,7 +3,7 @@
 ) }}
 
 SELECT
-    MIN(block_id) AS block_number
+    MIN(block_id) AS block_id
 FROM
     {{ ref("core__fact_blocks") }}
 WHERE

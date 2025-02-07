@@ -1,16 +1,16 @@
 {{ config (
     materialized = "incremental",
     unique_key = "tx_hash",
-    cluster_by = "ROUND(block_number, -3)",
+    cluster_by = "ROUND(block_id, -3)",
     merge_exclude_columns = ["inserted_timestamp"],
-    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(tx_hash, block_number)",
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(tx_hash, block_id)",
     tags = ['streamline_helper']
 ) }}
 
 WITH chunks_complete AS (
 
     SELECT
-        block_number,
+        block_id,
         chunk_hash,
         shard_id,
         transaction_ids,
@@ -31,7 +31,7 @@ WHERE
 ),
 flatten_tx_ids AS (
     SELECT
-        block_number,
+        block_id,
         chunk_hash,
         shard_id,
         VALUE :: STRING AS tx_hash,
@@ -45,7 +45,7 @@ flatten_tx_ids AS (
         )
 )
 SELECT
-    block_number,
+    block_id,
     chunk_hash,
     shard_id,
     tx_hash,
