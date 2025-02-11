@@ -90,6 +90,13 @@ vars:
         ROLES:
           - AWS_LAMBDA_NEAR_API
           - INTERNAL_DEV
+    prod:
+        API_INTEGRATION: AWS_NEAR_API_PROD
+        EXTERNAL_FUNCTION_URI: todo
+        API_AWS_ROLE_ARN: todo
+        ROLES:
+          - AWS_LAMBDA_NEAR_API
+          - DBT_CLOUD_NEAR
 
 dispatch:
   - macro_namespace: dbt

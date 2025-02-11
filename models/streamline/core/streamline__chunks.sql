@@ -1,3 +1,4 @@
+-- depends_on: {{ ref('streamline__blocks_complete') }}
 {{ config (
     materialized = "incremental",
     unique_key = "chunk_hash",

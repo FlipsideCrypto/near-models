@@ -11,7 +11,7 @@
             "producer_batch_size": "100000",
             "worker_batch_size": "25000",
             "sql_source": "{{this.identifier}}",
-            "order_by_column": "block_id DESC"
+            "order_by_column": "block_id ASC"
         }
     ),
     tags = ['streamline_realtime']
@@ -27,7 +27,7 @@ WITH
 {% if var('STREAMLINE_PARTIAL_BACKFILL', false) %}
 last_3_days AS (
     SELECT
-        120960000 as block_id
+        120939872 as block_id
 ),
 {% else %}
 last_3_days AS (

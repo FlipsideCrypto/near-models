@@ -21,10 +21,11 @@
 
 WITH 
 {% if var('STREAMLINE_PARTIAL_BACKFILL', false) %}
-last_3_days AS (
+tbl AS (
     SELECT
-        120960000 as block_id
-),
+        distinct block_id
+    FROM near.tests_full.final_gaps_tx
+)
 {% else %}
 last_3_days AS (
 
@@ -33,7 +34,6 @@ last_3_days AS (
     FROM
         {{ ref("_block_lookback") }}
 ),
-{% endif %}
 tbl AS (
     SELECT
         block_id
@@ -70,6 +70,7 @@ tbl AS (
         )
         AND block_hash IS NOT NULL
 )
+{% endif %}
 SELECT
     block_id,
     DATE_PART('EPOCH', SYSDATE()) :: INTEGER AS partition_key,
