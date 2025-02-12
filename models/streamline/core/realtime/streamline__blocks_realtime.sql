@@ -88,7 +88,7 @@ SELECT
             'method',
             'block',
             'id',
-            'Flipside/getBlock/' || block_id :: STRING,
+            'Flipside/getBlock/' || partition_key || '/' || block_id :: STRING,
             'params',
             OBJECT_CONSTRUCT(
                 'block_id',

@@ -98,7 +98,7 @@ SELECT
             'method',
             'EXPERIMENTAL_tx_status',
             'id',
-            'Flipside/getTransactionWithStatus/' || tx_hash :: STRING,
+            'Flipside/getTransactionWithStatus/' || partition_key || '/' || tx_hash :: STRING,
             'params',
             OBJECT_CONSTRUCT(
                 'tx_hash',

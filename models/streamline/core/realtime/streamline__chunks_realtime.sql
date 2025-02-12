@@ -89,7 +89,7 @@ SELECT
             'method',
             'chunk',
             'id',
-            'Flipside/getChunk/' || chunk_hash :: STRING,
+            'Flipside/getChunk/' || partition_key || '/' || chunk_hash :: STRING,
             'params',
             OBJECT_CONSTRUCT(
                 'chunk_id',
