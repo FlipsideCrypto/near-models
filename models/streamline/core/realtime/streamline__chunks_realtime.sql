@@ -1,5 +1,8 @@
 -- depends_on: {{ ref('bronze__chunks') }}
 -- depends_on: {{ ref('bronze__FR_chunks') }}
+-- depends on: {{ ref('streamline__chunks') }}
+-- depends_on: {{ ref('streamline__chunks_complete') }}
+
 {{ config (
     materialized = "view",
     post_hook = fsc_utils.if_data_call_function_v2(

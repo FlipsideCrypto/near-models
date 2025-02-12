@@ -1,5 +1,8 @@
 -- depends_on: {{ ref('bronze__transactions') }}
 -- depends_on: {{ ref('bronze__FR_transactions') }}
+-- depends on: {{ ref('streamline__transactions') }}
+-- depends on: {{ ref('streamline__transactions_complete') }}
+
 {{ config (
     materialized = "view",
     post_hook = fsc_utils.if_data_call_function_v2(

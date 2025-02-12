@@ -1,5 +1,6 @@
 -- depends_on: {{ ref('bronze__blocks') }}
 -- depends_on: {{ ref('bronze__FR_blocks') }}
+-- depends_on: {{ ref('streamline__blocks_complete') }}
 {{ config (
     materialized = "view",
     post_hook = fsc_utils.if_data_call_function_v2(
