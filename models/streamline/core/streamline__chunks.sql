@@ -12,6 +12,7 @@ WITH blocks_complete AS (
 
     SELECT
         block_id,
+        block_timestamp,
         block_hash,
         chunk_ids,
         _inserted_timestamp
@@ -31,6 +32,7 @@ WHERE
 flatten_chunk_ids AS (
     SELECT
         block_id,
+        block_timestamp,
         block_hash,
         VALUE :: STRING AS chunk_hash,
         INDEX AS chunk_index,
@@ -43,6 +45,7 @@ flatten_chunk_ids AS (
 )
 SELECT
     block_id,
+    block_timestamp,
     block_hash,
     chunk_hash,
     chunk_index,

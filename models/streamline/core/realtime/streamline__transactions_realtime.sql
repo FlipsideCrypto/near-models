@@ -20,12 +20,6 @@
     tags = ['streamline_realtime']
 ) }}
 
--- Note, anywhere from 100k to >500k transactions per hour
--- batch sizing and scheduling is WIP
-
--- TODO reminder that we are waiting for FINAL status so retry on some will be required
-
-
 WITH 
 {% if var('STREAMLINE_PARTIAL_BACKFILL', false) %}
 last_3_days AS (
@@ -44,6 +38,7 @@ last_3_days AS (
 tbl AS (
     SELECT
         block_id,
+        block_timestamp,
         tx_hash,
         signer_id
     FROM
@@ -62,6 +57,7 @@ tbl AS (
     EXCEPT
     SELECT
         block_id,
+        block_timestamp,
         tx_hash,
         signer_id
     FROM
@@ -83,6 +79,7 @@ tbl AS (
 )
 SELECT
     block_id,
+    DATE_PART('EPOCH', block_timestamp) :: INTEGER AS block_timestamp,
     FLOOR(block_id, -3) AS partition_key,
     tx_hash,
     DATE_PART('EPOCH', SYSDATE()) :: INTEGER AS request_timestamp,

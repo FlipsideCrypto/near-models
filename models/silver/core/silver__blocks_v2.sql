@@ -3,6 +3,7 @@
 {{ config (
     materialized = "incremental",
     incremental_strategy = 'merge',
+    incremental_predicates = ["DBT_INTERNAL_DEST.block_timestamp::DATE >= (select min(block_timestamp::DATE-7 ) from " ~ generate_tmp_view_name(this) ~ ")"],
     unique_key = "block_hash",
     cluster_by = ['modified_timestamp::DATE','partition_key'],
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(block_hash)",

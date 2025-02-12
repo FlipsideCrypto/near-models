@@ -19,8 +19,7 @@
     ),
     tags = ['streamline_realtime']
 ) }}
--- Note, roughly 3,000 blocks per hour (~70k/day) * 6 chunks per block (for now)
--- batch sizing is WIP
+
 WITH
 {% if var('STREAMLINE_PARTIAL_BACKFILL', false) %}
 last_3_days AS (
@@ -39,6 +38,7 @@ last_3_days AS (
 tbl AS (
     SELECT
         block_id,
+        block_timestamp,
         chunk_hash
     FROM
         {{ ref('streamline__chunks') }}
@@ -55,6 +55,7 @@ tbl AS (
     EXCEPT
     SELECT
         block_id,
+        block_timestamp,
         chunk_hash
     FROM
         {{ ref('streamline__chunks_complete') }}
@@ -74,6 +75,7 @@ tbl AS (
 )
 SELECT
     block_id,
+    DATE_PART('EPOCH', block_timestamp) :: INTEGER AS block_timestamp,
     FLOOR(block_id, -3) AS partition_key,
     chunk_hash,
     DATE_PART('EPOCH', SYSDATE()) :: INTEGER AS request_timestamp,

@@ -11,6 +11,7 @@
 
 SELECT
     VALUE :BLOCK_ID :: INT AS block_id,
+    DATA :header :timestamp:: timestamp_ntz AS block_timestamp,
     DATA :header :hash :: STRING AS block_hash,
     DATA :header :prev_height :: INT AS prev_height,
     DATA :header :prev_hash :: STRING AS prev_hash,

@@ -17,8 +17,6 @@
     ),
     tags = ['streamline_realtime']
 ) }}
--- Note, roughly 3,000 blocks per hour (~70k/day).
--- batch sizing is WIP
 
 WITH 
 {% if var('STREAMLINE_PARTIAL_BACKFILL', false) %}

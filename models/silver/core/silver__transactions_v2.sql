@@ -3,6 +3,7 @@
 {{ config (
     materialized = "incremental",
     incremental_strategy = 'merge',
+    incremental_predicates = ["DBT_INTERNAL_DEST.block_timestamp::DATE >= (select min(block_timestamp::DATE-7 ) from " ~ generate_tmp_view_name(this) ~ ")"],
     unique_key = "tx_hash",
     cluster_by = ['modified_timestamp::DATE','partition_key'],
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(tx_hash)",
@@ -13,6 +14,7 @@ WITH bronze_transactions AS (
 
     SELECT
         VALUE :BLOCK_ID :: INT AS block_id,
+        VALUE :BLOCK_TIMESTAMP :: timestamp_ntz AS block_timestamp,
         DATA :transaction :hash :: STRING AS tx_hash,
         DATA :transaction :signer_id :: STRING AS signer_id,
         partition_key,
@@ -37,6 +39,7 @@ WHERE
     )
 SELECT
     block_id,
+    block_timestamp,
     tx_hash,
     signer_id,
     partition_key,

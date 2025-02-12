@@ -11,6 +11,7 @@
 
 SELECT
     VALUE :BLOCK_ID :: INT AS block_id,
+    VALUE :BLOCK_TIMESTAMP :: timestamp_ntz AS block_timestamp,
     VALUE :TX_HASH :: STRING AS tx_hash,
     DATA :transaction :signer_id :: STRING AS signer_id,
     partition_key,

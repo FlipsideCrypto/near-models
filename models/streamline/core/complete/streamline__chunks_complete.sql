@@ -11,6 +11,7 @@
 
 SELECT
     VALUE :BLOCK_ID :: INT AS block_id,
+    VALUE :BLOCK_TIMESTAMP :: timestamp_ntz AS block_timestamp,
     VALUE :CHUNK_HASH :: STRING AS chunk_hash,
     DATA :header: shard_id :: INT AS shard_id,
     ARRAY_SIZE(
