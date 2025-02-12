@@ -12,6 +12,8 @@
 SELECT
     VALUE :BLOCK_ID :: INT AS block_id,
     DATA :header :hash :: STRING AS block_hash,
+    DATA :header :prev_height :: INT AS prev_height,
+    DATA :header :prev_hash :: STRING AS prev_hash,
     DATA :header :chunks_included :: INT AS chunks_expected,
     ARRAY_SIZE(
         DATA :chunks :: ARRAY
@@ -20,7 +22,6 @@ SELECT
         DATA :chunks :: ARRAY,
         'chunk_hash'
     ) AS chunk_ids,
-    -- array_size(chunk_ids) = chunks_included as array_is_complete ?
     partition_key,
     _inserted_timestamp,
     DATA :header :hash :: STRING AS complete_blocks_id,
@@ -41,11 +42,11 @@ WHERE
         ),
         '1900-01-01' :: timestamp_ntz
     )
-    AND DATA IS NOT NULL
+    AND typeof(DATA) != 'NULL_VALUE'
 {% else %}
     {{ ref('bronze__FR_blocks') }}
 WHERE
-    DATA IS NOT NULL
+    typeof(DATA) != 'NULL_VALUE'
 {% endif %}
 
 qualify(ROW_NUMBER() over (PARTITION BY block_id

@@ -74,8 +74,9 @@ tbl AS (
 )
 SELECT
     block_id,
+    FLOOR(block_id, -3) AS partition_key,
     chunk_hash,
-    DATE_PART('EPOCH', SYSDATE()) :: INTEGER AS partition_key,
+    DATE_PART('EPOCH', SYSDATE()) :: INTEGER AS request_timestamp,
     {{ target.database }}.live.udf_api(
         'POST',
         '{Service}',
@@ -89,7 +90,7 @@ SELECT
             'method',
             'chunk',
             'id',
-            'Flipside/getChunk/' || partition_key || '/' || chunk_hash :: STRING,
+            'Flipside/getChunk/' || request_timestamp || '/' || chunk_hash :: STRING,
             'params',
             OBJECT_CONSTRUCT(
                 'chunk_id',

@@ -51,8 +51,6 @@ tbl AS (
         )
         AND block_id IS NOT NULL
     EXCEPT
-        -- TODO there may be skipped block heights! use hash / parent hash instead
-        -- or will a skipped block height return a unique response that i can log
     SELECT
         block_id
     FROM
@@ -74,7 +72,8 @@ tbl AS (
 {% endif %}
 SELECT
     block_id,
-    DATE_PART('EPOCH', SYSDATE()) :: INTEGER AS partition_key,
+    FLOOR(block_id, -3) AS partition_key,
+    DATE_PART('EPOCH', SYSDATE()) :: INTEGER AS request_timestamp,
     {{ target.database }}.live.udf_api(
         'POST',
         '{Service}',
@@ -88,7 +87,7 @@ SELECT
             'method',
             'block',
             'id',
-            'Flipside/getBlock/' || partition_key || '/' || block_id :: STRING,
+            'Flipside/getBlock/' || request_timestamp || '/' || block_id :: STRING,
             'params',
             OBJECT_CONSTRUCT(
                 'block_id',

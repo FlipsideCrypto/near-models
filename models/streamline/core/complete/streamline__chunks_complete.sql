@@ -47,11 +47,11 @@ WHERE
         ),
         '1900-01-01' :: timestamp_ntz
     )
-    AND DATA IS NOT NULL
+    AND typeof(DATA) != 'NULL_VALUE'
 {% else %}
     {{ ref('bronze__FR_chunks') }}
 WHERE
-    DATA IS NOT NULL
+    typeof(DATA) != 'NULL_VALUE'
 {% endif %}
 
 qualify(ROW_NUMBER() over (PARTITION BY chunk_hash

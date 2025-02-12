@@ -83,8 +83,9 @@ tbl AS (
 )
 SELECT
     block_id,
+    FLOOR(block_id, -3) AS partition_key,
     tx_hash,
-    DATE_PART('EPOCH', SYSDATE()) :: INTEGER AS partition_key,
+    DATE_PART('EPOCH', SYSDATE()) :: INTEGER AS request_timestamp,
     {{ target.database }}.live.udf_api(
         'POST',
         '{Service}',
@@ -98,7 +99,7 @@ SELECT
             'method',
             'EXPERIMENTAL_tx_status',
             'id',
-            'Flipside/getTransactionWithStatus/' || partition_key || '/' || tx_hash :: STRING,
+            'Flipside/getTransactionWithStatus/' || request_timestamp || '/' || tx_hash :: STRING,
             'params',
             OBJECT_CONSTRUCT(
                 'tx_hash',
