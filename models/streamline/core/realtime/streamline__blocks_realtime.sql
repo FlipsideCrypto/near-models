@@ -10,7 +10,7 @@
             "external_table": "blocks_v2",
             "sql_limit": "10000",
             "producer_batch_size": "5000",
-            "worker_batch_size": "3500",
+            "worker_batch_size": "2500",
             "sql_source": "{{this.identifier}}",
             "order_by_column": "block_id DESC"
         }
