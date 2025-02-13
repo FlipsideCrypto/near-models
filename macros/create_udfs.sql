@@ -13,10 +13,8 @@
             {{ create_UDTF_CALL_CONTRACT_FUNCTION_BY_HEIGHT() }}
 
             -- Required for Streamline Pipeline
-            {{ create_UDF_GET_CHAINHEAD() }}
             {{ create_udf_extract_hash_array() }}
 
-            -- Todo - add call to fsc_utils create_udfs and create_streamline_udfs in here ?
         {% endset %}
 
         {% do run_query(sql) %}

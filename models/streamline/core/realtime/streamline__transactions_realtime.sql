@@ -10,11 +10,11 @@
         target = "{{this.schema}}.{{this.identifier}}",
         params = {
             "external_table": "transactions_v2",
-            "sql_limit": "400000",
-            "producer_batch_size": "100000",
+            "sql_limit": "300000",
+            "producer_batch_size": "75000",
             "worker_batch_size": "25000",
             "sql_source": "{{this.identifier}}",
-            "order_by_column": "block_id ASC"
+            "order_by_column": "block_id DESC"
         }
     ),
     tags = ['streamline_realtime']

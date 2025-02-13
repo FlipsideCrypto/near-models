@@ -39,7 +39,7 @@ flatten_tx_ids AS (
         shard_id,
         VALUE :: STRING AS tx_hash,
         INDEX AS tx_index,
-        signer_ids [INDEX] :: STRING AS signer_id, --TODO what if there is an error and the txs and signer arrays do not match on index?
+        signer_ids [INDEX] :: STRING AS signer_id,
         _inserted_timestamp
     FROM
         chunks_complete,

@@ -14,7 +14,7 @@
 SELECT
     MIN(DATE_TRUNC('hour', block_timestamp)) block_timestamp_hour
 FROM
-    {{ ref('silver__streamline_blocks') }}
+    {{ ref('silver__streamline_blocks') }} -- Streamline Migration TODO - change this to fact blocks once table
 WHERE
     _inserted_timestamp >= (
         SELECT

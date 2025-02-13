@@ -16,7 +16,7 @@ WITH block_chunks_included AS (
         _partition_by_block_number,
         _inserted_timestamp
     FROM
-        {{ ref('silver__streamline_blocks') }}
+        {{ ref('silver__streamline_blocks') }} -- Streamline Migration TODO - change this to fact blocks once table
     WHERE
         block_timestamp <= DATEADD('hour', -12, SYSDATE())
 {% if is_incremental() %}
@@ -29,7 +29,7 @@ AND (
                 SELECT
                     MIN(block_id) AS block_id
                 FROM
-                    {{ ref('silver__streamline_blocks') }}
+                    {{ ref('silver__streamline_blocks') }} -- Streamline Migration TODO - change this to fact blocks once table
                 WHERE
                     block_timestamp BETWEEN DATEADD('hour', -96, SYSDATE())
                     AND DATEADD('hour', -95, SYSDATE())
@@ -76,7 +76,7 @@ chunks_per_block AS (
             DISTINCT chunk :header :chunk_hash :: STRING
         ) AS chunk_ct
     FROM
-        {{ ref('silver__streamline_shards') }}
+        {{ ref('silver__streamline_shards') }} -- Streamline Migration TODO - change this to fact shards once table
     WHERE 
         block_id >= (SELECT min_block FROM summary_stats) 
     AND

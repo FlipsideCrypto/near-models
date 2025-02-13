@@ -30,11 +30,11 @@ WHERE
             COALESCE(MAX(_inserted_timestamp), '1900-01-01' :: TIMESTAMP) AS _inserted_timestamp
         FROM
             {{ this }})
-            AND DATA IS NOT NULL
+            AND typeof(DATA) != 'NULL_VALUE'
         {% else %}
             {{ ref('bronze__FR_chunks') }}
         WHERE
-            DATA IS NOT NULL
+            typeof(DATA) != 'NULL_VALUE'
         {% endif %}
     )
 SELECT

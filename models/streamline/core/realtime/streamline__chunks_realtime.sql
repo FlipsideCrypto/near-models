@@ -10,11 +10,11 @@
         target = "{{this.schema}}.{{this.identifier}}",
         params = {
             "external_table": "chunks_v2",
-            "sql_limit": "210000",
-            "producer_batch_size": "42000",
-            "worker_batch_size": "21000",
+            "sql_limit": "60000",
+            "producer_batch_size": "30000",
+            "worker_batch_size": "7500",
             "sql_source": "{{this.identifier}}",
-            "order_by_column": "block_id ASC"
+            "order_by_column": "block_id DESC"
         }
     ),
     tags = ['streamline_realtime']
