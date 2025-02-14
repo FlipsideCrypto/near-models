@@ -1,3 +1,5 @@
+-- TODO slated for deprecation and drop
+
 {# Deprecated 9/25/2023 #}
 {% macro create_get_nearblocks_fts() %}
   {% set create_table %}

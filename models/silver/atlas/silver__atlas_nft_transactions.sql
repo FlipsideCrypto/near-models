@@ -1,3 +1,5 @@
+-- TODO slated for deprecation and drop
+
 {{ config(
     materialized = "incremental",
     cluster_by = ["day"],

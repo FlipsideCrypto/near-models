@@ -14,7 +14,7 @@
 SELECT
     MIN(DATE_TRUNC('hour', block_timestamp)) block_timestamp_hour
 FROM
-    {{ ref('silver__streamline_transactions_final') }}
+    {{ ref('silver__streamline_transactions_final') }} -- Streamline Migration TODO - change this to fact transactions once table
 WHERE
     _inserted_timestamp >= (
         SELECT
@@ -58,7 +58,7 @@ SELECT
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
 FROM
-    {{ ref('silver__streamline_transactions_final') }}
+    {{ ref('silver__streamline_transactions_final') }}  -- Streamline Migration TODO - change this to fact transactions once table
 WHERE
     block_timestamp_hour < DATE_TRUNC(
         'hour',

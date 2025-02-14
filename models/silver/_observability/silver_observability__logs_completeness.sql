@@ -14,7 +14,7 @@ WITH summary_stats AS (
         MAX(block_timestamp) AS max_block_timestamp,
         COUNT(1) AS blocks_tested
     FROM
-        {{ ref('silver__streamline_blocks') }}
+        {{ ref('silver__streamline_blocks') }} -- Streamline Migration TODO - change this to fact blocks once table
     WHERE
         block_timestamp <= DATEADD('hour', -12, SYSDATE())
 
@@ -28,7 +28,7 @@ AND (
                 SELECT
                     MIN(block_id) AS block_id
                 FROM
-                    {{ ref('silver__streamline_blocks') }}
+                    {{ ref('silver__streamline_blocks') }} -- Streamline Migration TODO - change this to fact blocks once table
                 WHERE
                     block_timestamp BETWEEN DATEADD('hour', -96, SYSDATE())
                     AND DATEADD('hour', -95, SYSDATE())
@@ -82,7 +82,7 @@ broken_blocks AS (
     SELECT
         DISTINCT block_id as block_id
     FROM
-        {{ ref('silver__streamline_receipts_final') }}
+        {{ ref('silver__streamline_receipts_final') }} -- Streamline Migration TODO - change this to fact receipts once table
         r
         LEFT JOIN {{ ref('silver__logs_s3') }}
         l USING (
@@ -120,8 +120,3 @@ FROM
     summary_stats
     JOIN impacted_blocks
     ON 1 = 1
-
-
-
-
-        

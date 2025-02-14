@@ -9,7 +9,8 @@ r_transactions AS (
     SELECT
         DISTINCT tx_hash,
         block_id,
-        _signer_id AS signer_id
+        _signer_id AS signer_id,
+        shard_id
     FROM
         {{ ref('silver__streamline_transactions') }}
 
@@ -42,7 +43,8 @@ f_transactions AS (
 SELECT
     r_transactions.tx_hash AS tx_hash,
     r_transactions.block_id,
-    r_transactions.signer_id
+    r_transactions.signer_id,
+    r_transactions.shard_id
 FROM
    r_transactions
 LEFT JOIN

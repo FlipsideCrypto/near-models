@@ -16,7 +16,7 @@ WITH blocks_joined AS (
         b.block_timestamp AS next_block_timestamp,
         b.prev_hash AS next_prev_hash
     FROM
-        {{ ref('silver__streamline_blocks') }} A
+        {{ ref('silver__streamline_blocks') }} A -- Streamline Migration TODO - change this to fact blocks once table
         LEFT JOIN {{ ref('silver__streamline_blocks') }}
         b
         ON A.block_hash = b.prev_hash
@@ -34,7 +34,7 @@ AND (
                 SELECT
                     MIN(block_id) AS block_id
                 FROM
-                    {{ ref('silver__streamline_blocks') }}
+                    {{ ref('silver__streamline_blocks') }} -- Streamline Migration TODO - change this to fact blocks once table
                 WHERE
                     block_timestamp BETWEEN DATEADD('hour', -96, SYSDATE())
                     AND DATEADD('hour', -95, SYSDATE())

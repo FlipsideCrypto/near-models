@@ -1,3 +1,5 @@
+-- TODO slated for deprecation and drop
+
 {{ config(
     materialized = 'incremental',
     unique_key = 'atlas_account_created_id',

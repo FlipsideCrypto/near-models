@@ -33,3 +33,12 @@ sources:
     database: hevo
     tables:
       - name: flipsidecrypto_near_ft_balances_daily
+
+  - name: bronze_streamline
+    database: streamline
+    schema: |
+      {{ "NEAR_DEV" if var("STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES", False) else "NEAR" }}
+    tables:
+      - name: blocks_v2
+      - name: chunks_v2
+      - name: transactions_v2

@@ -1,3 +1,5 @@
+-- TODO slated for deprecation and drop
+
 {% macro create_PROCEDURE_GET_CHAINHEAD() %}
     {% set sql %}
         CREATE OR REPLACE PROCEDURE {{ target.database }}.STREAMLINE.GET_CHAINHEAD(
