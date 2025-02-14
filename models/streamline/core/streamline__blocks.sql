@@ -1,3 +1,4 @@
+-- depends on: {{ ref('streamline__get_chainhead') }}
 {{ config(
     materialized = "view",
     tags = ['streamline_realtime', 'streamline_history', 'streamline_helper']
