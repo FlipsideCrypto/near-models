@@ -91,9 +91,9 @@ vars:
           - AWS_LAMBDA_NEAR_API
           - INTERNAL_DEV
     prod:
-        API_INTEGRATION: AWS_NEAR_API_PROD
-        EXTERNAL_FUNCTION_URI: todo
-        API_AWS_ROLE_ARN: todo
+        API_INTEGRATION: AWS_NEAR_API_PROD_V2
+        EXTERNAL_FUNCTION_URI: https://ygnnkauzn2.execute-api.us-east-1.amazonaws.com/prod/
+        API_AWS_ROLE_ARN: arn:aws:lambda:us-east-1:924682671219:function:near-api-prod-APIHandler-926uy1lxE2Sa
         ROLES:
           - AWS_LAMBDA_NEAR_API
           - DBT_CLOUD_NEAR
