@@ -12,7 +12,7 @@ WITH chunks_complete AS (
 
     SELECT
         block_id,
-        block_timestamp,
+        block_timestamp_epoch,
         chunk_hash,
         shard_id,
         transaction_ids,
@@ -34,7 +34,7 @@ WHERE
 flatten_tx_ids AS (
     SELECT
         block_id,
-        block_timestamp,
+        block_timestamp_epoch,
         chunk_hash,
         shard_id,
         VALUE :: STRING AS tx_hash,
@@ -49,7 +49,7 @@ flatten_tx_ids AS (
 )
 SELECT
     block_id,
-    block_timestamp,
+    block_timestamp_epoch,
     chunk_hash,
     shard_id,
     tx_hash,

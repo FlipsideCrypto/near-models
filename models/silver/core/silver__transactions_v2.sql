@@ -14,7 +14,7 @@ WITH bronze_transactions AS (
 
     SELECT
         VALUE :BLOCK_ID :: INT AS block_id,
-        TO_TIMESTAMP_NTZ(VALUE :BLOCK_TIMESTAMP :: INT, 3) AS block_timestamp,
+        VALUE :BLOCK_TIMESTAMP_EPOCH :: INT AS block_timestamp_epoch,
         DATA :transaction :hash :: STRING AS tx_hash,
         DATA :transaction :signer_id :: STRING AS signer_id,
         partition_key,
@@ -39,7 +39,8 @@ WHERE
     )
 SELECT
     block_id,
-    block_timestamp,
+    block_timestamp_epoch,
+    TO_TIMESTAMP_NTZ(block_timestamp_epoch, 3) AS block_timestamp,
     tx_hash,
     signer_id,
     partition_key,

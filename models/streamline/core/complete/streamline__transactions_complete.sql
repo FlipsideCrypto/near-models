@@ -11,7 +11,7 @@
 
 SELECT
     VALUE :BLOCK_ID :: INT AS block_id,
-    TO_TIMESTAMP_NTZ(VALUE :BLOCK_TIMESTAMP :: INT, 3) AS block_timestamp,
+    VALUE :BLOCK_TIMESTAMP_EPOCH :: INT AS block_timestamp_epoch,
     VALUE :TX_HASH :: STRING AS tx_hash,
     DATA :transaction :signer_id :: STRING AS signer_id,
     partition_key,

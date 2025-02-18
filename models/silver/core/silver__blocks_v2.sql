@@ -15,7 +15,7 @@ WITH bronze_blocks AS (
     SELECT
         VALUE :BLOCK_ID :: INT AS block_id,
         DATA :header :hash :: STRING AS block_hash,
-        TO_TIMESTAMP_NTZ(DATA :header :timestamp :: INT, 3) AS block_timestamp,
+        DATA :header :timestamp :: INT AS block_timestamp_epoch,
         partition_key,
         DATA :: variant AS block_json,
         _inserted_timestamp
@@ -39,7 +39,8 @@ WHERE
 SELECT
     block_id,
     block_hash,
-    block_timestamp,
+    block_timestamp_epoch
+    TO_TIMESTAMP_NTZ(block_timestamp_epoch, 3) AS block_timestamp,
     partition_key,
     block_json,
     _inserted_timestamp,

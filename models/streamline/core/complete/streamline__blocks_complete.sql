@@ -11,7 +11,7 @@
 
 SELECT
     VALUE :BLOCK_ID :: INT AS block_id,
-    TO_TIMESTAMP_NTZ(DATA :header :timestamp :: INT, 3) AS block_timestamp,
+    DATA :header :timestamp :: INT AS block_timestamp_epoch,
     DATA :header :hash :: STRING AS block_hash,
     DATA :header :prev_height :: INT AS prev_height,
     DATA :header :prev_hash :: STRING AS prev_hash,

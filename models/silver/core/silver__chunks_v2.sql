@@ -14,7 +14,7 @@ WITH bronze_chunks AS (
 
     SELECT
         VALUE :BLOCK_ID :: INT AS block_id,
-        TO_TIMESTAMP_NTZ(VALUE :BLOCK_TIMESTAMP :: INT, 3) AS block_timestamp,
+        VALUE :BLOCK_TIMESTAMP_EPOCH :: INT AS block_timestamp_epoch,
         DATA :header :shard_id :: INT AS shard_id,
         DATA :header :chunk_hash :: STRING AS chunk_hash,
         partition_key,
@@ -39,7 +39,8 @@ WHERE
     )
 SELECT
     block_id,
-    block_timestamp,
+    block_timestamp_epoch,
+    TO_TIMESTAMP_NTZ(block_timestamp_epoch, 3) AS block_timestamp,
     shard_id,
     chunk_hash,
     partition_key,

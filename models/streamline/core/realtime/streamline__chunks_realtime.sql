@@ -38,7 +38,7 @@ last_3_days AS (
 tbl AS (
     SELECT
         block_id,
-        block_timestamp,
+        block_timestamp_epoch,
         chunk_hash
     FROM
         {{ ref('streamline__chunks') }}
@@ -55,7 +55,7 @@ tbl AS (
     EXCEPT
     SELECT
         block_id,
-        block_timestamp,
+        block_timestamp_epoch,
         chunk_hash
     FROM
         {{ ref('streamline__chunks_complete') }}
@@ -75,7 +75,7 @@ tbl AS (
 )
 SELECT
     block_id,
-    DATE_PART('EPOCH_MILLISECOND', block_timestamp) :: INTEGER AS block_timestamp,
+    block_timestamp_epoch,
     FLOOR(block_id, -3) AS partition_key,
     chunk_hash,
     DATE_PART('EPOCH', SYSDATE()) :: INTEGER AS request_timestamp,

@@ -11,7 +11,7 @@
 
 SELECT
     VALUE :BLOCK_ID :: INT AS block_id,
-    TO_TIMESTAMP_NTZ(VALUE :BLOCK_TIMESTAMP :: INT, 3) AS block_timestamp,
+    VALUE :BLOCK_TIMESTAMP_EPOCH :: INT AS block_timestamp_epoch,
     VALUE :CHUNK_HASH :: STRING AS chunk_hash,
     DATA :header: shard_id :: INT AS shard_id,
     ARRAY_SIZE(
