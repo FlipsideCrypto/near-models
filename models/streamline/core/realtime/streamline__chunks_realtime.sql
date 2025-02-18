@@ -75,7 +75,7 @@ tbl AS (
 )
 SELECT
     block_id,
-    DATE_PART('EPOCH', block_timestamp) :: INTEGER AS block_timestamp,
+    DATE_PART('EPOCH_MILLISECOND', block_timestamp) :: INTEGER AS block_timestamp,
     FLOOR(block_id, -3) AS partition_key,
     chunk_hash,
     DATE_PART('EPOCH', SYSDATE()) :: INTEGER AS request_timestamp,
