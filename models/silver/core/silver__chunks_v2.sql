@@ -7,7 +7,7 @@
     unique_key = "chunk_hash",
     cluster_by = ['modified_timestamp::DATE','partition_key'],
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(chunk_hash)",
-    tags = ['scheduled_core']
+    tags = ['scheduled_core', 'core_v2']
 ) }}
 
 WITH bronze_chunks AS (
@@ -40,7 +40,7 @@ WHERE
 SELECT
     block_id,
     block_timestamp_epoch,
-    TO_TIMESTAMP_NTZ(block_timestamp_epoch, 3) AS block_timestamp,
+    TO_TIMESTAMP_NTZ(block_timestamp_epoch, 9) AS block_timestamp,
     shard_id,
     chunk_hash,
     partition_key,

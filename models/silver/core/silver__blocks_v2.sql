@@ -7,7 +7,7 @@
     unique_key = "block_hash",
     cluster_by = ['modified_timestamp::DATE','partition_key'],
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(block_hash)",
-    tags = ['scheduled_core']
+    tags = ['scheduled_core', 'core_v2']
 ) }}
 
 WITH bronze_blocks AS (
@@ -40,7 +40,7 @@ SELECT
     block_id,
     block_hash,
     block_timestamp_epoch,
-    TO_TIMESTAMP_NTZ(block_timestamp_epoch, 3) AS block_timestamp,
+    TO_TIMESTAMP_NTZ(block_timestamp_epoch, 9) AS block_timestamp,
     partition_key,
     block_json,
     _inserted_timestamp,
