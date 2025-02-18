@@ -38,7 +38,7 @@ last_3_days AS (
 tbl AS (
     SELECT
         block_id,
-        block_timestamp,
+        block_timestamp_epoch,
         tx_hash,
         signer_id
     FROM
@@ -57,7 +57,7 @@ tbl AS (
     EXCEPT
     SELECT
         block_id,
-        block_timestamp,
+        block_timestamp_epoch,
         tx_hash,
         signer_id
     FROM
@@ -79,7 +79,7 @@ tbl AS (
 )
 SELECT
     block_id,
-    DATE_PART('EPOCH_MILLISECOND', block_timestamp) :: INTEGER AS block_timestamp,
+    block_timestamp_epoch,
     FLOOR(block_id, -3) AS partition_key,
     tx_hash,
     DATE_PART('EPOCH', SYSDATE()) :: INTEGER AS request_timestamp,
