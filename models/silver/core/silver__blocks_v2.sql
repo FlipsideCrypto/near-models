@@ -39,7 +39,7 @@ WHERE
 SELECT
     block_id,
     block_hash,
-    block_timestamp_epoch
+    block_timestamp_epoch,
     TO_TIMESTAMP_NTZ(block_timestamp_epoch, 3) AS block_timestamp,
     partition_key,
     block_json,
