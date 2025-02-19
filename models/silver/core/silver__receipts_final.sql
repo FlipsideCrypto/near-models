@@ -11,7 +11,7 @@
 ) }}
 -- TODO if execute block for incremental min blockdate 
 WITH 
-{% if var('NEAR_MIGRATE_RECEIPTS', False) %}
+{% if var('NEAR_MIGRATE_ARCHIVE', False) %}
 lake_receipts_final as (
     select * from {{ ref('silver__streamline_receipts_final') }}
     -- TODO incrementally load?
