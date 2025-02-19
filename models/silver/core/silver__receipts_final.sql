@@ -9,113 +9,105 @@
     tags = ['scheduled_core'],
     full_refresh = False
 ) }}
--- TODO if execute block for incremental min blockdate 
-WITH 
+
 {% if var('NEAR_MIGRATE_ARCHIVE', False) %}
-lake_receipts_final as (
-    select * from {{ ref('silver__streamline_receipts_final') }}
-    -- TODO incrementally load?
-    -- TODO rename cols?
-),
+
+    SELECT
+        chunk_hash,
+        block_id,
+        block_timestamp,
+        tx_hash,
+        receipt_id,
+        receipt_json,
+        outcome_json,
+        _partition_by_block_number
+    FROM
+        {{ ref('_migrate_receipts') }}
+        {% if var("BATCH_MIGRATE") %}
+            WHERE
+                {{ partition_load_manual('no_buffer') }}
+        {% endif %}
+
 {% else %}
 
-txs_with_receipts as (
-select * from {{ ref('silver__transactions_v2') }}
--- TODO incremental logic
-),
-blocks as (
-    select * from {{ ref('silver__blocks_v2') }}
-    -- TODO incremental logic
-),
-flatten_receipts as (
-    select
+-- TODO if execute block for incremental min blockdate
+WITH txs_with_receipts AS (
+    SELECT
+        chunk_hash,
+        origin_block_id,
+        origin_block_timestamp,
         tx_hash,
-        -- chunk_hash,
-        -- shard_id,
-        value:predecessor_id::STRING as predecessor_id,
-        value:priority :: int as priority,
-        value:receipt :: variant as receipt_json,
-        value:receipt_id :: STRING as receipt_id,
-        value:receiver_id :: string as receiver_id
-    from tx_response, lateral flatten(input => response_json :receipts :: ARRAY)
+        response_json :receipts :: ARRAY AS receipts_json,
+        response_json :receipts_outcome :: ARRAY AS receipts_outcome_json,
+        response_json :status :Failure IS NULL AS tx_succeeded,
+        partition_key AS _partition_by_block_number
+    FROM
+        {{ ref('silver__transactions_v2') }}
+        -- TODO incremental logic
 ),
-flatten_receipt_outcomes as (
-    select
-        value :block_hash :: STRING as block_hash,
-        value:id :: STRING as receipt_id,
-        value:outcome :: variant as outcome_json,
-        value:proof::array as proof
-    from tx_response, lateral flatten(input => response_json :receipts_outcome :: ARRAY)
+blocks AS (
+    SELECT
+        block_id,
+        block_hash,
+        block_timestamp
+    FROM
+        {{ ref('silver__blocks_v2') }}
+        -- TODO incremental logic
 ),
-receipts_full as (
-select
-    -- chunk_hash,
-    -- shard_id,
-    block_hash,
-    tx_hash,
-    r.receipt_id,
-    predecessor_id,
-    receiver_id,
-    priority,
-    receipt_json,
-    outcome_json,
-    proof,
-    outcome_json :status :Failure IS NULL AS receipt_succeeded,
-    TRY_PARSE_JSON(
-        outcome_json :status :Failure
-    ) AS failure_message,
-    object_keys(
-        failure_message
-    ) [0] :: STRING AS error_type_0,
-    COALESCE(
-        object_keys(
-            TRY_PARSE_JSON(
-                failure_message [error_type_0] :kind
-            )
-        ) [0] :: STRING,
-        failure_message [error_type_0] :kind :: STRING
-    ) AS error_type_1,
-    COALESCE(
-        object_keys(
-            TRY_PARSE_JSON(
-                failure_message [error_type_0] :kind [error_type_1]
-            )
-        ) [0] :: STRING,
-        failure_message [error_type_0] :kind [error_type_1] :: STRING
-    ) AS error_type_2,
-    failure_message [error_type_0] :kind [error_type_1] [error_type_2] :: STRING AS error_message
-from flatten_receipts r left join flatten_receipt_outcomes ro
-on r.receipt_id = ro.receipt_id
+flatten_receipts AS (
+    SELECT
+        chunk_hash,
+        tx_hash,
+        tx_succeeded,
+        VALUE :: variant AS receipt_json
+    FROM
+        txs_with_receipts,
+        LATERAL FLATTEN(
+            input => receipts_json
+        )
+),
+flatten_receipt_outcomes AS (
+    SELECT
+        VALUE :block_hash :: STRING AS block_hash,
+        tx_hash,
+        VALUE :id :: STRING AS receipt_id,
+        VALUE :: variant AS outcome_json
+    FROM
+        txs_with_receipts,
+        LATERAL FLATTEN(
+            input => receipts_outcome_json
+        )
+),
+receipts_full AS (
+    SELECT
+        chunk_hash,
+        ro.block_hash,
+        block_id,
+        block_timestamp,
+        r.tx_hash,
+        r.receipt_id,
+        receipt_json,
+        outcome_json,
+        tx_succeeded
+    FROM
+        flatten_receipts r
+        LEFT JOIN flatten_receipt_outcomes ro
+        ON r.receipt_id = ro.receipt_id
+        LEFT JOIN blocks b
+        ON ro.block_hash = b.block_hash
 ),
 FINAL AS (
     SELECT
-        -- chunk_hash,
-        -- shard_id,
+        chunk_hash,
         block_hash,
+        block_id,
+        block_timestamp,
         tx_hash,
         receipt_id,
-        -- block_id,
-        -- block_timestamp,
-        predecessor_id,
-        receiver_id,
-        -- signer_id, -- this is more like action_signer_id tbh.. should be renamed
-
         receipt_json,
         outcome_json,
-        -- outcome_json :receipt_ids :: ARRAY AS receipt_outcome_id,
-        -- receipt_type, -- this is not a thing
-        outcome_json :gas_burnt :: NUMBER AS gas_burnt,
-        outcome_json :status :: variant AS status_value,
-        outcome_json :logs :: ARRAY AS logs,
-        proof,
-        outcome_json :metadata :: variant AS metadata,
-        receipt_succeeded,
-        error_type_0,
-        error_type_1,
-        error_type_2,
-        error_message
-        -- _partition_by_block_number,
-        -- _inserted_timestamp
+        outcome_json :status :Failure IS NULL AS receipt_succeeded,
+        _partition_by_block_number
     FROM
         receipts_full
 )

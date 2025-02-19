@@ -13,7 +13,6 @@
 
   SELECT
     chunk_hash,
-    shard_id,
     block_id,
     block_timestamp,
     tx_hash,
@@ -39,14 +38,16 @@
     '{{ invocation_id }}' AS _invocation_id
   FROM
     {{ ref('_migrate_txs') }}
-    -- TODO batch logic if needed
+    {% if var("BATCH_MIGRATE") %}
+      WHERE
+        {{ partition_load_manual('no_buffer') }}
+    {% endif %}
 
   {% else %}
 
 WITH txs_with_receipts AS (
   SELECT
     chunk_hash,
-    shard_id,
     origin_block_id AS block_id,
     origin_block_timestamp AS block_timestamp,
     tx_hash,
@@ -59,12 +60,7 @@ WITH txs_with_receipts AS (
   FROM
     {{ ref('silver__transactions_v2') }}
 
-    {% if var("MANUAL_FIX") %}
-    WHERE
-      {{ partition_load_manual('no_buffer') }}
-    {% else %}
-
-      {% if is_incremental() %}
+    {% if is_incremental() %}
       WHERE
         modified_timestamp >= (
           SELECT
@@ -72,9 +68,8 @@ WITH txs_with_receipts AS (
           FROM
             {{ this }}
         )
-      {% endif %}
-
     {% endif %}
+
 ),
 determine_receipt_gas_burnt AS (
   SELECT
@@ -110,7 +105,6 @@ determine_attached_gas AS (
 transactions_final AS (
   SELECT
     chunk_hash,
-    shard_id,
     block_hash,
     block_id,
     block_timestamp,
@@ -130,7 +124,6 @@ transactions_final AS (
 )
 SELECT
   chunk_hash,
-  shard_id,
   block_hash,
   block_id,
   block_timestamp,
