@@ -82,10 +82,12 @@ tbl AS (
         AND signer_id IS NOT NULL
 )
 SELECT
+    shard_id,
+    chunk_hash,
     block_id,
     block_timestamp_epoch,
-    FLOOR(block_id, -3) AS partition_key,
     tx_hash,
+    FLOOR(block_id, -3) AS partition_key,
     DATE_PART('EPOCH', SYSDATE()) :: INTEGER AS request_timestamp,
     {{ target.database }}.live.udf_api(
         'POST',
