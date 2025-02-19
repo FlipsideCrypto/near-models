@@ -40,7 +40,9 @@ tbl AS (
         block_id,
         block_timestamp_epoch,
         tx_hash,
-        signer_id
+        signer_id,
+        shard_id,
+        chunk_hash
     FROM
         {{ ref('streamline__transactions') }}
     WHERE
@@ -59,7 +61,9 @@ tbl AS (
         block_id,
         block_timestamp_epoch,
         tx_hash,
-        signer_id
+        signer_id,
+        shard_id,
+        chunk_hash
     FROM
         {{ ref('streamline__transactions_complete') }}
     WHERE

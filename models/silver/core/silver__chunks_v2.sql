@@ -9,6 +9,10 @@
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(chunk_hash)",
     tags = ['scheduled_core', 'core_v2']
 ) }}
+-- TODO this can actually be dropped
+-- chunks only needed intrapipeline to get tx hashes
+-- unless deployed to a fact_chunks table with just the header ? ... 
+-- chunk author might be helpful to analysts looking at validator performance
 
 WITH bronze_chunks AS (
 

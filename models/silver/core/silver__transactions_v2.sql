@@ -3,7 +3,7 @@
 {{ config (
     materialized = "incremental",
     incremental_strategy = 'merge',
-    incremental_predicates = ["dynamic_range_predicate","block_timestamp::date"],
+    incremental_predicates = ["dynamic_range_predicate","origin_block_timestamp::date"],
     unique_key = "tx_hash",
     cluster_by = ['modified_timestamp::DATE','partition_key'],
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(tx_hash)",
@@ -13,8 +13,8 @@
 WITH bronze_transactions AS (
 
     SELECT
-        VALUE :BLOCK_ID :: INT AS block_id,
-        VALUE :BLOCK_TIMESTAMP_EPOCH :: INT AS block_timestamp_epoch,
+        VALUE :BLOCK_ID :: INT AS origin_block_id,
+        VALUE :BLOCK_TIMESTAMP_EPOCH :: INT AS origin_block_timestamp_epoch,
         DATA :transaction :hash :: STRING AS tx_hash,
         DATA :transaction :signer_id :: STRING AS signer_id,
         partition_key,
@@ -38,9 +38,9 @@ WHERE
         {% endif %}
     )
 SELECT
-    block_id,
-    block_timestamp_epoch,
-    TO_TIMESTAMP_NTZ(block_timestamp_epoch, 9) AS block_timestamp,
+    origin_block_id,
+    origin_block_timestamp_epoch,
+    TO_TIMESTAMP_NTZ(origin_block_timestamp_epoch, 9) AS origin_block_timestamp,
     tx_hash,
     signer_id,
     partition_key,
