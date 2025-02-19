@@ -6,7 +6,7 @@
     unique_key = 'receipt_id',
     cluster_by = ['block_timestamp::DATE','modified_timestamp::DATE'],
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,receipt_id,receiver_id,predecessor_id);",
-    tags = ['scheduled_core'],
+    tags = ['scheduled_core', 'core_v2'],
     full_refresh = False
 ) }}
 
@@ -123,3 +123,5 @@ SELECT
     '{{ invocation_id }}' AS _invocation_id
 FROM
     FINAL
+
+{% endif %}

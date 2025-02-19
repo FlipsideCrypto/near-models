@@ -6,7 +6,8 @@
   unique_key = 'tx_hash',
   cluster_by = ['block_timestamp::DATE','modified_timestamp::DATE'],
   post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,signer_id,receiver_id);",
-  tags = ['scheduled_core']
+  tags = ['scheduled_core', 'core_v2'],
+  full_refresh = False
 ) }}
 
 {% if var('NEAR_MIGRATE_ARCHIVE', False) %}
@@ -147,4 +148,5 @@ SELECT
   '{{ invocation_id }}' AS _invocation_id
 FROM
   transactions_final
+
 {% endif %}

@@ -1,5 +1,5 @@
 {{ config(
-    'materialized' = 'ephemeral'
+    materialized = 'ephemeral'
 ) }}
 
 SELECT
