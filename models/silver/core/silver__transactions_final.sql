@@ -30,18 +30,12 @@
     transaction_fee,
     attached_gas,
     _partition_by_block_number,
-    {{ dbt_utils.generate_surrogate_key(
-      ['tx_hash']
-    ) }} AS transactions_final_id,
-    SYSDATE() AS inserted_timestamp,
+    streamline_transactions_final_id AS transactions_final_id,
+    inserted_timestamp,
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
   FROM
     {{ ref('_migrate_txs') }}
-    {% if var("BATCH_MIGRATE") %}
-      WHERE
-        {{ partition_load_manual('no_buffer') }}
-    {% endif %}
 
   {% else %}
 

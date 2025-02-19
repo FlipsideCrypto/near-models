@@ -20,13 +20,13 @@
         receipt_id,
         receipt_json,
         outcome_json,
-        _partition_by_block_number
+        _partition_by_block_number,
+        streamline_receipts_final_id AS receipts_final_id,
+        inserted_timestamp,
+        SYSDATE() AS modified_timestamp,
+        '{{ invocation_id }}' AS _invocation_id
     FROM
         {{ ref('_migrate_receipts') }}
-        {% if var("BATCH_MIGRATE") %}
-            WHERE
-                {{ partition_load_manual('no_buffer') }}
-        {% endif %}
 
 {% else %}
 
@@ -59,7 +59,8 @@ flatten_receipts AS (
         chunk_hash,
         tx_hash,
         tx_succeeded,
-        VALUE :: variant AS receipt_json
+        VALUE :: variant AS receipt_json,
+        _partition_by_block_number
     FROM
         txs_with_receipts,
         LATERAL FLATTEN(
@@ -88,7 +89,8 @@ receipts_full AS (
         r.receipt_id,
         receipt_json,
         outcome_json,
-        tx_succeeded
+        tx_succeeded,
+        _partition_by_block_number
     FROM
         flatten_receipts r
         LEFT JOIN flatten_receipt_outcomes ro

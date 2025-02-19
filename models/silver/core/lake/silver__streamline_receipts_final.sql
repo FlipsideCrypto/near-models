@@ -6,7 +6,7 @@
     unique_key = 'receipt_object_id',
     cluster_by = ['block_timestamp::DATE','modified_timestamp::DATE', '_partition_by_block_number', ],
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,receipt_id,receiver_id,predecessor_id);",
-    tags = ['receipt_map','scheduled_core'],
+    tags = ['receipt_map','scheduled_core', 'deprecated_lake_archive'],
     full_refresh = False
 ) }}
 

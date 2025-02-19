@@ -1,7 +1,7 @@
 {{ config(
     materialized = 'ephemeral'
 ) }}
--- likely need to add batch logic for the migration
+
 WITH lake_transactions_final AS (
 
     SELECT
@@ -13,9 +13,18 @@ WITH lake_transactions_final AS (
         gas_used,
         transaction_fee,
         attached_gas,
-        _partition_by_block_number
+        _partition_by_block_number,
+        streamline_transactions_final_id,
+        inserted_timestamp,
+        modified_timestamp,
+        _invocation_id
     FROM
         {{ ref('silver__streamline_transactions_final') }}
+
+        {% if var("BATCH_MIGRATE") %}
+        WHERE
+            {{ partition_load_manual('no_buffer') }}
+        {% endif %}
 ),
 lake_transactions_int AS (
     SELECT
@@ -28,6 +37,11 @@ lake_transactions_int AS (
         _partition_by_block_number
     FROM
         {{ ref('silver__streamline_transactions') }}
+
+        {% if var("BATCH_MIGRATE") %}
+        WHERE
+            {{ partition_load_manual('no_buffer') }}
+        {% endif %}
 ),
 transaction_archive AS (
     SELECT
