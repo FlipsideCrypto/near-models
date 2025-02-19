@@ -13,6 +13,8 @@
 -- chunks only needed intrapipeline to get tx hashes
 -- unless deployed to a fact_chunks table with just the header ? ... 
 -- chunk author might be helpful to analysts looking at validator performance
+-- the rest of the chunk header is contained in the block json
+-- truly just chunk author ...
 
 WITH bronze_chunks AS (
 
