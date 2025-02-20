@@ -5,7 +5,7 @@
     incremental_strategy = 'merge',
     incremental_predicates = ["dynamic_range_predicate","origin_block_timestamp::date"],
     unique_key = "tx_hash",
-    cluster_by = ['modified_timestamp::DATE','partition_key'],
+    cluster_by = ['modified_timestamp::DATE','origin_block_timestamp::date'],
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(tx_hash)",
     tags = ['scheduled_core', 'core_v2']
 ) }}

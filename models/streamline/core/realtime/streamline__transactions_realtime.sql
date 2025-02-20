@@ -37,49 +37,26 @@ last_3_days AS (
 {% endif %}
 tbl AS (
     SELECT
-        block_id,
-        block_timestamp_epoch,
-        tx_hash,
-        signer_id,
-        shard_id,
-        chunk_hash
+        A.block_id,
+        A.block_timestamp_epoch,
+        A.tx_hash,
+        A.signer_id,
+        A.shard_id,
+        A.chunk_hash
     FROM
-        {{ ref('streamline__transactions') }}
+        {{ ref('streamline__transactions') }} A
+        LEFT JOIN {{ ref('streamline__transactions_complete') }} B ON A.tx_hash = B.tx_hash
     WHERE
         (
-            block_id >= (
+            A.block_id >= (
                 SELECT
                     block_id
                 FROM
                     last_3_days
             )
         )
-        AND tx_hash IS NOT NULL
-        AND signer_id IS NOT NULL
-    EXCEPT
-    SELECT
-        block_id,
-        block_timestamp_epoch,
-        tx_hash,
-        signer_id,
-        shard_id,
-        chunk_hash
-    FROM
-        {{ ref('streamline__transactions_complete') }}
-    WHERE
-        block_id >= (
-            SELECT
-                block_id
-            FROM
-                last_3_days
-        )
-        AND _inserted_timestamp >= DATEADD(
-            'day',
-            -4,
-            SYSDATE()
-        )
-        AND tx_hash IS NOT NULL
-        AND signer_id IS NOT NULL
+        AND A.signer_id IS NOT NULL
+        AND B.tx_hash IS NULL
 )
 SELECT
     shard_id,
