@@ -6,7 +6,6 @@
     incremental_predicates = ["dynamic_range_predicate","block_timestamp::date"],
     unique_key = "block_hash",
     cluster_by = ['modified_timestamp::DATE','block_timestamp::date'],
-    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(block_hash)",
     tags = ['scheduled_core', 'core_v2']
 ) }}
 
