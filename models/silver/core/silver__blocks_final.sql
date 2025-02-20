@@ -30,7 +30,7 @@
         SYSDATE() AS modified_timestamp, -- reset or preserve ?
         '{{ invocation_id }}' AS _invocation_id
     FROM
-        {{ ref('silver__streamline_blocks') }}
+        {{ ref('_migrate_blocks') }}
 
 {% else %}
 
