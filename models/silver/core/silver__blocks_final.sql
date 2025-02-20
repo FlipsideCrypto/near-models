@@ -22,8 +22,12 @@
         header_json,
         _partition_by_block_number,
         streamline_blocks_id AS blocks_final_id,
-        inserted_timestamp,
-        SYSDATE() AS modified_timestamp,
+        COALESCE(
+            inserted_timestamp, 
+            _inserted_timestamp,
+            SYSDATE()
+        ) AS inserted_timestamp,
+        SYSDATE() AS modified_timestamp, -- reset or preserve ?
         '{{ invocation_id }}' AS _invocation_id
     FROM
         {{ ref('silver__streamline_blocks') }}
@@ -42,6 +46,16 @@ WITH blocks AS (
         partition_key AS _partition_by_block_number
     FROM
         {{ ref('silver__blocks_v2') }}
+
+        {% if is_incremental() %}
+        WHERE
+            modified_timestamp >= (
+            SELECT
+                MAX(modified_timestamp)
+            FROM
+                {{ this }}
+            )
+        {% endif %}
 )
 SELECT
     *,

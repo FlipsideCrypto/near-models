@@ -22,8 +22,12 @@
         outcome_json,
         _partition_by_block_number,
         streamline_receipts_final_id AS receipts_final_id,
-        inserted_timestamp,
-        SYSDATE() AS modified_timestamp,
+        COALESCE(
+            inserted_timestamp, 
+            _inserted_timestamp,
+            SYSDATE()
+        ) AS inserted_timestamp,
+        SYSDATE() AS modified_timestamp, -- reset or preserve ?
         '{{ invocation_id }}' AS _invocation_id
     FROM
         {{ ref('_migrate_receipts') }}
