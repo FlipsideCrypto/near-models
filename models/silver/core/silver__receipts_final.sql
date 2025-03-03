@@ -6,7 +6,8 @@
     unique_key = 'receipt_id',
     cluster_by = ['block_timestamp::DATE','modified_timestamp::DATE'],
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,receipt_id,receiver_id,predecessor_id);",
-    tags = ['scheduled_core', 'core_v2']
+    tags = ['scheduled_core', 'core_v2'],
+    full_refresh = false
 ) }}
 
 {% if var('NEAR_MIGRATE_ARCHIVE', False) %}
@@ -36,8 +37,37 @@
         {{ ref('_migrate_receipts') }}
 
 {% else %}
+    {% if execute and not var("MANUAL_FIX") %}
+        {% if is_incremental() %}
+            {% set max_mod_query %}
+            SELECT
+                MAX(modified_timestamp) modified_timestamp
+            FROM
+                {{ this }}
+            {% endset %}
+        
+            {% set max_mod = run_query(max_mod_query) [0] [0] %}
 
--- TODO if execute block for incremental min blockdate
+            {% set min_block_date_query %}
+            SELECT
+                MIN(origin_block_timestamp :: DATE) block_timestamp
+            FROM
+                {{ ref('silver__transactions_v2') }}
+            WHERE
+                modified_timestamp >= '{{max_mod}}'
+            {% endset %}
+
+            {% set min_bd = run_query(min_block_date_query) [0] [0] %}
+
+            {% if not min_bd or min_bd == 'None' %}
+                {% set min_bd = '2099-01-01' %}
+            {% endif %}
+
+            {% do log('min_block_date: ' ~ min_bd, info=True) %}
+
+        {% endif %}
+    {% endif %}
+
 WITH txs_with_receipts AS (
     SELECT
         chunk_hash,
@@ -47,19 +77,35 @@ WITH txs_with_receipts AS (
         response_json :receipts :: ARRAY AS receipts_json,
         response_json :receipts_outcome :: ARRAY AS receipts_outcome_json,
         response_json :status :Failure IS NULL AS tx_succeeded,
-        partition_key AS _partition_by_block_number
+        partition_key AS _partition_by_block_number,
+        modified_timestamp
     FROM
         {{ ref('silver__transactions_v2') }}
-        -- TODO incremental logic
+    {% if var("MANUAL_FIX") %}
+        WHERE
+            {{ partition_load_manual('no_buffer') }}
+        {% else %}
+        {% if is_incremental() %}
+            WHERE origin_block_timestamp :: DATE >= '{{min_bd}}'
+        {% endif %}
+    {% endif %}
 ),
 blocks AS (
     SELECT
         block_id,
         block_hash,
-        block_timestamp
+        block_timestamp,
+        modified_timestamp
     FROM
         {{ ref('silver__blocks_v2') }}
-        -- TODO incremental logic
+    {% if var("MANUAL_FIX") %}
+        WHERE
+            {{ partition_load_manual('no_buffer') }}
+        {% else %}
+        {% if is_incremental() %}
+            WHERE block_timestamp :: DATE >= '{{min_bd}}'
+        {% endif %}
+    {% endif %}
 ),
 flatten_receipts AS (
     SELECT
@@ -68,7 +114,8 @@ flatten_receipts AS (
         tx_succeeded,
         VALUE :receipt_id :: STRING AS receipt_id,
         VALUE :: variant AS receipt_json,
-        _partition_by_block_number
+        _partition_by_block_number,
+        modified_timestamp
     FROM
         txs_with_receipts,
         LATERAL FLATTEN(
@@ -105,6 +152,13 @@ receipts_full AS (
         ON r.receipt_id = ro.receipt_id
         LEFT JOIN blocks b
         ON ro.block_hash = b.block_hash
+    {% if is_incremental() and not var("MANUAL_FIX") %}
+        WHERE
+            GREATEST(
+                COALESCE(r.modified_timestamp, '1970-01-01'),
+                COALESCE(b.modified_timestamp, '1970-01-01')   
+            ) >= '{{max_mod}}'
+    {% endif %}
 ),
 FINAL AS (
     SELECT
