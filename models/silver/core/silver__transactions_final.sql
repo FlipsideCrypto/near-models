@@ -10,6 +10,10 @@
 ) }}
 
 {% if var('NEAR_MIGRATE_ARCHIVE', False) %}
+    {% if execute %}
+        {% do log('Migrating transactions ' ~ var('RANGE_START') ~ ' to ' ~ var('RANGE_END'), info=True) %}
+        {% do log('Invocation ID: ' ~ invocation_id, info=True) %}
+    {% endif %}
 
   SELECT
     chunk_hash,

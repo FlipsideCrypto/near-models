@@ -10,6 +10,10 @@
 ) }}
 
 {% if var('NEAR_MIGRATE_ARCHIVE', False) %}
+    {% if execute %}
+        {% do log('Migrating receipts ' ~ var('RANGE_START') ~ ' to ' ~ var('RANGE_END'), info=True) %}
+        {% do log('Invocation ID: ' ~ invocation_id, info=True) %}
+    {% endif %}
 
     SELECT
         chunk_hash,
@@ -21,7 +25,7 @@
         receiver_id,
         receipt_json,
         outcome_json,
-        NULL AS tx_succeeded,
+        tx_succeeded,
         receipt_succeeded,
         _partition_by_block_number,
         receipts_final_id,

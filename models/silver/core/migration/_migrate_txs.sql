@@ -15,20 +15,24 @@ WITH lake_transactions_final AS (
         transaction_fee,
         attached_gas,
         _partition_by_block_number,
-        streamline_transactions_final_id AS transactions_final_id,
+        {{ dbt_utils.generate_surrogate_key(
+            ['tx_hash']
+        ) }} AS transactions_final_id,
         COALESCE(
             inserted_timestamp,
-            _inserted_timestamp
+            _inserted_timestamp,
+            _load_timestamp
         ) AS inserted_timestamp,
         COALESCE(
             modified_timestamp,
-            _inserted_timestamp
+            _inserted_timestamp,
+            _load_timestamp
         ) AS modified_timestamp,
         _invocation_id
     FROM
         {{ ref('silver__streamline_transactions_final') }}
 
-        {% if var("BATCH_MIGRATE") %}
+        {% if var("NEAR_MIGRATE_ARCHIVE") %}
         WHERE
             {{ partition_load_manual('no_buffer') }}
         {% endif %}
@@ -45,7 +49,7 @@ lake_transactions_int AS (
     FROM
         {{ ref('silver__streamline_transactions') }}
 
-        {% if var("BATCH_MIGRATE") %}
+        {% if var("NEAR_MIGRATE_ARCHIVE") %}
         WHERE
             {{ partition_load_manual('no_buffer') }}
         {% endif %}
