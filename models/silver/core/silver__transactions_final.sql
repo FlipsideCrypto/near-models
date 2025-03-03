@@ -5,7 +5,7 @@
   merge_exclude_columns = ['inserted_timestamp'],
   unique_key = 'tx_hash',
   cluster_by = ['block_timestamp::DATE','modified_timestamp::DATE'],
-  post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,signer_id,receiver_id);",
+  post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,tx_signer,tx_receiver);",
   tags = ['scheduled_core', 'core_v2'],
   full_refresh = False
 ) }}
@@ -14,16 +14,13 @@
 
   SELECT
     chunk_hash,
+    block_hash,
     block_id,
     block_timestamp,
     tx_hash,
-    transaction_json :actions :: ARRAY AS actions,
-    transaction_json :nonce :: INT AS nonce,
-    transaction_json :priority_fee :: INT AS priority_fee,
-    transaction_json :public_key :: STRING AS public_key,
-    transaction_json :receiver_id :: STRING AS receiver_id,
-    transaction_json :signature :: STRING AS signature,
-    transaction_json :signer_id :: STRING AS signer_id,
+    tx_receiver,
+    tx_signer,
+    transaction_json,
     outcome_json,
     OBJECT_CONSTRUCT() AS status_json,
     tx_succeeded,
@@ -31,12 +28,8 @@
     transaction_fee,
     attached_gas,
     _partition_by_block_number,
-    streamline_transactions_final_id AS transactions_final_id,
-    COALESCE(
-      inserted_timestamp, 
-      _inserted_timestamp,
-      SYSDATE()
-    ) AS inserted_timestamp,
+    transactions_final_id,
+    inserted_timestamp,
     modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
   FROM
@@ -127,13 +120,9 @@ SELECT
   block_id,
   block_timestamp,
   tx_hash,
-  transaction_json :actions :: ARRAY AS actions,
-  transaction_json :nonce :: INT AS nonce,
-  transaction_json :priority_fee :: INT AS priority_fee,
-  transaction_json :public_key :: STRING AS public_key,
-  transaction_json :receiver_id :: STRING AS receiver_id,
-  transaction_json :signature :: STRING AS signature,
-  transaction_json :signer_id :: STRING AS signer_id,
+  transaction_json :receiver_id :: STRING AS tx_receiver,
+  transaction_json :signer_id :: STRING AS tx_signer,
+  transaction_json,
   outcome_json,
   status_json,
   tx_succeeded,

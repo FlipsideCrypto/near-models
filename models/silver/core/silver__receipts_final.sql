@@ -18,15 +18,15 @@
         block_timestamp,
         tx_hash,
         receipt_id,
+        predecessor_id,
+        receiver_id,
         receipt_json,
         outcome_json,
+        NULL AS tx_succeeded,
+        receipt_succeeded,
         _partition_by_block_number,
-        streamline_receipts_final_id AS receipts_final_id,
-        COALESCE(
-            inserted_timestamp, 
-            _inserted_timestamp,
-            SYSDATE()
-        ) AS inserted_timestamp,
+        receipts_final_id,
+        inserted_timestamp,
         modified_timestamp,
         '{{ invocation_id }}' AS _invocation_id
     FROM
@@ -105,13 +105,15 @@ receipts_full AS (
 FINAL AS (
     SELECT
         chunk_hash,
-        block_hash,
         block_id,
         block_timestamp,
         tx_hash,
         receipt_id,
+        predecessor_id,
+        receiver_id,
         receipt_json,
         outcome_json,
+        tx_succeeded,
         outcome_json :status :Failure IS NULL AS receipt_succeeded,
         _partition_by_block_number
     FROM

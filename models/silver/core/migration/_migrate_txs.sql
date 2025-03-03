@@ -8,15 +8,23 @@ WITH lake_transactions_final AS (
         block_id,
         block_timestamp,
         tx_hash,
+        tx_signer,
+        tx_receiver,
         block_hash,
         tx_succeeded,
         gas_used,
         transaction_fee,
         attached_gas,
         _partition_by_block_number,
-        streamline_transactions_final_id,
-        inserted_timestamp,
-        modified_timestamp,
+        streamline_transactions_final_id AS transactions_final_id,
+        COALESCE(
+            inserted_timestamp,
+            _inserted_timestamp
+        ) AS inserted_timestamp,
+        COALESCE(
+            modified_timestamp,
+            _inserted_timestamp
+        ) AS modified_timestamp,
         _invocation_id
     FROM
         {{ ref('silver__streamline_transactions_final') }}
@@ -51,13 +59,19 @@ transaction_archive AS (
         f.block_id,
         f.block_timestamp,
         f.tx_hash,
+        f.tx_signer,
+        f.tx_receiver,
         i.transaction_json,
         i.outcome_json,
         f.tx_succeeded,
         f.gas_used,
         f.transaction_fee,
         f.attached_gas,
-        f._partition_by_block_number
+        f._partition_by_block_number,
+        f.transactions_final_id,
+        f.inserted_timestamp,
+        f.modified_timestamp,
+        f._invocation_id
     FROM
         lake_transactions_final f
         LEFT JOIN lake_transactions_int i
