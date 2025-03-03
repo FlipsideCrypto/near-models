@@ -10,7 +10,6 @@ WITH lake_transactions_final AS (
         tx_hash,
         tx_signer,
         tx_receiver,
-        block_hash,
         tx_succeeded,
         gas_used,
         transaction_fee,
@@ -55,7 +54,6 @@ transaction_archive AS (
     SELECT
         i.chunk_hash,
         i.shard_number AS shard_id,
-        f.block_hash,
         f.block_id,
         f.block_timestamp,
         f.tx_hash,

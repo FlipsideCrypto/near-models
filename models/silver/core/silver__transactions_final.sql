@@ -6,15 +6,13 @@
   unique_key = 'tx_hash',
   cluster_by = ['block_timestamp::DATE','modified_timestamp::DATE'],
   post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,tx_signer,tx_receiver);",
-  tags = ['scheduled_core', 'core_v2'],
-  full_refresh = False
+  tags = ['scheduled_core', 'core_v2']
 ) }}
 
 {% if var('NEAR_MIGRATE_ARCHIVE', False) %}
 
   SELECT
     chunk_hash,
-    block_hash,
     block_id,
     block_timestamp,
     tx_hash,
@@ -67,10 +65,10 @@ determine_receipt_gas_burnt AS (
   SELECT
     tx_hash,
     SUM(
-      VALUE :outcome :gas_burnt :: INT
+      ZEROIFNULL(VALUE :outcome :gas_burnt :: INT)
     ) AS total_gas_burnt_receipts,
     SUM(
-      VALUE :outcome :tokens_burnt :: INT
+      ZEROIFNULL(VALUE :outcome :tokens_burnt :: INT)
     ) AS total_tokens_burnt_receipts
   FROM
     txs_with_receipts,
@@ -97,7 +95,6 @@ determine_attached_gas AS (
 transactions_final AS (
   SELECT
     chunk_hash,
-    block_hash,
     block_id,
     block_timestamp,
     t.tx_hash,
@@ -116,7 +113,6 @@ transactions_final AS (
 )
 SELECT
   chunk_hash,
-  block_hash,
   block_id,
   block_timestamp,
   tx_hash,
@@ -126,8 +122,8 @@ SELECT
   outcome_json,
   status_json,
   tx_succeeded,
-  outcome_json :outcome :gas_burnt :: INT + total_gas_burnt_receipts AS gas_used,
-  outcome_json :outcome :tokens_burnt :: INT + total_tokens_burnt_receipts AS transaction_fee,
+  ZEROIFNULL(outcome_json :gas_burnt :: INT) + total_gas_burnt_receipts AS gas_used,
+  ZEROIFNULL(outcome_json :tokens_burnt :: INT) + total_tokens_burnt_receipts AS transaction_fee,
   COALESCE(
     total_attached_gas,
     gas_used

@@ -6,8 +6,7 @@
     unique_key = 'receipt_id',
     cluster_by = ['block_timestamp::DATE','modified_timestamp::DATE'],
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,receipt_id,receiver_id,predecessor_id);",
-    tags = ['scheduled_core', 'core_v2'],
-    full_refresh = False
+    tags = ['scheduled_core', 'core_v2']
 ) }}
 
 {% if var('NEAR_MIGRATE_ARCHIVE', False) %}
@@ -63,6 +62,7 @@ flatten_receipts AS (
         chunk_hash,
         tx_hash,
         tx_succeeded,
+        VALUE :receipt_id :: STRING AS receipt_id,
         VALUE :: variant AS receipt_json,
         _partition_by_block_number
     FROM
@@ -109,8 +109,8 @@ FINAL AS (
         block_timestamp,
         tx_hash,
         receipt_id,
-        predecessor_id,
-        receiver_id,
+        receipt_json :predecessor_id :: STRING AS predecessor_id,
+        receipt_json :receiver_id :: STRING AS receiver_id,
         receipt_json,
         outcome_json,
         tx_succeeded,
