@@ -67,9 +67,10 @@ vars:
   MANUAL_FIX: False
   OBSERV_FULL_TEST: False
   DBT_FULL_TEST: False
-  STREAMLINE_LOAD_LOOKBACK_HOURS: 3
-  RECEIPT_MAP_LOOKBACK_HOURS: 6
-  IS_MIGRATION: False
+  STREAMLINE_LOAD_LOOKBACK_HOURS: 3 # todo can deprecate
+  RECEIPT_MAP_LOOKBACK_HOURS: 6 # todo can deprecate
+  IS_MIGRATION: False # todo can deprecate
+  NEAR_MIGRATE_ARCHIVE: False
   HEAL_MODELS: []
   core_folders: [
     'silver/streamline',
