@@ -6,7 +6,7 @@
     incremental_predicates = ["dynamic_range_predicate","origin_block_timestamp::date"],
     unique_key = "tx_hash",
     cluster_by = ['modified_timestamp::DATE','origin_block_timestamp::date'],
-    tags = ['core_v2']
+    tags = ['scheduled_core', 'core_v2']
 ) }}
 
 WITH bronze_transactions AS (
