@@ -41,13 +41,13 @@
         {% if is_incremental() %}
             {% set max_mod_query %}
             SELECT
-                MAX(modified_timestamp) modified_timestamp
+                COALESCE(MAX(modified_timestamp), '1970-01-01') modified_timestamp
             FROM
                 {{ this }}
             {% endset %}
         
             {% set max_mod = run_query(max_mod_query) [0] [0] %}
-
+            {% do log('max_mod: ' ~ max_mod, info=True) %}
             {% set min_block_date_query %}
             SELECT
                 MIN(origin_block_timestamp :: DATE) block_timestamp
@@ -58,9 +58,10 @@
             {% endset %}
 
             {% set min_bd = run_query(min_block_date_query) [0] [0] %}
-
+            {% do log('min_bd: ' ~ min_bd, info=True) %}
             {% if not min_bd or min_bd == 'None' %}
                 {% set min_bd = '2099-01-01' %}
+                {% do log('min_bd: ' ~ min_bd, info=True) %}
             {% endif %}
 
             {% do log('min_block_date: ' ~ min_bd, info=True) %}
