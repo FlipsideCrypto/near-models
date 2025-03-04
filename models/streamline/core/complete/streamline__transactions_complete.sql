@@ -13,6 +13,8 @@ SELECT
     VALUE :BLOCK_ID :: INT AS block_id,
     VALUE :BLOCK_TIMESTAMP_EPOCH :: INT AS block_timestamp_epoch,
     VALUE :TX_HASH :: STRING AS tx_hash,
+    VALUE :transaction :shard_id :: STRING AS shard_id,
+    VALUE :transaction :chunk_hash :: STRING AS chunk_hash,
     DATA :transaction :signer_id :: STRING AS signer_id,
     partition_key,
     _inserted_timestamp,

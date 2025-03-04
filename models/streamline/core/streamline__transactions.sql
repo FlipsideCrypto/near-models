@@ -25,7 +25,7 @@ WITH chunks_complete AS (
 WHERE
     modified_timestamp >= (
         SELECT
-            MAX(modified_timestamp)
+            COALESCE(MAX(modified_timestamp), '2025-01-01' :: TIMESTAMP_NTZ)
         FROM
             {{ this }}
     )

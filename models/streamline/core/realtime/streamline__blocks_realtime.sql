@@ -26,13 +26,20 @@ tbl AS (
     FROM near.tests_full.final_gaps_tx
 )
 {% else %}
-last_3_days AS (
+    {% if var('STREAMLINE_BACKFILL', false) %}
+    last_3_days AS (
+        SELECT
+            9820210 AS block_id
+    ),
+    {% else %}
+    last_3_days AS (
 
-    SELECT
-        ZEROIFNULL(block_id) AS block_id
-    FROM
-        {{ ref("_block_lookback") }}
-),
+        SELECT
+            ZEROIFNULL(block_id) AS block_id
+        FROM
+            {{ ref("_block_lookback") }}
+    ),
+    {% endif %}
 tbl AS (
     SELECT
         block_id
