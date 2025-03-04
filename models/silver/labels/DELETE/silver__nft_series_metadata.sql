@@ -5,7 +5,7 @@
     incremental_strategy = 'merge',
     tags = ['livequery', 'pagoda','scheduled_non_core']
 ) }}
-
+-- TODO Deprecate this model by 4/1/2025
 WITH livequery_response AS (
 
     SELECT
