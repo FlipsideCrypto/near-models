@@ -2,8 +2,7 @@
     materialized = 'incremental',
     merge_exclude_columns = ["inserted_timestamp"],
     unique_key = 'metadata_id',
-    incremental_strategy = 'merge',
-    tags = ['livequery', 'pagoda','scheduled_non_core']
+    incremental_strategy = 'merge'
 ) }}
 -- TODO Deprecate this model by 4/1/2025
 WITH livequery_response AS (

@@ -3,7 +3,7 @@ version: 2
 models:
   - name: silver__nft_series_metadata
     description: |-
-      NFT Series-level metadata provided by the Pagoda NFT endpoint.
+      This table is fully deprecated. Deletion scheduled for 4/1/2025
     tests:
       - dbt_utils.recency:
           datepart: day

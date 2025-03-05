@@ -1,7 +1,8 @@
 {{ config(
     materialized = 'incremental',
     unique_key = 'metadata_id',
-    incremental_strategy = 'delete+insert'
+    incremental_strategy = 'delete+insert',
+    tags = ['streamline_non_core']
 ) }}
 -- DEPRECATED
 -- DELETE ALONGSIDE DEFI__DIM_NFT_SERIES_METADATA
