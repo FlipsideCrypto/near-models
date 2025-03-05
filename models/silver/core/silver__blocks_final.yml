@@ -1,0 +1,75 @@
+version: 2
+
+models:
+  - name: silver__blocks_final
+    description: |-
+      Table containing blocks for NEAR.
+    tests:
+      - dbt_utils.recency:
+          datepart: hour
+          field: inserted_timestamp
+          interval: 1
+    
+    columns:
+      - name: block_id
+        description: "{{ doc('block_id') }}"
+        tests:
+          - not_null
+          - unique
+
+      - name: block_timestamp
+        description: "{{ doc('block_timestamp') }}"
+        tests:
+          - not_null
+
+      - name: block_hash
+        description: "{{ doc('block_hash') }}"
+        tests:
+          - not_null
+          - unique
+          
+      - name: prev_hash
+        description: "{{ doc('prev_hash') }}"
+        tests:
+          - not_null
+          - unique
+
+      - name: block_author
+        description: "{{ doc('block_author') }}"
+        tests:
+          - not_null
+
+      - name: chunks_json
+        description: "{{ doc('chunks_json') }}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - VARIANT
+                - ARRAY
+                - OBJECT
+
+      - name: header_json
+        description: "{{ doc('header_json') }}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - VARIANT
+                - OBJECT
+
+      - name: _partition_by_block_number
+        description: "{{ doc('_partition_by_block_number') }}"
+        
+      - name: blocks_final_id
+        description: "{{ doc('id') }}"
+        tests:
+          - not_null
+          - unique
+
+      - name: inserted_timestamp
+        description: "{{ doc('inserted_timestamp') }}"
+
+      - name: modified_timestamp
+        description: "{{ doc('modified_timestamp') }}"
+
+      - name: _invocation_id
+

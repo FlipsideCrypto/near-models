@@ -1,0 +1,120 @@
+version: 2
+
+models:
+  - name: silver__transactions_final
+    description: |-
+      Table containing finalized transactions for NEAR blockchain.
+    tests:
+      - dbt_utils.recency:
+          datepart: hour
+          field: inserted_timestamp
+          interval: 1
+    
+    columns:
+      - name: chunk_hash
+        description: "{{ doc('chunk_hash') }}"
+        tests:
+          - not_null
+
+      - name: block_id
+        description: "{{ doc('block_id') }}"
+        tests:
+          - not_null
+
+      - name: block_timestamp
+        description: "{{ doc('block_timestamp') }}"
+        tests:
+          - not_null
+
+      - name: tx_hash
+        description: "{{ doc('tx_hash') }}"
+        tests:
+          - not_null
+          - unique
+
+      - name: tx_receiver
+        description: "{{ doc('tx_receiver') }}"
+        tests:
+          - not_null
+
+      - name: tx_signer
+        description: "{{ doc('tx_signer') }}"
+        tests:
+          - not_null
+
+      - name: transaction_json
+        description: "{{ doc('transaction_json') }}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - VARIANT
+                - OBJECT
+
+      - name: outcome_json
+        description: "{{ doc('outcome_json') }}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - VARIANT
+                - OBJECT
+
+      - name: status_json
+        description: "{{ doc('status_json') }}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - VARIANT
+                - OBJECT
+
+      - name: tx_succeeded
+        description: "{{ doc('tx_succeeded') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - BOOLEAN
+
+      - name: gas_used
+        description: "{{ doc('gas_used') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
+
+      - name: transaction_fee
+        description: "{{ doc('transaction_fee') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
+
+      - name: attached_gas
+        description: "{{ doc('attached_gas') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
+
+      - name: _partition_by_block_number
+        description: "{{ doc('_partition_by_block_number') }}"
+        
+      - name: transactions_final_id
+        description: "{{ doc('id') }}"
+        tests:
+          - not_null
+          - unique
+
+      - name: inserted_timestamp
+        description: "{{ doc('inserted_timestamp') }}"
+
+      - name: modified_timestamp
+        description: "{{ doc('modified_timestamp') }}"
+
+      - name: _invocation_id
+        description: "{{ doc('invocation_id') }}" 
