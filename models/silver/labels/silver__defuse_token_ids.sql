@@ -2,7 +2,7 @@
     materialized = 'incremental',
     merge_exclude_columns = ["inserted_timestamp"],
     unique_key = 'defuse_asset_identifier',
-    tags = ['labels', 'scheduled_non_core']
+    tags = ['scheduled_non_core']
 ) }}
 
 WITH api_call AS (

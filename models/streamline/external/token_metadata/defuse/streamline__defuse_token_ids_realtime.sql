@@ -1,6 +1,6 @@
 {{ config (
     materialized = "view",
-    tags = ['streamline_realtime_noncore']
+    tags = ['streamline_non_core']
 ) }}
 
 WITH api_call AS (

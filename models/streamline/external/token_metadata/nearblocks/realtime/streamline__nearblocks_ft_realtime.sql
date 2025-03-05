@@ -34,10 +34,7 @@ SELECT
     {{ target.database }}.live.udf_api(
         'GET',
         '{Service}fts/' || contract_address,
-        OBJECT_CONSTRUCT(
-            'Authorization',
-            'Bearer {Authorization}'
-        ),
+        {},
         {},
         'Vault/prod/near/nearblocks'
     ) AS request

@@ -11,7 +11,7 @@ WITH livequery_results AS (
     SELECT
         *
     FROM
-        {{ ref('livequery__request_nearblocks_nft_metadata') }}
+        PLACEHOLDER
 
 {% if is_incremental() %}
 WHERE
