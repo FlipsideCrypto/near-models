@@ -27,8 +27,7 @@ clean-targets: # directories to be removed by `dbt clean`
 
 on-run-start:
   - "{{ create_udfs() }}"
-  - "{{create_sps()}}"
-  - "{{create_get_nearblocks_fts()}}"
+  - "{{ create_sps() }}"
 
 on-run-end:
   - "{{ apply_meta_as_tags(results) }}"

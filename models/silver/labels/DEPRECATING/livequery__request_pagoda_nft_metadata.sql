@@ -2,8 +2,10 @@
     materialized = 'incremental',
     unique_key = 'metadata_id',
     incremental_strategy = 'delete+insert',
-    tags = ['livequery', 'pagoda']
+    tags = ['streamline_non_core']
 ) }}
+-- DEPRECATED
+-- DELETE ALONGSIDE DEFI__DIM_NFT_SERIES_METADATA
 
 WITH nfts_minted AS (
 

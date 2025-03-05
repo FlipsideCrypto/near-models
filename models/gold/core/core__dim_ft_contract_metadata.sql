@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'view',
-    tags = ['core', 'livequery', 'nearblocks']
+    tags = ['scheduled_non_core']
 ) }}
 
 WITH ft_contract_metadata AS (

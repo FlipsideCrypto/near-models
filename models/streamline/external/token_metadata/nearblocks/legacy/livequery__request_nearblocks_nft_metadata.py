@@ -3,6 +3,8 @@ import snowflake.snowpark.types as T
 
 from datetime import datetime
 
+# Legacy model for NFT Contract Metadata
+# Still runs fine - keep? Or refactor?
 
 def model(dbt, session):
 
@@ -27,7 +29,7 @@ def model(dbt, session):
     method = 'GET'
     headers = {}  # no header required for this api
     data = {}  # arguments passed in URL via GET request
-    base_url = 'https://api.nearblocks.io/v1/fts'
+    base_url = 'https://api.nearblocks.io/v1/nfts'
 
     # define result df schema with columns
     schema = T.StructType([
@@ -44,6 +46,7 @@ def model(dbt, session):
         [],
         schema
     )
+
     # set upper limit
     max_page = 100
 
@@ -53,9 +56,9 @@ def model(dbt, session):
 
         # call udf api (max 50 requests per page)
         call_udf_sql = f"select livequery.live.udf_api('{method}', '{url}', {headers}, {data})"
+
         # execute udf_api call
         response = session.sql(call_udf_sql).collect()
-        
         try:
             token_count = len(json.loads(response[0][0])['data']['tokens'])
         except:

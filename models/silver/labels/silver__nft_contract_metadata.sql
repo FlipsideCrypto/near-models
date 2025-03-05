@@ -5,13 +5,16 @@
     incremental_strategy = 'merge',
     tags = ['livequery', 'nearblocks','scheduled_non_core'],
 ) }}
+-- TODO: refactor? or drop support...
+-- the livequery model is still running with no issue tbh
+-- it's just the ft one that died 
 
 WITH livequery_results AS (
 
     SELECT
         *
     FROM
-        {{ ref('livequery__request_nearblocks_nft_metadata') }}
+        PLACEHOLDER
 
 {% if is_incremental() %}
 WHERE
