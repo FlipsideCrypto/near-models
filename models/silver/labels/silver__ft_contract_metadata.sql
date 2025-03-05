@@ -3,21 +3,24 @@
     unique_key = 'contract_address',
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
-    tags = ['livequery', 'nearblocks','scheduled_non_core']
+    tags = ['scheduled_non_core']
 ) }}
 
-WITH livequery_results AS (
+WITH bronze AS (
 
     SELECT
-        *
+        VALUE :CONTRACT_ADDRESS :: STRING AS contract_address,
+        DATA
     FROM
-        {{ ref('livequery__request_nearblocks_ft_metadata') }}
+        {{ ref('bronze__nearblocks_ft_metadata')}}
+    WHERE
+        typeof(DATA) != 'NULL_VALUE'
 
 {% if is_incremental() %}
-WHERE
+AND
     _inserted_timestamp >= (
         SELECT
-            MAX(_inserted_timestamp)
+            MAX(modified_timestamp)
         FROM
             {{ this }}
     )
@@ -30,35 +33,20 @@ flatten_results AS (
         VALUE :icon :: STRING AS icon,
         VALUE :name :: STRING AS NAME,
         VALUE :symbol :: STRING AS symbol,
-        VALUE AS DATA,
-        _inserted_timestamp,
-        _res_id
+        VALUE AS DATA
     FROM
-        livequery_results,
+        bronze,
         LATERAL FLATTEN(
-            input => DATA :data :tokens
+            input => DATA :contracts
         )
-),
-FINAL AS (
-    SELECT
-        contract_address,
-        decimals,
-        icon,
-        NAME,
-        symbol,
-        DATA,
-        _inserted_timestamp,
-        _res_id
-    FROM
-        flatten_results 
-        qualify ROW_NUMBER() over (
-            PARTITION BY contract_address
-            ORDER BY
-                _inserted_timestamp DESC
-        ) = 1
 )
 SELECT
-    *,
+    contract_address,
+    decimals,
+    icon,
+    NAME,
+    symbol,
+    DATA,
     {{ dbt_utils.generate_surrogate_key(
         ['contract_address']
     ) }} AS ft_contract_metadata_id,
@@ -66,4 +54,10 @@ SELECT
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
 FROM
-    FINAL
+    flatten_results
+
+qualify ROW_NUMBER() over (
+    PARTITION BY contract_address
+    ORDER BY
+        modified_timestamp DESC
+) = 1
