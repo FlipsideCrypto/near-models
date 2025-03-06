@@ -27,9 +27,3 @@ FROM
         'crosschain_silver',
         'complete_token_prices'
     ) }}
-WHERE
-    blockchain IN (
-        'near',
-        'near protocol',
-        'ethereum'
-    )
