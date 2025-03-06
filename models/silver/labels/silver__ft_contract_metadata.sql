@@ -1,3 +1,6 @@
+-- depends on: {{ ref('seeds__ft_token_details_final')}}
+-- depends on: {{ ref('bronze__nearblocks_ft_metadata')}}
+
 {{ config(
     materialized = 'incremental',
     unique_key = 'contract_address',
@@ -6,7 +9,17 @@
     tags = ['scheduled_non_core']
 ) }}
 
+
 WITH bronze AS (
+    {% if var('NEAR_MIGRATE_ARCHIVE', false) %}
+
+    SELECT
+        contract_address,
+        TRY_PARSE_JSON(DATA) AS DATA
+    FROM
+        {{ ref('seeds__ft_token_details_final')}}
+
+    {% else %}
 
     SELECT
         VALUE :CONTRACT_ADDRESS :: STRING AS contract_address,
@@ -16,21 +29,22 @@ WITH bronze AS (
     WHERE
         typeof(DATA) != 'NULL_VALUE'
 
-{% if is_incremental() %}
-AND
-    _inserted_timestamp >= (
-        SELECT
-            MAX(modified_timestamp)
-        FROM
-            {{ this }}
-    )
+    {% if is_incremental() %}
+    AND
+        _inserted_timestamp >= (
+            SELECT
+                MAX(modified_timestamp)
+            FROM
+                {{ this }}
+        )
+    {% endif %}
 {% endif %}
+
 ),
 flatten_results AS (
     SELECT
         VALUE :contract :: STRING AS contract_address,
         VALUE :decimals :: INT AS decimals,
-        VALUE :icon :: STRING AS icon,
         VALUE :name :: STRING AS NAME,
         VALUE :symbol :: STRING AS symbol,
         VALUE AS DATA
@@ -43,7 +57,6 @@ flatten_results AS (
 SELECT
     contract_address,
     decimals,
-    icon,
     NAME,
     symbol,
     DATA,

@@ -3,8 +3,6 @@ import snowflake.snowpark.types as T
 
 from datetime import datetime
 
-# Legacy model for NFT Contract Metadata
-# Still runs fine - keep? Or refactor?
 
 def model(dbt, session):
 

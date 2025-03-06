@@ -9,18 +9,17 @@
 ) }}
 
 {% if var('NEAR_MIGRATE_ARCHIVE', false) %}
--- do not need to re-query for tokens we already have so just add to complete table once
--- especially with the low rate limit
+
 SELECT
     contract_address,
-    DATE_PART('EPOCH', _inserted_timestamp) :: INTEGER AS partition_key,
-    _inserted_timestamp,
+    DATE_PART('EPOCH', inserted_timestamp) :: INTEGER AS partition_key,
+    inserted_timestamp AS _inserted_timestamp,
     contract_address AS nearblocks_ft_complete_id,
-    COALESCE(inserted_timestamp, _inserted_timestamp) AS inserted_timestamp,
+    SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
 FROM
-    near.silver.ft_contract_metadata
+    {{ ref('seeds__ft_token_details_final')}}
 
 {% else %}
 SELECT

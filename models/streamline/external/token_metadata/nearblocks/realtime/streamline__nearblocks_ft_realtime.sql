@@ -6,7 +6,7 @@
         target = "{{this.schema}}.{{this.identifier}}",
         params = {
             "external_table": "nearblocks_ft_metadata",
-            "sql_limit": "100",
+            "sql_limit": "500",
             "producer_batch_size": "50",
             "worker_batch_size": "10",
             "sql_source": "{{this.identifier}}"
@@ -14,11 +14,6 @@
     ),
     tags = ['streamline_non_core']
 ) }}
-
--- TODO plan to run this once daily
--- with the really low rate limit, we might get 30% of requests if we're lucky
--- have about 600 to catch up on and then likely very few per day, if any
--- exact batch size tbd
 
 WITH
 ft_tokenlist AS (
