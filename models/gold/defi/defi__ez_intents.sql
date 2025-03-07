@@ -6,7 +6,7 @@
     merge_exclude_columns = ['inserted_timestamp'],
     cluster_by = ['block_timestamp::DATE'],
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,receipt_id);",
-    tags = ['intents','curated','scheduled_non_core']
+    tags = ['scheduled_non_core']
 ) }}
 
 {% if execute %}
@@ -143,6 +143,8 @@ labels AS (
 prices AS (
     SELECT
         token_address AS contract_address,
+        symbol,
+        is_native,
         price,
         HOUR
     FROM
@@ -156,7 +158,7 @@ WHERE
     ) >= '{{ min_block_timestamp_day }}'
 {% endif %}
 
-qualify(ROW_NUMBER() over (PARTITION BY token_address, HOUR
+qualify(ROW_NUMBER() over (PARTITION BY COALESCE(token_address, symbol), HOUR
 ORDER BY
     HOUR DESC) = 1)
 ),
@@ -178,7 +180,6 @@ FINAL AS (
         amount_index,
         amount_raw,
         token_id,
-        i.contract_address_raw,
         referral,
         dip4_version,
         gas_burnt,
@@ -189,17 +190,19 @@ FINAL AS (
             l.ecosystem
         ) AS blockchain,
         l.contract_address,
+        l.contract_address = 'native' AS is_native,
         l.symbol,
         l.decimals,
         amount_raw / pow(
             10,
             l.decimals
         ) AS amount_adj,
-        p.price,
+        -- We do not have USDC for every token on every chain, so fallback to 1
+        IFF(l.symbol ilike 'USD%', COALESCE(p.price, 1), COALESCE(p.price, p2.price)) AS price,
         amount_raw / pow(
             10,
             l.decimals
-        ) * p.price AS amount_usd
+        ) * IFF(l.symbol ilike 'USD%', COALESCE(p.price, 1), COALESCE(p.price, p2.price)) AS amount_usd
     FROM
         intents i
         LEFT JOIN labels l
@@ -211,6 +214,13 @@ FINAL AS (
         )
         ON (
             l.contract_address = p.contract_address
+        )
+        ASOF JOIN prices p2 match_condition (
+            i.block_timestamp >= p2.hour
+        )
+        ON (
+            (l.contract_address = 'native') = p2.is_native
+            AND upper(l.symbol) = upper(p2.symbol)
         )
 )
 SELECT
