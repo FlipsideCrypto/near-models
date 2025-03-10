@@ -173,7 +173,7 @@ FINAL AS (
         receipt_json,
         outcome_json,
         tx_succeeded,
-        outcome_json :status :Failure IS NULL AS receipt_succeeded,
+        outcome_json :outcome :status :Failure IS NULL AS receipt_succeeded,
         _partition_by_block_number
     FROM
         receipts_full

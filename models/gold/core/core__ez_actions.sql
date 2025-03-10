@@ -8,8 +8,8 @@
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,receipt_id,receipt_receiver_id,receipt_signer_id,receipt_predecessor_id);",
     tags = ['actions', 'curated', 'scheduled_core', 'grail']
 ) }}
--- depends_on: {{ ref('silver__streamline_transactions_final') }}
--- depends_on: {{ ref('silver__streamline_receipts_final') }}
+-- depends_on: {{ ref('silver__transactions_final') }}
+-- depends_on: {{ ref('silver__receipts_final') }}
 
 {% if execute %}
 
@@ -41,14 +41,14 @@
             SELECT
                 MIN(block_timestamp) block_timestamp
             FROM
-                {{ ref('silver__streamline_transactions_final') }} A
+                {{ ref('silver__transactions_final') }} A
             WHERE
                 modified_timestamp >= '{{max_mod}}'
             UNION ALL
             SELECT
                 MIN(block_timestamp) block_timestamp
             FROM
-                {{ ref('silver__streamline_receipts_final') }} A
+                {{ ref('silver__receipts_final') }} A
             WHERE
                 modified_timestamp >= '{{max_mod}}'
         ) 
@@ -76,7 +76,7 @@ WITH transactions AS (
         transaction_fee AS tx_fee,
         modified_timestamp
     FROM
-        {{ ref('silver__streamline_transactions_final') }}
+        {{ ref('silver__transactions_final') }}
 
     {% if var("MANUAL_FIX") %}
         WHERE
@@ -92,19 +92,18 @@ receipts AS (
         tx_hash,
         block_id,
         block_timestamp,
-        receipt_object_id AS receipt_id,
+        receipt_id,
         receiver_id AS receipt_receiver_id,
-        signer_id AS receipt_signer_id,
-        receipt_actions :predecessor_id :: STRING AS receipt_predecessor_id,
+        receipt_json :receipt :Action :signer_id :: STRING AS receipt_signer_id,
+        predecessor_id AS receipt_predecessor_id,
         receipt_succeeded,
-        gas_burnt AS receipt_gas_burnt,
-        status_value,
-        receipt_actions,
+        outcome_json :outcome :gas_burnt :: NUMBER AS receipt_gas_burnt,
+        outcome_json :outcome :status :: VARIANT AS status_value,
+        receipt_json,
         _partition_by_block_number,
-        _inserted_timestamp,
         modified_timestamp
     FROM
-        {{ ref('silver__streamline_receipts_final') }}
+        {{ ref('silver__receipts_final') }}
 
     {% if var("MANUAL_FIX") %}
         WHERE
@@ -132,9 +131,8 @@ join_data AS (
         r.receipt_succeeded,
         r.receipt_gas_burnt,
         r.status_value,
-        r.receipt_actions,
-        r._partition_by_block_number,
-        r._inserted_timestamp
+        r.receipt_json,
+        r._partition_by_block_number
     FROM
         receipts r
         LEFT JOIN transactions t
@@ -184,7 +182,7 @@ flatten_actions AS (
         ) as receipt_status_value,
         False AS is_delegated,
         INDEX AS action_index,
-        receipt_actions :receipt :Action :gas_price :: NUMBER AS action_gas_price,
+        receipt_json :receipt :Action :gas_price :: NUMBER AS action_gas_price,
         IFF(
             VALUE = 'CreateAccount', 
             VALUE, 
@@ -247,12 +245,11 @@ flatten_actions AS (
             ),
             action_data
         ) AS action_data_parsed,
-        _partition_by_block_number,
-        _inserted_timestamp
+        _partition_by_block_number
     FROM
         join_data,
         LATERAL FLATTEN(
-            receipt_actions :receipt :Action :actions :: ARRAY
+            receipt_json :receipt :Action :actions :: ARRAY
         )
 ),
 flatten_delegated_actions AS (
@@ -333,7 +330,6 @@ SELECT
     action_data_parsed AS action_data,
     action_gas_price,
     _partition_by_block_number,
-    _inserted_timestamp,
     {{ dbt_utils.generate_surrogate_key(
         ['receipt_id', 'action_index']
     ) }} AS actions_id,
