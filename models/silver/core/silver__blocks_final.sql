@@ -6,7 +6,7 @@
     unique_key = 'block_id',
     cluster_by = ['block_timestamp::DATE','modified_timestamp::DATE'],
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(block_id, block_hash);",
-    tags = ['core_v2'],
+    tags = ['scheduled_core', 'core_v2'],
     full_refresh = false
 ) }}
 
