@@ -10,7 +10,7 @@ archive AS (
         count(distinct receipt_id) as receipt_count,
         count(distinct block_id) as block_count
     from {{ ref('silver__streamline_receipts') }}
-    where floor(block_id, -6) between {{ var('start_block') }} and {{ var('end_block') }}
+    -- where floor(block_id, -6) between {{ var('start_block') }} and {{ var('end_block') }}
     group by 1
 ),
 destination AS (
@@ -19,7 +19,7 @@ destination AS (
         count(distinct receipt_id) as receipt_count,
         count(distinct block_id) as block_count
     from {{ ref('silver__receipts_final') }}
-    where floor(block_id, -6) between {{ var('start_block') }} and {{ var('end_block') }}
+    -- where floor(block_id, -6) between {{ var('start_block') }} and {{ var('end_block') }}
     group by 1
 )
 select
@@ -31,5 +31,5 @@ select
 from archive
 left join destination
 on archive.block_group = destination.block_group
-where receipt_ct_expected <> receipt_ct_actual
+-- where receipt_ct_expected <> receipt_ct_actual
 order by block_group
