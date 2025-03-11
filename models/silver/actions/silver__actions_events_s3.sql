@@ -15,21 +15,20 @@ WITH receipts AS (
 
     SELECT
         tx_hash,
-        receipt_object_id,
+        receipt_id AS receipt_object_id,
         receiver_id,
-        signer_id,
+        predecessor_id AS signer_id,
         block_id,
         block_timestamp,
         chunk_hash,
-        logs,
-        receipt_actions,
-        execution_outcome,
+        outcome_json :outcome :logs :: ARRAY AS logs,
+        receipt_json AS receipt_actions,
+        outcome_json AS execution_outcome,
         receipt_succeeded,
-        gas_burnt,
-        _partition_by_block_number,
-        _inserted_timestamp
+        outcome_json :outcome :gas_burnt :: NUMBER AS gas_burnt,
+        _partition_by_block_number
     FROM
-        {{ ref('silver__streamline_receipts_final') }}
+        {{ ref('silver__receipts_final') }}
 
         {% if var("MANUAL_FIX") %}
         WHERE
@@ -64,12 +63,11 @@ flatten_actions AS (
         VALUE AS action_object,
         INDEX AS action_index,
         receipt_succeeded,
-        _partition_by_block_number,
-        _inserted_timestamp
+        _partition_by_block_number
     FROM
         receipts,
         LATERAL FLATTEN(
-            input => receipt_actions :receipt :Action :actions
+            input => receipt_actions :receipt :Action :actions :: ARRAY
         )
 ),
 FINAL AS (
@@ -95,8 +93,7 @@ FINAL AS (
         gas_price,
         gas_burnt,
         tokens_burnt,
-        _partition_by_block_number,
-        _inserted_timestamp
+        _partition_by_block_number
     FROM
         flatten_actions,
         LATERAL FLATTEN(
