@@ -10,7 +10,7 @@ archive AS (
         count(distinct coalesce(receipt_object_id, receipt_id)) as receipt_count,
         count(distinct block_id) as block_count
     from {{ ref('silver__streamline_receipts_final') }}
-    where _partition_by_block_number >= 116000000
+
     group by 1
 ),
 destination AS (
@@ -19,7 +19,7 @@ destination AS (
         count(distinct receipt_id) as receipt_count,
         count(distinct block_id) as block_count
     from {{ ref('silver__receipts_final') }}
-    where _partition_by_block_number >= 116000000
+
     group by 1
 )
 select
