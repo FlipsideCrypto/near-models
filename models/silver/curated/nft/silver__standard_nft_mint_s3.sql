@@ -47,10 +47,9 @@ tx AS (
         tx_signer,
         tx_receiver,
         tx_succeeded,
-        tx_status, -- TODO deprecate col
         transaction_fee
     FROM
-        {{ ref('silver__streamline_transactions_final') }}
+        {{ ref('silver__transactions_final') }}
     {% if var("MANUAL_FIX") %}
       WHERE {{ partition_load_manual('no_buffer') }}
     {% else %}
@@ -214,7 +213,6 @@ mint_tx AS (
         tx_signer,
         tx_receiver,
         tx_succeeded,
-        tx_status,
         transaction_fee
     FROM
         tx
@@ -239,7 +237,6 @@ FINAL AS (
         mint_tx.tx_signer AS tx_signer,
         mint_tx.tx_receiver AS tx_receiver,
         mint_tx.tx_succeeded AS tx_succeeded,
-        mint_tx.tx_status AS tx_status,
         mint_events.receipt_object_id,
         mint_events.receiver_id,
         mint_events.signer_id,

@@ -16,9 +16,9 @@ WITH txs AS (
         tx_hash,
         tx_succeeded,
         _partition_by_block_number,
-        _inserted_timestamp
+        inserted_timestamp AS _inserted_timestamp
     FROM
-        {{ ref('silver__streamline_transactions_final') }}
+        {{ ref('silver__transactions_final') }}
 
     {% if var("MANUAL_FIX") %}
       WHERE {{ partition_load_manual('no_buffer') }}

@@ -17,7 +17,7 @@ WITH receipts AS (
         tx_hash,
         receipt_id AS receipt_object_id,
         receiver_id,
-        predecessor_id AS signer_id,
+        receipt_json :receipt :Action :signer_id :: STRING AS signer_id,
         block_id,
         block_timestamp,
         chunk_hash,
