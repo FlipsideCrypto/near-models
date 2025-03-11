@@ -19,7 +19,7 @@ WITH receipts AS (
         outcome_json :outcome :logs AS logs,
         receiver_id,
         predecessor_id,
-        signer_id,
+        receipt_json :receipt :Action :signer_id :: STRING AS signer_id,
         outcome_json :outcome :gas_burnt AS gas_burnt,
         receipt_succeeded,
         _partition_by_block_number
