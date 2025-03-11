@@ -17,7 +17,7 @@
       {% endset %}
       {% set min_block_id = run_query(min_block_sql).columns[0].values()[0] %}
     {% else %}
-      {% set min_block_id = 9820210 %}
+      {% set min_block_id = 140868759 %}
     {% endif %}
   {% do log('Min block id: ' ~ min_block_id, info=True) %}
 {% endif %}

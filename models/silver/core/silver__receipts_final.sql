@@ -104,7 +104,7 @@ blocks AS (
             {{ partition_load_manual('no_buffer') }}
         {% else %}
         {% if is_incremental() %}
-            WHERE block_timestamp :: DATE >= '{{min_bd}}'
+            WHERE block_timestamp :: DATE >= '{{min_bd}}' - interval '1 day'
         {% endif %}
     {% endif %}
 ),
@@ -188,5 +188,7 @@ SELECT
     '{{ invocation_id }}' AS _invocation_id
 FROM
     FINAL
+
+qualify(row_number() over (partition by receipt_id order by block_id is not null desc, modified_timestamp desc) = 1)
 
 {% endif %}

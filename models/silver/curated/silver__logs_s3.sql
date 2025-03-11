@@ -53,6 +53,7 @@ FINAL AS (
         INDEX AS log_index,
         receiver_id,
         predecessor_id,
+        signer_id,
         COALESCE(
             TRY_PARSE_JSON(VALUE), 
             TRY_PARSE_JSON(SPLIT(VALUE, 'EVENT_JSON:') [1]),

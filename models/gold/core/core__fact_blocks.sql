@@ -30,7 +30,7 @@ SELECT
     header_json :gas_price :: FLOAT AS gas_price,
     header_json :last_ds_final_block :: STRING AS last_ds_final_block,
     header_json :last_final_block :: STRING AS last_final_block,
-    header_json :latest_protocol_version :: STRING AS latest_protocol_version,
+    header_json :latest_protocol_version :: INT AS latest_protocol_version,
     header_json :next_bp_hash :: STRING AS next_bp_hash,
     header_json :next_epoch_id :: STRING AS next_epoch_id,
     header_json :outcome_root :: STRING AS outcome_root,

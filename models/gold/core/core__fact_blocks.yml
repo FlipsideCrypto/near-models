@@ -185,7 +185,7 @@ models:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
-                - FLOAT
+                - INT
 
       - name: NEXT_BP_HASH
         description: "{{ doc('next_bp_hash')}}"
