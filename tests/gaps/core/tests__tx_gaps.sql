@@ -1,6 +1,6 @@
 {{ config(
     severity = 'error',
-    tags = ['gap_test']
+    tags = ['gap_test', 'gap_test_core']
 ) }}
 -- depends_on: {{ ref('silver__blocks_v2') }}
 
