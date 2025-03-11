@@ -15,17 +15,16 @@ WITH receipts AS (
         block_id,
         block_timestamp,
         tx_hash,
-        receipt_object_id,
-        logs,
+        receipt_id,
+        outcome_json :outcome :logs AS logs,
         receiver_id,
-        receipt_actions :predecessor_id :: STRING AS predecessor_id, -- TODO once exists in receipts final can select directly
+        predecessor_id,
         signer_id,
-        gas_burnt,
+        outcome_json :outcome :gas_burnt AS gas_burnt,
         receipt_succeeded,
-        _partition_by_block_number,
-        _inserted_timestamp
+        _partition_by_block_number
     FROM
-        {{ ref('silver__streamline_receipts_final') }}
+        {{ ref('silver__receipts_final') }}
 
         {% if var("MANUAL_FIX") %}
         WHERE {{ partition_load_manual('no_buffer') }}
@@ -45,16 +44,15 @@ FINAL AS (
         block_id,
         block_timestamp,
         tx_hash,
-        receipt_object_id,
+        receipt_id,
         concat_ws(
             '-',
-            receipt_object_id,
+            receipt_id,
             INDEX
         ) AS log_id,
         INDEX AS log_index,
         receiver_id,
         predecessor_id,
-        signer_id,
         COALESCE(
             TRY_PARSE_JSON(VALUE), 
             TRY_PARSE_JSON(SPLIT(VALUE, 'EVENT_JSON:') [1]),
@@ -63,8 +61,7 @@ FINAL AS (
         VALUE ILIKE 'event_json:%' AS is_standard,
         gas_burnt,
         receipt_succeeded,
-        _partition_by_block_number,
-        _inserted_timestamp
+        _partition_by_block_number
     FROM
         receipts,
         LATERAL FLATTEN(
@@ -73,6 +70,7 @@ FINAL AS (
 )
 SELECT
     *,
+    receipt_id AS receipt_object_id, -- maintain for a run but then need to copy values over and then drop
     {{ dbt_utils.generate_surrogate_key(
         ['log_id']
     ) }} AS logs_id,
