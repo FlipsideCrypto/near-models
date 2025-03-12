@@ -1,7 +1,6 @@
 {{ config(
     materialized = 'view',
-    tags = ['core', 'nft', 'livequery', 'nearblocks'],
-    enabled = false
+    tags = ['core', 'nft', 'livequery', 'nearblocks']
 ) }}
 
 WITH nft_contract_metadata AS (
