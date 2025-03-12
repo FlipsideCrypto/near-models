@@ -6,7 +6,7 @@
         target = "{{this.schema}}.{{this.identifier}}",
         params = {
             "external_table": "nearblocks_ft_metadata",
-            "sql_limit": "500",
+            "sql_limit": "150",
             "producer_batch_size": "50",
             "worker_batch_size": "10",
             "sql_source": "{{this.identifier}}"
