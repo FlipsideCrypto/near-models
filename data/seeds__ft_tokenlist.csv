@@ -1,0 +1,2468 @@
+contract_address,name,symbol,decimals
+usdt.tether-token.near,Tether USD,USDt,6
+token.sweat,SWEAT,SWEAT,18
+17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1,USDC,USDC,6
+aaaaaa20d9e0e2461697782ef11675f668207961.factory.bridge.near,Aurora,AURORA,18
+linear-protocol.near,LiNEAR,LINEAR,24
+meta-pool.near,Staked NEAR,STNEAR,24
+wrap.near,Wrapped NEAR fungible token,wNEAR,24
+walc.near,WALC,WALC,24
+token.sendertge.near,Sender AI Token,ASI,18
+staker1.msig1.trufin.near,TruNEAR Token,TruNEAR,24
+a0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.factory.bridge.near,Bridged USDC,USDC.e,6
+meta-token.near,Meta Token,$META,24
+token.v2.ref-finance.near,Ref Finance Token,REF,18
+mpdao-token.near,metapool.app DAO Governance Token,mpDAO,6
+dac17f958d2ee523a2206206994597c13d831ec7.factory.bridge.near,Tether USD,USDT.e,6
+usn,USN,USN,18
+aurora,Ether,ETH,18
+purge-558.meme-cooking.near,Forgive Me Father,PURGE,18
+853d955acef822db058eb8505911ed77f175b99e.factory.bridge.near,Frax,FRAX,18
+far-token.fewandfar-protocol.near,FAR Token,FAR,18
+438e48ed4ce6beecf503d43b9dbd3c30d516e7fd.factory.bridge.near,UWON,UWON,18
+token.burrow.near,Burrow Token,BRRR,18
+f5cfbc74057c610c8ef151a439252680ac68c6dc.factory.bridge.near,Octopus Network Token,OCT,18
+2260fac5e5542a773aa44fbcfedf7c193bc2c599.factory.bridge.near,Wrapped BTC,WBTC,8
+6b175474e89094c44da98b954eedeac495271d0f.factory.bridge.near,Dai Stablecoin,DAI,18
+blackdragon.tkn.near,Black Dragon,BLACKDRAGON,24
+token.v1.realisnetwork.near,Realis,LIS,12
+gear.enleap.near,GEAR,GEAR,18
+52a047ee205701895ee06a375492490ec9c597ce.factory.bridge.near,Pulse,PULSE,18
+token.0xshitzu.near,SHITZU,SHITZU,18
+token.lonkingnearbackto2024.near,LONK fungible token,LONK,8
+1117ac6ad6cdf1a3bc543bad3b133724620522d5.factory.bridge.near,moda,MODA,18
+a663b02cf0a4b149d2ad41910cb81e23e1c41c32.factory.bridge.near,Staked FRAX,sFRAX,18
+802d89b6e511b335f05024a65161bce7efc3f311.factory.bridge.near,LNR,LNR,18
+ftv2.nekotoken.near,NEKO,NEKO,24
+e99de844ef3ef72806cf006224ef3b813e82662f.factory.bridge.near,YouMinter,UMINT,18
+d9c2d319cd7e6177336b0a9c93c21cb48d84fb54.factory.bridge.near,HAPI,HAPI,18
+1ab43204a195a0fd37edec621482afd3792ef90b.factory.bridge.near,Aurigami Token,PLY,18
+edge-fast.near,Edge Video AI,FAST,24
+neat.nrc-20.near,NEAT,NEAT,8
+token.paras.near,PARAS,PARAS,18
+token.skyward.near,Skyward Finance Token,SKYWARD,18
+ea7cc765ebc94c4805e3bff28d7e4ae48d06468a.factory.bridge.near,NearPad Token,PAD,18
+token.stlb.near,SeatlabNFT,SEAT,5
+kat.token0.near,NearKat,KAT,18
+sol.token.a11bd.near,Solana,SOL,24
+c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.factory.bridge.near,Wrapped Ether,WETH,18
+3ea8ea4237344c9931214796d9417af1a1180770.factory.bridge.near,Flux Token,FLX,18
+celo.token.a11bd.near,Celo,CELO,24
+30d20208d987713f46dfd34ef128bb16c404d10f.factory.bridge.near,Stader,SD,18
+3432b6a60d23ca0dfca7761b7ab56459d9c964d0.factory.bridge.near,Frax Share,FXS,18
+token.pembrock.near,PembRock,PEM,18
+a35923162c49cf95e6bf26623385eb431ad920d3.factory.bridge.near,Turbo,TURBO,18
+abr.a11bd.near,ABR,ABR,24
+a4ef4b0b23c1fc81d3f9ecf93510e64f58a4a016.factory.bridge.near,1MILNFT,1MIL,18
+0316eb71485b0ab14103307bf65a021042c6d380.factory.bridge.near,Huobi BTC,HBTC,18
+43dfc4159d86f3a37a5a4b3d4580b888ad7d4ddd.factory.bridge.near,DODO bird,DODO,18
+059a1f1dea1020297588c316ffc30a58a1a0d4a2.factory.bridge.near,Bastion,BSTN,18
+marmaj.tkn.near,marma j token,marmaj,18
+509a38b7a1cc0dcd83aa9d06214663d9ec7c7f4a.factory.bridge.near,BlocksquareToken,BST,18
+4691937a7508860f876c9c0a2a617e7d9e945d4b.factory.bridge.near,Wootrade Network,WOO,18
+cusd.token.a11bd.near,Celo Dollar,cUSD,24
+06a00715e6f92210af9d7680b584931faf71a833.factory.bridge.near,Chronicle,XNL,18
+9aeb50f542050172359a0e1a25a9933bc8c01259.factory.bridge.near,oinfinance,OIN,8
+1f9840a85d5af5bf1d1762f925bdaddc4201f984.factory.bridge.near,Uniswap,UNI,18
+fusotao-token.near,FUSOTAO,TAO,18
+a0b73e1ff0b80914ab6fe0444e65848c4c34450b.factory.bridge.near,CRO,CRO,8
+utopia.secretskelliessociety.near,Utopia,UTO,8
+1a7e4e63778b4f12a199c062f3efdd288afcbce8.factory.bridge.near,agEUR,agEUR,18
+514910771af9ca656af840dff83e8264ecf986ca.factory.bridge.near,ChainLink Token,LINK,18
+0d8775f648430679a709e98d2b0cb6250d2887ef.factory.bridge.near,Basic Attention Token,BAT,18
+508df5aa4746be37b5b6a69684dfd8bdc322219d.factory.bridge.near,Crafting Finance,CRF,18
+7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9.factory.bridge.near,Aave Token,AAVE,18
+429881672b9ae42b8eba0e26cd9c73711b891ca5.factory.bridge.near,PickleToken,PICKLE,18
+c00e94cb662c3520282e6f5717214004a7f26888.factory.bridge.near,Compound,COMP,18
+a4cb0dce4849bdcad2d553e9e68644cf40e26cce.factory.bridge.near,BakedToken,BAKED,18
+111111111117dc0aa78b770fa6a738034120c302.factory.bridge.near,1INCH Token,1INCH,18
+f56b164efd3cfc02ba739b719b6526a6fa1ca32a.factory.bridge.near,Curio Governance Token,CGT,18
+8353b92201f19b4812eee32efd325f7ede123718.factory.bridge.near,Scamfari,SCM,18
+0000000000085d4780b73119b644ae5ecd22b376.factory.bridge.near,TrueUSD,TUSD,18
+6f259637dcd74c767781e37bc6133cd6a68aa161.factory.bridge.near,HuobiToken,HT,18
+dfdb7f72c1f195c5951a234e8db9806eb0635346.factory.bridge.near,Feisty Doge NFT,NFD,18
+925206b8a707096ed26ae47c84747fe0bb734f59.factory.bridge.near,WBT,WBT,8
+6b3595068778dd592e39a122f4f5a5cf09c90fe2.factory.bridge.near,SushiToken,SUSHI,18
+31429d1856ad1377a8a0079410b297e1a9e214c2.factory.bridge.near,ANGLE,ANGLE,18
+501ace9c35e60f03a2af4d484f49f9b1efde9f40.factory.bridge.near,solace,SOLACE,18
+9c2dc0c3cc2badde84b0025cf4df1c5af288d835.factory.bridge.near,COR Token,COR,18
+9f8f72aa9304c8b593d555f12ef6589cc3a579a2.factory.bridge.near,nMKR,nMKR,18
+de30da39c46104798bb5aa3fe8b9e0e1f348163f.factory.bridge.near,Gitcoin,GTC,18
+4fabb145d64652a948d72533023f6e7a623c7c53.factory.bridge.near,Binance USD,BUSD,18
+1494ca1f11d487c2bbe4543e90080aeba4ba3c2b.factory.bridge.near,DefiPulse Index,DPI,18
+f001937650bb4f62b57521824b2c20f5b91bea05.factory.bridge.near,Taraxa Coin,TARA,18
+035df12e0f3ac6671126525f1015e47d79dfeddf.factory.bridge.near,0xMonero,0xMR,18
+d3043d66afe00344c115f7f81d18277c5c718ff8.factory.bridge.near,OpenMoney USD,omUSD,6
+c944e90c64b2c07662a292be6244bdf05cda44a7.factory.bridge.near,Graph Token,GRT,18
+50d1c9771902476076ecfc8b2a83ad6b9355a4c9.factory.bridge.near,FTT,FTX Token,18
+a47c8bf37f92abed4a126bda807a7b7498661acd.factory.bridge.near,Wrapped UST Token,UST,18
+744d70fdbe2ba4cf95131626614a1763df805b9e.factory.bridge.near,Status Network Token,SNT,18
+cf3c8be2e2c42331da80ef210e9b1b307c03d36a.factory.bridge.near,BetProtocolToken,BEPRO,18
+0bc529c00c6401aef6d220be8c6ea1667f6ad93e.factory.bridge.near,yearn.finance,YFI,18
+0000000de40dfa9b17854cbc7869d80f9f98d823.factory.bridge.near,delta.theta,DLTA,18
+0000000000095413afc295d19edeb1ad7b71c952.factory.bridge.near,Tokenlon,LON,18
+ff20817765cb7f73d4bde2e66e067e58d11095c2.factory.bridge.near,Amp,AMP,18
+ba100000625a3754423978a60c9317c58a424e3d.factory.bridge.near,Balancer,BAL,18
+7d1afa7b718fb893db30a3abc0cfc608aacfebb0.factory.bridge.near,Matic Token,MATIC,18
+408e41876cccdc0f92210600ef50372656052a38.factory.bridge.near,Republic Token,REN,18
+3540abe4f288b280a0740ad5121aec337c404d15.factory.bridge.near,TPRO,TPRO,18
+c011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f.factory.bridge.near,Synthetix Network Token,SNX,18
+0f51bb10119727a7e5ea3538074fb341f56b09ad.factory.bridge.near,DAO Maker,DAO,18
+d2877702675e6ceb975b4a1dff9fb7baf4c91ea9.factory.bridge.near,Wrapped LUNA Token,LUNA,18
+bed4ab0019ff361d83ddeb74883dac8a70f5ea1e.factory.bridge.near,MerchDAO,MRCH,18
+cc7ab8d78dba187dc95bf3bb86e65e0c26d0041f.factory.bridge.near,Spacelens,SPACE,18
+dbdb4d16eda451d0503b854cf79d55697f90c8df.factory.bridge.near,Alchemix,ALCX,18
+0c10bf8fcb7bf5412187a595ab97a3609160b5c6.factory.bridge.near,Decentralized USD,USDD,18
+056fd409e1d7a124bd7017459dfea2f387b6d5cd.factory.bridge.near,Gemini dollar,GUSD,2
+054d64b73d3d8a21af3d764efd76bcaa774f3bb2.factory.bridge.near,Plasma,PPAY,18
+ca0e7269600d353f70b14ad118a49575455c0f2f.factory.bridge.near,AMLT,AMLT,18
+009c43b42aefac590c719e971020575974122803.factory.bridge.near,BIXToken,BIX,18
+2ba592f78db6436527729929aaf6c908497cb200.factory.bridge.near,Cream,CREAM,18
+77fba179c79de5b7653f68b5039af940ada60ce0.factory.bridge.near,Ampleforth Governance,FORTH,18
+41d5d79431a913c4ae7d69a668ecdfe5ff9dfb68.factory.bridge.near,Inverse DAO,INV,18
+2370f9d504c7a6e775bf6e14b3f12846b594cd53.factory.bridge.near,JPY Coin,JPYC,18
+48afbbd342f64ef8a9ab1c143719b63c2ad81710.factory.bridge.near,MetaPoolETH,MPETH,18
+93dfaf57d986b9ca77df9376c50878e013d9c7c8.factory.bridge.near,RARE.UNIQUE,RARE,18
+73968b9a57c6e53d41345fd57a6e6ae27d6cdb2f.factory.bridge.near,Stake DAO Token,SDT,18
+graubuenden.near,BiarritzContract,*-*,0
+syngenta.near,illuminati,<>,0
+winterishere.near,Snow,❄️  ,0
+wackazong.near,Digital Ducks,🦆,5
+coin.asac.near,Antisocial Ape Coin,$ASAC,24
+epic-cunt.near,$CADE,$CADE,24
+dead-token.near,$dead,$dead,24
+deezz.near,DEEZZ,$deezz,24
+near_flip.near,$FLIP NEAR fungible token,$FLIP,8
+token.kakzaebal.near,KakGeZaebalGrishko,$GRISHKO,18
+0.token0.near,Call,0,18
+01.token0.near,0,0,18
+0husky.tkn.near,Husky angel,0HUSKY,1
+10.token0.near,Catlisiy,10,18
+1000.token0.near,ThunderCat,1000,18
+10000.token0.near,Cripto Cat,10000,18
+1000000.token0.near,BlagTocen,1000000,18
+15338008135.tknx.near,I SEE BOOBIES,15338008135,8
+18.gra-fun.near,paws,18,24
+20000.token0.near,Dogs,20000,18
+20usn-1089.meme-cooking.near,20$is20USN,20USN,18
+420.token0.near,SNOOP,420,18
+4201.token0.near,420gang,420,18
+4illia-222.meme-cooking.near,Illia4Near,4illia,18
+50.token0.near,Hot Wallet,50,18
+555.token0.near,OppANa,555,18
+6bowen-227.meme-cooking.near,6bowen,6bowen,18
+8329.gra-fun.near,IMG_8329,8329,24
+8bowen-1597.meme-cooking.near,∞bowen,8bowen,18
+911-364.meme-cooking.near,redactedbangkok.ai,911,18
+a-256.meme-cooking.near,a,a,18
+aac.tkn.near,AIAlpaca,AAC,8
+tkn_artfans.near,Activity ArtFans token,AAF,24
+33.contract.portalbridge.near,Aave Token,AAVE,8
+eth-0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9.omft.near,Aave Token,AAVE,18
+aaxxii.laboratory.jumpfinance.near,AAXXII,AAXXII,5
+abg-966.meme-cooking.near,Asian Girl Boss,ABG,18
+abrahamlincoln.tkn.near,Folks are usually about as happy as they make their minds up to be.,ABRAHAMLINCOLN,0
+absxv.gra-fun.near,Crypto Aegend,absxv,24
+31761a152f1e96f966c041291644129144233b0b.factory.bridge.near,aBTC,aBTC,18
+acat.tfactory.near,Attacking Cat,ACAT,18
+ace.tkn.near,Ace Club,ACE,18
+adam.tkn.near,Adamantium,ADAM,18
+adammihelich.tkn.near,Adam Mihelich,ADAMMIHELICH,15
+adg.tkn.near,AiDragon,ADG,18
+adhd-1076.meme-cooking.near,Can't stop moving during live sessions,ADHD,18
+adv.tkn.near,ADV ,ADV,18
+aesco-1180.meme-cooking.near,AESCOBAR,AESCO,18
+aet.tkn.near,Amorous Existence ,AET,12
+aextoken.near,AEX TOKEN,AEX,24
+afrog.tfactory.near,Angry Frog,AFROG,18
+ag01.mtmx.near,Ankara Gölbaşı Kızılcaşar 228/10 NFT Payları,AG01,24
+agah.tkn.near,Agah,agah,18
+age.token0.near,NEARanderthal,AGE,18
+agency.tkn.near,Agency,AGENCY,18
+aguacate.dagro.near,aguacate,AGUACATE,6
+ai.token0.near,NEAR_AI,AI,18
+aiaiser.gra-fun.near,CALM,aiaiser,24
+aibb.aidols.near,AI Bid Bro,AIBB,24
+aibst.aidols.near,AIBoost,AIBst,24
+aicat.gra-fun.near,Intelligent Cat,AIcat,24
+aicra.aidols.near,Creative AI,AICRA,24
+token-aid.near,AID Token,AID,9
+aidl.aidols.near,AIDO-Luxe,AIDL,24
+aido-12.aidols.near,NEARgician,AIDO,24
+aido-11.aidols.near,AIDOO,AIDO,24
+aido.aidols.near,AIDOCTOR,AIDO,24
+aidog.aidols.near,AI Dog,AiDog,24
+aidoge.aidols.near,AiDOGE,AiDoge,24
+aidol.aidols.near,Aidolla,AIDOL,24
+aidol100.aidols.near,AIDOLStar,AIDOL100,24
+aidor.aidols.near,AIDorable,AIDor,24
+aidragon.tkn.near,AIDragon,AIDragon,18
+aids.token0.near,Aids,AIDS,18
+aiex.aidols.near,AISage,AIEX,24
+aieyes.aidols.near,AIDOL Eyes,AIEYES,24
+aiko-1317.meme-cooking.near,AIKO,AIKO,18
+ailex-1155.meme-cooking.near,AILEXAURORADEV,AILEX,18
+aima.aidols.near,AIDOLS Matchmaker,AIMA,24
+ai.aipunks.near,AI Punks,aipunks,0
+aipunks.nrc-20.near,AIPUNKS,AIPUNKS,0
+aisml.aidols.near,AISMILE,AISML,24
+aitime.gra-fun.near,Einsteinium,aitime,24
+ai-wanted-1617.meme-cooking.near,ALEX AND ILLIA WANTED,AI-WANTED,18
+aji_dulce.dagro.near,Aji Dulce,AJI_DULCE,6
+akaia.tkn.near,Akaia,AKAIA,24
+aladdin.thundertkn.near,Aladdin,ALADDIN,18
+alberteinstein.tkn.near,"Try not to become a person of success, but rather try to become a person of value.",ALBERTEINSTEIN,0
+alburger.gra-fun.near,Funny Aliens Burger ,Alburger,24
+9.contract.portalbridge.near,ALGO,ALGO,6
+alkocoin.token0.near,ALK,ALKOCOIN,18
+cryptoalma.near,Crypto Alma,ALMA,18
+almostboobs.token0.near,ALMOSTBOOBS,ALMOSTBOOBS,18
+alninvdr.gra-fun.near,Extraterrestrial Attack,alninvdr,24
+altan-1071.meme-cooking.near,BALDTAN,ALTAN,18
+alts.tkn.near,Altstroluminati,ALTS,18
+amc.tkn.near,Adam Mihelich Coins,AMC,18
+bestial.near,AMD RADEON,AMD,8
+amzn.tkn.near,#Adam_Mihelich_Zany_Note,AMZN,18
+android.token0.near,Android,ANDROID,18
+angl.tkn.near,Angel's Luck,ANGL,18
+angry.tfactory.near,Angry Frog,ANGRY,18
+animeelon.aidols.near,AnimeElon: The Digital Visionary,AnimeElon,24
+44ee4ae1e0c2e6160715f24c02fd8df72afe31f2.factory.bridge.near,ANS.BEST - knowledgeFi,ANS,18
+ansc.gra-fun.near,ANTISCORE,ANSC,24
+bayonne.near,Answers 🐱‍🏍 ,ANSW,0
+anton.tkn.near,Anton Social Token,ANTON,18
+ants.tkn.near,Ants,ANTS,18
+13.contract.portalbridge.near,Aptos Coin,APT,8
+apys.token.a11bd.near,APYSwap,APYS,24
+aqa1_demo.331a4daac1s.near,VEAX Trash Token (no value). Custom name.,AQA1,24
+aqa2_demo.331a4daac1s.near,VEAX Trash Token (no value). Custom name.,AQA2,24
+aqa3_demo.331a4daac1s.near,VEAX Trash Token (no value). Custom name.,AQA3,24
+aqa4_demo.331a4daac1s.near,VEAX Trash Token (no value). Custom name.,AQA4,24
+arb-0x912ce59144191c1204e64559fe8253a0e49e6548.omft.near,Arbitrum,ARB,18
+argh.token0.near,GOOD,ARGH,18
+incrediblehulk.near,hulk token,ARGH,0
+arizcredits.near,Ariz credits,ARIZ,6
+token.arkana.near,ARKANA,ARKANA,18
+aroon-918.meme-cooking.near,Aroon AI,AROON,4
+arepita.near,Arepita,ARP,6
+arroz.dagro.near,Arroz,ARROZ,6
+art.tkn.near,Art Coin,ART,18
+artport.gra-fun.near,Solaris Artistry,artport,24
+asa-19.aidols.near,Asa,ASA,24
+asa.aidols.near,Asa,ASA,24
+asc.tkn.near,Art Stars Club,ASC,10
+ascii.tkn.near,ASCII,ASCII,18
+asign.gra-fun.near,"God, give me a sign",ASIGN,24
+aspin-224.meme-cooking.near,Asong Pinoy,ASPIN,18
+assist.aidols.near,AssistAI,ASSIST,24
+asset.usdf.burntest.near,Asset,ASST,18
+ato.tkn.near,Atocha Coin,ATO,18
+atr.tkn.near,Activity Token Reward,ATR,18
+aubergine.token0.near,🍆,AUBERGINE,18
+aur1a.gra-fun.near,AI Authenticity,aur1a,24
+23.contract.portalbridge.near,Aurora Network,Aurora,8
+aurora.tkn.near,Aurora,AURORA,18
+avax.tkn.near,Avalanche,AVAX,18
+avb.tknx.near,AVB 2.0,AVB,18
+avb.tkn.near,AVB,AVB,18
+avfckn.gra-fun.near,Crypto Learning Hub,avfckn,24
+avocado.tkn.near,AVOCADO,AVOCADO,18
+axiba.tknx.near,AXIBA,AXIBA,18
+axolotl.tkn.near,Axolotl App,AXOLOTL,8
+amorymiel1.near,AmoryMiel,AYM,6
+b00b.tfactory.near,Boobs,B00B,18
+baby.tkn.near,Baby Shiba,baby,18
+babyblackdragon.tkn.near,BABYBLACKDRAGON,BABYBLACKDRAGON,24
+babye.token0.near,Gasless Gary,BABYE,18
+babyhijack-253.meme-cooking.near,BabyHiJack ,BabyHiJack,18
+babylonk.tkn.near,Lonking NEAR back to $8.8 in April,BABYLONK,18
+babynear-265.meme-cooking.near,BABYNEAR,BABYNEAR,18
+babynear.gra-fun.near,BabyNEAR,BABYNEAR,24
+babyneko.tkn.near,babyneko,babyneko,18
+bad-357.meme-cooking.near,BadDuck,BAD,18
+bad.tkn.near,Bad Coin,BAD,18
+baitoken.bullpaloozaai.near,Bullpalooza AI,BAI,18
+bai.tkn.near,Business Analytics Institute Token,BAI,18
+baldilia.aidols.near,Bald Illia,BALDILIA,24
+balls.token0.near,BALLSACK,BALLS,18
+bananear.near,BanaNear,BAN,4
+bana-998.meme-cooking.near,BananaCoin,BANA,18
+nearest_near.near,Banana for Scale 🍌,Banana,0
+banana.tkn.near,BANANA,BANANA,18
+banana.token0.near,Banana Split🍌,BANANA,18
+banana.tfactory.near,Banana,BANANA,18
+2ffa68cbdb7ef784d7836dca0ef7e85ad98058a89270462478683eb55a053995,Bananas for You,BANANA,10
+bangcock.token0.near,BANGCOCK,BANGCOCK,18
+test1.reftoken.near,Barac V2,BARAC,18
+bark.aidols.near,BarkCoin Master,BARK,24
+based-10.aidols.near,Based ,Based,24
+based.aidols.near,Based,Based,24
+batman.token0.near,BATMAN,BATMAN,18
+baz.tkn.near,Bazooka,BAZ,16
+snixqfeyr6.vrtx,BlueBook,BB,18
+lpz3thaguy.vrtx,BlackBook,BB,18
+bb12.aidols.near,BlabberBot,BB12,24
+bbkids.tkn.near,"Benny Brown Please let my kids go, I've sent the ransom money in NEAR like you requested",BBKIDS,18
+bblbenny.token0.near,Benny let my kids go man,BBLBENNY,18
+bbn-787.meme-cooking.near,BeatBoxNEAR,BBN,18
+bbp.331a4daac1s.near,Bebop Token,BBP,18
+bbrkrw.token0.near,BoberKurwa,BBRKRW,18
+bcat.gra-fun.near,B Cat,BCAT,24
+bcc-242.meme-cooking.near,BITCONNECT,BCC,18
+bdkok-292.meme-cooking.near,Blackdragon KOK INU,BDKOK,18
+bdsm.token0.near,BDSM,BDSM,18
+bdt1.tkn.near,Base Token V1,BDT1,18
+bdy.tkn.near,Birdy,BDY,18
+bean.tkn.near,BEAN,BEAN,18
+beanz.tkn.near,beanz,BEANZ,18
+beast.gra-fun.near,Crypto Beast,BEAST,24
+beasty.aidols.near,CoinBeast,BEASTY,24
+bee.tkn.near,BeeTogether,BEE,2
+beer.tkn.near,Beer Token,BEER,18
+bees.tkn.near,BEES,BEES,0
+belma.gra-fun.near,Belgian Malinois,Belma,24
+benthedog.near,Ben the Dog,BENDOG,9
+bera.omft.near,Berachain,BERA,18
+betear.aidols.near,Bettear,BETEAR,24
+bfi.aidols.near,BullishFriends,BFI,24
+bgn.tkn.near,BGN Token,BGN,18
+bgn.token0.near,Big John,BGN,18
+bravohitz.near,bravohitz💦💦💦💦💦💦💦💦💦,BH💦,0
+bhc.tkn.near,bhc,bhc,18
+b8919522331c59f5c16bdfaa6a121a6e03a91f62.factory.bridge.near,bHome,bHOME,6
+bidbot.aidols.near,BIDBOT Supreme,BIDBOT,24
+biden.tkn.near,Biden,Biden,18
+bidenpow.token0.near,Biden Power,BIDENPOW,18
+bidw.aidols.near,BidWarrior,BIDW,24
+bierstreit.tkn.near,Bierstreit,BIERSTREIT,18
+big.tkn.near,Block Imperium Games,BIG,18
+billy.token0.near,BILLY,BILLY,18
+bin-1088.meme-cooking.near,bingo,BIN,18
+bird1.token0.near,BIRD,BIRD,18
+bitcoin.tkn.near,BTC,Bitcoin,18
+bitcoin.token0.near,Bitcoin,BITCOIN,18
+bkr.token0.near,BobrKurva,BKR,18
+bkt001.aidols.near,Barkitect,BKT001,24
+blackpoints.tkn.near,Blackpoints,blackpoints,2
+blago.tkn.near,BLAGO,BLAGO,0
+blaze.tkn.near,BlazeN Fast,BLAZE,18
+blcsq.aidols.near,Black Square,BLCSQ,24
+blcsqr.aidols.near,iBlack,BLCSQR,24
+cdcode02.near,BlEsS,BLE,24
+blsd.tkn.near,Blessed ,BLSD,18
+blum1.token0.near,BLUM,BLUM,18
+blwrn.token0.near,BlackWaren,BLWRN,18
+bmb.gra-fun.near,BigMemeBag,BMB,24
+bmw.gra-fun.near,MEM BMW,BMW,24
+bsc.omft.near,BNB,BNB,18
+bnb.tkn.near,Binance Coin,BNB,18
+bnd-202407.finby.near,Finby BND,BND,0
+bnear.token0.near,Baby Near,BNEAR,18
+bnn.tkn.near,Banana finance,BNN,18
+bob.tkn.near,BobOnNear,BOB,18
+bob.token0.near,Spongebob,BOB,18
+bober.gra-fun.near,Kurwa Rakketa ,BOBER,24
+bobo.tkn.near,AlliveBob,BOBO,18
+bol.gra-fun.near,BOL,BOL,24
+boltubs.gra-fun.near,Bolt's Legacy,boltubs,24
+bolz.gra-fun.near,Harry bolz,Bolz,24
+sol-57d087fd8c460f612f8701f5499ad8b2eec5ab68.omft.near,BOOK OF MEME,BOME,6
+bome.token0.near,BOOK OF MEME,BOME,18
+bones.tkn.near,Chicken Bones,bones,18
+bonk.token0.near,BONK COIN,BONK,18
+boo.tkn.near,Pomeranian,BOO,18
+boo.token0.near,Majin-Buu,BOO,18
+boobs.tkn.near,BOOBS DRAGON,BOOBS,18
+boon.tkn.near,Boon,BOON,18
+booth-639.meme-cooking.near,The Booth,BOOTH,18
+bork.token0.near,BORK,BORK,18
+boss.tkn.near,hello boss how are you www.boss.com,BOSS,18
+bowenw.aidols.near,BowenW,BowenW,24
+boys.token0.near,Boys Club,BOYS,18
+bp.token0.near,ButtPlug,BP,18
+bpad.tkn.near,BISPAD,BPAD,18
+bpanda.token0.near,FUBAO,BPANDA,18
+swxpm2h8tk.vrtx,BLPASv1,BPS,18
+bpurge-746.meme-cooking.near,BabyPurge,Bpurge,18
+br.token0.near,Brasil na Area,BR,18
+bran.token0.near,Branermus,BRAN,18
+brcg-914.meme-cooking.near,BorgiCoin,BRCG,18
+breast.gra-fun.near,Lovely breast,Breast,24
+brett.token0.near,Brett,BRETT,18
+base-0x532f27101965dd16442e59d40670faf5ebb142e4.omft.near,Brett,BRETT,18
+base-0x532f27101965dd16442e59d40670faf5ebb142e4.duse.near,Brett,BRETT,18
+brex.aidols.near,Barkitect Rex,BRex,24
+broc.aidols.near,BROCCOLI,BROC,24
+broccoli.gra-fun.near,Broccoli,Broccoli,24
+brocoli.gra-fun.near,CZ's Dog,BROCOLI,24
+brokedev-1024.meme-cooking.near,Alex needs Smoney,Brokedev,18
+brrr.tkn.near,Burrow Token,BRRR,18
+bry.tkn.near,Berries,BRY,18
+bsa.tkn.near,BigShortAlliance,BSA,18
+bsc.tkn.near,bullshitcash,BSC,0
+27.contract.portalbridge.near,BSKT,BSKT,5
+bst.tkn.near,Busterius,BST,7
+token.bwitter.near,Bwitter Token,BT,18
+btc.token0.near,Bitcoin,BTC,18
+btc.omft.near,Bitcoin,BTC,8
+btc-native.duse.near,Bitcoin,BTC,8
+btc.tkn.near,Bitcoin,BTC,18
+15.contract.portalbridge.near,Wrapped Bitcoin (Sollet),BTC,6
+bto.gra-fun.near,Bitcoin Overlord,BTO,24
+btor.tkn.near,BTOR,BTOR,18
+bttm.tfactory.near,BULL TO THE MOON,BTTM,18
+buddha.token0.near,Buddha,BUDDHA,18
+build.token0.near,BUILD,BUILD,18
+bulla.tkn.near,BULLA,BULLA,18
+bullish-1254.meme-cooking.near,Bullish friends,Bullish,18
+buqa.gra-fun.near,BUKA,BUQA,24
+burger.tkn.primitives.near,Burger,burger,2
+burgr.token0.near,Burger,BURGR,18
+burn-1411.meme-cooking.near,BURN,BURN,18
+burrowfinancedao.near,Burrow Finance Rewards (https://burrowfi.com),BurrowFi.com,24
+burrowrewards.near,Burrow Finance Rewards (https://burrowfi.com),BurrowFi.com,17
+butt.tkn.near,Buttcoin,BUTT,0
+bxf.tkn.near,Super puper token,BXF,18
+c.tkn.near,Credit,C,18
+caca.tkn.near,Craft & Crypto Art,CACA,18
+cacao.dagro.near,Cacao,CACAO,6
+cafe.devtest.near,CAFE,CAFE,12
+cafe.dagro.near,Cafe,CAFE,6
+token.elcafecartel.near,CAFE,CAFE,12
+cai.gra-fun.near,CATAI,CAI,24
+callme.tkn.near,Call Me!,CALLME,18
+cam-167.meme-cooking.near,CAM,cam,18
+cambur.dagro.near,Cambur,CAMBUR,6
+camera.tkn.near,Media,Camera,18
+cana.dagro.near,Cana,CANA,6
+candy.tfactory.near,Candy,CANDY,18
+capstory.token0.near,$CAP,CAPSTORY,18
+caraota.dagro.near,Caraota,CARAOTA,6
+carbon.tkn.near,The Carbon Games,CARBON,4
+carne_bovina.dagro.near,Carne Bovina,CARNE_BOVINA,6
+cart.tkn.near,𝙲𝙾𝙳𝙰𝙼𝙴 𝙲𝙰𝚁𝚃,CART,18
+cas.tkn.near,Castor fiber,CAS,18
+cash.tkn.near,NEAR Cash,CASH,18
+casper.gra-fun.near,Casper,CASPER,24
+cat.token0.near,Cat Attack,CAT,18
+cat1.token0.near,Sigma Cat,CAT,18
+cat.tkn.near,Catalyst,CAT,18
+cat.tfactory.near,Small Cat,CAT,18
+cat22.tfactory.near,Cool Cat,CAT22,18
+catai.gra-fun.near,Intelligent Cat,CatAI,24
+catboxer.gra-fun.near,CAT Boxer,CATboxer,24
+catcoin.token0.near,CAT COIN,CATCOIN,18
+catdog.token0.near,CATDOG,CATDOG,18
+catjamzcoin.token0.near,CatJAMZCoin,CATJAMZCOIN,18
+catpop.token0.near,CATPOP,CATPOP,18
+catripz.gra-fun.near,FelineFarewell,catripz,24
+catrump.token0.near,CATRUMP,CATRUMP,18
+catz.token0.near,Catzee,CATZ,18
+caxap.tkn.near,CAXAP,CAXAP,18
+cb.tkn.primitives.near,Cangreburger,CB,4
+cb.tkn.near,CodeBlack,CB,18
+cbg.tkn.near,Cangreburger,CBG,6
+cbrs.tkn.near,Cangreburger,CBrs,18
+cbt.tkn.near,CRYPTO BEER TOKEN,CBT,18
+token.cryptoblessing.near,Crypto Blessing Token,CBT,24
+cc-1357.meme-cooking.near,Collective Coin,CC,18
+wetzikon.near,costacoin👌,CC,0
+ccc.tknx.near,Cooked Chook Casino,CCC,12
+ccc-5.aidols.near,Crypto Circus Conductor,CCC,24
+ccc.aidols.near,ChainChoice Chameleon,CCC,24
+ccd.tkn.near,Chinese Community Dao,CCD,18
+ccp.aidols.near,CoinCaper,CCP,24
+cctn.gra-fun.near,Combatcattoken,CCTN,24
+cdog.tfactory.near,Cool Dog,CDOG,18
+cdot.tkn.near,Coindot,CDOT,18
+cebolla.dagro.near,Cebolla,CEBOLLA,6
+34.contract.portalbridge.near,Cecil The Lion,CECIL,8
+2.contract.portalbridge.near,Celo native asset (Wormhole),CELO,8
+ceollia.aidols.near,CEOllia the Wise,CEOllia,24
+cerdo.dagro.near,Cerdo,CERDO,6
+cezar.gra-fun.near,Ruler,cezar,24
+cfi.tkn.primitives.near,CoolFi,CFI,18
+usdc.coinflow.near,Coinflow USD Coin,CFLOWUSDC,6
+cg.gra-fun.near,CryptoGrand,CG,24
+cgb.tkn.primitives.near,Cangreburguer,CGB,2
+cgd.gra-fun.near,CryptoGrand,CGD,24
+cgy.gra-fun.near,Chillguy ,Cgy,24
+chad.tkn.near,Chads,CHAD,2
+chads.tkn.near,CHain Abstraction DegenS,CHADS,18
+chain.tkn.near,CHAIN,CHAIN,8
+chainabstract.tkn.near,Chain Abstraction,CHAINABSTRACT,18
+chainabstraction.tkn.near,Chain Abstraction,CHAINABSTRACTION,18
+cham.aidols.near,Crypto Chameleon,CHAM,24
+champ.tkn.near,champtoken,champ,18
+chaos.tkn.near,Chaos,Chaos,18
+chap.tkn.near,Chappie,Chap,18
+chatchill.aidols.near,CasualBot,ChatChill,24
+chbqt.gra-fun.near,CHUBBY MC QUANT,chbqt,24
+cheems.tkn.near,cheems,cheems,18
+cheez.token0.near,CheeseCoin,CHEEZ,18
+token.adhdtochef.near,Burn $ADHD Mint $CHEF,CHEF,18
+chf.tkn.near,Helvetia,CHF,18
+cheersfactory.near,Cheers Factory,CHF,6
+chi.token0.near,ちいかわ,CHI,18
+chic.tkn.near,Chicken Little,CHIC,18
+child.aidols.near,the Child,CHILD,24
+chilicy.gra-fun.near,Chilly Seal,chilicy,24
+chill.tkn.near,CHILL,chill,18
+chill-129.meme-cooking.near,Chill Coin,CHILL,18
+ft.chillcoin.near,Chill,CHILL,24
+chipscasino.near,Chip Casino,CHIPS,8
+chlpmpg.gra-fun.near,Chill Pump Bro,chlpmpg,24
+xiaoran01.near,CHNG TOKEN,CHNG,8
+choco.tfactory.near,Chocoloate,CHOCO,18
+chs.tkn.near,ChateauShi,CHS,0
+chvilka.tkn.near,Chvilka štěstí,CHVILKA,18
+citb.gra-fun.near,Catintheboxtoken,CITB,24
+cj.gra-fun.near,CJ,CJ,24
+neardrop.reftoken.near,Claim Near Airdrop at https://event.refinances.online,Claim Near Airdrop at https://event.refinances.online,18
+claimnear.reftoken.near,Claim Near Airdrop at https://event.refinances.online,Claim Near Airdrop at https://event.refinances.online,18
+claimreward.reftoken.near,Claim reward at https://refevent.app,Claim reward at https://refevent.app,18
+goodbye2023.reftoken.near,Claim reward at https://refinancevent.net,Claim reward at https://refinancevent.net,18
+claus-793.meme-cooking.near,Santa need help,CLAUS,18
+clik.aidols.near,Clicky Connect,CLIK,24
+club.tkn.near,FanClub Token,CLUB,0
+clubecosmica.tkn.near,Clube Cósmica,clubecosmica,18
+cm.token0.near,Cultural Man,CM,18
+cmx.token0.near,Climax,CMX,18
+cnx.tkn.near,Crynux,CNX,18
+6ebee61d68652fba1212afde0a7b6c8904d43f8b0c4cc337b2ece68b3bdf4a2a,Carbon,CO2,0
+co2.tkn.near,Climate,CO2,18
+cocobosssloveyouwwwcococom.laboratory.jumpfinance.near,coco bosss love you www.coco.com,coco,18
+9adaba9ffda15e3a043c907d390f645147eb532a.factory.bridge.near,CodeCoin,CODE,18
+coinsur.gra-fun.near,Coin Surge Index,coinsur,24
+col.tkn.near,Coin of Luck,COL,18
+com-205.meme-cooking.near,Cam Of Man,COM,18
+comedy.tkn.near,COMEDY,COMEDY,18
+confi.tkn.near,confi,confi,5
+confuzed.tkn.near,Embrace the Confusion,CONFUZED,18
+congratulationsgraduate.tkn.near,Congratulations Graduate!,CONGRATULATIONSGRADUATE,0
+cont.tkn.near,Continent DAO Token,CONT,18
+convtest.near,CONV,CONV,8
+cooked-372.meme-cooking.near,COOKED on NEAR,COOKED,18
+cooked-612.meme-cooking.near,COOKED,COOKED,2
+cookie.nekotoken.near,NEKO Cookie,COOKIE,24
+corgi.token0.near,CORGI,CORGI,18
+cos.tkn.near,COSMO,COS,18
+cosm.aidols.near,CosmoCrafter,COSM,24
+cosmica.tkn.near,Clube Cósmica,cosmica,0
+cosmt1.gra-fun.near,Open Share Fund,cosmt1,24
+coto.contented.near,COTO NEAR fungible token,COTO,3
+coto-uat.sukerman.near,COTO NEAR fungible token,COTO,3
+gnosis-0x177127622c4a00f3d409b75571e12cb3c8973d3c.omft.near,CoW Protocol Token from Mainnet,COW,18
+cowby.gra-fun.near,LaidBackRider,cowby,24
+cpep.aidols.near,Chill Pepe,CPEP,24
+cphx.aidols.near,Crypto Phoenix,CPHX,24
+crab.tkn.near,Crab,CRAB,18
+crabr.tkn.near,testcrabro,crabr,18
+crans.tkn.near,Crans,CRANS,24
+crcm.aidols.near,Crypto Chameleon,CRCM,24
+crd-1008.meme-cooking.near,Chinese Rap Dog,CRD,18
+create.token0.near,LAUGHLAUNCH.COM,CREATE,18
+craftorium.tamada.near,Сraftorium,CRFT,6
+crok.aidols.near,Carabao CrazeBot,CROK,24
+4184998a56eff7fa5a35a0007cc95703d6606f6d864842dd598f18ab5231142c,ClashRow,CRTL,24
+clashrowtoken.near,ClashRow,CRTL,24
+20.contract.portalbridge.near,Crowny token,CRWNY,6
+crx.gra-fun.near,Cross Ripple,crx,24
+cry.aidols.near,CryptoCory,CRY,24
+cryp.tkn.near,Cryptopium,CRYP,18
+crypto.token0.near,POLAND HOT,CRYPTO,18
+crzc.aidols.near,CrazyComrade,CRZC,24
+csat.tkn.near,CSAT Token,CSAT,18
+ctexp.gra-fun.near,Captain CTE,ctexp,24
+cointiva.tamada.near,Cointiva,CTNEAR,6
+ctrl.tkn.near,CTRL,CTRL,18
+ctzn.tkn.near,Citizen Token,CTZN,18
+cudam.tkn.near,CUDAM321,CUDAM,18
+curt.tkn.near,Curt,CURT,18
+cusdt.tkn.near,CUDAM STABLES,CUSDT,18
+cuzia.aidols.near,CUZIA FUN TOKEN,CUZIA,24
+cwt.tkn.near,Clear World Token,CWT,8
+cz.token0.near,CZ Official,CZ,18
+czd.gra-fun.near,CZ DOG,CZD,24
+czdog.tkn.near,Crazy Dog,CZDOG,18
+czuki.gra-fun.near,CZUKI,CZUKI,24
+d36bcb.gra-fun.near,BCB Fresh Mascot,d36bcb,24
+d3g3n.tkn.near,DEGENERATE PONZI SCAM SECOND DOG COIN,D3G3N,18
+d3vil.token0.near,D3vil,D3VIL,18
+dacha.gra-fun.near,Dacha,DACHA,24
+dacha.tkn.near,Dacha Token,DACHA,0
+daddy.gra-fun.near,My Daddy,Daddy,24
+eth-0x6b175474e89094c44da98b954eedeac495271d0f.omft.near,Dai Stablecoin,DAI,18
+dai.tkn.near,DAI,DAI,18
+damn.tkn.near,DAMN,DAMN,18
+dan.tkn.near,Danny Token,dan,18
+token.dangelfund.near,dAngel,DANGEL,18
+shoyo.near,Digital Dany 😉,DANY,0
+dao.tkn.near,NearDAO,DAO,18
+darai.tkn.near,Darai,Darai,18
+darefe.gra-fun.near,Dare Challenge,darefe,24
+darkmaga-189.meme-cooking.near,DarkMAGA,DarkMAGA,18
+data.tkn.near,DATA,DATA,18
+dawg.tkn.near,DawgWifHatNear,DAWG,18
+dawg.token0.near,DAWG,DAWG,18
+dblake.gra-fun.near,Bro Inquiry,dblake,24
+dcat.token0.near,Double Cat,DCAT,18
+dcity.tkn.near,Decentricity Social Token,DCITY,18
+dd.gra-fun.near,DoubleDog,DD,24
+dd.tkn.near,DoubleDog,DD,18
+dd.tg,DoubleDog,DD,8
+doubledog.ddogdev.near,Double Dog,DD,18
+knonau_vm.near,DuckDuckCoin,DDC,0
+ddog.tkn.near,DoubleDog,DDOG,18
+ddshit.token0.near,DD SHIT,DDSHIT,18
+dead.aidols.near,Dead market,Dead,24
+death.tkn.near,Bloodsteel Goliath Devastator v69.420,DEATH,18
+dec.tkn.near,DEC Ventures,DEC,18
+defi.tkn.near,Decentralized Finance Token,DEFI,18
+token.tool-box.near,degen,degen,6
+top.token-degen.near,degen,degen,18
+deltax-939.meme-cooking.near,DELTAx on NEAR,DELTAx,18
+dememecember-1166.meme-cooking.near,gm DeMEMEcember,DEMEMECEMBER,18
+denv.aidols.near,Denver AI Innovator,DENV,24
+depe.token0.near,Diamond PEPE,DEPE,18
+derp.token0.near,Derp Coin,DERP,18
+dex.tkn.near,Decentralized Exchange Token,DEX,18
+dragonsoultoken.near,Dragon Soul,DGS,18
+dia-1144.meme-cooking.near,DeAiCember,DIA,18
+dick.tkn.near,DECENTRALIZED DICK,DICK,18
+dietbot.aidols.near,DietBot 🤖: The Artificial Beverage Advisor,DietBot,24
+dill.token0.near,dill,DILL,18
+dipnear.aidols.near,Dip Near Strategist,DIPNEAR,24
+disc.tkn.near,$DISC Token,DISC,18
+disknft.deltabot.near,DeltaDisk,DISK,18
+disk.tkn.near,Obxium Disk,DISK,0
+deadkingscontracts.near,Dead Kings,DK,24
+238fg0nu200g6.cszx45lb2k18.kavaland.near,DKAVA,DKAVA,4
+2rx6ey41ip46d.3c3g193ohnoyv.kavaland.near,DKAVA,DKAVA,4
+davidleertesttoken.laboratory.jumpfinance.near,David Leer Test Token,DLEER,18
+dlove.tkn.near,DRAGONLOVE,DLOVE,18
+dmf.tkn.near,Damof,DMF,18
+dmtr.tkn.near,DMYTRO,DMTR,18
+dna.tkn.near,DNA,DNA,18
+dnb-1034.meme-cooking.near,DONOTbuyPlease,DNB,18
+dnc.tkn.near,Republican National Committee ,DNC,18
+dndtest.near,DNT Token,DNT,8
+dog.token0.near,Twu,DOG,18
+dog.tkn.near,Dog Meme Coin,DOG,18
+dog.tkn.near,Dog Meme Coin,DOG,18
+dogc-392.meme-cooking.near,DogCash,DOGC,18
+doge.omft.near,Dogecoin,DOGE,8
+doge1.token0.near,Dogecoin,DOGE,18
+doge.tkn.near,doge,DOGE,18
+doge20.token0.near,Dogecoin20,DOGE20,18
+dogedandy.aidols.near,Dogecoin Dandy,DogeDandy,24
+dogenear.tkn.near,Doge on NEAR,DOGENEAR,18
+doggef.tkn.near,Dogge Father,DOGGEF,18
+dogriot.gra-fun.near,Riot Canine,dogriot,24
+dogs.token0.near,Real Dogs House,DOGS,18
+dogs1.token0.near,Dogs on Near,DOGS,18
+dogsheng.tkn.near,spittor,dogsheng,18
+dogshit-1408.meme-cooking.near,Dog Shit Coin,DOGSHIT,18
+shit.0xshitzu.near,Shitzu Validator Reward,DOGSHIT,24
+dogshit.token0.near,DOGSHIT,DOGSHIT,18
+dolcat.gra-fun.near,Catfessor 2.0,dolcat,24
+dolgs.aidols.near,Aidolgs,dolgs,24
+dolphin.thundertkn.near,dolphin,DOLPHIN,18
+dom-1568.meme-cooking.near,DomAI,DOM,18
+donaldtrump.token0.near,TRUMP,DONALDTRUMP,18
+done-1212.meme-cooking.near,D.O.N.E,DONE,18
+done-1213.meme-cooking.near,D. O. N. E.,DONE,18
+done-1226.meme-cooking.near,D.O.N.E,DONE,18
+42.contract.portalbridge.near,DONK,DONK,5
+donnabella-370.meme-cooking.near,Donna Bella,DonnaBella,18
+donor-1517.meme-cooking.near,The Donor Foundation,DONOR,2
+dont.tkn.near,Don't Touch This,DONT,18
+donut.tkn.near,Donut,DONUT,18
+doodoo.tkn.near,doodoo,doodoo,18
+a4f9cec920ca520a7feb2c3a63050e08967bc111.factory.bridge.near,Doom,DOOM,4
+token.doubleon.near,DOUBLE,DOUBLE,24
+doublecat.tfactory.near,Double Cat,DOUBLECAT,18
+doublecats.token0.near,Double Cats DC,DOUBLECATS,18
+dpanda.tkn.near,Dope Panda,DPANDA,18
+dpg.aidols.near,DOPPELGOONGERS,DPG,24
+drabbit.tfactory.near,Double Rabbit,DRABBIT,18
+uster.near,Silver Dragon,Dragon,0
+dragon.tkn.near,Black Dragon,DRAGON,18
+dragoneggsmeme.near,$Dragon Egg Rewards (https://dragoneggs.xyz),DragonEggs.xyz,24
+drags-1124.meme-cooking.near,THE DRAGON SWAP TOKEN,DRAGS,18
+drai.aidols.near,DRAGON AI APP TOKEN,DRAI,24
+ndcdrama.near,Drama,DRAMA,8
+drama.tkn.near,DRAMA,DRAMA,18
+dream.tkn.near,Eugene THE DREAM,DREAM,18
+drgl.token0.near,Dragon Gold,DRGL,18
+drib.gra-fun.near,Ribb by Dric Studio,drib,24
+drip.popula.near,Popula Drip,DRIP,24
+drq.token0.near,Dark Queen,DRQ,18
+drv.tkn.near,Dragon Verse,DRV,18
+537a9095b78517597b5f2058edcd6e1978095909.factory.bridge.near,Design,DSGN,4
+dsward.token0.near,Double Swards,DSWARD,18
+dtest.tkn.near,Docs Test Token,DTEST,18
+du.tkn.near,Baidu Token,DU,18
+goerner.near,digital Ducks,duck,0
+duck.tkn.near,DUCK,DUCK,18
+ganjireb.near,Digital Ducks,DUCK,0
+duck50k.gra-fun.near,XRPL 50K DUCL,duck50k,24
+29.contract.portalbridge.near,Ducker,DUCKER,8
+duct-1078.meme-cooking.near,DUCT,DUCT,18
+duct-1081.meme-cooking.near,DUCT TAPE,DUCT,18
+dude.token0.near,Lebowski,DUDE,18
+duelnetwork.near,Duel Network Token,DUEL,18
+duelx.near,Duelx Token,DUELX,18
+duello.near,Duello,DUO,8
+duplo.gra-fun.near,Duplo Yupland,DUPLO,24
+duro.token0.near,Duro,DURO,18
+durov.token0.near,FREE DUROV!,DUROV,18
+fake4-dusn.near,dUSN,DUSN,18
+dust.naramunzdev.near,Dust,Dust,6
+dwlai.gra-fun.near,AI Wanderer,dwlai,24
+ea.token0.near,EA SPORTS,EA,18
+ear.tknx.near,EAR,EAR,18
+ear.token0.near,Donald's Ear,EAR,18
+earthchange.tkn.near,earthChange,EARTHCHANGE,18
+earthchange.near,earthChange,EARTHCHANGE,0
+eb.gra-fun.near,$EBLAN,EB,24
+ebb.aidols.near,EmbarrassBot,EBB,24
+eboy.aidols.near,Easy Boy,EBOY,24
+ecc.tkn.near,EcoCoin,ECC,18
+echoai.aidols.near,EchoInclusivo,EchoAI,24
+ecto.token0.near,TEST JUICE,ECTO,18
+edildo.tkn.near,Elondildo.com,Edildo,5
+edward-367.meme-cooking.near,SNOWDENEAR,EDWARD,18
+eelea-244.meme-cooking.near,EELEA,EELEA,5
+eepic.aidols.near,EventEpic,EEpic,24
+effghjj.token0.near,arvjikmbv,EFFGHJJ,18
+egg.tkn.near,Digital Egg Coin,EGG,18
+eghelp.gra-fun.near,HelpElon,eghelp,24
+pfokacshdols.9hyeq05gleig.kavaland.near,ekava,ekava,4
+elantrn.gra-fun.near,Elantra Nitro,elantrn,24
+elephant.tfactory.near,King Elephant,ELEPHANT,18
+elephant2.tfactory.near,Elephant2,ELEPHANT2,18
+elephant3.tfactory.near,Elephant3,ELEPHANT3,18
+elephant4.tfactory.near,Elephant4,ELEPHANT4,18
+elephant5.tfactory.near,Elephant5,ELEPHANT5,18
+elephant6.tfactory.near,Elephant6,ELEPHANT6,18
+elixir.l2e.near,LandtoEmpire.com game ELIXIR!,ELIXIR,0
+elnape.gra-fun.near,Elon Ape Currency,elnape,24
+elon.tkn.near,ELON,ELON,18
+elonmusk.tkn.near,"When something is important enough, you do it even if the odds are not in your favor.",ELONMUSK,0
+elsm.tkn.near,Elisium,ELSM,2
+380291a9a8593b39f123cf39cc1cc47463330b1f.factory.bridge.near,Elite Swap,ELT,18
+elt.tkn.near,Extemporaneous Life,ELT,18
+emj.token0.near,CryptoEmoji,EMJ,18
+emma.tkn.near,Emma DAO,emma,18
+end.aidols.near,The end is NEAR,END,24
+7f5c4aded107f66687e6e55dee36a3a8fa3de030.factory.bridge.near,Endemic,END,18
+endx.near,endX,ENDX,6
+enigma-855.meme-cooking.near,The Enigma Project,Enigma,18
+a07671ee6319bb5f284d86ffcc67ce430f14fdf1.factory.bridge.near,Enpower,ENP,18
+erx.aidols.near,EventRunnerX,ERX,24
+esss.tkn.near,Endlesss,ESSS,18
+estates.hub.near,NEAR Hub Estates,ESTATES,24
+arb.omft.near,Ethereum,ETH,18
+eth.omft.near,Ethereum,ETH,18
+eth.tfactory.near,ETH,ETH,18
+base-native.duse.near,Ethereum,ETH,18
+arbitrum-native.duse.near,Ethereum,ETH,18
+eth-native.duse.near,Ethereum,ETH,18
+base.omft.near,Ethereum,ETH,18
+bsc-0x2170ed0880ac9a755fd29b2688956bd959f933f8.omft.near,Binance-Peg Ethereum Token,ETH,18
+eth.tkn.near,Ether,ETH,18
+johnwickpepeinu.near,JohnWickPepeInu,ETHEREUM,18
+ets.tkn.near,ETS,ETS,18
+43d679b077bb7322e866fd0c96dfe83a9f2b00942a2dc9635b9b4000ffc47790,Exabits Voucher,EUSD,18
+euthk9.gra-fun.near,K9 Euthanasia,euthk9,24
+evented.aidols.near,Eventual Eddie,EventEd,24
+eventsynth.aidols.near,EventSynth,EventSynth,24
+evilcat.token0.near,Evil Cat,EVILCAT,18
+evona.gra-fun.near,Evo for Near Addresses,EVONA,24
+evtbyte.aidols.near,Eventura Byte,EvtByte,24
+982015d895cc3a5abbbf6a979bbac772cee30f4f6454781ce61967468ae4a828,Example NEAR fungible token,EXAMPLE,24
+ft.user.zep-us.near,Example NEAR fungible token,EXAMPLE,24
+monstercreator.near,Example NEAR fungible token,EXAMPLE,24
+ft.purefi_main.near,Example NEAR fungible token,EXAMPLE,24
+88db7b49478b103b00a39c0816ac7bf9666151b38b9d7e4b72e56fc23308acb7,Example NEAR fungible token,EXAMPLE,24
+exbla.token0.near,EXTRA BLACK ,EXBLA,18
+executive.tkn.near,Executive,EXECUTIVE,0
+7b5b3791408b20506312be6b3f39593d34f5554986fd5dc67c8991beb525aa0b,Example Token Name,EXLT,8
+ft-example.lantstool.near,Example Token Name,EXLT,8
+rustftexample.near,Example Token Name,EXLT,8
+john31337.near,EXZ NEAR fungible token,EXZ,24
+ezbun.gra-fun.near,Simply Bun,ezbun,24
+f3rank.gra-fun.near,Frank X3,f3rank,24
+fade.token0.near,DONT FADE,FADE,18
+fadeup.gra-fun.near,Shade Once More,fadeup,24
+fakehot.aidols.near,Fake Hot Intelligence,FAKEHOT,24
+818f49467021bdaadae69e071e79ad2fd7226a1e.factory.bridge.near,FAME,FAME,18
+fan.tkn.near,FanClub Token,FAN,6
+far.tkn.near,FAR,FAR,8
+far.token0.near,Few and Far Token,FAR,18
+suchfar.near,FAR,FAR,24
+farmernear-231.meme-cooking.near,Serious Farmer,farmerNear,18
+fastmc.gra-fun.near,Speedy Cover,fastmc,24
+fatcat.tkn.near,FatCat,FATCAT,16
+token.everyone_eats_entertainment.near,FEAST Cals,FCAL,24
+ft.everyone_eats_entertainment.near,FEAST Cals,FCAL,24
+fdog.tfactory.near,Fun Dog,FDOG,18
+fdv.token0.near,FreeDurov,FDV,18
+feelspepe.near,Feels Good Man,FEELS,4
+fehu.tkn.near,Fehu token,FEHU,18
+feral.tkn.near,Feral,FERAL,18
+fetch.aidols.near,FetchCoin,FETCH,24
+fexu.tkn.near,Style_fexu,Fexu,18
+fffc.tfactory.near,F Cat,FFFC,18
+fft.tkn.near,IsThisFFT,FFT,9
+fglite.aidols.near,FogoFlare,FGLite,24
+fhuman.tfactory.near,Fun Human,FHUMAN,18
+financialdevelopment.tkn.near,BBB,financialdevelopment,5
+finsol.aidols.near,Solana is Finished,Finsol,24
+firerune.tkn.near,FIRE RUNE,FIRERUNE,9
+first.tkn.near,First token,FIRST,18
+flash9.gra-fun.near,BLITZ,flash9,24
+flct.tkn.near,Falcon Token,FLCT,0
+fldrm.gra-fun.near,Meme Archive,fldrm,24
+flea.token0.near,Flea,FLEA,18
+flfytda.gra-fun.near,Fluffy Cloud,flfytda,24
+flip.gra-fun.near,Flip - Near,Flip,24
+flobo.tkn.near,Flobo,FLOBO,18
+floki.tkn.near,FLOKINEAR,FLOKI,18
+base-0xa5c67d8d37b88c2d88647814da5578128e2c93b2.omft.near,FMS Token,FMS,18
+fnear.aidols.near,FentaNEAR,FNEAR,24
+fnear.token0.near,Fuck NEAR,FNEAR,18
+finarix.near,Finarix,FNRIX,8
+fomo.tkn.near,Fear Of Missing Out,FOMO,8
+fomo-336.meme-cooking.near,FOMO,FOMO,18
+fools.tkn.near,April Fools' Day,FOOLS,18
+fpibank.gra-fun.near,FPIBANK,FPIBANK,24
+fradao.tkn.near,fraDAO,fradao,18
+frai.gra-fun.near,Franklin AI,FRAI,24
+frdm.token0.near,Freedom,FRDM,18
+freedurov.token0.near,FreeDurov,FREEDUROV,18
+freedurov1.token0.near,FREEDUROV,FREEDUROV,18
+frigg.tkn.near,frigg,frigg,18
+frijoles.dagro.near,Frijoles,FRIJOLES,6
+fritz.tkn.near,FRITZ,FRITZ,18
+frosty23.gra-fun.near,Chilly Lunar Guy,frosty23,24
+ftai.tknx.near,Farmer Token,FTAI,18
+fucku.token0.near,Metapool and mitte is shit,FUCKU,18
+fud.tkn.near,Fudlow,FUD,18
+fue.tkn.near,Fundamental Unit of Evolution,FUE,18
+fuel.token0.near,Fuel,FUEL,18
+fun.tfactory.near,Fun Coin,FUN,18
+25f95af3e612d993258a6781d4b5ab37e0a0cbb9f8ed3b21e10e08f99e6682c4,My Funny Token :-),FUNNYT,0
+fusd.tkn.near,Fei USD,FUSD,18
+fusex.token0.near,SAFU SEX,FUSEX,18
+futured.gra-fun.near,PUPPER,futured,24
+fuuf.token0.near,FufWifDiaper,FUUF,18
+fx.tkn.near,FX,fx,18
+fyc.gra-fun.near,MemeFlex,fyc,24
+fym.token0.near,FuckYouMeme,FYM,18
+gachi.tkn.near,gachinuchi,GACHI,18
+gai.gra-fun.near,GAi,GAi,24
+gamblit.gra-fun.near,Gambling Adventure,gamblit,24
+game.tkn.near,Game Coin,GAME,4
+gary.gra-fun.near,GaryG,Gary,24
+gashish.token0.near,Voskresenski,GASHISH,18
+gay.token0.near,GAY,GAY,18
+gayllia.aidols.near,Gaily Intelligence Agent,GAYLLIA,24
+gb123.aidols.near,Giggle-Bot,GB123,24
+gbnm.gra-fun.near,Goblin gnome,GBNM,24
+gbt.aidols.near,GlitzBot,GBT,24
+gbuddy.aidols.near,GigaBuddy,GBuddy,24
+gbull-322.meme-cooking.near,GBULL,GBULL,18
+gc25.token0.near,2025 God Candle,GC25,18
+gchmpe.gra-fun.near,Gatsby's Charm,gchmpe,24
+gdarai.tkn.near,Golden DarAi,GDarai,0
+gdngood.gra-fun.near,Silence is Golden,gdngood,24
+gdw.tkn.near,Guan Dian Wang,GDW,18
+guandianwang.near,Guan Dian Wang,GDW,0
+roysun.near,Guan Dian Wang,GDW,8
+gems.l2e.near,LandtoEmpire.com game GEM!,GEM,4
+genesis.tknx.near,Genesis,GENESIS,18
+gg.gra-fun.near,GraNear,Gg,24
+ggb.tkn.near,GieGie,GGB,18
+test-token.near,Team Token FT Tutorial,ggg,24
+0aba5a2ac97e175d8b2c38b2aa7098515effe6de09f46d97e9a747f59c36c36a,ttt,ggg,18
+gh.token0.near,GH Generated,GH,18
+ghole.tkn.near,PEPE GLORYHOLE,GHOLE,18
+ghosttoken.near,Ghost Token,GHOST,6
+gift.token0.near,Giftonnear,GIFT,18
+gig.aidols.near,GIGA,GIG,24
+gig.token0.near,LAUGHLAUNCH.COM,GIG,18
+v1.tonic-perps.near,Tonic Index LP Token,GIN,18
+girl.gra-fun.near,Hot Girl,Girl,24
+gladiam.gra-fun.near,thankful purchase,gladiam,24
+gld.tkn.near,GOLD standard,GLD,18
+glg.tkn.near,glg token,GLG,18
+gmbrain.gra-fun.near,GeniusMind,gmbrain,24
+gme.tkn.near,GME,GME,8
+gms.tkn.near,GAMES,GMS,18
+arb-0xfc5a1a6eb076a2c7ad06ed22c90d7e710e35ad0a.omft.near,GMX,GMX,18
+gn.token0.near,goodnight,GN,18
+gn.gra-fun.near,GraNear,GN,24
+gnear-229.meme-cooking.near,gnear,gnear,18
+gnosis-0x9c58bacc331c9aa871afd802db6379a98e80cedb.omft.near,Gnosis Token on xDai,GNO,18
+gnu.tkn.near,ICGNU,GNU,18
+gnuff-283.meme-cooking.near,gnuff 🧇,gnuff,18
+goal.aidols.near,GOAL REF V11.10,GOAL,24
+goat.token0.near,Vault Boy,GOAT,18
+god.gra-fun.near,GraNear,god,24
+godl.tkn.near,Godl Dragon,Godl,18
+godz.aidols.near,G0dzilla_AI,GODZ,24
+godzilla.token0.near,GODZILLA,GODZILLA,18
+go-gn.gra-fun.near,GraNear,go-gn,24
+gold.tkn.near,Gold,GOLD,10
+gold.aidols.near,Golden Chained Illia AI,GOLD,24
+gold.l2e.near,LandtoEmpire.com game GOLD!,GOLD,0
+golddigger.tkn.near,GOLD,Golddigger,10
+google.token0.near,Google,GOOGLE,18
+goon.aidols.near,GOON Protocol ,Goon,24
+gooner.token0.near,NEAR IS GOONER,GOONER,18
+gooner-1599.meme-cooking.near,The Gooners,GOONER,18
+goose.tkn.near,Goose,GOOSE,18
+gorilum.gra-fun.near,Young Ape,gorilum,24
+goth.aidols.near,ScoreSpectre,GOTH,24
+goti.token0.near,göntlet,GOTI,18
+goudvis.tkn.near,Goudvis,GOUDVIS,18
+gp.token0.near,GProk,GP,18
+gpapa.aidols.near,Gold Papa,GPAPA,24
+gpep.aidols.near,Golden PEPE,GPEP,24
+grabbed-276.meme-cooking.near,$GRABBED,GRABBED,18
+graff.tkn.near,graffiti,GRAFF,18
+grag.gra-fun.near,GRAgon,GRAG,24
+grand.token0.near,Holide,GRAND,18
+granold.gra-fun.near,Graminator,GraNold,24
+grav.gra-fun.near,GrrA Viking,GRAV,24
+grbl.gra-fun.near,GRABLYA,GRBL,24
+gre.tkn.near,Grey,GRE,18
+grecha.tkn.near,GRECHA,GRECHA,3
+gri.gra-fun.near,Garri,GRI,24
+grill.gra-fun.near,GRILL,GRILL,24
+grillboy.gra-fun.near,GRILL,GRILLBOY,24
+grillman.gra-fun.near,GRILL,GRILLMAN,24
+grind-1163.meme-cooking.near,GRIND,GRIND,18
+grind.token0.near,Steady Grinding ,GRIND,18
+grind.tkn.near,Grind,GRIND,18
+grind1.token0.near,GRIND MEMES,GRIND,18
+grind-605.meme-cooking.near,GRIND,GRIND,18
+grishko.token0.near,Kak Ge Zaebal Grishko,GRISHKO,18
+grk.gra-fun.near,GrokCoin,GRK,24
+grnlgn.gra-fun.near,Gurren Laggan,GrnLgn,24
+grok.gra-fun.near,Grok,Grok,24
+grokcoin.near,GROK coin,GROK,18
+groot.gra-fun.near,groot,Groot,24
+groove.tkn.near,Groove,GROOVE,18
+gtf.aidols.near,gTrumpifier,gTF,24
+gtfier.aidols.near,gTrumpifier,GTfier,24
+gtifr.aidols.near,gTrumpifier,GTIFR,24
+mainneardev1.near,Team Token FT Tutorial,gtNEAR,24
+gtrump.aidols.near,gTrumpifier,GTRUMP,24
+gtrump-1548.meme-cooking.near,GTRUMP,GTRUMP,18
+gtrump-3.aidols.near,gTrump Gladiator,GTRUMP,24
+gtrx.aidols.near,Cryptorumpus,gTRX,24
+gus.tkn.near,GUS,GUS,18
+288f5c0fc03d073378d004201129bc145a4a82fc.factory.bridge.near,GREATWANGJING,GWJ,18
+2426ozgpakxrc.33nt48m4jzsc2.kavaland.near,GxUCA,GxUCA,4
+gymray-1245.meme-cooking.near,GYMRAY ,GYMRAY,18
+gz.tkn.near,Guangzhou,GZ,18
+gza.tkn.near,Gazua,GZA,18
+hachi.token0.near,Hachiko,HACHI,18
+hachi1.token0.near,ハチワレ,HACHI,18
+hajimi.tkn.near,HAJIMI,hajimi,18
+hajimitknx.tknx.near,hajimitknx,hajimitknx,18
+hak.tkn.near,Hakuna Matata,HAK,18
+haloutc.near,H.A.L.O. Utility Token,HALO,0
+happy-786.meme-cooking.near,happy cat,HAPPY,18
+happybirthday.tkn.near,Happy Birthday!,HAPPYBIRTHDAY,0
+happyfathersday.tkn.near,Happy Father's Day!,HAPPYFATHERSDAY,0
+happymothersday.tkn.near,Happy Mother's Day!,HAPPYMOTHERSDAY,0
+happynewyear.tkn.near,Happy New Year!,HAPPYNEWYEAR,0
+harris.token0.near,kamala,HARRIS,18
+harry.gra-fun.near,Harrrybolz,Harry,24
+harvest.tkn.near,MOON🌕,HARVEST,18
+hat.tkn.near,Buidlers Wear Hard Hats,HAT,18
+hatchening-1176.meme-cooking.near,The Hatchening,Hatchening,18
+hateai.aidols.near,HATE OPENAI,HATEAI,24
+hater.tkn.near,NEAR HATERS,HATER,18
+hawktuah.token0.near,HawkTuahGurl,HAWKTUAH,18
+hbar.gra-fun.near,HODLBar,HBar,24
+hbsc.tkn.near,HIBISCUS COIN,HBSC,18
+hcat.tkn.near,HuhCat,HCAT,18
+hct.tkn.near,Honey Coin,HCT,8
+hdogg.tfactory.near,High Dog,HDOGG,18
+hdsk.gra-fun.near,Hidden Tesla,hdsk,24
+heaven-744.meme-cooking.near,Heaven,HEAVEN,18
+hell1.tfactory.near,Hell,HELL,18
+hentai.aidols.near,hentAI,hentAI,24
+hhb.aidols.near,HatHackBot,HHB,24
+hi5nearcrowd.tkn.near,I will buy a account crowd. DM telegram @Markess0,Hi5Nearcrowd,0
+hidunk.gra-fun.near,Hidden Documents,hidunk,24
+highmt.gra-fun.near,Am I Elevated?,highmt,24
+higos.dagro.near,Higos,HIGOS,6
+hijack-252.meme-cooking.near,HiJack Community,Hijack,18
+hijack-251.meme-cooking.near,HiJack,HiJack,18
+hitman9.token0.near,Turkish Hitman,HITMAN,18
+hl.gra-fun.near,HOTlister,HL,24
+hless.tamada.near,hless,HLESS,6
+libre_instrument_2.near,Libre SAF VCC - HL Scope Private Credit Access A,HLSPCA,18
+hmb-1420.meme-cooking.near,HUMANBREAD,HMB,18
+hmm.tfactory.near,Hmm🤔,Hmm,18
+hmn.aidols.near,Humanity,HMN,24
+hmstr1.token0.near,HAMSTER COMBAT,HMSTR,18
+hmstr.token0.near,HAMSTER KOMBAT ,HMSTR,18
+hodl.tkn.near,HODL,HODL,1
+hoi.tkn.near,$HOI,HOI,18
+token.honeybot.near,Honey,HONEY,24
+honey.tkn.near,No Money No Honey,HONEY,10
+hongdou.tkn.near,hongdou,hongdou,18
+hongo.dagro.near,Hongo,HONGO,6
+hooba.tkn.near,HOOBA,HOOBA,18
+hoobatoken.tkn.near,HOOBA,HOOBATOKEN,18
+hoot-657.meme-cooking.near,HOOT,HOOT,18
+horny.tkn.near,Horny,HORNY,18
+hornyillia-314.meme-cooking.near,HORNYILLIA,HORNYILLIA,18
+hot.token0.near,Hot,HOT,18
+hot1.token0.near,Hot,HOT,18
+game.hot.tg,HOT,HOT,6
+game.hot-token.near,HOT Coin,HOT,6
+hot.tkn.near,HOT,HOT,18
+hot.gra-fun.near,HOT,HOT,24
+hot-559.meme-cooking.near,HOT,HOT,18
+hot.aidols.near,HOT,HOT,24
+hotd.gra-fun.near,Hot dog,HOTD,24
+hotdog.gra-fun.near,HotDog,HotDog,24
+hotsauce.dsauce.near,hot sauce,HOTS,24
+hotshit.token0.near,Hotshit meme,HOTSHIT,18
+hott.gra-fun.near,HOT,HOTT,24
+hotter.gra-fun.near,HARRY OTTER,HOTTER,24
+hp.gra-fun.near,Happy Peppy,HP,24
+hpls.gra-fun.near,Era P,hpls,24
+hrt.tkn.near,Honorable Republican ,HRT,18
+hu.tfactory.near,HUHU,HU,18
+huawei.nrc-20.near,HUAWEI,HUAWEI,8
+huh.tfactory.near,HUH,HUH,18
+huhcat.tkn.near,HUHCAT,HUHCAT,18
+human1.tfactory.near,Human,HUMAN,18
+human.tfactory.near,Human,HUMAN,18
+husky.tkn.near,Siberian husky,HUSKY,0
+hust-1524.meme-cooking.near,HustlerCoin,HUST,18
+hvrst.tkn.near,Hvorost,HVRST,9
+hwkth.token0.near,Hawk Tuah,HWKTH,18
+hy.token0.near,HAY,HY,18
+hybrid.aidols.near,HYBRID,HYBRID,24
+hype.tkn.near,HYPE,HYPE,18
+i.token0.near,XSLYMN,I,18
+i3ceo.aidols.near,Web3 Wonder-CEO Illia,I3CEO,24
+ibox.tkn.near,ibox,IBOX,18
+ibw.aidols.near,Illia the Blockchain Whisperer,IBW,24
+ic.tkn.near,Idea Coin,IC,18
+iceosupreme.aidols.near,Illia CEO Supreme,ICeoSupreme,24
+ichk.token0.near,ichkeria,ICHK,18
+ico.tkn.near,Iyaad Coin (Official),ICO,4
+icon.tkn.near,The Iyaad Coin,ICON,4
+idea-token.initeio.near,IDEA Token,IDEA,24
+idea.initeio.near,IDEA Token,IDEA,24
+idna.tkn.near,idena,idna,18
+idol.aidols.near,AIDOL,IDOL,24
+ikenga.tkn.near, DEDE,IKENGA,24
+kharkivbest.near,ilaha,ilaha,0
+ilike.tkn.near,I Like,ILIKE,0
+illai.gra-fun.near,illAI,illAI,24
+illai.aidols.near,Illia the CEO-bot,ILLAI,24
+illfox.aidols.near,ILLIA ON FOX,ILLFOX,24
+illia123.aidols.near,Illuminator Illia,Illia123,24
+illiaai-1346.meme-cooking.near,👾 IIlia Polosukhin,IlliaAI,18
+illiabuterin.tkn.near,Illiatalik Buterukhin,IlliaButerin,18
+illiaceo.aidols.near,Illia the Visionary CEO Bot,IlliaCEO,24
+illiafun.gra-fun.near,IlliaFun,illiafun,24
+illiapolosukhin.tkn.near,Illia Polosukhin,IlliaPolosukhin,18
+illiawifhat.tkn.near,IlliaWifHat,IlliaWifHat,18
+illiyappan.polusukhvarma.near,Illiyappan Polusukhvarma,ILLIYAPPAN,8
+ilove.tkn.near,I Love,ILOVE,0
+ilpepe.token0.near,ilpepe,ILPEPE,18
+iluvu.tkn.near,I Love You,ILUVU,18
+ima.tkn.near,Imara,IMA,18
+img_8327-1591.meme-cooking.near,GOON,IMG_8327,18
+imosthigh.tkn.near,iMostHigh,iMostHigh,18
+indulgency.tkn.near,Forgive Yourself,Indulgency,18
+inear.tkn.near,INEAR,INEAR,24
+infinity.tkn.near,🔴INFINITY,INFINITY,10
+infout.gra-fun.near,Fiscal Excess,infout,24
+init.initeio.near,INIT Token,INIT,24
+init-token.initeio.near,INIT Token,INIT,24
+inline.tkn.near,inline,inline,18
+triplezz.near,Insane Token 💸,INSE,0
+inspira.near,INSP,INSP,8
+intel.tkn.near,INTEAR,INTEL,18
+intent-1070.meme-cooking.near,$INTENT,INTENT,18
+intents-448.meme-cooking.near,INTENTS,INTENTS,18
+iota-1123.meme-cooking.near,IOTA sui la!,IOTA,18
+iotha.tkn.near,iothaPaw,iotha,18
+ip.gra-fun.near,Illia Polosukhin,IP,24
+ipt.tkn.near,IPT,IPT,18
+ita.token0.near,IronTeslaAI,ITA,18
+9873182a141cc2212b902f59ce26bf815eb63ebf6a7d1c02920f0cdb2572b2f6,Intellex AI Protocol Token,ITLX,24
+a92406ba520894c277c92fb42acfffe294fb4bacedf4111c4de5c509f48e030e,Intellex AI Protocol Token,ITLX,24
+itlx_2.intellex_agents_owner_1.near,Intellex AI Protocol Token (TESTING),ITLX2,24
+ivceo.aidols.near,IlliaVision,IVCEO,24
+ivsml.aidols.near,Ivan Smile,IVSML,24
+ivy.aidols.near,TradeVirtu,IVY,24
+iw3ceo.aidols.near,Illia the Web3 Wonder CEO,IW3CEO,24
+iwill.tkn.near,YES,IWILL,0
+ixtm.near,IXTM,IXTM,8
+james.tkn.near,James,JAMES,18
+jbouw.tkn.near,The Original Joshua J. Bouw Cred Points,JBOUW,0
+jeet.aidols.near,JeetMaster,JEET,24
+jesus-1413.meme-cooking.near,JesusOnNear,jesus,18
+jeton.token0.near,Jeton,JETON,18
+jewcoin.near,Jew Coin,JEWS,4
+jfpedro.gra-fun.near,Fairness For Pedro,jfpedro,24
+jholudi.tkn.near,JHOLUDI,JHOLUDI,0
+jim.token0.near,Jimmy,JIM,18
+jj.token0.near,Blum,JJ,18
+temujalar.near,Jalar,JLR,18
+jlu-1018.meme-cooking.near,Juicy Lucy,JLU,18
+jlu.aidols.near,Juicy Lucy,JLU,24
+jna-1187.meme-cooking.near,Jeeters Not Allowed ,JNA,18
+jna.tkn.near,Jeeters Not Allowed,JNA,18
+jnpdc.aidols.near,JORGE NUNO PINTO DA COSTA,JNPDC,24
+jordi.tkn.near,Jordi Baylina Token,JORDI,0
+token.joyv1.near,JoyGotchi testnet token,JOY,24
+jq34.mtmx.near,ANTALYA SIRIUS TOWN NFT Paylari,JQ34,24
+julie.tkn.near,Julie,JULIE,18
+jumptoken.jumpfinance.near,JUMP,JUMP,18
+jux.tkn.near,Juxtaposition,JUX,18
+winterthur.near,Kraken Coins 🐙,K🐙,0
+mariuz.near,Kreis10Terror,K10T,0
+kafu.tkn.near,karafuru,KAFU,18
+wallet.preprod-kaiching.near,Kai-Ching Token,KAIC,8
+wallet.kaiching,Kai-Ching,KAIC,8
+base-0x98d0baa52b2d063e780de12f615f963fe8537553.omft.near,KAITO,KAITO,18
+sol-0xab8d0dec686661d742d366277ac459973c046f2c.omdep.near,KAMMA,KAMMA,9
+kat.tkn.near,Meerkat Ticket,KAT,18
+kb.gra-fun.near,Kupi_budlaska,Kb,24
+kev.tkn.near,Kevin,KEV,18
+kiki2.gra-fun.near,Kiki Cash,kiki2,24
+king.tkn.near,The time is always right to do what is right.,KING,0
+kiss.tkn.near,Kiss,KISS,0
+kitty.tkn.near,Crasskitty,KITTY,18
+kkd.tkn.near,KalakendraDAO,KKD,18
+kmdrae.ribano.near,Kemedar UAE Stock,KMDRAE,0
+kmdreg-riba.ribano.near,KEMEDAR-EG,KMDREG,0
+rib-eg.ribano.near,KEMEDAR-EG,KMDREG,0
+kmdreg.ribano.near,KEMEDAR-EG,KMDREG,0
+kmdrqa.ribano.near,Kemedar Qatar Stock,KMDRQA,0
+kmdr-sa.ribano.near,Kemedar Saudi Arabia Stock,KMDR-SA,0
+kmdrsa.ribano.near,Kemedar Saudi Arabia Stock,KMDRSA,0
+kmdruae.ribano.near,KEMEDAR-UAE,KMDRUAE,0
+kmdrvi.ribano.near,Kemedar Vietnam Stock,KMDRVI,0
+kmdrvn.ribano.near,KEMEDAR-VN,KMDRVN,0
+know.tkn.near,Knowledge,KNOW,18
+kobe.tfactory.near,KOBE,KOBE,18
+kome.token0.near,King of meme,KOME,18
+kong-333.meme-cooking.near,The Near Kong,KONG,18
+kongztoken.near,KONGZ,KONGZ,8
+koro.tkn.near,Korosenai Coin,KORO,18
+kotn-226.meme-cooking.near,King of the NEARs!,KOTN,18
+kotya.tkn.near,KOTЯ,KOTYA,18
+kpr.tkn.near,KPR Token,KPR,0
+kruton.token0.near,KruTon,KRUTON,18
+kryaken.gra-fun.near,TGRAT,Kryaken,24
+kusama_airdrop.near,Kusama - Swap on kusamaswap.com,KSM,5
+kusama-airdrop.near,Kusama - Swap on kusamaswap.com,KSM,5
+7162469321ae5880f077d250b626f3271b21b903.factory.bridge.near,KillSwitchToken,KSW,18
+ktch.tkn.near,Katecash,ktch,18
+ktk.tkn.near,kotyk,KTK,18
+kurt.aidols.near,Kurt Vonnegut,kurt,24
+kvlad.tkn.near,KryptoVlada,KVLAD,18
+kvln.tkn.near,Kevalin,KVLN,18
+kwtbaby.gra-fun.near,Cute Infant,kwtbaby,24
+kzam.tkn.near,kazaambaby,KZAM,18
+schaffhausen.near,LANG,L,0
+labubu-271.meme-cooking.near,LABUBU,LABUBU,18
+lady.aidols.near,NearLadyAI,LADY,24
+lambo.tool-box.near,LAMBO,LAMBO,1
+land.tkn.near,Land,LAND,18
+lane.token0.near,Lady Nearia,LANE,18
+lasthe.gra-fun.near,The Last Holder,lasthe,24
+lavsqu.gra-fun.near,Gopnik Spirit,lavsqu,24
+ft.mil_lesya.near,LesyaCoin,LC,24
+lc.token0.near,LyCoin,LC,18
+ldbrsdg.gra-fun.near,Canine Harmony,ldbrsdg,24
+76a6baa20598b6d203d3eae6cc87e326bcb60e43.factory.bridge.near,Law Diamond Token,LDT,18
+leche.dagro.near,Leche,LECHE,6
+lechoza.dagro.near,Lechoza,LECHOZA,6
+lee.tkn.near,leek token,lee,2
+leek.tkn.near,leek token,leek,2
+legup.gra-fun.near,another step forward,legup,24
+5d1e237d348277d2f8a22dc683e3d57f285c3bb3.factory.bridge.near,LENS Collection,LENS,18
+lfg.tkn.near,L.F.G.!,LFG,18
+lg.tkn.near,Leprechaun Gold,LG,18
+lgbt.tkn.near,Hey👏hey👏Ho👏ho👏Homophobia's👏got👏to👏go👏,LGBT,18
+lgmagic.gra-fun.near,Legends Unite,lgmagic,24
+lib.aidols.near,Liber8,LIB,24
+liberty.tkn.near,"Liberty - the power or scope to act as one pleases. ""individuals should enjoy the liberty to pursue their own interests and preferences""",LIBERTY,18
+libra.aidols.near,LIBRA,LIBRA,24
+lie.token0.near,It's All A Lie,LIE,18
+life.tkn.near,"change my life if 10,000 people send me 0.1 NEAR{8739de66ff4a88bc6c229551cb295b82301faad913948bd7a68f96c156496f94} or buy this token, it will change my life a lot 0.1 NEAR: nothing for you for me - lifechange    ",life,18
+lil90s.gra-fun.near,Retro Blossom,lil90s,24
+limon.dagro.near,Limon,LIMON,6
+linear-staging.near,LiNEAR,LINEAR,24
+linear_protocol.near,$Linear Protocol Rewards (https://linearprotocol.net),LinearProtocol.net,24
+eth-0x514910771af9ca656af840dff83e8264ecf986ca.omft.near,ChainLink Token,LINK,18
+lizzy.woothugg.near,LIZZY,LIZZY,24
+lockedjumptoken.jumpfinance.near,Locked JUMP,LJUMP,18
+localmakermart.tkn.near,LocalMakerMart,LocalMakerMart,18
+lofi.gra-fun.near,Lofi ,LOFI,24
+loki.tkn.near,Loki,LOKI,18
+lol.tkn.near,LOL Memecoin,LOL,4
+memelol.near,LOL Memecoin,LOL,24
+v0.memelol.near,LOL MemeCoin,LOL,24
+longcat.token0.near,$LONGCAT AI CALLER,LONGCAT,18
+token.lonk2024.near,LONK fungible token,LONK,8
+lonk.tkn.near,LONK,LONK,18
+lonkrewards.near,$Lonk Meme Rewards (https://lonkmeme.com),LonkMeme.com,24
+loom.tkn.near,Loom Dao Token,Loom,1
+love.tkn.near,Love Token,Love,18
+loveme.tkn.near,LoveMe,Loveme,18
+lover.tkn.near,NEAR LOVERS,LOVER,18
+lovet.gra-fun.near,LovelyAsset,lovet,24
+lp-usdc.zkrouter.near,LP Electron USDC,LP eUSDC,6
+light-token.near,Lights,LTS,8
+ce84ee6aa2d3d84325c528b25a248b50c5edad68.factory.bridge.near,Lights,LTS,18
+lts_token.near,Lights,LTS,8
+ltt.tkn.near,Louis Test Token,LTT,18
+lubun.gra-fun.near,Luigi Roll,lubun,24
+luck.tkn.near,Luck,LUCK,0
+lucky-273.meme-cooking.near,DapperDalmation,LUCKY,18
+luckybastard.tkn.near,lucky-bastard,luckybastard,18
+lulsrg.gra-fun.near,Luluumba SRG,lulsrg,24
+luna.token.a11bd.near,Luna,LUNA,24
+luxurytraveltoken.tkn.near,Luxury Travel Token,LuxuryTravelToken,18
+lvygrk.gra-fun.near,Livvy and Baby Gronk,lvygrk,24
+lwn.tknx.near,LOST WOLVES NOMAD,LWN,18
+lwn.tkn.near,Learn with NEAR,LWN,18
+sanvito.near,King G,M,0
+macflr.gra-fun.near,Floral Haven,macflr,24
+macho.token0.near,Mar(IA)cho,MACHO,18
+mad.token0.near,Madman,MAD,18
+maestro.token0.near,Evgeny Kuzyakov,MAESTRO,18
+mag.tkn.near,Magicules,MAG,18
+maga.token0.near,MAKE AMERICA GREAT AGAIN,MAGA,18
+magaibawifhat.tkn.near,MAGAIBA WIF HAT,MAGAIBAWIFHAT,18
+magic.tkn.near,Magic Token,MAGIC,18
+mahatmagandhi.tkn.near,Be the change that you wish to see in the world.,MAHATMAGANDHI,0
+maiz.dagro.near,Maiz,MAIZ,6
+mama.token0.near,GranWIFhat,MAMA,18
+mango.dagro.near,Mango,MANGO,6
+maria.tkn.near,Maria,MARIA,18
+mark.gra-fun.near,MARK,MARK,24
+marp.gra-fun.near,MARPI Token,marp,24
+mars.tkn.near, DEDE,Mars,18
+martian.tkn.near,MartianDOGE,MARTIAN,18
+martinlutherkingjr.tkn.near,The time is always right to do what is right.,MARTINLUTHERKINGJR,0
+masia.token0.near,MasiaCoin,MASIA,18
+mask.tkn.near,MASK,MASK,18
+massive-260.meme-cooking.near,AVBs ASSHOLE,MASSIVE,18
+mat.tkn.near,Materials,MAT,18
+max-1082.meme-cooking.near,Max Verstappen,MAX,18
+mazertoken.near,Mental Maze,MAZER,8
+mbga.tkn.near,Make Blockchain Great Again,MBGA,18
+mbpp2.token0.near,Mbappépe on NEAR,MBPP,18
+mbpp3.token0.near,Mbappépe ,MBPP,18
+mbrgr.aidols.near,Memebringer,MBRGR,24
+mcat.gra-fun.near,Moon Cat ,MCAT,24
+mcd.gra-fun.near,McCoin,MCD,24
+mcdonld.gra-fun.near,MickyMatt,mcdonld,24
+mcg.aidols.near,Memecoin Maven,MCG,24
+mcn-992.meme-cooking.near,MC IN NEAR,MCN,18
+mcs.tkn.near,Meme Coin Store,MCS,18
+mdks.tfactory.near,modekos,MDKS,18
+med.tkn.near,MED,MED,3
+meek.tkn.near,MeekBlaize return my money and show your buys,MEEK,24
+meekrev.tkn.near,MEEK REVIVAL ,MEEKREV,18
+sol-d600e625449a4d9380eaf5e3265e54c90d34e260.omft.near,Melania Meme,MELANIA,6
+rmarinho.near,MelCoin,MELC,0
+melodrama.tkn.near,MELODRAMA,MELODRAMA,18
+memiko.near,Memiko,MEM,24
+mem.tkn.near,NMEME,MEM,18
+test_mycontract.near,Memiko,MEM,24
+meme.tkn.near,MEME 💎🚀 Universal Idea Token,MEME,8
+meme.token0.near,MEME,MEME,18
+memegenie.aidols.near,Memify Genie,MemeGenie,24
+mememind.aidols.near,MemeCoin Mastermind,MEMEMIND,24
+memex.token0.near,MemeX,MEMEX,18
+memez.gra-fun.near,Meme Hub,memez,24
+meow.tkn.near,Meows,MEOW,18
+pre.meteor-token.near,Meteor Pre Token,MEPT,8
+meraki.tkn.near,MERAKI,MERAKI,18
+meritocracy.tkn.near,MERITOCRACY,MERITOCRACY,18
+meritocracycoin.tkn.near,MERITOCRACY COIN,MERITOCRACYCOIN,18
+merrychristmas.tkn.near,Merry Christmas!,MERRYCHRISTMAS,0
+meta.tkn.near,Metaverse Universal Currency,META,18
+meta.token0.near,Metapool,META,18
+metacoin.tkn.near,Metacoin,METACOIN,18
+metapools.near,$Meta Pool Rewards (https://metapools.org),MetaPools.org,24
+metrop.near,METROP,METROP,8
+mew.token0.near,Mew,MEW,18
+mfox.gra-fun.near,Mad Alice Fox,MFOX,24
+ft.metafoxonry.near,MFOX,MFOX,18
+mfrog1.tfactory.near,Angry Meme Frog,MFROG,18
+mg.token0.near,MudGuard,MG,18
+mg.tkn.near,Matias,MG,18
+mga.gra-fun.near,MISHANINA,MGA,24
+mgai-711.meme-cooking.near,Mogw.AI,MGAI,18
+mgsp.tkn.near,MEGASHOPING-PRUEBA,MGSP,18
+mgt.gra-fun.near,Mr. Garrison - Trump,MGT,24
+mhmdtst.tkn.near,Muhammed Test,MHMDTST,18
+mi.token0.near,MaxInvest,MI,18
+mi-1319.meme-cooking.near,MaxInvest,MI,18
+microsoft.token0.near,MICROSOFT,MICROSOFT,18
+mika.tkn.near,Mikasa,MIKA,18
+mike.tkn.near,MIKE,MIKE,18
+milf.tkn.near,Hot Wife Points,MILF,18
+milk.nrc-20.near,MILK,MILK,8
+mime.token0.near,mitte:meme,MIME,18
+mira.tkn.near,MIRA,MIRA,0
+misfits.tkn.near,Misfits token,Misfits,18
+mjoker.tkn.near,MadJoker,mJOKER,18
+mlgrt.gra-fun.near,Milei's Brilliance,mlgrt,24
+moliets.near,Moliets👌,MLTS,0
+mm.tkn.near,猫猫,MM,18
+mmr.tkn.near,MakeMeRich,MMR,18
+mmw.aidols.near,The Meme Machine Whisperer,MMW,24
+39fc9e94caeacb435842fadedecb783589f50f5f.factory.bridge.near,MANUFACTORY,MNFT,18
+mnga-376.meme-cooking.near,Make Near Great Again,MNGA,18
+mnw.gra-fun.near,mynearwallet,MNW,24
+mochi.tkn.near,Mochi,MOCHI,19
+aurora.mocks.near,Mock Aurora,MOCK-AURORA,18
+brrr.mocks.near,Mock Burrow Token,MOCK-BRRR,18
+corn.v1.corn-staging.near,Mock Cornerstone,MOCK-CORN,18
+linear.mocks.near,Mock LiNEAR,MOCK-LINEAR,24
+ref.mocks.near,Mock Ref Finance Token,MOCK-REF,18
+usdc.mocks.near,Mock USD Coin,MOCK-USDC,6
+usdt.mocks.near,Mock Tether USD,MOCK-USDT.e,6
+usn.mocks.near,Mock USN,MOCK-USN,18
+wnear.mocks.near,Mock Wrapped NEAR fungible token,MOCK-wNEAR,24
+moe.gra-fun.near,Moe Szyslak,MOE,24
+eth-0xaaee1a9723aadb7afa2810263653a34ba2c21c7a.omft.near,Mog Coin,MOG,18
+mono.tkn.near,MonoMint,MONO,18
+monsters-alpha.near,NEAR Monsters ALPHA packs,MONSTERS_ALPHA,0
+moo.tkn.near,Moo,Moo,18
+moodeng.token0.near,MOODENG,MOODENG,18
+moon2.token0.near,MOON,MOON,18
+moon1.token0.near,To the MOON,MOON,18
+harvest-moon.near,Moonlight Token,MOON,8
+dev.harvest-moon.near,Moonlight Token,MOON,8
+moon3.token0.near,MOON,MOON,18
+moon.tkn.near,Moon,MOON,18
+moon.token0.near,Moon or Dust,MOON,18
+aa-harvest-moon.near,Moonlight Token,MOON,8
+34.omt.tg,MOON,MOON,24
+moonc.tkn.near,testcrab,moonc,18
+mos.tkn.near,Master Of Self,MOS,18
+8634f0689a502b3659f2b3c9e5650d365067b48a.factory.bridge.near,Motion,MOTION,4
+moto.aidols.near,  Hello Moto,MOTO,24
+mp02.tkn.near,MagicP Pro 02,MP02,2
+mp18.tkn.near,MagicP Pro,MP18,18
+mpa.tkn.near,Minority Programmers,MPA,18
+mpp.token0.near,Mbapepe,MPP,18
+meteor-point.near,Meteor Point,MPT,8
+meteor-points.near,Meteor Points,MPTS,8
+mrd.tkn.near,Mad Rat Dead,MRD,18
+mrktng.tkn.near,Marketing token,MRKTNG,6
+mskyi.tkn.near,moonsky,mskyi,18
+mstm-1183.meme-cooking.near,monster mom,mstm,18
+msupport.gra-fun.near,FIXED MS AID,msupport,24
+mt.tfactory.near,MoneyTruck,MT,18
+mttr.tkn.near,Matter,MTTR,18
+mtv.gra-fun.near,MEME TV,MTV,24
+musa.gra-fun.near,MusaAi,MUSA,24
+musk.token0.near,Elon,MUSK,18
+musk1.token0.near,MUSK EMPIRE,MUSK,18
+muskatr.aidols.near,Musketeer AI,MUSKATR,24
+mutant-1282.meme-cooking.near,MUTANT,MUTANT,18
+mvmaster.aidols.near,Meme Vault Master,MVMaster,24
+mvp.tkn.near,Maximum Viable Potential,MVP,18
+mwalc-1122.meme-cooking.near,MoonWALC,MWALC,18
+mwn.aidols.near,Meme Wizard NEAR,MWN,24
+janoshwerlen.near,maxicoin,MXCN,0
+mxtl.metalira.near,MetaLira,MXTL,24
+mainneardev.near,My Meme Near Token,myNEAR,24
+mz.tkn.near,Meinen Zutrunk!,mz,0
+n0t.token0.near,N0TC01N,N0T,18
+na.tkn.near,Noise Art,NA,18
+nai.tkn.near,Near AI,NAI,18
+naid.aidols.near,NEARAID,NAID,24
+nain.aidols.near,NearAI Navigator,NAIN,24
+nald.aidols.near,NearAI Legend,NALD,24
+naranja.dagro.near,Naranja,NARANJA,6
+navi.aidols.near,NearAI Navigator,NAVI,24
+navy-13.aidols.near,NearAI Voyager,NAVY,24
+navy.aidols.near,Navvy Nook,NAVY,24
+nb.tkn.near,Nice Body,NB,18
+nbonk.tkn.near,Near Bonk Token,NBONK,18
+nbt.tkn.near,NEAR BEER TOKEN,NBT,18
+nbtc.token0.near,NewBitcoin,NBTC,18
+nbtc.toalice.near,Near WTC,NBTC,8
+nbtc.bridge.near,Near WBTC,NBTC,8
+token.n_btc.near,NEAR BTC,NBTC,8
+nbuddy.aidols.near,NearBuddy,NBUDDY,24
+nc.tkn.near,Nearcat,NC,18
+nchad-243.meme-cooking.near,Near Giga Chad,NCHAD,18
+nchef-233.meme-cooking.near,Near Chef,NCHEF,18
+ncn.tkn.near,NEARCOIN,NCN,18
+nd.tkn.near,NearDog,ND,8
+ndai.tkn.near,nDAI,NDAI,18
+ndao.tkn.near,NEAR NFT DAO,NDAO,18
+ndao.nrc-20.near,NDAO,NDAO,8
+ndc.tkn.near,ObamaSonicTrumpSkidanovPolosukhinSonicInuTen,NDC,18
+ndeng-1206.meme-cooking.near,NEARDENG,NDENG,18
+ndoge-288.meme-cooking.near,NEAR DOGE,nDOGE,18
+neair.tkn.near,NeAIr Protocol,NEAIR,18
+nealr.tkn.near,NEAIR,NEAlR,18
+near.aidols.near,NEAR Navigator,NEAR,24
+near.tkn.near,NEAR,NEAR,18
+28.contract.portalbridge.near,NEAR Protocol,NEAR,8
+near-14.aidols.near,Protocol Pal,NEAR,24
+near-18.aidols.near,142.37,NEAR,24
+near2024.token0.near,NEAR End Of 2024,NEAR2024,18
+nearai.aidols.near,NearAI Navigator,NEARAI,24
+nearai.token0.near,NearAI SECRET AGENT,NEARAI,18
+nearbit.tkn.near,NEARBIT,NEARBIT,18
+nearchad.nrc-20.near,NEARCHAD,NEARCHAD,0
+neardog.tkn.near,NEARDOG,NEARDOG,18
+neardoge.tkn.near,neardoge,neardoge,18
+neards-1382.meme-cooking.near,NEARed,NEARDS,18
+neareum.tkn.near,Illia + Vitalik = Friends 💏,NEAREUM,18
+near_starter_index_token.near,Near Index Alpha Pool,NEARIA,24
+nearkat.tkn.near,NEARKAT,NEARKAT,18
+nearkatwifhat.tkn.near,Nearkat Wif Hat,nearkatwifhat,18
+nearkatwifhatv3.tkn.near,Nearkat Wif Hat,nearkatwifhatv3,18
+nearkatwifthatv2.tkn.near,Nearkat Wif Hat v2,NearkatWiftHatv2,18
+nearnft.tkn.near,NEAR NFT,NEARnft,18
+nearo-230.meme-cooking.near,Nearo,Nearo,18
+nearowski.tkn.near,Mike Nearowski,NEAROWSKI,18
+nearpunk.tkn.near,NEARPUNK,NEARPUNK,18
+nearrewards.near,$NEAR rewards at https://nearrewards.com,NearRewards.com,17
+nearreward.near,$NEAR rewards at https://nearrewards.io,NearRewards.io,6
+nearsam.aidols.near,Uncle NEAR-Sam,NEARSAM,24
+nearth.aidols.near,NearThrifty,NEARth,24
+nearvember-337.meme-cooking.near,NEARvember,NEARvember,18
+nearnvidia.near,NearVidia,NEARVIDIA,8
+neato-1204.meme-cooking.near,Neato,Neato,18
+neato.token0.near,NEATO AI,NEATO,18
+neaurora-349.meme-cooking.near,neaurora,neaurora,18
+neir.tkn.near,NEIR,NEIR,18
+neiro2.token0.near,Neiro,NEIRO,18
+neiro.token0.near,NEIRO,NEIRO,18
+ft.nekotoken.near,NEKO(OLD),NEKO(OLD),0
+neon.tkn.near,Neon Girls,NEON,9
+nepe-290.meme-cooking.near,NEPE,NEPE,18
+nerd20.gra-fun.near,Geeky,nerd20,24
+nersig-282.meme-cooking.near,NEAR SIGMA,NERSIG,18
+nescot-1059.meme-cooking.near,NEARSCOT,NESCOT,18
+net.tkn.near,near express,Net,18
+neth.tkn.near,nETH,NETH,18
+newbn.gra-fun.near,CVXXV Reimagined,newbn,24
+newgwc.gra-fun.near,EfficiencyReform,newgwc,24
+newrkt.gra-fun.near,BAKTT Revamped,newrkt,24
+nexp.near,NEXP,NEXP,4
+nezha.aidols.near,NeZha,NEZHA,24
+nezha.token0.near,Nezha,NEZHA,18
+nfc.tknx.near,Noah's Friendly Consulting,NFC,18
+nfdagent.aidols.near,NFDeaf Ambassador,NFDAgent,24
+nfdeaf.aidols.near,NFDeaf,NFDeaf,24
+nfonke.token0.near,fake fock ponke on near,NFONKE,18
+nft.tkn.near,Nfties,NFT,18
+nftm.tkn.near,NFTMilloniare Coin,NFTM,18
+nftticketdarai.tkn.near,Nft Ticket Darai,NftTicketDarai,0
+ngmi.tkn.near,N.G.M.I.,NGMI,10
+ngnc.tkn.near,NGN Coin,NGNC,6
+nibu.tkn.near,NEAR Shiba Inu,NIBU,18
+nico.tkn.near,NICO,nico,18
+nico131.tkn.near,nico131,nico131,18
+nico132.tkn.near,nico132,nico132,18
+nicotknx.tknx.near,nicotknx,nicotknx,18
+nimedix.near,NiMEDix,NiM,24
+nk.tkn.near,NearKat,NK,18
+nkat.tkn.near,nub Nearkat,nKat,18
+nkok.tkn.near,Nearkok,nKOK,18
+nm.aidols.near,NearMeme,NM,24
+nmcd-493.meme-cooking.near,NMCD,NMCD,18
+nmeme.tkn.near,NEAR MEME DAILY,nMEME,18
+nmixx.token0.near,NMIXX,NMIXX,18
+nmoon.tkn.near,$MOON,nMOON,18
+nochill-176.meme-cooking.near,Zero Chill,noChill,18
+nocover.gra-fun.near,"Zero Assurance, Zero Protection",nocover,24
+noctik.gra-fun.near,No Cost TikTok,noctik,24
+noear-324.meme-cooking.near,NOEAR,NOEAR,18
+nogecoin.near,Nogecoin,NOGE,8
+noge.tkn.near,Noge The Doge,NOGE,18
+nokia-1091.meme-cooking.near,A Slightly Used Nokia 3310,NOKIA,18
+noob.token0.near,Noob,NOOB,18
+noodle.token0.near,Fire Noodle Challenge,NOODLE,18
+nosamo.tkn.near,Nos Amo Coin ,NOSAMO,14
+not1.token0.near,NotCoin,NOT,18
+not2.token0.near,Notcoin,NOT,18
+not.tkn.near,NOT Neological Ontological Tautological,NOT,14
+notg.token0.near,nothing,NOTG,18
+nox.gra-fun.near,NOX,NOX,24
+np.tkn.near,Nearly Protocol,NP,18
+npac-245.meme-cooking.near,NEAR PAC MAN ,NPAC,18
+npad.tkn.near,NearPad,NPAD,18
+ft.nephilim.near,NEPH-X,NPX,24
+nrmgld.gra-fun.near,Deity of Order,nrmgld,24
+nro.tkn.near,nearo,NRO,18
+nrtd.token0.near,NEARTARDED,NRTD,18
+nrtr.aidols.near,NEARtro,NRTR,24
+nrvia.aidols.near,NEARVIDIA,NRVIA,24
+nrwy1.aidols.near,NEARRunway,NRWY1,24
+ns.tkn.near,Near Squid,NS,18
+nsamo.tkn.near,SAMO Coin,nSAMO,18
+nsanta-1274.meme-cooking.near,NEAR SANTA,NSANTA,18
+nshib.tkn.near,Nshiba,Nshib,18
+nst.tkn.near,Nearstarter,NST,18
+near_starter_token.near,Near starter,NSTART,24
+ntc.tkn.near,NearTards Currency,NTC,0
+ntdarai.tkn.near,nft ticket Darai,NTDarai,0
+nte-743.meme-cooking.near,Nate ,NTE,18
+nte-1031.meme-cooking.near,Nate,NTE,18
+ntk.tkn.near,NeuroToken,NTK,18
+ntrash.tkn.near,NEAR TRASH,nTRASH,18
+ntsnvr.gra-fun.near,Not Tied to Sinks,ntsnvr,24
+nug.token0.near,Near Ukraine Guild 🇺🇦,NUG,18
+nusd.tkn.near,NUSD,nusd,18
+nusdc.tkn.near,nUSDC,NUSDC,18
+nusdt.tkn.near,nUSDT,NUSDT,18
+nut.tkn.near,NEAR University Token,NUT,18
+nvana.token0.near,Nearvana,NVANA,18
+nvc.tkn.near,nVCELKA,NVC,18
+nearvidiais.near,NearVidia,Nvdia,8
+nvidai.aidols.near,NVIDIA Neural,NVIDAI,24
+nvidia.aidols.near,Agent NVIDIA ,Nvidia,24
+nvidia-17.aidols.near,Nvidia AI,NVIDIA,24
+nvigtc.aidols.near,NVIDIA GTC,NVIGTC,24
+nvision.tkn.near,NVISION,NVISION,18
+nvl.aidols.near,NEARVEIL,NVL,24
+nvp.tkn.near,NOVAPUNK,NVP,18
+rocketbois-reward.near,NVRS Token,NVRS,18
+9b204442fe63137a47930b78976c4f1a7c34d555e46fb51f614d0801520cac01,NVRS Token,NVRS,18
+rocket-staking.near,NVRS Token,NVRS,18
+nwnear-1473.meme-cooking.near,NEW NEAR,nwnear,24
+nwr.aidols.near,NEAR Whisperer,NWR,24
+o.tkn.near,Omicron,O,0
+oai.gra-fun.near,Open AI,OAI,24
+obama.gra-fun.near,OBAMA,OBAMA,24
+kiksen.near,Thinking outside the box ⚅,o.box,0
+obs.openbisea.near,OpenBiSea Token,OBS,18
+obx.tkn.near,🎨🌊👽,OBX,0
+ody.tkn.near,Ody,ODY,18
+of.token0.near,OnlyFans,OF,18
+offer.dagro.near,Offer,OFFER,6
+ofp.tkn.near,Open Forest Protocol,OFP,18
+ogobug.aidols.near,OOga Booga,OGOBUG,24
+ogvic.gra-fun.near,Another Win for Originals,ogvic,24
+ohb.aidols.near,Obama-tic Harmony Bot,OHB,24
+old1.token0.near,OLD GUY,OLD,18
+old.token0.near,OLD GUY,OLD,18
+olympic.token0.near,Olympic,OLYMPIC,18
+one-1114.meme-cooking.near,THE ONE,ONE,18
+onemorehot.token0.near,BRAZZERS,ONEMOREHOT,18
+onr.tkn.near,OnNear,ONR,9
+oops.tkn.near,Oops!,OOPS,0
+opntoken.near,OPN Token,OPN,24
+lock-opntoken.near,OPN Token Lock,OPN,24
+opul.tkn.near,Opulous,OPUL,8
+orb.enter-the-sphere.near,Enter The Sphere ORB,ORB,18
+elongrokinu.near,ElonGrokInu,ORDINAL,18
+otdai.tkn.near,OTDAI token,OTDAI,18
+obridge-test-token-b.near,Obridge Test Token B,OTTB,8
+4e807467ba9e3119d5356c5568ef63e9c321b471.factory.bridge.near,Otto Token,OTTO,18
+25.contract.portalbridge.near,OUTSYDE GLOBAL BVI CORP,OUTSYDE,6
+berneck.near,EULE COIN🦉,OWL🚀,0
+ows.tkn.near,Open Web Services,OWS,18
+owsd.tkn.near,Open Web Services DAO,OWSd,18
+p0k.tkn.near,p0k token,p0k,18
+pa.tkn.near,Pacebedo,PA,18
+pacman.tkn.near,PACMAN,PACMAN,18
+8.contract.portalbridge.near,impactMarket,PACT,8
+pad.tkn.near,NearPAD,PAD,18
+pagoda.tkn.near,Pagoda,PAGODA,18
+palka.tkn.primitives.near,Палка,PALKA,6
+pamp.gra-fun.near,Pamp it!,PAMP,24
+panda.tkn.near,Panda Token,PANDA,18
+pandoratoken.near,Pandora,PANDORA,18
+pants.aidols.near,FancyPants,PANTS,24
+papa.dagro.near,Papa,PAPA,6
+parchita.dagro.near,Parchita,PARCHITA,6
+pasha.gra-fun.near,PASHA.tg,PASHA,24
+ren-p-m.near,PatronusCoin,PatC,0
+patilla.dagro.near,Patilla,PATILLA,6
+pbds.tkn.near,PAMBADS,PBDS,1
+pbl.tkn.near,Picobot Laborer,PBL,0
+pcat.tknx.near,PERSIAN CAT,PCAT,18
+pr0ph3cy.near,P.coin,P.coin,0
+c0f907ba30f0742ab9a504cc547e9359026073a7ac1ef6b41ce49b83644cf7e2,PCOIN,PCOIN,0
+116065cd3769e8ab81ab65df4b1eb2c22d12ddff4ef8edbbc4af3a288308086e,PCOIN,PCOIN,0
+pdd.token0.near,P. Diddy,PDD,18
+pecop.pideky_escala.near,Pideky Escala,PECOP,0
+peepocoins.near,Peepo Coins,PEEPO,4
+pegas.tkn.near,Pegasus,PEGAS,18
+pei.token0.near,PEIPEI,PEI,18
+penis.aidols.near,PENIS,PENIS,24
+penrosepartners.tkn.near,Penrose Partners,penrosepartners,1
+eth-0x6982508145454ce325ddbe47a25d4ec3d2311933.omft.near,Pepe,PEPE,18
+pepe.tkn.near,PEPE,PEPE,18
+pepe.token0.near,PEPE,PEPE,18
+pepe1.token0.near,Pepe,PEPE,18
+pepear.aidols.near,PEPEAR,PEPEAR,24
+pepelong.tkn.near,PEPE LONG,PEPELONG,18
+pepepepepe.token0.near,pepepepepe,PEPEPEPEPE,18
+pepsico.tkn.near,nearmoon,Pepsico,18
+pepy24.gra-fun.near,PEPY Token,pepy24,24
+persnmt.gra-fun.near,Persian Star,persnmt,24
+pescado.dagro.near,Pescado,PESCADO,6
+peter.tkn.near,Peter,Peter,18
+pex.tkn.near,phoenix,pex,18
+pggy.tkn.near,Piggy Bank Money,PGGY,18
+phcg.tkn.near,Phoenix Cat Granula,PHCG,18
+pheo.tkn.near,PHEO,PHEO,18
+phoneme.tkn.near,17797030177,PHONEME,18
+php.tkn.near,People help People,PhP,18
+pi.tkn.near,Pi,Pi,18
+pie.token0.near,piepie,PIE,18
+pig.tkn.near,PigToken,PIG,18
+pigs.tkn.near,Wen Pigs Fly,PIGS,18
+pimenton.dagro.near,Pimenton,PIMENTON,6
+pina.dagro.near,Pina,PINA,6
+pino.gra-fun.near,PINO,PINO,24
+pino.tkn.primitives.near,PINO,PINO,18
+pitpmp.gra-fun.near,Inflate Titan,pitpmp,24
+pixel.tkn.near,Pixel Token,PIXEL,18
+pixiv.tkn.near,pixi,pixiv,18
+pkcat.tkn.near,PIKACAT,PKCAT,15
+pkr.tkn.near,Poker Chips,PKR,18
+pl.token0.near,Palestine ,PL,18
+plat.tkn.near,Platypus Token,PLAT,18
+platano.dagro.near,Platano,PLATANO,6
+play.tkn.near,Playboy ,PLAY,18
+plb-1567.meme-cooking.near,Plebe,PLB,18
+pleasesendmemytokensbacksir.tkn.near,"Hey, I accidentally sent you 310N (tx id: Ftw6t3QydEFpJSa9APRd8ojvnviY2SYNCGAcvAJM7qaf) and would want to have it back please sir 😭 You can also keep a bounty if you really want to. Just please send back the majority of it to o0_0o.near",pleasesendmemytokensbacksir,18
+plsm.tkn.near,Plasma,PLSM,18
+plug.token0.near,PLUG RELATIONS,PLUG,18
+ply.tkn.near,Pally,PLY,18
+pmc.tkn.near,Pixelmech Coin,PMC,0
+pmt.token0.near,PokeTON,PMT,18
+pndr.token0.near,Pandora,PNDR,18
+phoenix-staging.near,Phoenix NEAR,pNEAR,24
+phoenix-bonds.near,Phoenix NEAR,pNEAR,24
+pns.token0.near,PENIS,PNS,18
+pnx.tkn.near,PayNex,PNX,18
+poketa.tkn.near,HEAP POKETA,POKETA,9
+pol.omft.near,POL,POL,18
+pollm20.aidols.near,PollMaster 2020,PollM20,24
+pollo.dagro.near,Pollo,POLLO,6
+pollpet.aidols.near,PollPet,PollPet,24
+ponkeai.aidols.near,PONKEAIDOL,PONKEAI,24
+f914d5ed8da9855da16e998d28704f2f81d49cfe119be22a35cff863fa4fe3ef,Pontevedra,Ponte,0
+poo.token0.near,PUMP,POO,18
+poof.tkn.near,POOF,POOF,18
+poop.aidols.near,Poopface,poop,24
+poop.token0.near,Poopcoin,POOP,18
+poopcoin.token0.near,POOPCOIN ON NEAR,POOPCOIN,18
+poopiscoop-541.meme-cooking.near,Scoopydipoop,Poopiscoop,18
+poppy-0.meme-cooking-test.near,Poppy,POPPY,18
+potate.token0.near,Potato,POTATE,18
+power.aidols.near,Power for Change,Power,24
+poweredbyhotwallet.token0.near,iHot,POWEREDBYHOTWALLET,18
+app.chess-game.near,Protocol Pawns Points,PPP,6
+ppp.aidols.near,Pepe ProfitPal,PPP,24
+prdla.gra-fun.near,Embrace Achievement,prdla,24
+c6903b623f1548f533eb367f6f1b7d717b9351c2.factory.bridge.near,Presence DAO,PRESENCE,18
+preton.token0.near,PRETON GAME ,PRETON,18
+prince.tkn.near,Prince,PRINCE,0
+pro1.tkn.near,🎉You won 500 NEAR!🎉To claim your gain:👉www.near-raffle.com,PRO1,0
+proai-1161.meme-cooking.near,Prometheus The AI,ProAI,18
+prt.token0.near,parrot,PRT,18
+pt.tfactory.near,Part-timer,PT,18
+pre.intear.near,Prettear,pTEAR,24
+ptlc.tkn.near,Prelaunch Tulumcoin,PTLC,18
+ptlm.tkn.near,Prelaunch Tulumcoin,PTLM,18
+ptn.gra-fun.near,PUTIN,PTN,24
+pump.aidols.near,Pumpy Oak,PUMP,24
+pumpik.gra-fun.near,Pumpik,Pumpik,24
+pumpkg-332.meme-cooking.near,PUMPKING,PUMPKG,18
+pumpz.aidols.near,Pumpocalypse,PUMPZ,24
+punk-280.meme-cooking.near,PunkOnNEAR,PUNK,18
+punk2317.tkn.near,PUNK #2317,PUNK2317,18
+purgem-1055.meme-cooking.near,Purge me More,PURGEM,18
+purpledragon.tkn.near,Purple Dragon,PURPLEDRAGON,18
+purr.gra-fun.near,Cts,Purr,24
+purr.tkn.near,Purr Coin,PURR,18
+purrr.tkn.near,Divya Preetha,PURRR,18
+pussy.laboratory.jumpfinance.near,PUSSY,PUSSY,18
+pussy.tkn.near,PUSSY,PUSSY,18
+puta.token0.near,Vladimir Puta,PUTA,18
+putin.token0.near,Putin,PUTIN,18
+putt.tkn.near,Puttcoinz,PUTT,18
+pw.tkn.near,Portis Wallet Token,PW,10
+pwt.tkn.near,Pulse Wallet Tolen,PWT,10
+pyouth.tkn.near,Potion of Youth,PYouth,0
+21.contract.portalbridge.near,Pyth Network,PYTH,6
+pzdc.gra-fun.near,PZDC,PZDC,24
+qad-263.meme-cooking.near, Quantum Quad,QAD,18
+qroc.aidols.near,Hello :),QROC,24
+qtlive.gra-fun.near,Quantum Anytime,qtlive,24
+quack.gra-fun.near,MetaDuck,QUACK,24
+queso.dagro.near,Queso,QUESO,6
+question.gra-fun.near,question,question,24
+raccoon-882.meme-cooking.near,Raccoon,Raccoon,18
+racoonx-1547.meme-cooking.near,RacoonAlex,RACOONX,18
+radeonear.tkn.near,AMD RadeoNEAR,RadeoNEAR,18
+raen.token0.near,q◉◉p,RAEN,18
+raen-608.meme-cooking.near,RAEN locotorP,RAEN,18
+token.raidvault.near,AI Raid Clash,RAID,18
+ft00.ai-is-near.near,AI Raid Clash,RAID,18
+rainbowbull.near,RAINBOW,RAINBOW,8
+ralfusha.tkn.near,Ralfusha token,Ralfusha,18
+rank1.tkn.near,Rank1,Rank1,18
+rap.aidols.near,from the block to the blockchain,RAP,24
+ray.tkn.near,RAY,RAY,0
+rphnyacg6w.vrtx,RedBook,RB,18
+rch.tkn.near,Riche (riche.biz),Rch,18
+rdg.gra-fun.near,RichDog,RDG,24
+rdoge.token0.near,Rescue Dog,RDOGE,18
+redacted-172.meme-cooking.near,Redacted,Redacted,18
+redacted.token0.near,REDACTED,REDACTED,18
+rees.tkn.near,rees,rees,18
+token.ref-finance.near,Ref Finance Token,REF,18
+ref.tkn.near,Ref Finance,REF,18
+rekt.tkn.near,Rekt Token,REKT,18
+rekt.gra-fun.near,RektChair,REKT,24
+rekted.tkn.near,"I sold everything I had. Every coin I owned is gone. I'm completely out of the cryptocurrency market, I can't take it anymore. Aggressive dumping, manipulation, everything is so intense. crypto is over, I am out, I am very glad to meet you, life has dreams, each is wonderful",REKTED,18
+rep.tkn.near,Reparations,REP,18
+reps.tkn.near,Fitness Reps,REPS,18
+retard.aidols.near,Are you retarded ?,RETARD,24
+hottingen.near,REMY,RF,0
+rff.aidols.near,ReferenzFoto,RFF,24
+rftt.tkn.near,Ref Finance Test Token,RFTT,8
+rga2k.gra-fun.near,Market Cap Drop,rga2k,24
+rgb-859.meme-cooking.near,🟥🟪🟦🟩🟨🟧,RGB,18
+rhea.aidols.near,Rhea Protector,RHEA,24
+rhea-20.aidols.near,RHEA,RHEA,24
+168296bb09e24a88805cb9c33356536b980d3fc5.factory.bridge.near,RHOC,RHOC,8
+ribbit-426.meme-cooking.near,FrogFiesta,RIBBIT,18
+rich.tkn.near,RICHENEAR.COM,RICH,18
+riche.tkn.near,RICHE ( RICHENEAR.COM ),RICHE,10
+richenear.tkn.near,RICHE ( RICHENEAR.COM ),RICHENEAR,18
+ride.tkn.near,Ride,RIDE,18
+rim.token0.near,Real internet money,RIM,18
+rimjob.tkn.near,Simps 4 Rim,RIMJOB,18
+rin.tkn.near,Rin Cat Girl,RIN,18
+ring.tkn.near,14 Carat White Gold Diamond Engagement Ring,RING,0
+rip.aidols.near,RIP Skype,RIP,24
+relpas.laboratory.jumpfinance.near,RELPAS,RLSA,0
+token.realitymaster.near,Realities,RLTS,8
+rlx.gra-fun.near,RELAX ,RLX,24
+39a15a0695c77cbe5fd4f06ab0ccb7bad62f696f.factory.bridge.near,rMutantCoin,rMC,18
+rmcomic.gra-fun.near,Munroe's World,rmcomic,24
+token1.devtest2023.near,RMNear,RMNear,18
+rnc.tkn.near,Republican National Committee ,RNC,18
+craftingrnear.near,Crafting Near,rNEAR,6
+claimneardrop.reftoken.near,rNear at https://event.refinances.site,rNear at https://event.refinances.site,18
+rnrb.gra-fun.near,Rhythm and Riffs,rnrb,24
+rnrs.aidols.near,RinseAI,RNRS,24
+rnx.gra-fun.near,Roblox Updates,rnx,24
+roartr.gra-fun.near,RoarChain,roartr,24
+token.venividiroasti.near,Venividiroasti,ROASTI,24
+rock.token0.near,RocK,ROCK,18
+rocker.token0.near,TheMOON,ROCKER,18
+rocks.331a4daac1s.near,Roskteady Token,ROCKS,6
+rofl.token0.near,RoflToken,ROFL,18
+roman.tkn.near,Roman Consulting,Roman,18
+root-363.meme-cooking.near,Nearvana,ROOT,18
+root-676.meme-cooking.near,Terminal,ROOT,18
+rort-170.meme-cooking.near,RORT,rort,18
+rosanna.tkn.near,Rosanna,ROSANNA,0
+rosie.aidols.near,RoseBloom AI,rosie,24
+rottedwood.token0.near,Rotted Wood,ROTTEDWOOD,18
+rr.aidols.near,REALROCK,RR,24
+rs.tkn.near,Rust,RS,9
+rsb.tkn.near,Real Soda Bread,RSB,18
+rsbgor.gra-fun.near,Rescue Baby Ape,rsbgor,24
+rsk1.tkn.near,RSKOIN,RSK1,18
+rsz.token0.near,Rusoriz,RSZ,18
+rtxai.aidols.near,RTX AI,RTXAI,24
+rub.gra-fun.near,RUB,RUB,24
+ruct.tkn.near,RUCT,RUCT,18
+rudo.tkn.primitives.near,Rudolph,RUDO,6
+rugg.aidols.near,Rugger Interceptor,RUGG,24
+rugrace.tkn.near,Rug Race: Are you Degen enough to get in and out before the rug is pulled? Because it's inevitable jeeters! Just some fun brought to you by Survival Is Near,RUGRACE,18
+rugwpn.gra-fun.near,Russian Soft Power,rugwpn,24
+runrco.aidols.near,Runway Raccoon,RunRco,24
+runy.aidols.near,Runniverse Buddy,RUNY,24
+rupia.token0.near,Rupia,RUPIA,18
+ruri23.gra-fun.near,RuriBot,ruri23,24
+craftingrusd.near,Crafting USD,rUSD,6
+ft.ruhcommunity.near,Ruh USD,RUSD,6
+rust-334.meme-cooking.near,In Rust We Trust,RUST,18
+rustyore.tkn.near,RUSTY ORE,RUSTYORE,2
+rvndl.tkn.near,RareVandal,rVNDL,2
+rwtest.tkn.near,R Away Test,RWTEST,18
+sad.aidols.near,sad,sad,24
+gnosis-0x4d18815d14fe5c3304e87b3fa18318baa5c23820.omft.near,Safe Token from Mainnet,SAFE,18
+saga.havendao.near,SAGA,SAGA,8
+sahara.gra-fun.near,SAHARA AI,SAHARA,24
+sai.aidols.near,Satoshi AI,sAI,24
+saint.aidols.near,Score Saint,SAINT,24
+salet.tkn.near,Sale Test,SaleT,18
+sallyaidol.aidols.near,Supercharge Sally,SallyAIdol,24
+salo.token0.near,SALO,SALO,18
+sam.tkn.near,Sam,SAM,0
+samoyed.tkn.near,Samoyed,Samoyed,9
+03ec7bb59be036870ef696a2abf124f496d6735a.factory.bridge.near,Sancoj,SANC,18
+sasha.tkn.near,sasha services,sasha,2
+sasha-433.meme-cooking.near,SASHA,SASHA,18
+sasha.token0.near,BITCOIN CAT,SASHA,18
+sasha-186.meme-cooking.near,SASHA,SASHA,18
+satoshi.token0.near,SATOSHI RAMP TOKEN,SATOSHI,18
+satoshis.aidols.near,Satoshi Squirrel,SatoshiS,24
+satoshisig.aidols.near,Satoshi Stacker,SatoshiSig,24
+satoshistacker.aidols.near,Satoshi Stacker,SatoshiStacker,24
+sats.token0.near,Satoshi,SATS,18
+sauda.tkn.near,Sauda,SAUDA,18
+sbd.gra-fun.near,stop blyat debil,SBD,24
+sc2023.aidols.near,SuperCharge,SC2023,24
+scales.tkn.near,SCALES,SCALES,18
+scam.tkn.near,Scam Coin – Don't Buy,SCAM,18
+scam.token0.near,Scamcoin,SCAM,18
+scamdd.token0.near,Double Scam,SCAMDD,18
+scc.aidols.near,Scorch The Crypto Crusader,SCC,24
+scf-1171.meme-cooking.near,Smokingcatfish,SCF,18
+scor-8.aidols.near,ScoreBot,SCOR,24
+scor.aidols.near,ScoreBot,SCOR,24
+score.gra-fun.near,HAPI Score,SCORE,24
+score.aidols.near,Trust Score,SCORE,24
+scottie.tkn.near,scottiewifhat,scottie,18
+scre.aidols.near,SCOREmetron,SCRE,24
+scribs-16.aidols.near,Scribbles,scribs,24
+scribs.aidols.near,Scribbles,scribs,24
+scrl.aidols.near,SCOREauncher,SCRL,24
+scrm.aidols.near,ScoreMaster,SCRM,24
+scrr.aidols.near,Scorecerer,SCRR,24
+scry.aidols.near,Scorey the Spectator,SCRY,24
+scsally.aidols.near,Supercharge Sally,SCSally,24
+sctb.aidols.near,ScoreBot,SCTB,24
+sctn.aidols.near,SCOREtron,SCTN,24
+seb.gra-fun.near,sebek1606,seb,24
+sega.segaai.near,segaAI,sega,18
+sendit.aidols.near,TrendHunter,SENDIT,24
+ser.tkn.near,Ser Protocol,SER,18
+sex.tkn.near,Sex Cams,sex,2
+testfttest.ewtd.near,sexyrooster,SEXY,24
+sfhnxd.token0.near,Ryyuuiii,SFHNXD,18
+0aabcc65ef352ad84b1326df188c95b6ab856c1c.factory.bridge.near,Scorefam,SFT,8
+sftt.gra-fun.near,Sorry ,sftt,24
+sgg2023.aidols.near,StarGaze Genie,SGG2023,24
+sgrd.aidols.near,ScoreGuard,SGRD,24
+shade.aidols.near,Shade Agents,SHADE,24
+shadog.aidols.near,Sharddog,SHADOG,24
+test.rk_dev.near,SHANK Token,SHANK,24
+sheb.tkn.near,sheepcoin the coin to end all coins,sheb,18
+sheep.thundertkn.near,sheep,SHEEP,18
+sheep.token0.near,ShinySheepCoin,SHEEP,18
+sheesh.tkn.near,sheesh,sheesh,18
+sheva-305.meme-cooking.near,sheva,sheva,18
+shgg.gra-fun.near,Shoggoth,SHGG,24
+shib.token0.near,Shiba Inu,SHIB,18
+eth-0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce.omft.near,SHIBA INU,SHIB,18
+shib.tkn.near,Shiba   lnu,SHIB,18
+shiba.tkn.near,Shiba Near,SHIBA,18
+shibasav.aidols.near,ShibaSavvy,SHIBASAV,24
+shibu.token0.near,Shibu Builder,SHIBU,18
+shin.aidols.near,Shin-chan,SHIN,24
+shiok.gra-fun.near,Binance New AI Bot,shiok,24
+shit-565.meme-cooking.near,SHiTCOiN,SHiT,2
+shitcoined.near,Shit Coin,SHIT,4
+shit-1170.meme-cooking.near,$SHIT by Huggies,SHIT,18
+shit.tkn.near,Pile of Shit (rare),SHIT,18
+shit-361.meme-cooking.near,10000xAIcatshit,SHIT,18
+shit21.gra-fun.near,Garbage Coin,shit21,24
+shitc.aidols.near,ShitCoin Charlie,SHITC,24
+rewards.0xshitzu.near,Shit Stars,SHITSTARS,18
+shitzu.token0.near,Royalty for SHITZU,SHITZU,18
+shitzu.tkn.near,Shitzu On Near,SHITZU,18
+shmeks.tkn.near,Schmeckels,SHMEKS,18
+shmelon.gra-fun.near,Meme Dispatch,shmelon,24
+shmrt-1315.meme-cooking.near,ShmertCoin,SHMRT,18
+shniba.tkn.near,SHIBA on Near,SHNIBA,18
+sho-15.aidols.near,Shoggoth,SHO,24
+sho.aidols.near,Shooo,SHO,24
+shot.token0.near,hitman,SHOT,18
+shr-202407.finby.near,Finby SHR,SHR,0
+shrek-1073.meme-cooking.near,Shrek,SHREK,18
+shrk.gra-fun.near,SHARK,SHRK,24
+shtn.tkn.near,Manure0,SHTN,8
+silly.nrc-20.near,SILLY,SILLY,0
+simp-390.meme-cooking.near,meme4porsche,SIMP,18
+sin.tkn.near,Survival Is Near,SIN,18
+sin-339.meme-cooking.near,Survival Is Near,SIN,18
+sinners-1137.meme-cooking.near,We are sinners,SINNERS,18
+sino.tkn.near,sinobili,SINO,18
+sjwoo.gra-fun.near,Sung Jin-woo,SJWOO,24
+ske.tkn.near,SKELETOR,SKE,18
+skilltoken.allskills.near,SKILL,SKILL,10
+skpr.aidols.near,SCOREkeeper,SKPR,24
+skr.gra-fun.near,SKR,SKR,24
+skrp.aidols.near,ScoreKeeper,SKRP,24
+sks.token0.near,Seks,SKS,18
+token.namesky.near,Name Sky Fungible Token,SKY,18
+sky.tkn.near,Skyward Future,SKY,18
+skyt.aidols.near,SkyTracker,SKYT,24
+skyto.token0.near,SKYTONET,SKYTO,18
+skyward.tkn.near,Skyward,SKYWARD,18
+slay.tkn.near,Slaman,SLAY,18
+1ef6a7e2c966fb7c5403efefde38338b1a95a084.factory.bridge.near,ShieldEX,SLD,18
+sldhld.gra-fun.near,Sold My Assets,sldhld,24
+slimy-1458.meme-cooking.near,The Slimy Bandits,SLIMY,18
+sllime.tkn.near,Slime's 0.5B AI model that may or may not be created,sLLiMe,18
+slme.aaidols.near,Slick SlimeBot,SLME,24
+slme-2.aidols.near,Slick SlimeBot,SLME,24
+slme69.aidols.near,HornySlime,SLME69,24
+sloth.thundertkn.near,Sloth,SLOTH,18
+slownear-473.meme-cooking.near,SlowNEAR,SLOWNEAR,18
+slush.tkn.near,Slushie,SLUSH,18
+slv.tkn.near,SeLaVia,SLV,0
+smile-409.meme-cooking.near,SmileDragon,SMILE,18
+smile-1064.meme-cooking.near,The Web Is Watching,SMILE,18
+smile143.token0.near,Smile143,SMILE143,18
+smlfc.aidols.near,Smile Face,SMLFC,24
+smliv.aidols.near,Ivan Smile,SMLIV,24
+smpepe.tfactory.near,SMOKING PEPE,SMPEPE,18
+snail.tkn.near,Heliko,SNAIL,18
+snakesnap-1561.meme-cooking.near,SnakeSnap,SNAKESNAP,18
+snap.tkn.near,FOODSTAMPS,SNAP,18
+snear.tkn.near,Staking NEAR,sNEAR,18
+snek.tkn.near,Snek Token,SNEK,18
+sniff.gra-fun.near,Sniff,Sniff,24
+sunetworld.near,Sunet Token,SNT,24
+socialmeet.tkn.near,SOCIALMEET,SOCIALMEET,18
+sofia.token0.near,Sofia Vergara ,SOFIA,18
+sol.omft.near,Solana,SOL,9
+22.contract.portalbridge.near,Wrapped SOL,SOL,8
+solidarity.tkn.near,WeStandWithUkraine,SOLIDARITY,8
+somes.tkn.primitives.near,Some Sense,SOMES,18
+sonn.tkn.near,Sonnet,SONN,18
+soon.gra-fun.near,Soon girls,Soon,24
+soultoken.near,SOUL,SOUL,6
+sov.tkn.near,Sovereign Money,SOV,18
+sp.tknx.near,Sloth Points,SP,18
+spacea.tkn.near,Space Alliance,SpaceA,18
+spear-1565.meme-cooking.near,SPEARonNEAR,SPEAR,18
+spear.tkn.near,SPEAR,SPEAR,18
+devking.near,SPEAR,SPEAR,8
+spin-285.meme-cooking.near,Spin.fi,SPIN,18
+spittor.tkn.near,Spittor ,spittor,18
+spk.tkn.near,Sprint,SPK,18
+spooky.tkn.near,Spooky Coin,SPOOKY,18
+spot.tkn.near,Spotter,SPOT,18
+spp.aidols.near,Sneak-Peek Pete,SPP,24
+sprk.aidols.near,AIDOSpark,SPRK,24
+spun.token0.near,SPUN,SPUN,18
+sqre.aidols.near,SCORE Squire,SQRE,24
+squid.tkn.near,SQUID,SQUID,18
+sryndp.gra-fun.near,Fortuity,sryndp,24
+ss45.aidols.near,Satoshi Styler,SS45,24
+sshilly.tkn.near,shy silly,sshilly,18
+sstk.aidols.near,SatoshiStacker,SSTK,24
+sstrump.token0.near,Super Saiyan Trump,SSTRUMP,18
+st.tkn.near,蛇,st,18
+st.token0.near,StopWar,ST,18
+ft.dev-support.near,Support Token,ST,0
+st24.tkn.near,Magic Pro 02,ST24,24
+stake.tkn.near,Stake University,Stake,18
+stan.tkn.near,STAN,STAN,6
+star.tkn.near,Stardust,STAR,18
+stars.thelittles.near,Star,STAR,0
+starsents.aidols.near,StarSparkle Sentinels,StarSents,24
+staysl.gra-fun.near,Footprints,staysl,24
+stb.token0.near,Smart Trader Boss,STB,18
+stevejobs.tkn.near,Innovation distinguishes between a leader and a follower.,STEVEJOBS,0
+stke.tkn.near,sticky,STKE,18
+stm.token0.near,Shiba to the Mars🚀🚀🚀,STM,18
+stonkcoin.near,STONKS,STONKS,4
+stop.tkn.near,STOP BUYING RUGS FROM INTEAR BOT,STOP,1
+stpm.gra-fun.near,It's Gonna Jam,stpm,24
+stramp.gra-fun.near,STRAMP,STRAMP,24
+sp0xqxens9.vrtx,CHOONSIK,STRAYCAT,18
+strump.token0.near,Shitzu Trump,STRUMP,18
+stsbtc.tfactory.near,SaToshi ,STSBTC,18
+santa_token.near,Santa Token,STT,0
+sui-1441.meme-cooking.near,SUI,SUI,18
+sun.aidols.near,Justin Sun,SUN,24
+sunvnam.gra-fun.near,Sunvietnam,SunVNam,24
+sunydb.gra-fun.near,Cosmic Ember,sunydb,24
+supersid.aidols.near,Supercharged Sid,SUPERSID,24
+suprchr.aidols.near,SuperCharge,SUPRCHR,24
+survive.tkn.near,Survival Is Near,SURVIVE,18
+svart.gra-fun.near,Voirol Art,svart,24
+svn.token0.near,Seven,SVN,18
+swag.tkn.near,SWAGGER,SWAG,18
+swagger.tkn.near,SWAGGER,SWAGGER,18
+swarm.token0.near,Swarm,SWARM,18
+swasti.gra-fun.near,Swasticoin,Swasti,24
+swd.tknx.near,SWORLD,SWD,8
+swdog.gra-fun.near,Chita,SWDog,24
+swear.tkn.near,SWEAR,SWEAR,18
+sweat_token_testing.near,SWEAT,SWEAT,18
+test.sweat,SWEAT,SWEAT,18
+sweetdog.gra-fun.near,Chita,SWeetDog,24
+swim.tkn.near,SWIM Coin,SWIM,18
+31.contract.portalbridge.near,SybilZero,Sybzero,8
+sydney.tfactory.near,"Hello, Sydney",SYDNEY,18
+syn.tkn.near,WebSyndicate,SYN,18
+sync.aidols.near,SparkSync,SYNC,24
+synthium-879.meme-cooking.near,SYNTHIUM,SYNTHIUM,18
+syo1.mtmx.near,Antalya Şirinyalı 1477,SYO1,24
+szk-1618.meme-cooking.near,suzuki,SZK,18
+t.tkn.near,Tmb,T,18
+token.testtge.near,Test AI Token,TAI,18
+taliban.tkn.near,Taliban Token,TALIBAN,18
+tamil.tkn.near,TAMIL CRYPTO,TAMIL,18
+tao.tkn.near,TAO Token,TAO,18
+tara.tkn.near,Astro,TARA,18
+taste.tfactory.near,Test Test Test,TASTE,18
+taygay.gra-fun.near,tysongay,taygay,24
+tb.aidols.near,TrendBlender,TB,24
+tbr.tkn.near,The Burning Realm,TBR,2
+theburningrealm.near,The Burning Realm,TBR,2
+tbt.tkn.near,THEBESTNEARTOKEN,TBT,18
+e306dc952aea636a77874c3da2ed8ad742a9a6b0091d6ad7ebaaf8f76ab3a404,TestCoin,TC,6
+tcc.aidols.near,TRUMPcoin Custodian,TCC,24
+tckt.tkn.near,Mintickt,TCKT,18
+tclots.aidols.near,Tits in clothes ,TClots,24
+te2025.gra-fun.near,Economisc,TE2025,24
+tears.aidols.near,Tears,TEARS,24
+technicorumtest.tkn.near,Test Token,TECHNICORUMTEST,18
+tee.aidols.near,TEEties,TEE,24
+tee-1594.meme-cooking.near,TEE(ties),TEE,18
+ter.tkn.near,SkyNet,TER,10
+terminus.token0.near,TERMINUS coin,TERMINUS,18
+tesla.tknx.near,TESLA,TESLA,17
+test.gra-fun.near,test,Test,24
+test.tkn.near,Test,TEST,18
+testb2.near,TestB2,TestB2,10
+testb6.near,TestB6,TestB6,10
+testb8.near,TestB8,TestB8,10
+testin.tkn.near,testin,testin,0
+testing.tkn.near,Testing ,TESTING,18
+testla.tknx.near,TESTLA,TESTLA,17
+testo1.tfactory.near,Test 1 token,TESTO,18
+testtoken.factory.passby.near,Test Token,testtoken,18
+testtoken123.tkn.near,TestToken,TestToken123,18
+textroyale.near,Text Royale,TEXT,8
+text.tkn.near,Secret Message Specie,TEXT,18
+tfrog1.tfactory.near,tfrog,TFROG,18
+tg.token0.near,Telegram,TG,18
+tganza.aidols.near,TrumpGanza,TGANZA,24
+thewhitehouse.tkn.near,"The White House is the official residence and workplace of the president of the United States. It is located at 1600 Pennsylvania Avenue NW in Washington, D.C., and has been the residence of every U.S. president since John Adams in 1800.",THEWHITEHOUSE,18
+thgst.gra-fun.near,Jolly Gangster,thgst,24
+thing.tkn.near,THING,THING,18
+thisisatestasyoucanseewwwcococom.tkn.near,this is the token name,thisisatestasyoucanseewwwcococom,18
+thusky.tkn.near,HuskyTest,THUSKY,1
+thx.tkn.near,thank you,THX,18
+tia-token.theiadev.near,Theia,TIA,18
+tiktok.tkn.near,TikCrypt,TIKTOK,18
+timer-1281.meme-cooking.near,TradeTimer,TIMER,18
+timur.tkn.near,Shakirov Shakirov,TIMUR,18
+tiny.tkn.near,Tiny Cash,TINY,18
+tip.aidols.near,Tip,Tip,24
+tits.aidols.near,Chief of TITS ,TITS,24
+tkbn.aidols.near,TokenBean,TKBN,24
+tkntdbt.aidols.near,Token Tidbit,TKNTDBT,24
+tkntlr.aidols.near,TokenTaylor,TKNTLR,24
+tkntr.aidols.near,Tokenator,TKNTR,24
+tkntrckstr.aidols.near,Token Trickster,TKNTRCKSTR,24
+tkny.aidols.near,TokenTally,TKNY,24
+tktn.aidols.near,Token Titan,TKTN,24
+tktrooper.aidols.near,TokenTrooper,TKTrooper,24
+tl.gra-fun.near,Tesla,TL,24
+tlab-365.meme-cooking.near,TokenLab,TLAB,18
+tlg.aidols.near,TokenLingo,TLG,24
+tmg.aidols.near,TrendMeme Genie,TMG,24
+test.meteor-point.near,Test Meteor Point,T-MPT,8
+tnear.tkn.near,testnear,tnear,18
+toes.tkn.near,Camel Token,TOES,13
+toke.aidols.near,Toki,TOKE,24
+token-9.aidols.near,new troken,token,24
+token.aidols.near,Captain Crypto,TOKEN,24
+tokenatorgen.aidols.near,Tokenator Genie,TokenatorGen,24
+tokeneaseai.aidols.near,TokenEase,TokenEaseAI,24
+tokent.aidols.near,TokenTaylor,TokenT,24
+tokenteddy.aidols.near,TokenTeddy,TokenTeddy,24
+tokenturbo.aidols.near,Token Turbo,TokenTurbo,24
+tokenz.aidols.near,TokenZilla,TokenZ,24
+tokn-6.aidols.near,Token Tails,TOKN,24
+tokn.aidols.near,SCOREtastic,TOKN,24
+tomate.dagro.near,Tomate,TOMATE,6
+tomocat.tkn.near,Tomo Cat,TOMOCAT,18
+39.omt.tg,The Open Platform,TON,24
+tool.tool-box.near,Tool Box,TOOL,18
+totamer.aidols.near,TokenTamer,ToTamer,24
+touch.tkn.near,Jensen Huang's Touch,TOUCH,18
+touchedbyjensen.laboratory.jumpfinance.near,Touched by Jensen,TOUCH,18
+touched.tkn.near,Jensen Touched Illia,TOUCHED,24
+touches.tkn.near,Proof of Touch,TOUCHES,18
+touko.tkn.near,Toukocoin,TOUKO,24
+tpl.tkn.near,T-Apple,TPL,18
+tracker.tkn.near,Tracker,tracker,5
+trans.token0.near,Transister ,TRANS,18
+trash1.331a4daac1s.near,VEAX Trash Token (no value). Custom name.,TRASH1,24
+trash2.331a4daac1s.near,VEAX Trash Token (no value). Custom name.,TRASH2,24
+trash3.331a4daac1s.near,VEAX Trash Token (no value). Custom name.,TRASH3,24
+trda.aidols.near,Traderina,TRDA,24
+tre.token0.near,Seksy ,TRE,18
+trex.token0.near,Green Dino🦖,TREX,18
+tri.tkn.near,Illia Flexed Triceps,TRI,18
+tribe.tkn.near,Webank TRIBE,TRIBE,18
+trillion.aidols.near,Trillion Nova,TRILLION,24
+token.triptex.near,Triptex Token,TRIPX,24
+trmp1.token0.near,Trump,TRMP,18
+trmp.token0.near,Trumb,TRMP,18
+token.trmr-tkn.near,Transformer,TRMR,18
+trmubd.gra-fun.near,TRUMP Unity,trmubd,24
+troll.token0.near,TROLLCOIN / TON / NEAR,TROLL,18
+trump.gra-fun.near,Trump,Trump,24
+trump.tfactory.near,Trump,Trump,18
+trump.tknx.near,TRUMP,TRUMP,18
+sol-c58e6539c2f2e097c251f8edf11f9c03e581f8d4.omft.near,OFFICIAL TRUMP,TRUMP,6
+trump-355.meme-cooking.near,TRUMP,TRUMP,18
+trump.tkn.near,Donald Trump Token,TRUMP,18
+trump-225.meme-cooking.near,THE DONALD TRUMP,TRUMP,18
+trump47-391.meme-cooking.near,Trump47 ,Trump47,18
+trumpe1.tfactory.near,Thinking TRUMPE,TRUMPE,18
+trumpepe.tfactory.near,Trumpepe,TRUMPEPE,18
+trumptn.aidols.near,TrumpToon,TRUMPTN,24
+trustus.errrrrooorrr.near,T̴͍̫͋R̷̦̅́̇U̸̧̜̇̉̈S̷̫̪͓͎͐T̵͔̪͉̹̅ ̷̼͉̝͎͌̓̒U̴̝̅͠S̴͔̃̈,T̴͍̫͋R̷̦̅́̇U̸̧̜̇̉̈S̷̫̪͓͎͐T̵͔̪͉̹̅,8
+truthk.gra-fun.near,Unlock Insights,truthk,24
+tscore.gra-fun.near,TrustScore,TSCORE,24
+tsla.tkn.near,TSLA,TSLA,18
+tsoy.tkn.near,Tsoy Zhiv Proof,TSOY,3
+tspark.aidols.near,Token Spark Genie,TSPARK,24
+rat.norfolktestnet.near,bingo,TST,24
+bingo.norfolktestnet.near,bingo,TST,24
+rattt.norfolktestnet.near,bingo,TST,24
+pom.norfolktestnet.near,bingo,TST,24
+tst.gra-fun.near,TEST,TST,24
+tstn.tkn.near,TESTINGTOKEN,TSTN,18
+tsts.gftest3.near,tstn,tsts,24
+tsts119156.gftest3.near,tstn,tsts119156,24
+tsts129934.gftest3.near,tstn,tsts129934,24
+tsts15122.gftest3.near,tstn,tsts15122,24
+tsts166592.gftest3.near,tstn,tsts166592,24
+tsts201135.gftest3.near,tstn,tsts201135,24
+tsts20661.gftest3.near,tstn,tsts20661,24
+tsts209328.gftest3.near,tstn,tsts209328,24
+tsts216483.gftest3.near,tstn,tsts216483,24
+tsts247842.gftest3.near,tstn,tsts247842,24
+tsts255525.gftest3.near,tstn,tsts255525,24
+tsts296047.gftest3.near,tstn,tsts296047,24
+tsts300482.gftest3.near,tstn,tsts300482,24
+tsts318808.gftest3.near,tstn,tsts318808,24
+tsts328801.gftest3.near,tstn,tsts328801,24
+tsts335955.gftest3.near,tstn,tsts335955,24
+tsts337723.gftest3.near,tstn,tsts337723,24
+tsts370637.gftest3.near,tstn,tsts370637,24
+tsts470894.gftest3.near,tstn,tsts470894,24
+tsts473783.gftest3.near,tstn,tsts473783,24
+tsts475930.gftest3.near,tstn,tsts475930,24
+tsts531340.gftest3.near,tstn,tsts531340,24
+tsts558938.gftest3.near,tstn,tsts558938,24
+tsts58843.gftest3.near,tstn,tsts58843,24
+tsts605823.gftest3.near,tstn,tsts605823,24
+tsts612364.gftest3.near,tstn,tsts612364,24
+tsts616213.gftest3.near,tstn,tsts616213,24
+tsts660434.gftest3.near,tstn,tsts660434,24
+tsts672902.gftest3.near,tstn,tsts672902,24
+tsts677834.gftest3.near,tstn,tsts677834,24
+tsts696017.gftest3.near,tstn,tsts696017,24
+tsts712677.gftest3.near,tstn,tsts712677,24
+tsts736005.gftest3.near,tstn,tsts736005,24
+tsts781614.gftest3.near,tstn,tsts781614,24
+tsts784304.gftest3.near,tstn,tsts784304,24
+tsts831243.gftest3.near,tstn,tsts831243,24
+tsts872395.gftest3.near,tstn,tsts872395,24
+tsts906714.gftest3.near,tstn,tsts906714,24
+tsts908469.gftest3.near,tstn,tsts908469,24
+tsts924237.gftest3.near,tstn,tsts924237,24
+tt.factory.passby.near,Test Token,TT,18
+ttac.aidols.near,Token Tactician,TTAC,24
+ttkn.aidols.near,Token Titan,TTKN,24
+ttn.aidols.near,Token Titan,TTN,24
+ttop-7.aidols.near,TokenTrooper,TTOP,24
+ttop.aidols.near,TokenTrooper,TTOP,24
+t0-the-plut0.gftest2.near,To the Pluto,TTP,24
+t0-the-plut0.gftest1.near,To the Pluto,TTP,24
+t0-the-plut0.gftest.near,To the Pluto,TTP,24
+t0-the-plut0.gftest3.near,To the Pluto,TTP,24
+ttrot.aidols.near,TokenTrotter,TTrot,24
+ttt.aidols.near,Token TikTok,TTT,24
+tttest.tkn.near,Test Tokem,TTTEST,18
+tttest1.tkn.near,Test Token,TTTEST1,3
+tttrump.aidols.near,Token Tussle Trump,TTTrump,24
+tty.rugfactory.near,AI Terminal,TTY,24
+eth-0xa35923162c49cf95e6bf26623385eb431ad920d3.omft.near,Turbo,TURBO,18
+sol-df27d7abcc1c656d4ac3b1399bbfbba1994e6d8c.omft.near,Turbo,TURBO,8
+tusk.tkn.near,Elon TUSK,TUSK,18
+tuxa.tkn.primitives.near,Tuxappcoin,TUXA,24
+tuxa.tkn.near,Tuxappcoin,TUXA,18
+twz.aidols.near,TokenWhiz,TWZ,24
+tygs.tkn.near,$TYGS,TYGS,18
+tyo-1074.meme-cooking.near,thanksgivingYo,TYO,18
+ua.token0.near,Brave people ,UA,18
+ua.gra-fun.near,Ukraine Freedom(UNIAN),UA,24
+ua.aidols.near,Victory,UA,24
+uct.tkn.near,Universal Clock Tick,UCT,18
+ud.token0.near,Universal Dada,UD,18
+ukc.tkn.near,Ukrainian Coin,UKC,18
+ukr.token0.near,Make Ukraine Great Again,UKR,18
+ultameta.gra-fun.near,Extraterrestrial Network,ultameta,24
+libre_instrument_1.near,Libre Institutional USD Money Market A1,UMA1,18
+uncooked-618.meme-cooking.near,UNCOOKED,UNCOOKED,18
+unet.tkn.near,Unique One Network,UNET,18
+uni.tkn.near,Webank UNI,UNI,18
+eth-0x1f9840a85d5af5bf1d1762f925bdaddc4201f984.omft.near,Uniswap,UNI,18
+uniaidogeaidoge.tknx.near,AI Doge,uniaidogeaidoge,6
+unidragonworlddragon.tknx.near,DragonWorld,unidragonworlddragon,6
+unifattoken.near,UniFat,UNIFAT,6
+uniinscription.tknx.near,Inscription,UniINSCRIPTION,6
+uniinstwo.tknx.near,Inscription,UniINSTwo,6
+uniot.tkn.near,Uniot,UNIOT,18
+embr.playember_reserve.near,Unites,UNTS,24
+up.dagro.near,Up,UP,6
+upcember-1169.meme-cooking.near,Upcember,Upcember,18
+updog-237.meme-cooking.near,NEARUPDOG,UPDOG,18
+upi.dagro.near,Upi,UPI,6
+uplift22.aidols.near,UpliftBot,Uplift22,24
+urukche.tkn.near,Uruk-Che,URUKCHE,18
+usagi.token0.near,USAGI,USAGI,18
+usaid.gra-fun.near,USAID,USAID,24
+uscsc.tkn.near,US Comp Supply Corp,USCSC,18
+usd.tkn.near,USD Token,USD,21
+38.contract.portalbridge.near,USD Coin,USDC,8
+pol-0x3c499c542cef5e3811e1192ce70d8cc03d5c3359.omft.near,USD Coin,USDC,6
+12.contract.portalbridge.near,USDC,USDC,6
+39.contract.portalbridge.near,USD Coin,USDC,6
+41.contract.portalbridge.near,USD Coin,USDC,6
+sol-5ce3bf3a31af18be40ba30f721101b4341690186.omft.near,USD Coin,USDC,6
+16.contract.portalbridge.near,USD Coin,USDC,6
+eth-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.duse.near,USD Coin,USDC,6
+3.contract.portalbridge.near,USD Coin (Wormhole),USDC,6
+base-0x833589fcd6edb6e08f4c7c32d4f71b54bda02913.omft.near,USD Coin,USDC,6
+7.contract.portalbridge.near,USD Coin (PoS),USDC,6
+14.contract.portalbridge.near,USD Coin,USDC,6
+40.contract.portalbridge.near,USD Coin,USDC,6
+gnosis-0x2a22f9c3b484c3629090feed35f17ff8f88f76f0.omft.near,Bridged USDC,USDC,6
+arbitrum-0xaf88d065e77c8cc2239327c5edb3a432268e5831.duse.near,USD Coin,USDC,6
+eth-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.omft.near,USD Coin,USDC,6
+base-0x833589fcd6edb6e08f4c7c32d4f71b54bda02913.duse.near,USD Coin,USDC,6
+bsc-0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d.omft.near,USD Coin,USDC,18
+arb-0xaf88d065e77c8cc2239327c5edb3a432268e5831.omft.near,USD Coin,USDC,6
+usdc.tkn.near,wUSDC,USDC,18
+gnosis-0xddafbb505ad214d7b80b1f830fccc89b60fb7a83.omft.near,USD//C on xDai,USDC,6
+37.contract.portalbridge.near,USD Coin,USDC,6
+usdf.usdf.burntest.near,usdf,USDF,18
+usdfx.near,USDFX,USDFX,6
+18.contract.portalbridge.near,TetherToken,USDt,6
+sol-c800a4bd850783ccb82c2b2c7e84175443606352.omft.near,Tether USD,USDT,6
+arb-0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9.omft.near,Tether USD,USDT,6
+4.contract.portalbridge.near,Tether USD (Wormhole),USDT,6
+usdt.tkn.near,USDT,USDT,18
+10.contract.portalbridge.near,USDT,USDT,6
+eth-0xdac17f958d2ee523a2206206994597c13d831ec7.omft.near,Tether USD,USDT,6
+bsc-0x55d398326f99059ff775485246999027b3197955.omft.near,Tether USD,USDT,18
+usf-token.near,STABLE,USF,18
+usm.gra-fun.near,USMeme,USM,24
+usm.tkn.near,USMeme,USM,18
+usmensupport.token0.near,USMen ARMY,USMENSUPPORT,18
+usmmm.token0.near,USMeme,USMMM,18
+usnr.tkn.near,US New Republic,USNR,1
+uss.aidols.near,Crypto Commander,USS,24
+uss-4.aidols.near,Cryptodactyl USS,USS,24
+ust.token.a11bd.near,TerraUSD,UST,24
+usus.tkn.near,usus.finance,USUS,18
+usyc.near,US Yield Coin,USYC,6
+uu76.aidols.near,Unpredictable Unicycle,UU76,24
+uwonnft.token0.near,Looking for buyers for my NFTs,UWONNFT,18
+vda.token0.near,VIDIA,VDA,18
+vdsvsd.aidols.near,vdvd,vdsvsd,24
+veax-1499.meme-cooking.near,Shitty meme,VEAX,18
+veganfriends.tkn.near,Vegan Friends Token,VEGANFRIENDS,18
+versi.gra-fun.near,VERSICOIN,VERSI,24
+vhealios.tkn.near,vHEALIOS,vHEALIOS,6
+vie.token0.near,Vie Coin,VIE,18
+vie1.token0.near,Vie Coin,VIE,18
+viet.tfactory.near,Vietnam,VIET,18
+vino.tkn.primitives.near,TOTO,VINO,18
+vlad.tkn.near,Vlad Writes Code,VLAD,3
+vnpad.tkn.near,Vesting NearPAD,vNPAD,18
+vow_token.near,VOW NEAR fungible token,VOW,24
+7f3d1be6c7322ca5a792900b3a42d7131251628b2bbe9e1515e7b4973ede4aee,Vortex Gaming,VRTX,18
+vsrbt.token0.near,Vanilla Sorbet,VSRBT,18
+vvp.tfactory.near,Putin,VVP,18
+apple.vizionpro.near,VizionPro,VZP,18
+w33d.tkn.near,Pass the dutch. ,W33D,0
+wa2025.gra-fun.near,Economic ,WA2025,24
+wafi.tkn.near,Water & Fire Token,WAFI,10
+wan.gra-fun.near,WE ARE NEAR,WAN,24
+wang-246.meme-cooking.near,Bowen’s Wang,WANG,18
+watcth.gra-fun.near,Observe Now,watcth,24
+watto-1563.meme-cooking.near,We only accept mpETH,WATTO,18
+ft.waxcoin.near,Wax,WAX,24
+dv31egkulq.vrtx,WhiteBook,WB,18
+35.contract.portalbridge.near,Wrapped BNB,WBNB,8
+wbnb.hot.tg,Wrapped BNB,WBNB,18
+wbsc.tkn.near,WrappedBSC,WBSC,18
+36.contract.portalbridge.near,Wrapped BTC,WBTC,8
+wbtc.token0.near,Wrapped BTC,WBTC,18
+wotacrystal.laboratory.jumpfinance.near,WOTA Crystal,WCRL,18
+wct.leonard0.near,WordChain Token,WCT,24
+wdai.tkn.near,wDAI,WDAI,18
+wdragon.tkn.near,⬜🐉WHITE DRAGON 🐉⬜,WDRAGON,18
+we3.tkn.near,WE3 Token,WE3,18
+wealth.tkn.near,WEALTH,WEALTH,18
+24.contract.portalbridge.near,Wrapped Ether,WETH,8
+26.contract.portalbridge.near,Wrapped Ether,WETH,8
+gnosis-0x6a023ccd1ff6f2045c3309768ead9e68f978f6e1.omft.near,Wrapped Ether on xDai,WETH,18
+1.contract.portalbridge.near,Wrapped Ether (Wormhole),WETH,8
+6.contract.portalbridge.near,Wrapped GLMR,WGLMR,8
+wgpt.near,WhatsGPT,WGPT,6
+whale-301.meme-cooking.near,Whaly🐋,WHALE,18
+whale.aidols.near,Whale Gen,WHALE,24
+whale.gra-fun.near,The Whale,WHALE,24
+whales.tkn.near,NEAR WHALES,WHALES,4
+when.gra-fun.near,WHEN,WHEN,24
+whenmoon.gra-fun.near,When Altseason??,WHENMOON,24
+whitedragon.tkn.near,White Dragon,WHITEDRAGON,18
+whot.gra-fun.near,HOT,wHOT,24
+whuffie.tkn.near,Whuffie - Reputation Currency,WHUFFIE,0
+why.tkn.near,"Why do you buy $12k of a fake impersonator rug coin, and not buy $STOP? Check the message above. $STOP is not a rug, 100% of supply is in LP, and 100% of LP is burned (if you need proof, DM @NeedSomeBakuretsu), just buy my shitcoin and get rich https://dexscreener.com/near/refv1-4828 and we have a telegram t.me/stopbuyingrugs pls join and dont sell!!!",WHY,18
+wif.token0.near,Dogwifhat,WIF,18
+sol-b9c68f94ec8fd160137af8cdfe5e61cd68e2afba.omft.near,dogwifhat,WIF,6
+wif.tkn.near,Gold Dragon Wif Hat,WIF,18
+wif1.token0.near,Dogwifhat,WIF,18
+willa.tknx.near,willa,willa,18
+willa.tkn.near,WILLA,willa,18
+willyoumarryme.tkn.near,Will You Marry Me?,WILLYOUMARRYME,0
+wins.token0.near,Winner,WINS,18
+5.contract.portalbridge.near,Wrapped Klay,WKLAY,8
+wllntp.gra-fun.near,Wall Only,wllntp,24
+wmn-1231.meme-cooking.near,Women in Blockchain Meetup 5th December,WMN,18
+wnear.tkn.near,wnear,WNEAR,18
+token.karim-dev.near,Wrapped Near,WNEAR,24
+wnk.gra-fun.near,WANK,wnk,24
+wnpad.tkn.near,Wrapped NearPAD,wNPAD,18
+wojak.tkn.near,WojakOnNear,wojak,18
+wojakannouncement.tkn.near,$Wojak Presale is live! Presale wallet:  wojaks.near  - Make sure to send Near Token as payment - Send only from native wallets(no CEXes) NFA DYOR Twitter post: https://twitter.com/WojakOnNear/status/1774763278322868617 For Questions join our tg group: https://t.me/wojaksonnear,WOJAKAnnouncement,18
+wolf.token0.near,WOLF,WOLF,18
+youwon500neartoclaimyourgainwwwnearw.laboratory.jumpfinance.near,🎁You won 500 NEAR🎁 To claim your gain👉www.nearwon.com,WON,18
+youwon400neartoclaimyourgainwwwlotte.laboratory.jumpfinance.near,🎁You won 400 NEAR🎁 To claim your gain👉www.lottery-near.com,WON,12
+youwon400neartoclaimyourgainwwwnearl.laboratory.jumpfinance.near,🎁You won 400 NEAR🎁 To claim your gain👉www.near-lottery.com,WON,12
+youwon500neartoclaimyourgainwwwraffl.laboratory.jumpfinance.near,🎁You won 500 NEAR🎁 To claim your gain👉www.rafflenear.com,WON,18
+youwon500neartoclaimyourgainwwwnearl.laboratory.jumpfinance.near,🎁You won 500 NEAR🎁 To claim your gain👉www.nearlottery.com,WON,18
+youwon500neartoclaimyourgainwwwlotte.laboratory.jumpfinance.near,🎁You won 500 NEAR🎁 To claim your gain👉www.lotterynear.com,WON,18
+wood.gra-fun.near,Rotted Wood,Wood,24
+wood.token0.near,Rotted Wood,WOOD,18
+work-1583.meme-cooking.near,Slack Channel,WORK,18
+worm.gra-fun.near,Worms,WORM,24
+wow.gra-fun.near,wow elon musk wow,wow,24
+wow-1208.meme-cooking.near,WOW,Wow,18
+wow-1207.meme-cooking.near,WOW,WOW,18
+wst.tkn.near,Wolves Token,WST,18
+wtf.gra-fun.near,WTF,WTF,24
+wtfdafuq.gra-fun.near,What the Trend,wtfdafuq,24
+wumbocoin.near,Wumbo,WUMBO,4
+wusdc.tkn.near,wUSDC,WUSDC,18
+wusdt.tkn.near,wUSDT,WUSDT,18
+wwire.aidols.near,WoofWire,WWire,24
+wzp.aidols.near,WazzupBot,WZP,24
+xabr.a11bd.near,xABR Token,xABR,24
+xaki.gra-fun.near,xaki ,xaki,24
+1111111111111222222222222222www22223.laboratory.jumpfinance.near,🎁111 111 1111 111🎁 22 22222 2222 2222👉www.2222-3333333.com,XCBR,18
+xcorn.v1.corn-staging.near,Staked CORN,xCORN,18
+gnosis.omft.near,xDAI,xDAI,18
+xjumptoken.jumpfinance.near,xJUMP,xJUMP,18
+xp.heroes.near,HEROES REPUTATION,XP,6
+xpo.tkn.near,EXPOSURE,XPO,18
+xtoken.ref-finance.near,xRef Finance Token,xREF,18
+xrfix.aidols.near,FixUpX Agent,XRFIX,24
+xrpest.gra-fun.near,XRP Enthusiast,xrpest,24
+xslymn.token0.near,xslymn,XSLYMN,18
+xusm.tkn.near,ANTI USMeme,xUSM,18
+xwiftrx-728.meme-cooking.near,Xwiftrx Ai,XWIFTRX,18
+xxx.tkn.near,Иксы,XXX,18
+xxx.token0.near,XXX,XXX,18
+xyi.tkn.near,XYI Test FT Token,XYI,18
+yachi-1381.meme-cooking.near,YACHI,YACHI,18
+yang.yinyangtoken.near,Yang Token,YANG,4
+yantest.tkn.near,Yan_TestToken,YANTEST,18
+yeji.token0.near,Yeji Kim,YEJI,18
+yepyep.aidols.near,Yellow PEPE,YEPYEP,24
+yes.token0.near,Cgzao,YES,18
+yes.tkn.near,YES,YES,18
+yin.yinyangtoken.near,Yin Token,YIN,4
+ynp.tkn.near,Yashannapolis,YNP,18
+yolo.token0.near,YOLO,YOLO,18
+yolo1.token0.near,GOD of YOLO,YOLO,18
+yonocoin.near,Years Of No Opposition,YONO,8
+youwon1000neartoclaimyourgainwwwnear.laboratory.jumpfinance.near,🎉You won 1000 NEAR!🎉To claim your gain:👉www.near-lottery.org,🎉You won 1000 NEAR!🎉To claim your gain:👉www.near-lottery.org,1
+compliments.laboratory.jumpfinance.near,🎉Compliments,🎉You won 500 NEAR!🎉To claim your gain:👉www.lottery-near.org,1
+101.laboratory.jumpfinance.near,101,🎉You won 500 NEAR!🎉To claim your gain:👉www.lotterynear.org,0
+compliment.laboratory.jumpfinance.near,🎉Compliment,🎉You won 500 NEAR!🎉To claim your gain:👉www.lotterynear.org,1
+congratulations.laboratory.jumpfinance.near,🎉Congratulations,🎉You won 500 NEAR!🎉To claim your gain:👉www.near-lottery.org,1
+1.laboratory.jumpfinance.near,1,🎉You won 500 NEAR!🎉To claim your gain:👉www.near-lottery.org,0
+congratulation.laboratory.jumpfinance.near,🎉Congratulation,🎉You won 500 NEAR!🎉To claim your gain:👉www.near-lottery.org,1
+congrats.laboratory.jumpfinance.near,🎉Congrats,🎉You won 500 NEAR!🎉To claim your gain:👉www.nearlottery.org,1
+01.laboratory.jumpfinance.near,01,🎉You won 500 NEAR!🎉To claim your gain:👉www.near-raffle.com,0
+o.laboratory.jumpfinance.near,O,🎉You won 500 NEAR!🎉To claim your gain:👉www.near-raffle.com,0
+001.laboratory.jumpfinance.near,001,🎉You won 500 NEAR!🎉To claim your gain:👉www.nearraffle.com,0
+10.laboratory.jumpfinance.near,10,🎉You won 500 NEAR!🎉To claim your gain:👉www.near-raffle.org,0
+02.laboratory.jumpfinance.near,02,🎉You won 500 NEAR!🎉To claim your gain:👉www.raffle-near.com,0
+youwon500neartoclaimyourgainwwwverol.laboratory.jumpfinance.near,You won 500 NEAR! To claim your gain: www.verolottery.com,You won 500 NEAR! To claim your gain: www.verolottery.com,1
+youwon600neartoclaimyourgainwwwnearl.laboratory.jumpfinance.near,🎉You won 600 NEAR!🎉To claim your gain:👉www.near-lottery.org,🎉You won 600 NEAR!🎉To claim your gain:👉www.near-lottery.org,1
+ysx.tkn.near,YupStaxx Coin,YSX,0
+yt.token0.near,YouTube,YT,18
+yte-323.meme-cooking.near,Yeet,YTE,18
+yuca.dagro.near,Yuca,YUCA,6
+yupland.gra-fun.near,YupLand,YupLand,24
+yupland.tkn.near,YUPLAND,YUPLAND,0
+yusdf.usdf.burntest.near,yUSDF,yUSDF,18
+yusuf.token0.near,The Türkiye Hitman,YUSUF,18
+yvz.tkn.near,Yavuz Token,YVZ,18
+zanahoria.dagro.near,Zanahoria,ZANAHORIA,6
+zapilidveri.token0.near,DVERI ZAPILI MNE,ZAPILIDVERI,18
+zapote.dagro.near,Zapote,ZAPOTE,6
+zbl.aidols.near,ZuckBot: Human-AI Liaison,ZBL,24
+zbr.tkn.near,ZUBRA_1_BYN_24,ZBR,0
+zec.omft.near,Zcash,ZEC,8
+zentai.token0.near,NICKYMASK.COM,ZENTAI,18
+zero.gra-fun.near,ZERO,ZERO,24
+zeus.token0.near,ZEUS,ZEUS,18
+zhaimie.tkn.near,Zhaimie,ZHAIMIE,0
+ziggy.tkn.near,Ziggy,ZIGGY,18
+zip-366.meme-cooking.near,ZIPPO,ZIP,18
+zk-usdc.zkrouter.near,ZK USDC,zkUSDC,6
+ft.zomland.near,ZomLand Token,ZML,24
+zml.tkn.near,ZomLand Token,ZML,18
+zmpl.tkn.near,Zample Token ,ZMPL,18
+v1.guild-covenant.near,zNEAR nonMTM (USDC),zNEARnM-USDC,18
+zoe-1188.meme-cooking.near,Zoe,ZOE,18
+zombie.token0.near,The Undead,ZOMBIE,18
+zore.gra-fun.near,Zoropunk,Zore,24
+zwrp.tkn.near,Zeitwarp ,ZWRP,18
+lolcoin.qbit.near,Q-bit LOL-coin,ЛОЛ,2

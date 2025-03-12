@@ -1,12 +1,11 @@
-name: dbt_run_nearblocks_api
-run-name: dbt_run_nearblocks_api
+name: dbt_run_streamline_weekly
+run-name: dbt_run_streamline_weekly
 
 on:
   workflow_dispatch:
-  # Disabling schedule
-  # schedule:
-  # Runs 0100 UTC daily (see https://crontab.guru)
-  # - cron: '0 1 * * *'
+  schedule:
+    # Runs weekly at 0 UTC on Mondays (see https://crontab.guru)
+    - cron: "0 0 * * 1"
 
 env:
   USE_VARS: "${{ vars.USE_VARS }}"
@@ -43,7 +42,7 @@ jobs:
 
       - name: Run DBT Jobs
         run: |
-          dbt run-operation get_nearblocks_fts
+          dbt run -s tag:streamline_non_core
 
       - name: Store logs
         uses: actions/upload-artifact@v4

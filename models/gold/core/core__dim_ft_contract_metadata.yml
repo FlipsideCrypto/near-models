@@ -21,14 +21,15 @@ models:
         tests: 
           - not_null
 
-      - name: DECIMALS
-        description: "{{ doc('decimals')}}"
+      - name: DATA
+        description: "{{ doc('data')}}"
         tests: 
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - NUMBER
-                - FLOAT
+                - VARIANT
+                - OBJECT
+                - ARRAY
 
       - name: ICON
         description: "{{ doc('icon')}}"

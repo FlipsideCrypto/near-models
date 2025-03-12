@@ -7,8 +7,8 @@ models:
     tests:
       - dbt_utils.recency:
           datepart: day
-          field: _inserted_timestamp
-          interval: 14
+          field: inserted_timestamp
+          interval: 8
 
     columns:
       - name: CONTRACT_ADDRESS
@@ -23,9 +23,6 @@ models:
         description: "{{ doc('decimals')}}"
         tests:
           - not_null
-
-      - name: ICON
-        description: "{{ doc('icon')}}"
 
       - name: NAME
         description: "{{ doc('name')}}"
@@ -43,12 +40,6 @@ models:
 
       - name: DATA
         description: "{{ doc('data')}}"
-
-      - name: _INSERTED_TIMESTAMP
-        description: "{{ doc('_inserted_timestamp')}}"
-
-      - name: _RES_ID
-        description: "{{ doc('_res_id')}}"
 
       - name: FT_CONTRACT_METADATA_ID
         description: "{{doc('id')}}"
