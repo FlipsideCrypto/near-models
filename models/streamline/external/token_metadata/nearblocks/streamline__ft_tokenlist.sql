@@ -11,7 +11,7 @@
 WITH ft_transfers AS (
 
     SELECT
-        DISTINCT receipt_receiver_id AS contract_address
+        DISTINCT lower(receipt_receiver_id) AS contract_address
     FROM
         {{ ref('core__ez_actions') }}
     WHERE
@@ -24,8 +24,18 @@ AND modified_timestamp >= (
         COALESCE(MAX(modified_timestamp), '1970-01-01')
     FROM
         {{ this }})
+    {% endif %}
+) 
+{% if not is_incremental() %}
+    {% do log('Is FR, loading from seed file', info=true) %}
+,
+    tokenlist_seed AS (
+        SELECT
+            lower(contract_address) AS contract_address
+        FROM
+            {{ ref('seeds__ft_tokenlist') }}
+    )
 {% endif %}
-)
 SELECT
     contract_address,
     {{ dbt_utils.generate_surrogate_key(
@@ -37,8 +47,20 @@ SELECT
 FROM
     ft_transfers
 
-qualify(ROW_NUMBER() over (
-    PARTITION BY contract_address
-    ORDER BY
-        modified_timestamp asc
-) = 1)
+    {% if not is_incremental() %}
+UNION
+SELECT
+    contract_address,
+    {{ dbt_utils.generate_surrogate_key(
+        ['contract_address']
+    ) }} AS ft_tokenlist_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
+FROM
+    tokenlist_seed
+{% endif %}
+
+qualify(ROW_NUMBER() over (PARTITION BY contract_address
+ORDER BY
+    modified_timestamp ASC) = 1)

@@ -8,20 +8,6 @@
     tags = ['streamline_non_core']
 ) }}
 
-{% if var('NEAR_MIGRATE_ARCHIVE', false) %}
-
-SELECT
-    contract_address,
-    DATE_PART('EPOCH', inserted_timestamp) :: INTEGER AS partition_key,
-    inserted_timestamp AS _inserted_timestamp,
-    contract_address AS nearblocks_ft_complete_id,
-    SYSDATE() AS inserted_timestamp,
-    SYSDATE() AS modified_timestamp,
-    '{{ invocation_id }}' AS _invocation_id
-FROM
-    {{ ref('seeds__ft_token_details_final')}}
-
-{% else %}
 SELECT
     VALUE :CONTRACT_ADDRESS :: STRING AS contract_address,
     partition_key,
@@ -46,7 +32,6 @@ AND
         ),
         '1900-01-01' :: timestamp_ntz
     )
-{% endif %}
 {% endif %}
 
 qualify(row_number() over (partition by contract_address order by _inserted_timestamp desc)) = 1

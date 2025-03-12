@@ -34,7 +34,10 @@ SELECT
     {{ target.database }}.live.udf_api(
         'GET',
         '{Service}fts/' || contract_address,
-        {},
+        {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' || '{Authentication}'
+        },
         {},
         'Vault/prod/near/nearblocks'
     ) AS request

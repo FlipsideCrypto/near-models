@@ -1,4 +1,3 @@
--- depends on: {{ ref('seeds__ft_token_details_final')}}
 -- depends on: {{ ref('bronze__nearblocks_ft_metadata')}}
 
 {{ config(
@@ -11,15 +10,6 @@
 
 
 WITH bronze AS (
-    {% if var('NEAR_MIGRATE_ARCHIVE', false) %}
-
-    SELECT
-        contract_address,
-        TRY_PARSE_JSON(DATA) AS DATA
-    FROM
-        {{ ref('seeds__ft_token_details_final')}}
-
-    {% else %}
 
     SELECT
         VALUE :CONTRACT_ADDRESS :: STRING AS contract_address,
@@ -38,8 +28,6 @@ WITH bronze AS (
                 {{ this }}
         )
     {% endif %}
-{% endif %}
-
 ),
 flatten_results AS (
     SELECT
