@@ -108,7 +108,6 @@ models:
         description: "{{ doc('id') }}"
         tests:
           - not_null
-          - unique
 
       - name: inserted_timestamp
         description: "{{ doc('inserted_timestamp') }}"

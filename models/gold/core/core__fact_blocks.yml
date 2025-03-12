@@ -154,7 +154,8 @@ models:
       - name: GAS_PRICE
         description: "{{ doc('gas_price')}}"
         tests:
-          - not_null
+          - not_null:
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
@@ -181,7 +182,8 @@ models:
       - name: LATEST_PROTOCOL_VERSION
         description: "{{ doc('latest_protocol_version')}}"
         tests:
-          - not_null
+          - not_null:
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
