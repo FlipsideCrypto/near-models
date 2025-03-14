@@ -11,7 +11,7 @@
 
 SELECT
     VALUE :TX_HASH :: STRING AS tx_hash,
-    VALUE :chunk_hash :: STRING AS chunk_hash,
+    VALUE :CHUNK_HASH :: STRING AS chunk_hash,
     VALUE :BLOCK_ID :: INT AS block_id,
     partition_key,
     _inserted_timestamp,
