@@ -104,7 +104,7 @@ blocks AS (
             {{ partition_load_manual('no_buffer') }}
         {% else %}
         {% if is_incremental() %}
-            WHERE block_timestamp :: DATE >= '{{min_bd}}' - interval '1 day'
+            WHERE block_timestamp :: DATE >= '{{min_bd}}' :: DATE - interval '1 day'
         {% endif %}
     {% endif %}
 ),
