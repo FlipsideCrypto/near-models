@@ -1,4 +1,4 @@
--- depends_on: {{ ref('silver__streamline_blocks') }}
+-- depends_on: {{ ref('silver__blocks_final') }}
 {{ config(
     materialized = 'incremental',
     unique_key = 'test_timestamp',
@@ -16,8 +16,8 @@ WITH blocks_joined AS (
         b.block_timestamp AS next_block_timestamp,
         b.prev_hash AS next_prev_hash
     FROM
-        {{ ref('silver__streamline_blocks') }} A -- Streamline Migration TODO - change this to fact blocks once table
-        LEFT JOIN {{ ref('silver__streamline_blocks') }}
+        {{ ref('silver__blocks_final') }} A
+        LEFT JOIN {{ ref('silver__blocks_final') }}
         b
         ON A.block_hash = b.prev_hash
     WHERE
@@ -34,7 +34,7 @@ AND (
                 SELECT
                     MIN(block_id) AS block_id
                 FROM
-                    {{ ref('silver__streamline_blocks') }} -- Streamline Migration TODO - change this to fact blocks once table
+                    {{ ref('silver__blocks_final') }}
                 WHERE
                     block_timestamp BETWEEN DATEADD('hour', -96, SYSDATE())
                     AND DATEADD('hour', -95, SYSDATE())

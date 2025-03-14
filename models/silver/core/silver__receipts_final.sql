@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'incremental',
-    incremental_predicates = ["dynamic_range_predicate","block_timestamp::date"],
+    incremental_predicates = ["dynamic_range_predicate_custom","block_timestamp::date"],
     incremental_strategy = 'merge',
     merge_exclude_columns = ['inserted_timestamp'],
     unique_key = 'receipt_id',
@@ -104,12 +104,13 @@ blocks AS (
             {{ partition_load_manual('no_buffer') }}
         {% else %}
         {% if is_incremental() %}
-            WHERE block_timestamp :: DATE >= '{{min_bd}}'
+            WHERE block_timestamp :: DATE >= '{{min_bd}}' :: DATE
         {% endif %}
     {% endif %}
 ),
 flatten_receipts AS (
     SELECT
+        origin_block_timestamp,
         chunk_hash,
         tx_hash,
         tx_succeeded,
@@ -173,7 +174,7 @@ FINAL AS (
         receipt_json,
         outcome_json,
         tx_succeeded,
-        outcome_json :status :Failure IS NULL AS receipt_succeeded,
+        outcome_json :outcome :status :Failure IS NULL AS receipt_succeeded,
         _partition_by_block_number
     FROM
         receipts_full
@@ -188,5 +189,7 @@ SELECT
     '{{ invocation_id }}' AS _invocation_id
 FROM
     FINAL
+
+qualify(row_number() over (partition by receipt_id order by block_id is not null desc, modified_timestamp desc) = 1)
 
 {% endif %}

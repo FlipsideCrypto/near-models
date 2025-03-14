@@ -5,7 +5,7 @@
     merge_exclude_columns = ['inserted_timestamp'],
     unique_key = 'receipt_id',
     cluster_by = ['modified_timestamp::date', '_partition_by_block_number'],
-    tags = ['load', 'load_shards','scheduled_core', 'deprecated_lake_archive']
+    tags = ['load', 'load_shards', 'deprecated_lake_archive']
 ) }}
 
 WITH shards AS (

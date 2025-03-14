@@ -1,81 +1,60 @@
 {{ config(
     severity = 'error',
-    tags = ['gap_test']
+    tags = ['gap_test', 'gap_test_core']
 ) }}
+-- depends_on: {{ ref('silver__blocks_v2') }}
 
-WITH blocks AS (
+{% if execute %}
+
+    {% if not var('DBT_FULL_TEST') %}
+      {% set min_block_sql %}
+        SELECT
+          MIN(block_id)
+        FROM
+          {{ ref('silver__blocks_v2') }}
+        WHERE
+          _inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
+      {% endset %}
+      {% set min_block_id = run_query(min_block_sql).columns[0].values()[0] %}
+    {% else %}
+      {% set min_block_id = 140868759 %}
+    {% endif %}
+  {% do log('Min block id: ' ~ min_block_id, info=True) %}
+{% endif %}
+
+WITH expected_chunks AS (
 
     SELECT
         block_id,
-        header :chunks_included :: INT AS chunk_ct_expected,
-        _partition_by_block_number,
-        _inserted_timestamp
+        _inserted_timestamp,
+        VALUE :chunk_hash :: STRING AS chunk_hash,
+        VALUE :height_created :: INT AS height_created,
+        VALUE :height_included :: INT AS height_included
     FROM
-        {{ ref('silver__streamline_blocks') }}
+        {{ ref('silver__blocks_v2') }}, lateral flatten(input => block_json :chunks :: ARRAY)
+    WHERE
+        block_id >= {{ min_block_id }}
 
-        {% if var('DBT_FULL_TEST') %}
-        WHERE
-            _inserted_timestamp < SYSDATE() - INTERVAL '1 hour'
-        {% else %}
-        WHERE
-            _inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days'
-            AND SYSDATE() - INTERVAL '1 hour'
-        {% endif %}
+    qualify(ROW_NUMBER() over (PARTITION BY chunk_hash ORDER BY block_id ASC)) = 1
 ),
-shards AS (
+actual_chunks AS (
     SELECT
-        block_id,
-        MAX(_inserted_timestamp) AS _inserted_timestamp,
-        COUNT(
-            DISTINCT chunk :header :chunk_hash :: STRING
-        ) AS chunk_ct_actual
+        DISTINCT chunk_hash
     FROM
-        {{ ref('silver__streamline_shards') }}
-
-        {% if var('DBT_FULL_TEST') %}
-        WHERE
-            _inserted_timestamp < SYSDATE() - INTERVAL '1 hour'
-        {% else %}
-        WHERE
-            _inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days'
-            AND SYSDATE() - INTERVAL '1 hour'
-        {% endif %}
-    GROUP BY
-        1
-),
-comp AS (
-    SELECT
-        b.block_id AS b_block_id,
-        s.block_id AS s_block_id,
-        b.chunk_ct_expected,
-        s.chunk_ct_actual,
-        _partition_by_block_number,
-        b._inserted_timestamp AS _inserted_timestamp_blocks,
-        s._inserted_timestamp AS _inserted_timestamp_shards
-    FROM
-        blocks b full
-        OUTER JOIN shards s USING (block_id)
+        {{ ref('silver__chunks_v2') }}
+    WHERE
+        block_id >= {{ min_block_id }}
 )
 SELECT
-    COALESCE(
-        b_block_id,
-        s_block_id
-    ) AS block_id,
-    chunk_ct_expected,
-    chunk_ct_actual,
-    _partition_by_block_number,
-    (
-        chunk_ct_actual != chunk_ct_expected
-        OR b_block_id IS NULL
-        OR s_block_id IS NULL
-    ) AS is_missing
+    block_id,
+    _inserted_timestamp,
+    chunk_hash,
+    height_created,
+    height_included
 FROM
-    comp
+    expected_chunks e
+    LEFT JOIN actual_chunks a USING (chunk_hash)
 WHERE
-    chunk_ct_expected > 0
-    AND is_missing 
-    {# Filter out false positive from blocks at start of window #}
-    AND _inserted_timestamp_blocks > SYSDATE() - INTERVAL '7 days' + INTERVAL '1 hour'
-    AND _inserted_timestamp_shards > SYSDATE() - INTERVAL '7 days' + INTERVAL '1 hour'
-ORDER BY
-    1
+    a.chunk_hash IS NULL
+    AND _inserted_timestamp <= SYSDATE() - interval '1 hour'
+    AND height_included >= {{ min_block_id }}

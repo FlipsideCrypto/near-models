@@ -42,7 +42,9 @@ tbl AS (
         A.tx_hash,
         A.signer_id,
         A.shard_id,
-        A.chunk_hash
+        A.chunk_hash,
+        A.height_created,
+        A.height_included
     FROM
         {{ ref('streamline__transactions') }} A
         LEFT JOIN {{ ref('streamline__transactions_complete') }} B ON A.tx_hash = B.tx_hash
@@ -63,6 +65,8 @@ SELECT
     chunk_hash,
     block_id,
     block_timestamp_epoch,
+    height_created,
+    height_included,
     tx_hash,
     FLOOR(block_id, -3) AS partition_key,
     DATE_PART('EPOCH', SYSDATE()) :: INTEGER AS request_timestamp,

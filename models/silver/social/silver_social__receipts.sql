@@ -2,7 +2,7 @@
     materialized = 'incremental',
     merge_exclude_columns = ["inserted_timestamp"],
     unique_key = 'receipt_object_id',
-    cluster_by = ['_inserted_timestamp::date', '_partition_by_block_number'],
+    cluster_by = ['modified_timestamp::date', '_partition_by_block_number'],
     tags = ['curated', 'social','scheduled_non_core']
 ) }}
 
@@ -10,27 +10,26 @@ WITH all_social_receipts AS (
 
     SELECT
         tx_hash,
-        receipt_object_id,
+        receipt_id AS receipt_object_id,
         block_id,
         block_timestamp,
-        receipt_index,
+        NULL AS receipt_index,
         chunk_hash,
-        receipt_actions,
-        execution_outcome,
-        receipt_outcome_id,
+        receipt_json AS receipt_actions,
+        outcome_json AS execution_outcome,
+        outcome_json :outcome :receipt_ids :: ARRAY AS receipt_outcome_id,
         receiver_id,
-        receipt_actions :predecessor_id :: STRING AS predecessor_id,
-        signer_id,
-        receipt_type,
-        gas_burnt,
-        status_value,
-        logs,
-        proof,
-        metadata,
-        _partition_by_block_number,
-        _inserted_timestamp
+        predecessor_id,
+        receipt_json :receipt :Action :signer_id :: STRING AS signer_id,
+        NULL AS receipt_type,
+        outcome_json :outcome :gas_burnt :: NUMBER AS gas_burnt,
+        outcome_json :outcome :status :: VARIANT AS status_value,
+        outcome_json :outcome :logs :: ARRAY AS logs,
+        outcome_json :proof :: ARRAY AS proof,
+        outcome_json :outcome :metadata :: VARIANT AS metadata,
+        _partition_by_block_number
     FROM
-        {{ ref('silver__streamline_receipts_final') }}
+        {{ ref('silver__receipts_final') }}
     WHERE
         (
             LOWER(signer_id) = 'social.near'

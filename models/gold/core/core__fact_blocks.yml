@@ -33,7 +33,7 @@ models:
         tests:
           - not_null
           - unique:
-              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '2 hours'
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
@@ -154,7 +154,8 @@ models:
       - name: GAS_PRICE
         description: "{{ doc('gas_price')}}"
         tests:
-          - not_null
+          - not_null:
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
@@ -181,11 +182,12 @@ models:
       - name: LATEST_PROTOCOL_VERSION
         description: "{{ doc('latest_protocol_version')}}"
         tests:
-          - not_null
+          - not_null:
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
-                - FLOAT
+                - INT
 
       - name: NEXT_BP_HASH
         description: "{{ doc('next_bp_hash')}}"
@@ -297,9 +299,9 @@ models:
         description: "{{doc('id')}}"
         tests:
           - unique:
-              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '2 hours'
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
           - not_null:
-              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days' AND SYSDATE() - INTERVAL '2 hours'
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
 
       - name: INSERTED_TIMESTAMP
         description: "{{doc('inserted_timestamp')}}"

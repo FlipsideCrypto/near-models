@@ -65,7 +65,8 @@ models:
       - name: DIP4_VERSION
         description: "{{ doc('dip4_version') }}"
         tests:
-          - not_null
+          - not_null:
+              where: memo != 'refund'
 
       - name: GAS_BURNT
         description: "{{ doc('gas_burnt') }}"

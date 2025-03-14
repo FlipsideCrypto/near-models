@@ -42,9 +42,8 @@ jobs:
 
       - name: Run DBT Jobs
         run: |
-          dbt run-operation dispatch_github_workflow --args "{'repo_name': 'streamline-snowflake', 'workflow_name': 'dbt_run_near_external_table_update', 'gb_id': '${{ secrets.GB_ID}}'}";
           dbt seed;
-          dbt run -s tag:scheduled_core --vars "{ 'RECEIPT_MAP_LOOKBACK_HOURS': 1.25}";
+          dbt run -s tag:scheduled_core;
           dbt run -s tag:scheduled_non_core models/gold;
       - name: Store logs
         uses: actions/upload-artifact@v4
