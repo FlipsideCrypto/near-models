@@ -2,7 +2,7 @@
 # and underscores. A good package name should reflect your organization's
 # name or the intended use of these models
 name: "near_models"
-version: "1.3.0"
+version: "2.0.0"
 config-version: 2
 
 # This setting configures which "profile" dbt uses for this project.
