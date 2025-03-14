@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'incremental',
-    incremental_predicates = ["dynamic_range_predicate","block_timestamp::date"],
+    incremental_predicates = ["dynamic_range_predicate_custom","block_timestamp::date"],
     incremental_strategy = 'merge',
     merge_exclude_columns = ['inserted_timestamp'],
     unique_key = 'receipt_id',
@@ -141,7 +141,7 @@ receipts_full AS (
         chunk_hash,
         ro.block_hash,
         block_id,
-       COALESCE(block_timestamp, origin_block_timestamp) AS block_timestamp,
+        block_timestamp,
         r.tx_hash,
         r.receipt_id,
         receipt_json,
