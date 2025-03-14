@@ -110,6 +110,7 @@ blocks AS (
 ),
 flatten_receipts AS (
     SELECT
+        origin_block_timestamp,
         chunk_hash,
         tx_hash,
         tx_succeeded,
@@ -140,7 +141,7 @@ receipts_full AS (
         chunk_hash,
         ro.block_hash,
         block_id,
-        block_timestamp,
+       COALESCE(block_timestamp, origin_block_timestamp) AS block_timestamp,
         r.tx_hash,
         r.receipt_id,
         receipt_json,
