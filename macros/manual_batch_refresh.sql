@@ -1,5 +1,6 @@
 {% macro partition_load_manual(
-        scope = 'no_buffer'
+        scope = 'no_buffer',
+        partition_field = '_partition_by_block_number'
     ) %}
     {# if range_start and range_end not set in cli, default to earliest rpc data #}
     {% set range_start = var(
@@ -19,17 +20,17 @@
         1
     ) %}
     {% if scope == 'front' %}
-        _partition_by_block_number BETWEEN {{ range_start }} - (
+        {{ partition_field }} BETWEEN {{ range_start }} - (
             10000 * {{ front_buffer }}
         )
         AND {{ range_end }}
 
         {% elif scope == 'end' %}
-        _partition_by_block_number BETWEEN {{ range_start }}
+        {{ partition_field }} BETWEEN {{ range_start }}
         AND {{ range_end }} + (
             10000 * {{ end_buffer }}
         ) {% elif scope == 'no_buffer' %}
-        _partition_by_block_number BETWEEN {{ range_start }}
+        {{ partition_field }} BETWEEN {{ range_start }}
         AND {{ range_end }}
     {% else %}
         TRUE
