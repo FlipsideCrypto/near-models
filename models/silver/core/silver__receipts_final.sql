@@ -84,7 +84,7 @@ WITH txs_with_receipts AS (
         {{ ref('silver__transactions_v2') }}
     {% if var("MANUAL_FIX") %}
         WHERE
-            {{ partition_load_manual('no_buffer') }}
+            {{ partition_load_manual('no_buffer', 'partition_key') }}
         {% else %}
         {% if is_incremental() %}
             WHERE origin_block_timestamp :: DATE >= '{{min_bd}}'
@@ -101,7 +101,7 @@ blocks AS (
         {{ ref('silver__blocks_v2') }}
     {% if var("MANUAL_FIX") %}
         WHERE
-            {{ partition_load_manual('no_buffer') }}
+            {{ partition_load_manual('no_buffer', 'partition_key') }}
         {% else %}
         {% if is_incremental() %}
             WHERE block_timestamp :: DATE >= '{{min_bd}}' :: DATE
