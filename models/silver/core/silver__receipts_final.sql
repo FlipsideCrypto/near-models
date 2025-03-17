@@ -75,8 +75,8 @@ WITH txs_with_receipts AS (
         origin_block_id,
         origin_block_timestamp,
         tx_hash,
-        response_json :receipts :: ARRAY AS receipts_json,
-        response_json :receipts_outcome :: ARRAY AS receipts_outcome_json,
+        response_json,
+        response_json :transaction_outcome :outcome :receipt_ids [0] :: STRING AS initial_receipt_id,
         response_json :status :Failure IS NULL AS tx_succeeded,
         partition_key AS _partition_by_block_number,
         modified_timestamp
@@ -121,7 +121,7 @@ flatten_receipts AS (
     FROM
         txs_with_receipts,
         LATERAL FLATTEN(
-            input => receipts_json
+            input => response_json :receipts :: ARRAY
         )
 ),
 flatten_receipt_outcomes AS (
@@ -133,7 +133,7 @@ flatten_receipt_outcomes AS (
     FROM
         txs_with_receipts,
         LATERAL FLATTEN(
-            input => receipts_outcome_json
+            input => response_json :receipts_outcome :: ARRAY
         )
 ),
 receipts_full AS (
@@ -162,6 +162,43 @@ receipts_full AS (
             ) >= '{{max_mod}}'
     {% endif %}
 ),
+initial_receipt_full AS (
+    SELECT
+        chunk_hash,
+        origin_block_id AS block_id,
+        origin_block_timestamp AS block_timestamp,
+        txr.tx_hash,
+        initial_receipt_id AS receipt_id,
+        OBJECT_CONSTRUCT(
+            'predecessor_id', response_json :transaction :signer_id :: STRING,
+            'priority', response_json :transaction :priority_fee :: INTEGER,
+            'receipt', OBJECT_CONSTRUCT(
+                    'Action', OBJECT_CONSTRUCT(
+                        'actions', response_json :transaction :actions :: ARRAY,
+                        'gas_price', Null,
+                        'input_data_ids', Null,
+                        'is_promise_yield', Null,
+                        'output_data_receivers', Null,
+                        'signer_id', response_json :transaction :signer_id :: STRING,
+                        'signer_public_key', response_json :transaction :public_key :: STRING
+                    )
+                ),
+            'receipt_id', initial_receipt_id :: STRING,
+            'receiver_id', response_json :transaction :receiver_id :: STRING
+        ) AS receipt_json,
+        outcome_json,
+        tx_succeeded,
+        _partition_by_block_number
+    FROM
+        txs_with_receipts txr
+    LEFT JOIN flatten_receipt_outcomes ro
+    ON txr.initial_receipt_id = ro.receipt_id
+    AND txr.tx_hash = ro.tx_hash
+    {% if is_incremental() and not var("MANUAL_FIX") %}
+        WHERE
+            modified_timestamp >= '{{max_mod}}'
+    {% endif %}
+),
 FINAL AS (
     SELECT
         chunk_hash,
@@ -178,6 +215,22 @@ FINAL AS (
         _partition_by_block_number
     FROM
         receipts_full
+    UNION ALL
+    SELECT
+        chunk_hash,
+        block_id,
+        block_timestamp,
+        tx_hash,
+        receipt_id,
+        receipt_json :predecessor_id :: STRING AS predecessor_id,
+        receipt_json :receiver_id :: STRING AS receiver_id,
+        receipt_json,
+        outcome_json,
+        tx_succeeded,
+        tx_succeeded AS receipt_succeeded,
+        _partition_by_block_number
+    FROM
+        initial_receipt_full
 )
 SELECT
     *,
