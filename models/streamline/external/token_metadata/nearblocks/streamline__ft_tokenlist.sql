@@ -36,19 +36,21 @@ AND modified_timestamp >= (
             {{ ref('seeds__ft_tokenlist') }}
     )
 {% endif %}
-SELECT
-    contract_address,
-    {{ dbt_utils.generate_surrogate_key(
-        ['contract_address']
-    ) }} AS ft_tokenlist_id,
-    SYSDATE() AS inserted_timestamp,
-    SYSDATE() AS modified_timestamp,
-    '{{ invocation_id }}' AS _invocation_id
-FROM
-    ft_transfers
+,
+FINAL AS (
+    SELECT
+        contract_address
+    FROM
+        ft_transfers
 
     {% if not is_incremental() %}
-UNION
+    UNION
+    SELECT
+        contract_address
+    FROM
+        tokenlist_seed
+    {% endif %}
+)
 SELECT
     contract_address,
     {{ dbt_utils.generate_surrogate_key(
@@ -58,9 +60,8 @@ SELECT
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
 FROM
-    tokenlist_seed
-{% endif %}
+    FINAL
 
-qualify(ROW_NUMBER() over (PARTITION BY contract_address
-ORDER BY
-    modified_timestamp ASC) = 1)
+    qualify(ROW_NUMBER() over (PARTITION BY contract_address
+    ORDER BY
+        modified_timestamp ASC) = 1)

@@ -31,8 +31,8 @@ models:
                 - OBJECT
                 - ARRAY
 
-      - name: ICON
-        description: "{{ doc('icon')}}"
+      - name: DECIMALS
+        description: "{{ doc('decimals')}}"
 
       - name: DATA
         description: "{{ doc('data')}}"
