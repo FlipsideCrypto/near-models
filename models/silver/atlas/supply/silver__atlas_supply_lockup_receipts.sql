@@ -10,27 +10,27 @@
 WITH receipts AS (
 
     SELECT
-        receipt_object_id,
+        receipt_id AS receipt_object_id,
         tx_hash,
         block_timestamp,
-        receipt_actions,
+        receipt_json AS receipt_actions,
         receiver_id,
-        status_value,
-        logs,
-        _partition_by_block_number,
-        _inserted_timestamp,
-        modified_timestamp AS _modified_timestamp
+        predecessor_id,
+        outcome_json :outcome :status :: VARIANT AS status_value,
+        outcome_json :outcome :logs :: ARRAY AS logs,
+        _partition_by_block_number
     FROM
-        {{ ref('silver__streamline_receipts_final') }}
-    WHERE
+        {{ ref('silver__receipts_final') }}
         {% if var("MANUAL_FIX") %}
+        WHERE
             {{ partition_load_manual('no_buffer') }}
         {% else %}
-            {% if var('IS_MIGRATION') %}
-                {{ incremental_load_filter('_inserted_timestamp') }}
-            {% else %}
-                {{ incremental_load_filter('_modified_timestamp') }}
-            {% endif %}
+        WHERE modified_timestamp >= (
+            SELECT
+                MAX(modified_timestamp)
+            FROM
+                {{ this }}
+        )
         {% endif %}
 ),
 FINAL AS (
@@ -38,16 +38,14 @@ FINAL AS (
         receipt_object_id,
         tx_hash,
         block_timestamp,
-        receipt_actions :predecessor_id :: STRING AS predecessor_id,
+        predecessor_id,
         receiver_id,
         receipt_actions AS actions,
         object_keys(
             status_value
         ) [0] :: STRING AS status,
         logs,
-        _partition_by_block_number,
-        _inserted_timestamp,
-        _modified_timestamp
+        _partition_by_block_number
     FROM
         receipts
     WHERE

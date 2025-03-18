@@ -1,69 +1,60 @@
 {{ config(
     severity = 'error',
-    tags = ['gap_test']
+    tags = ['gap_test', 'gap_test_core']
 ) }}
+-- depends_on: {{ ref('silver__blocks_v2') }}
 
-WITH shards AS (
+{% if execute %}
+
+    {% if not var('DBT_FULL_TEST') %}
+      {% set min_block_sql %}
+        SELECT
+          MIN(block_id)
+        FROM
+          {{ ref('silver__blocks_v2') }}
+        WHERE
+          _inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
+      {% endset %}
+      {% set min_block_id = run_query(min_block_sql).columns[0].values()[0] %}
+    {% else %}
+      {% set min_block_id = 140868759 %}
+    {% endif %}
+  {% do log('Min block id: ' ~ min_block_id, info=True) %}
+{% endif %}
+
+WITH expected_txs AS (
 
     SELECT
         block_id,
-        _partition_by_block_number,
-        SUM(ARRAY_SIZE(chunk :transactions :: ARRAY)) AS tx_ct_expected
+        chunk_hash,
+        chunk_json :height_created :: INT as chunk_height_created,
+        chunk_json :height_included :: INT as chunk_height_included,
+        _inserted_timestamp,
+        VALUE :hash :: STRING AS tx_hash
     FROM
-        {{ ref('silver__streamline_shards') }}
-
-        {% if var('DBT_FULL_TEST') %}
-        WHERE
-            _inserted_timestamp < SYSDATE() - INTERVAL '1 hour'
-        {% else %}
-        WHERE
-            _inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days'
-            AND SYSDATE() - INTERVAL '1 hour'
-        {% endif %}
-    GROUP BY
-        1,
-        2
+        {{ ref('silver__chunks_v2') }}, lateral flatten(input => chunk_json :transactions :: ARRAY)
+    WHERE
+        block_id >= {{ min_block_id }}
 ),
-txs AS (
+actual_txs AS (
     SELECT
-        block_id,
-        _partition_by_block_number,
-        COUNT(DISTINCT tx_hash) AS tx_ct_actual_distinct,
-        COUNT(1) AS tx_ct_actual_all
+        DISTINCT tx_hash
     FROM
-        {{ ref('silver__streamline_transactions') }}
-
-        {% if var('DBT_FULL_TEST') %}
-        WHERE
-            _inserted_timestamp < SYSDATE() - INTERVAL '1 hour'
-        {% else %}
-        WHERE
-            _inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days'
-            AND SYSDATE() - INTERVAL '1 hour'
-        {% endif %}
-    GROUP BY
-        1,
-        2
-),
-diffs AS (
-    SELECT
-        s.block_id,
-        s.tx_ct_expected,
-        t.tx_ct_actual_distinct,
-        t.tx_ct_actual_all,
-        s._partition_by_block_number
-    FROM
-        shards s
-        LEFT JOIN txs t
-        ON s.block_id = t.block_id
+        {{ ref('silver__transactions_v2') }}
+    WHERE
+        origin_block_id >= {{ min_block_id }}
 )
 SELECT
-    *
+    block_id,
+    chunk_hash,
+    chunk_height_created,
+    chunk_height_included,
+    _inserted_timestamp,
+    tx_hash
 FROM
-    diffs
+    expected_txs e
+    LEFT JOIN actual_txs a USING (tx_hash)
 WHERE
-    tx_ct_expected != tx_ct_actual_distinct
-    OR tx_ct_expected != tx_ct_actual_all
-    OR tx_ct_actual_distinct != tx_ct_actual_all
-ORDER BY
-    block_id
+    a.tx_hash IS NULL
+    AND _inserted_timestamp <= SYSDATE() - interval '2 hours'
+    AND chunk_height_included >= {{ min_block_id }}

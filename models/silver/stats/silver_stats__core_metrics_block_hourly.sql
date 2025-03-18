@@ -3,7 +3,7 @@
     incremental_strategy = 'delete+insert',
     unique_key = "block_timestamp_hour",
     cluster_by = ['block_timestamp_hour::DATE'],
-    tags = ['curated','scheduled_non_core']
+    tags = ['stats','scheduled_non_core']
 ) }}
 /* run incremental timestamp value first then use it as a static value */
 {% if execute %}
@@ -14,11 +14,11 @@
 SELECT
     MIN(DATE_TRUNC('hour', block_timestamp)) block_timestamp_hour
 FROM
-    {{ ref('silver__streamline_blocks') }} -- Streamline Migration TODO - change this to fact blocks once table
+    {{ ref('silver__blocks_final') }}
 WHERE
-    _inserted_timestamp >= (
+    modified_timestamp >= (
         SELECT
-            MAX(_inserted_timestamp)
+            MAX(modified_timestamp)
         FROM
             {{ this }}
     ) {% endset %}
@@ -35,7 +35,7 @@ SELECT
     COUNT(
         1
     ) AS block_count,
-    MAX(_inserted_timestamp) AS _inserted_timestamp,
+    MAX(inserted_timestamp) AS _inserted_timestamp,
     {{ dbt_utils.generate_surrogate_key(
         ['block_timestamp_hour']
     ) }} AS core_metrics_block_hourly_id,
@@ -43,7 +43,7 @@ SELECT
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
 FROM
-    {{ ref('silver__streamline_blocks') }}
+    {{ ref('silver__blocks_final') }}
 WHERE
     block_timestamp_hour < DATE_TRUNC(
         'hour',

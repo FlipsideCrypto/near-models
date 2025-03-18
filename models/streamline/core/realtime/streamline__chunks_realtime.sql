@@ -37,41 +37,22 @@ last_3_days AS (
 {% endif %}
 tbl AS (
     SELECT
-        block_id,
-        block_timestamp_epoch,
-        chunk_hash
+        A.block_id,
+        A.block_timestamp_epoch,
+        A.chunk_hash
     FROM
-        {{ ref('streamline__chunks') }}
+        {{ ref('streamline__chunks') }} A
+        LEFT JOIN {{ ref('streamline__chunks_complete') }} B ON A.chunk_hash = B.chunk_hash
     WHERE
         (
-            block_id >= (
+            A.block_id >= (
                 SELECT
                     block_id
                 FROM
                     last_3_days
             )
         )
-        AND chunk_hash IS NOT NULL
-    EXCEPT
-    SELECT
-        block_id,
-        block_timestamp_epoch,
-        chunk_hash
-    FROM
-        {{ ref('streamline__chunks_complete') }}
-    WHERE
-        block_id >= (
-            SELECT
-                block_id
-            FROM
-                last_3_days
-        )
-        AND _inserted_timestamp >= DATEADD(
-            'day',
-            -4,
-            SYSDATE()
-        )
-        AND chunk_hash IS NOT NULL
+        AND B.chunk_hash IS NULL
 )
 SELECT
     block_id,

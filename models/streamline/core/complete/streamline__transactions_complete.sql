@@ -10,10 +10,9 @@
 ) }}
 
 SELECT
-    VALUE :BLOCK_ID :: INT AS block_id,
-    VALUE :BLOCK_TIMESTAMP_EPOCH :: INT AS block_timestamp_epoch,
     VALUE :TX_HASH :: STRING AS tx_hash,
-    DATA :transaction :signer_id :: STRING AS signer_id,
+    VALUE :CHUNK_HASH :: STRING AS chunk_hash,
+    VALUE :BLOCK_ID :: INT AS block_id,
     partition_key,
     _inserted_timestamp,
     DATA :transaction :hash :: STRING AS complete_transactions_id,

@@ -12,16 +12,16 @@ WITH receipts AS (
         tx_hash,
         block_id,
         block_timestamp,
-        receipt_object_id,
+        receipt_id AS receipt_object_id,
         receiver_id,
-        signer_id,
-        receipt_actions :predecessor_id :: STRING AS predecessor_id,
-        status_value,
-        logs,
-        _inserted_timestamp,
+        receipt_json :receipt :Action :signer_id :: STRING AS signer_id,
+        predecessor_id,
+        receipt_json AS receipt_actions,
+        outcome_json :outcome :status :: VARIANT AS status_value,
+        outcome_json :outcome :logs :: ARRAY AS logs,
         _partition_by_block_number
     FROM
-        {{ ref('silver__streamline_receipts_final') }}
+        {{ ref('silver__receipts_final') }}
     WHERE
         receipt_succeeded
         {% if var("MANUAL_FIX") %}
@@ -48,8 +48,7 @@ FINAL AS (
         status_value,
         logs,
         VALUE AS LOG,
-        _partition_by_block_number,
-        _inserted_timestamp
+        _partition_by_block_number
     FROM
         receipts,
         LATERAL FLATTEN(logs)

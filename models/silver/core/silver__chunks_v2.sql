@@ -5,8 +5,7 @@
     incremental_strategy = 'merge',
     incremental_predicates = ["dynamic_range_predicate","block_timestamp::date"],
     unique_key = "chunk_hash",
-    cluster_by = ['modified_timestamp::DATE','partition_key'],
-    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(chunk_hash)",
+    cluster_by = ['modified_timestamp::DATE','block_timestamp::date'],
     tags = ['scheduled_core', 'core_v2']
 ) }}
 
@@ -15,8 +14,7 @@ WITH bronze_chunks AS (
     SELECT
         VALUE :BLOCK_ID :: INT AS block_id,
         VALUE :BLOCK_TIMESTAMP_EPOCH :: INT AS block_timestamp_epoch,
-        DATA :header :shard_id :: INT AS shard_id,
-        DATA :header :chunk_hash :: STRING AS chunk_hash,
+        VALUE :CHUNK_HASH :: STRING AS chunk_hash,
         partition_key,
         DATA :: variant AS chunk_json,
         _inserted_timestamp
@@ -38,11 +36,10 @@ WHERE
         {% endif %}
     )
 SELECT
+    chunk_hash,
     block_id,
     block_timestamp_epoch,
     TO_TIMESTAMP_NTZ(block_timestamp_epoch, 9) AS block_timestamp,
-    shard_id,
-    chunk_hash,
     partition_key,
     chunk_json,
     _inserted_timestamp,

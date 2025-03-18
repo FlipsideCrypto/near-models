@@ -1,4 +1,4 @@
--- depends_on: {{ ref('silver__streamline_blocks') }}
+-- depends_on: {{ ref('silver__blocks_final') }}
 {{ config(
     materialized = 'incremental',
     unique_key = 'test_timestamp',
@@ -12,11 +12,11 @@ WITH block_chunks_included AS (
     SELECT
         block_id,
         block_timestamp,
-        header :chunks_included :: INT AS chunks_included,
+        header_json :chunks_included :: INT AS chunks_included,
         _partition_by_block_number,
-        _inserted_timestamp
+        inserted_timestamp AS _inserted_timestamp
     FROM
-        {{ ref('silver__streamline_blocks') }} -- Streamline Migration TODO - change this to fact blocks once table
+        {{ ref('silver__blocks_final') }}
     WHERE
         block_timestamp <= DATEADD('hour', -12, SYSDATE())
 {% if is_incremental() %}
@@ -29,7 +29,7 @@ AND (
                 SELECT
                     MIN(block_id) AS block_id
                 FROM
-                    {{ ref('silver__streamline_blocks') }} -- Streamline Migration TODO - change this to fact blocks once table
+                    {{ ref('silver__blocks_final') }}
                 WHERE
                     block_timestamp BETWEEN DATEADD('hour', -96, SYSDATE())
                     AND DATEADD('hour', -95, SYSDATE())
@@ -70,13 +70,13 @@ summary_stats AS (
 ),
 chunks_per_block AS (
     SELECT
-        block_id,
+        origin_block_id AS block_id,
         MAX(_inserted_timestamp) AS _inserted_timestamp,
         COUNT(
-            DISTINCT chunk :header :chunk_hash :: STRING
+            chunk_hash
         ) AS chunk_ct
     FROM
-        {{ ref('silver__streamline_shards') }} -- Streamline Migration TODO - change this to fact shards once table
+        {{ ref('silver__transactions_v2') }}
     WHERE 
         block_id >= (SELECT min_block FROM summary_stats) 
     AND

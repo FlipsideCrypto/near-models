@@ -13,6 +13,8 @@ SELECT
     VALUE :BLOCK_ID :: INT AS block_id,
     VALUE :BLOCK_TIMESTAMP_EPOCH :: INT AS block_timestamp_epoch,
     VALUE :CHUNK_HASH :: STRING AS chunk_hash,
+    DATA :header :height_created :: INT AS height_created,
+    DATA :header :height_included :: INT AS height_included,
     DATA :header: shard_id :: INT AS shard_id,
     ARRAY_SIZE(
         DATA :receipts :: ARRAY

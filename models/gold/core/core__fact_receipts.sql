@@ -4,37 +4,24 @@
     tags = ['core']
 ) }}
 
-WITH receipts AS (
-
-    SELECT
-        *
-    FROM
-        {{ ref('silver__streamline_receipts_final') }}
-)
 SELECT
     block_timestamp,
     block_id,
     tx_hash,
-    receipt_object_id AS receipt_id,
-    receipt_outcome_id,
+    receipt_id,
+    outcome_json :outcome :receipt_ids :: ARRAY AS receipt_outcome_id, -- TODO DEPRECATE THIS, it's in outcome_json
     receiver_id,
-    receipt_actions :predecessor_id :: STRING AS predecessor_id,
-    receipt_actions AS actions,
-    execution_outcome AS outcome,
-    gas_burnt,
-    status_value,
-    logs,
-    proof,
-    metadata,
+    predecessor_id,
+    receipt_json AS actions, -- TODO this should be renamed. It's not just actions, it's the full receipt input
+    outcome_json AS outcome,
+    outcome_json :outcome :gas_burnt :: NUMBER AS gas_burnt,
+    outcome_json :outcome :status :: VARIANT AS status_value,
+    outcome_json :outcome :logs :: ARRAY AS logs,
+    outcome_json :proof :: ARRAY AS proof, -- TODO DEPRECATE THIS, it's in outcome_json
+    outcome_json :outcome :metadata :: VARIANT AS metadata, -- TODO DEPRECATE THIS, it's in outcome_json
     receipt_succeeded,
-    COALESCE(
-        streamline_receipts_final_id,
-        {{ dbt_utils.generate_surrogate_key(
-            ['receipt_object_id']
-        ) }}
-    ) AS fact_receipts_id,
-    receipt_object_id, -- to be deprecated
-    COALESCE(inserted_timestamp, _inserted_timestamp, '2000-01-01' :: TIMESTAMP_NTZ) AS inserted_timestamp,
-    COALESCE(modified_timestamp, _inserted_timestamp, '2000-01-01' :: TIMESTAMP_NTZ) AS modified_timestamp
+    receipts_final_id AS fact_receipts_id,
+    inserted_timestamp,
+    modified_timestamp
 FROM
-    receipts
+    {{ ref('silver__receipts_final') }}

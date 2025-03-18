@@ -1,69 +1,60 @@
 {{ config(
     severity = 'error',
-    tags = ['gap_test']
+    tags = ['gap_test', 'gap_test_core']
 ) }}
+-- depends_on: {{ ref('silver__blocks_v2') }}
 
-WITH shards AS (
+{% if execute %}
+
+    {% if not var('DBT_FULL_TEST') %}
+      {% set min_block_sql %}
+        SELECT
+          MIN(block_id)
+        FROM
+          {{ ref('silver__blocks_v2') }}
+        WHERE
+          _inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
+      {% endset %}
+      {% set min_block_id = run_query(min_block_sql).columns[0].values()[0] %}
+    {% else %}
+      {% set min_block_id = 140868759 %}
+    {% endif %}
+  {% do log('Min block id: ' ~ min_block_id, info=True) %}
+{% endif %}
+
+WITH expected_receipts AS (
 
     SELECT
         block_id,
-        _partition_by_block_number,
-        SUM(ARRAY_SIZE(receipt_execution_outcomes)) AS receipt_ct_expected
+        chunk_hash,
+        chunk_json :height_created :: INT as chunk_height_created,
+        chunk_json :height_included :: INT as chunk_height_included,
+        _inserted_timestamp,
+        VALUE :receipt_id :: STRING AS receipt_id
     FROM
-        {{ ref('silver__streamline_shards') }}
-
-        {% if var('DBT_FULL_TEST') %}
-        WHERE
-            _inserted_timestamp < SYSDATE() - INTERVAL '1 hour'
-        {% else %}
-        WHERE
-            _inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days'
-            AND SYSDATE() - INTERVAL '1 hour'
-        {% endif %}
-    GROUP BY
-        1,
-        2
+        {{ ref('silver__chunks_v2') }}, lateral flatten(input => chunk_json :receipts :: ARRAY)
+    WHERE
+        block_id >= {{ min_block_id }}
 ),
-receipts AS (
+actual_receipts AS (
     SELECT
-        block_id,
-        _partition_by_block_number,
-        COUNT(DISTINCT receipt_id) AS receipt_ct_actual_distinct,
-        COUNT(1) AS receipt_ct_actual_all
+        DISTINCT receipt_id
     FROM
-        {{ ref('silver__streamline_receipts') }}
-
-        {% if var('DBT_FULL_TEST') %}
-        WHERE
-            _inserted_timestamp < SYSDATE() - INTERVAL '1 hour'
-        {% else %}
-        WHERE
-            _inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days'
-            AND SYSDATE() - INTERVAL '1 hour'
-        {% endif %}
-    GROUP BY
-        1,
-        2
-),
-diffs AS (
-    SELECT
-        s.block_id,
-        s.receipt_ct_expected,
-        r.receipt_ct_actual_distinct,
-        r.receipt_ct_actual_all,
-        s._partition_by_block_number
-    FROM
-        shards s
-        LEFT JOIN receipts r
-        ON s.block_id = r.block_id
+        {{ ref('silver__receipts_final') }}
+    WHERE
+        block_id >= {{ min_block_id }}
 )
 SELECT
-    *
+    block_id,
+    chunk_hash,
+    chunk_height_created,
+    chunk_height_included,
+    _inserted_timestamp,
+    receipt_id
 FROM
-    diffs
+    expected_receipts e
+    LEFT JOIN actual_receipts a USING (receipt_id)
 WHERE
-    receipt_ct_expected != receipt_ct_actual_distinct
-    OR receipt_ct_expected != receipt_ct_actual_all
-    OR receipt_ct_actual_distinct != receipt_ct_actual_all
-ORDER BY
-    block_id
+    a.receipt_id IS NULL
+    AND _inserted_timestamp <= SYSDATE() - interval '2 hours'
+    AND chunk_height_included >= {{ min_block_id }}

@@ -15,7 +15,7 @@ SELECT
     block_id,
     block_timestamp,
     tx_hash,
-    receipt_object_id AS receipt_id,
+    COALESCE(receipt_id, receipt_object_id) AS receipt_id,
     predecessor_id,
     receiver_id,
     signer_id,
@@ -30,7 +30,6 @@ SELECT
             ['log_id']
         ) }}
     ) AS fact_logs_id,
-    receipt_object_id, -- will drop col eventually
     COALESCE(inserted_timestamp, _inserted_timestamp, '2000-01-01' :: TIMESTAMP_NTZ) AS inserted_timestamp,
     COALESCE(modified_timestamp, _inserted_timestamp, '2000-01-01' :: TIMESTAMP_NTZ) AS modified_timestamp
 FROM

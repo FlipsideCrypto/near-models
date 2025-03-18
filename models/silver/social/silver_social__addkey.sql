@@ -12,12 +12,12 @@
 WITH receipts AS (
 
     SELECT
-        receipt_object_id,
-        signer_id,
+        receipt_id AS receipt_object_id,
+        receipt_json :receipt :Action :signer_id :: STRING AS signer_id,
         _partition_by_block_number,
-        _inserted_timestamp
+        inserted_timestamp AS _inserted_timestamp
     FROM
-        {{ ref('silver__streamline_receipts_final') }}
+        {{ ref('silver__receipts_final') }}
     WHERE
         _partition_by_block_number >= 59670000
 

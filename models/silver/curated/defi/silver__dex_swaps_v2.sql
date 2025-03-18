@@ -10,7 +10,7 @@
 ) }}
 {# Note - multisource model #}
 -- depends on {{ ref('silver__logs_s3') }}
--- depends on {{ ref('silver__streamline_receipts_final') }}
+-- depends on {{ ref('silver__receipts_final') }}
 
 {% if execute %}
 
@@ -49,7 +49,7 @@
             SELECT
                 MIN(block_timestamp) block_timestamp
             FROM
-                {{ ref('silver__streamline_receipts_final') }} A
+                {{ ref('silver__receipts_final') }} A
             WHERE
                 modified_timestamp >= '{{max_mod}}'
         ) 
@@ -78,7 +78,6 @@ WITH swap_logs AS (
         log_index,
         clean_log,
         _partition_by_block_number,
-        _inserted_timestamp,
         modified_timestamp
     FROM
         {{ ref('silver__logs_s3') }}
@@ -97,15 +96,14 @@ WITH swap_logs AS (
 ),
 receipts AS (
     SELECT
-        receipt_object_id,
-        receipt_actions,
+        receipt_id AS receipt_object_id,
+        receipt_json AS receipt_actions,
         receiver_id,
-        signer_id,
+        receipt_json :receipt :Action :signer_id :: STRING AS signer_id,
         _partition_by_block_number,
-        _inserted_timestamp,
         modified_timestamp
     FROM
-        {{ ref('silver__streamline_receipts_final') }}
+        {{ ref('silver__receipts_final') }}
     WHERE
         receipt_object_id IN (
             SELECT
@@ -157,7 +155,6 @@ swap_outcome AS (
             '\\1'
         ) :: STRING AS token_out,
         _partition_by_block_number,
-        _inserted_timestamp,
         modified_timestamp
     FROM
         swap_logs
@@ -212,8 +209,7 @@ parse_actions AS (
         ) AS swap_input_data,
         r.receiver_id AS receipt_receiver_id,
         r.signer_id AS receipt_signer_id,
-        o._partition_by_block_number,
-        o._inserted_timestamp
+        o._partition_by_block_number
     FROM
         swap_outcome o
         LEFT JOIN receipts r USING (receipt_object_id)
@@ -241,8 +237,7 @@ FINAL AS (
         token_in,
         swap_input_data,
         LOG,
-        _partition_by_block_number,
-        _inserted_timestamp
+        _partition_by_block_number
     FROM
         parse_actions
 )

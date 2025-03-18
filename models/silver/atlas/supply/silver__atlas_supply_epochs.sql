@@ -8,14 +8,23 @@
 WITH blocks AS (
 
     SELECT
-        *
+        block_id,
+        block_timestamp,
+        block_author,
+        header_json :total_supply :: NUMBER AS total_supply,
+        header_json :epoch_id :: STRING AS epoch_id,
+        _partition_by_block_number
     FROM
-        {{ ref('silver__streamline_blocks') }}
-    WHERE
+        {{ ref('silver__blocks_final') }}
         {% if var("MANUAL_FIX") %}
-            {{ partition_load_manual('no_buffer') }}
+            WHERE {{ partition_load_manual('no_buffer') }}
         {% else %}
-            {{ incremental_load_filter('_inserted_timestamp') }}
+            WHERE modified_timestamp >= (
+                SELECT
+                    MAX(modified_timestamp)
+                FROM
+                    {{ this }}
+            )
         {% endif %}
 ),
 epochs AS (

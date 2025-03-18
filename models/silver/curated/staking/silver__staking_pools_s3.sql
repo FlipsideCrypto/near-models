@@ -17,12 +17,10 @@ WITH txs AS (
         block_id,
         tx_signer,
         tx_receiver,
-        tx,
-        tx_status,
-        _partition_by_block_number,
-        _inserted_timestamp
+        transaction_json AS tx,
+        _partition_by_block_number
     FROM
-        {{ ref('silver__streamline_transactions_final') }}
+        {{ ref('silver__transactions_final') }}
 
     {% if var("MANUAL_FIX") %}
       WHERE {{ partition_load_manual('no_buffer') }}
@@ -48,8 +46,7 @@ function_calls AS (
         signer_id,
         method_name,
         args,
-        _partition_by_block_number,
-        _inserted_timestamp
+        _partition_by_block_number
     FROM
         {{ ref('silver__actions_events_function_call_s3') }}
     WHERE
@@ -84,9 +81,7 @@ add_addresses_from_tx AS (
         signer_id,
         method_name,
         args,
-        tx_status,
-        txs._partition_by_block_number,
-        txs._inserted_timestamp
+        txs._partition_by_block_number
     FROM
         function_calls fc
         LEFT JOIN txs USING (tx_hash)
@@ -102,8 +97,7 @@ new_pools AS (
             args :reward_fee_fraction
         ) AS reward_fee_fraction,
         'Create' AS tx_type,
-        _partition_by_block_number,
-        _inserted_timestamp
+        _partition_by_block_number
     FROM
         add_addresses_from_tx
     WHERE
@@ -128,8 +122,7 @@ updated_pools AS (
             args :reward_fee_fraction
         ) AS reward_fee_fraction,
         'Update' AS tx_type,
-        _partition_by_block_number,
-        _inserted_timestamp
+        _partition_by_block_number
     FROM
         add_addresses_from_tx
     WHERE

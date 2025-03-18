@@ -1,0 +1,97 @@
+version: 2
+
+models:
+  - name: silver__receipts_final
+    description: |-
+      Table containing transaction receipts for NEAR blockchain.
+    tests:
+      - dbt_utils.recency:
+          datepart: hour
+          field: inserted_timestamp
+          interval: 1
+    
+    columns:
+      - name: chunk_hash
+        description: "{{ doc('chunk_hash') }}"
+        tests:
+          - not_null
+
+      - name: block_id
+        description: "{{ doc('block_id') }}"
+        tests:
+          - not_null
+
+      - name: block_timestamp
+        description: "{{ doc('block_timestamp') }}"
+        tests:
+          - not_null
+
+      - name: tx_hash
+        description: "{{ doc('tx_hash') }}"
+        tests:
+          - not_null
+
+      - name: receipt_id
+        description: "{{ doc('receipt_id') }}"
+        tests:
+          - not_null
+          - unique
+
+      - name: predecessor_id
+        description: "{{ doc('predecessor_id') }}"
+        tests:
+          - not_null
+
+      - name: receiver_id
+        description: "{{ doc('receiver_id') }}"
+        tests:
+          - not_null
+
+      - name: receipt_json
+        description: "{{ doc('receipt_json') }}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - VARIANT
+                - OBJECT
+
+      - name: outcome_json
+        description: "{{ doc('outcome_json') }}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - VARIANT
+                - OBJECT
+
+      - name: tx_succeeded
+        description: "{{ doc('tx_succeeded') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - BOOLEAN
+
+      - name: receipt_succeeded
+        description: "{{ doc('receipt_succeeded') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - BOOLEAN
+
+      - name: _partition_by_block_number
+        description: "{{ doc('_partition_by_block_number') }}"
+        
+      - name: receipts_final_id
+        description: "{{ doc('id') }}"
+        tests:
+          - not_null
+
+      - name: inserted_timestamp
+        description: "{{ doc('inserted_timestamp') }}"
+
+      - name: modified_timestamp
+        description: "{{ doc('modified_timestamp') }}"
+
+      - name: _invocation_id
+        description: "{{ doc('invocation_id') }}" 

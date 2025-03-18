@@ -53,15 +53,15 @@ WITH actions_events AS (
 status_value AS (
     SELECT
         tx_hash,
-        status_value,
-        TRY_PARSE_JSON(REPLACE(LOGS[0] :: STRING, 'EVENT_JSON:', '')) AS event,
-        PARSE_JSON(BASE64_DECODE_STRING(status_value:SuccessValue)) as SuccessValue,
+        outcome_json :outcome :status AS status_value,
+        TRY_PARSE_JSON(REPLACE(outcome_json :outcome :logs[0] :: STRING, 'EVENT_JSON:', '')) AS event,
+        PARSE_JSON(BASE64_DECODE_STRING(outcome_json :outcome :status :SuccessValue)) as SuccessValue,
         _partition_by_block_number,
-        _inserted_timestamp
+        inserted_timestamp AS _inserted_timestamp
     FROM
-        {{ ref('silver__streamline_receipts_final') }}
+        {{ ref('silver__receipts_final') }}
     WHERE
-        receipt_actions:predecessor_id = 'marketplace.paras.near'
+        predecessor_id = 'marketplace.paras.near'
     AND 
         event:event = 'nft_transfer'
 
