@@ -109,7 +109,7 @@ logs_base AS(
 
     {% if var("MANUAL_FIX") %}
         AND
-            {{ partition_load_manual('no_buffer') }}
+            {{ partition_load_manual('no_buffer', floor) }}
         {% else %}
         {% if is_incremental() %}
             AND block_timestamp::DATE >= '{{min_bd}}'
