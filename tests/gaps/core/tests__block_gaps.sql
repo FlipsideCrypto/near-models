@@ -17,7 +17,7 @@
       {% endset %}
       {% set min_block_id = run_query(min_block_sql).columns[0].values()[0] %}
     {% else %}
-      {% set min_block_id = 140868759 %}
+      {% set min_block_id = 9820210 %}
     {% endif %}
   {% do log('Min block id: ' ~ min_block_id, info=True) %}
 {% endif %}
@@ -42,7 +42,11 @@ WITH silver_blocks AS (
         block_id ASC
     ) AS prev_hash_actual
   FROM
+  {% if var('DBT_FULL_TEST') %}
     {{ ref('silver__blocks_final') }}
+  {% else %}
+    {{ ref('silver__blocks_v2') }}
+  {% endif %}
 
   WHERE
     block_id >= {{ min_block_id }}
