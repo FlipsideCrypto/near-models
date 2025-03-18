@@ -1,0 +1,191 @@
+version: 2
+
+models:
+  - name: defi__ez_intents
+    description: |-
+      Enhanced view of NEAR Intents data with token metadata and USD pricing.
+      This model enriches the fact_intents data with token symbols, decimals, and USD values,
+      making it easier to analyze token transfers and financial metrics within the Intents protocol.
+
+    tests:
+      - dbt_utils.recency:
+          datepart: hours
+          field: block_timestamp
+          interval: 3
+
+    columns:
+      - name: BLOCK_ID
+        description: "{{ doc('block_id') }}"
+        tests:
+          - not_null
+
+      - name: BLOCK_TIMESTAMP
+        description: "{{ doc('block_timestamp') }}"
+        tests:
+          - not_null
+
+      - name: TX_HASH
+        description: "{{ doc('tx_hash') }}"
+        tests:
+          - not_null
+      
+      - name: RECEIPT_ID
+        description: "{{ doc('receipt_object_id') }}"
+        tests:
+          - not_null
+
+      - name: PREDECESSOR_ID
+        description: "{{ doc('predecessor_id') }}"
+        tests:
+          - not_null
+
+      - name: RECEIVER_ID
+        description: "{{ doc('receiver_id') }}"
+        tests:
+          - not_null
+
+      - name: MEMO
+        description: "{{ doc('memo') }}"
+
+      - name: AMOUNT_RAW
+        description: "{{ doc('amount_raw') }}"
+        tests:
+          - not_null
+          
+      - name: TOKEN_ID
+        description: "{{ doc('token_id') }}"
+        tests:
+          - not_null
+
+      - name: REFERRAL
+        description: "{{ doc('referral') }}"
+
+      - name: DIP4_VERSION
+        description: "{{ doc('dip4_version') }}"
+        tests:
+          - not_null:
+              where: memo != 'refund'
+
+      - name: GAS_BURNT
+        description: "{{ doc('gas_burnt') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - INTEGER
+
+      - name: RECEIPT_SUCCEEDED
+        description: "{{ doc('receipt_succeeded') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - BOOLEAN
+
+      - name: AMOUNT_INDEX
+        description: "{{ doc('amount_index') }}"
+        tests:
+          - not_null
+
+      - name: LOG_EVENT
+        description: "{{ doc('log_event') }}"
+        tests:
+          - not_null
+
+      - name: LOG_INDEX
+        description: "{{ doc('log_index') }}"
+        tests:
+          - not_null
+
+      - name: LOG_EVENT_INDEX
+        description: "{{ doc('log_event_index') }}"
+        tests:
+          - not_null
+
+      - name: OWNER_ID
+        description: "{{ doc('owner_id') }}"
+        tests:
+          - not_null:
+              where: log_event in ('mt_mint', 'mt_burn')
+
+      - name: OLD_OWNER_ID
+        description: "{{ doc('old_owner_id') }}"
+        tests:
+          - not_null:
+              where: log_event = 'mt_transfer'
+
+      - name: NEW_OWNER_ID
+        description: "{{ doc('new_owner_id') }}"
+        tests:
+          - not_null:
+              where: log_event = 'mt_transfer'
+
+      - name: BLOCKCHAIN
+        description: "{{ doc('blockchain') }}"
+        tests:
+          - not_null
+
+      - name: CONTRACT_ADDRESS
+        description: "{{ doc('contract_address') }}"
+        tests:
+          - not_null
+
+      - name: IS_NATIVE
+        description: "{{ doc('is_native') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - BOOLEAN
+
+      - name: SYMBOL
+        description: "{{ doc('symbol') }}"
+        tests:
+          - not_null
+
+      - name: DECIMALS
+        description: "{{ doc('decimals') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - INTEGER
+
+      - name: AMOUNT_ADJ
+        description: "{{ doc('amount_adj') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
+
+      - name: PRICE
+        description: "{{ doc('price_usd') }}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
+
+      - name: AMOUNT_USD
+        description: "{{ doc('amount_usd') }}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
+
+      - name: EZ_INTENTS_ID
+        description: "{{ doc('id') }}"
+        tests:
+          - unique
+          - not_null
+
+      - name: INSERTED_TIMESTAMP
+        description: "{{doc('inserted_timestamp')}}"
+
+      - name: MODIFIED_TIMESTAMP
+        description: "{{doc('modified_timestamp')}}"

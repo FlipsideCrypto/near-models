@@ -2,6 +2,7 @@
     materialized = 'view',
     tags = ['core', 'nft', 'pagoda']
 ) }}
+-- reminder update bi_analytics with deprecating flag
 
 WITH series_metadata AS (
 
