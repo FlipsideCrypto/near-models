@@ -1,7 +1,7 @@
 {{ config(
     materialized = 'incremental',
     unique_key = "ez_token_transfers_id",
-    incremental_strategy = 'delete+insert',
+    incremental_strategy = 'merge',
     incremental_predicates = ["dynamic_range_predicate_custom","block_timestamp::date"],
     cluster_by = ['block_timestamp::DATE', 'floor(block_id, -3)'],
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,contract_address,from_address,to_address,ez_token_transfers_id);",    
