@@ -42,11 +42,8 @@ WITH silver_blocks AS (
         block_id ASC
     ) AS prev_hash_actual
   FROM
-  {% if var('DBT_FULL_TEST') %}
     {{ ref('silver__blocks_final') }}
-  {% else %}
-    {{ ref('silver__blocks_v2') }}
-  {% endif %}
+
 
   WHERE
     block_id >= {{ min_block_id }}
