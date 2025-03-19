@@ -95,6 +95,7 @@ broken_blocks AS (
         AND ARRAY_SIZE(
             r.outcome_json :outcome :logs :: ARRAY
         ) > 0
+        AND r.block_id IS NOT NULL
 ),
 impacted_blocks AS (
     SELECT

@@ -24,6 +24,8 @@ WITH receipts AS (
         {{ ref('silver__receipts_final') }}
     WHERE
         receipt_succeeded
+    AND
+        block_id IS NOT NULL
         {% if var("MANUAL_FIX") %}
         AND {{ partition_load_manual('no_buffer') }}
 

@@ -25,3 +25,5 @@ SELECT
     modified_timestamp
 FROM
     {{ ref('silver__receipts_final') }}
+WHERE
+    block_id IS NOT NULL

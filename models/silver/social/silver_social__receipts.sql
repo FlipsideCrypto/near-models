@@ -35,6 +35,7 @@ WITH all_social_receipts AS (
             LOWER(signer_id) = 'social.near'
             OR LOWER(receiver_id) = 'social.near'
         )
+        AND block_id IS NOT NULL
 
     {% if var("MANUAL_FIX") %}
       AND {{ partition_load_manual('no_buffer') }}

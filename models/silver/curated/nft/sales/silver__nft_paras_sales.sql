@@ -64,6 +64,8 @@ status_value AS (
         predecessor_id = 'marketplace.paras.near'
     AND 
         event:event = 'nft_transfer'
+    AND 
+        block_id IS NOT NULL
 
     {% if var("MANUAL_FIX") %}
       AND {{ partition_load_manual('no_buffer') }}

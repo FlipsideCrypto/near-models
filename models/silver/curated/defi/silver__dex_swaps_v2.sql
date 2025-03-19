@@ -111,6 +111,7 @@ receipts AS (
             FROM
                 swap_logs
         ) 
+        AND block_id IS NOT NULL
 
     {% if var("MANUAL_FIX") %}
         AND {{ partition_load_manual('no_buffer') }}

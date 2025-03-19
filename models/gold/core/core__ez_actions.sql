@@ -104,13 +104,14 @@ receipts AS (
         modified_timestamp
     FROM
         {{ ref('silver__receipts_final') }}
-
+    WHERE
+        block_id IS NOT NULL
     {% if var("MANUAL_FIX") %}
-        WHERE
+        AND
             {{ partition_load_manual('no_buffer') }}
         {% else %}
         {% if is_incremental() %}
-            WHERE block_timestamp :: DATE >= '{{min_bd}}'
+            AND block_timestamp :: DATE >= '{{min_bd}}'
         {% endif %}
     {% endif %}
 ),

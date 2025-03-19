@@ -243,6 +243,6 @@ SELECT
 FROM
     FINAL
 
-qualify(row_number() over (partition by receipt_id order by block_id is not null desc, modified_timestamp desc) = 1)
+qualify(row_number() over (partition by receipt_id order by modified_timestamp desc) = 1)
 
 {% endif %}

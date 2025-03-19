@@ -20,6 +20,7 @@ WITH receipts AS (
         {{ ref('silver__receipts_final') }}
     WHERE
         _partition_by_block_number >= 59670000
+        AND block_id IS NOT NULL
 
     {% if var("MANUAL_FIX") %}
       AND {{ partition_load_manual('no_buffer') }}

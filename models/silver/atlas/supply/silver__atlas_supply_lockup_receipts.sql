@@ -21,11 +21,13 @@ WITH receipts AS (
         _partition_by_block_number
     FROM
         {{ ref('silver__receipts_final') }}
+    WHERE
+        block_id IS NOT NULL
         {% if var("MANUAL_FIX") %}
-        WHERE
+        AND
             {{ partition_load_manual('no_buffer') }}
         {% else %}
-        WHERE modified_timestamp >= (
+        AND modified_timestamp >= (
             SELECT
                 MAX(modified_timestamp)
             FROM
