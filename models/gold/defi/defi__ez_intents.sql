@@ -139,6 +139,11 @@ labels AS (
         decimals
     FROM
         {{ ref('silver__ft_contract_metadata') }}
+    WHERE
+        contract_address not in (
+            select distinct near_token_id 
+            from {{ ref('silver__defuse_tokens_metadata') }}
+        )
 ),
 prices AS (
     SELECT
