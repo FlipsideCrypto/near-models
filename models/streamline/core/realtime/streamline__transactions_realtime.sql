@@ -21,10 +21,10 @@
 ) }}
 
 WITH 
-{% if var('STREAMLINE_PARTIAL_BACKFILL', false) %}
+{% if var('STREAMLINE_BACKFILL', false) %}
 last_3_days AS (
     SELECT
-        120939872 as block_id
+        140750000 as block_id
 ),
 {% else %}
 last_3_days AS (
