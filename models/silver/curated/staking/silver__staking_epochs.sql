@@ -59,7 +59,7 @@ FINAL AS (
         LOG,
         _partition_by_block_number,
         {{ dbt_utils.generate_surrogate_key(['pool_id', 'epoch_number']) }} AS _epoch_id,
-        _inserted_timestamp
+        inserted_timestamp AS _inserted_timestamp
     FROM
         pool_events
 )

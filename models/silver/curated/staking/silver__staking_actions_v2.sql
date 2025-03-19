@@ -22,7 +22,7 @@ WITH pool_events AS (
         logs,
         LOG,
         _partition_by_block_number,
-        _inserted_timestamp
+        inserted_timestamp AS _inserted_timestamp
     FROM
         {{ ref('silver__pool_events') }}
         {% if var("MANUAL_FIX") %}
