@@ -17,12 +17,7 @@ WITH staking_actions AS (
         signer_id,
         action,
         amount_adj AS amount,
-        COALESCE(
-            staking_actions_v2_id,
-            {{ dbt_utils.generate_surrogate_key(
-                ['tx_hash']
-            ) }}
-        ) AS fact_staking_actions_id,
+        staking_actions_v2_id AS fact_staking_actions_id,
         COALESCE(inserted_timestamp, _inserted_timestamp, '2000-01-01' :: TIMESTAMP_NTZ) AS inserted_timestamp,
         COALESCE(modified_timestamp, _inserted_timestamp, '2000-01-01' :: TIMESTAMP_NTZ) AS modified_timestamp
     FROM
