@@ -60,7 +60,8 @@ WHERE
 qualify(ROW_NUMBER() over (PARTITION BY token_address, HOUR
 ORDER BY
     HOUR DESC) = 1)
-)
+),
+FINAL AS (
 SELECT
     block_id,
     block_timestamp,
@@ -91,9 +92,7 @@ SELECT
     C.symbol AS symbol,
     price AS token_price,
     transfer_type,
-    transfers_complete_id AS ez_token_transfers_id,
-    SYSDATE() AS inserted_timestamp,
-    SYSDATE() AS modified_timestamp
+    transfers_complete_id AS ez_token_transfers_id
 FROM
     {{ ref('silver__token_transfers_complete') }}
     t
@@ -106,21 +105,30 @@ FROM
         {{ partition_load_manual('no_buffer') }}
     {% else %}
 
-{% if is_incremental() %}
-WHERE
-    GREATEST(
-        t.modified_timestamp,
-        '2000-01-01'
-    ) >= DATEADD(
-        'minute',
-        -5,(
-            SELECT
-                MAX(
-                    modified_timestamp
-                )
-            FROM
-                {{ this }}
+    {% if is_incremental() %}
+    WHERE
+        GREATEST(
+            t.modified_timestamp,
+            '2000-01-01'
+        ) >= DATEADD(
+            'minute',
+            -5,(
+                SELECT
+                    MAX(
+                        modified_timestamp
+                    )
+                FROM
+                    {{ this }}
+            )
         )
-    )
-{% endif %}
-{% endif %}
+    {% endif %}
+    {% endif %}
+)
+SELECT
+    *,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp
+FROM
+    FINAL
+
+qualify(row_number() over (partition by ez_token_transfers_id order by modified_timestamp desc)) = 1
