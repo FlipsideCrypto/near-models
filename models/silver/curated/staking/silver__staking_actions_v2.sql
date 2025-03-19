@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'table',
-    unique_key = 'tx_hash',
+    unique_key = 'staking_actions_v2_id',
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
     tags = ['curated', 'scheduled_non_core'],
