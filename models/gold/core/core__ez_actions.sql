@@ -80,7 +80,7 @@ WITH transactions AS (
 
     {% if var("MANUAL_FIX") %}
         WHERE
-            {{ partition_load_manual('no_buffer') }}
+            {{ partition_load_manual('front') }}
         {% else %}
         {% if is_incremental() %}
             WHERE block_timestamp :: DATE >= '{{min_bd}}'
