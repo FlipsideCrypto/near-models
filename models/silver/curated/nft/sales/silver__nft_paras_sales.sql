@@ -4,6 +4,7 @@
     cluster_by = ['block_timestamp::DATE'],
     unique_key = 'nft_paras_sales_id',
     incremental_strategy = 'merge',
+    incremental_predicates = ["dynamic_range_predicate_custom","block_timestamp::date"],
     tags = ['curated','scheduled_non_core']
 ) }}
 {# Note - multisource model #}
