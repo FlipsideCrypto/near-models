@@ -29,7 +29,7 @@ tbl AS (
     {% if var('STREAMLINE_BACKFILL', false) %}
     last_3_days AS (
         SELECT
-            9820210 AS block_id
+            140750000 AS block_id
     ),
     {% else %}
     last_3_days AS (
