@@ -2,7 +2,7 @@
     materialized = 'incremental',
     incremental_strategy = 'merge',
     incremental_predicates = ["dynamic_range_predicate_custom","block_timestamp::date"],
-    unique_key = 'tx_hash',
+    unique_key = 'pool_events_id',
     tags = ['curated','scheduled_non_core'],
     cluster_by = ['_partition_by_block_number', 'block_timestamp::date']
 ) }}
@@ -60,7 +60,7 @@ FINAL AS (
 SELECT
     *,
     {{ dbt_utils.generate_surrogate_key(
-        ['tx_hash']
+        ['receipt_object_id', 'log']
     ) }} AS pool_events_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
