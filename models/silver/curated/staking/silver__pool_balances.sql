@@ -52,7 +52,7 @@ FINAL AS (
             24
         ) AS amount_adj,
         _partition_by_block_number,
-        _inserted_timestamp
+        inserted_timestamp AS _inserted_timestamp
     FROM
         pool_events
     WHERE
