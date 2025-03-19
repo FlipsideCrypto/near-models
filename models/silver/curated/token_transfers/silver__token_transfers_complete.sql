@@ -3,6 +3,7 @@
     cluster_by = ['block_timestamp::DATE','modified_timestamp::Date'],
     unique_key = 'transfers_complete_id',
     incremental_strategy = 'delete+insert',
+    incremental_predicates = ["dynamic_range_predicate_custom","block_timestamp::date"],
     tags = ['curated','scheduled_non_core']
 ) }}
 
