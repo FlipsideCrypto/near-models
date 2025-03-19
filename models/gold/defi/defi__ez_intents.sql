@@ -1,7 +1,7 @@
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'merge',
-    incremental_predicates = ["dynamic_range_predicate","block_timestamp::date"],
+    incremental_predicates = ["dynamic_range_predicate_custom","block_timestamp::date"],
     unique_key = ['ez_intents_id'],
     merge_exclude_columns = ['inserted_timestamp'],
     cluster_by = ['block_timestamp::DATE'],
