@@ -4,6 +4,7 @@
     unique_key = "atlas_supply_lockup_receipts_id",
     merge_exclude_columns = ["inserted_timestamp"],
     incremental_strategy = "merge",
+    incremental_predicates = ["dynamic_range_predicate_custom","block_timestamp::date"],
     tags = ['atlas']
 ) }}
 
@@ -21,13 +22,12 @@ WITH receipts AS (
         _partition_by_block_number
     FROM
         {{ ref('silver__receipts_final') }}
-    WHERE
-        block_id IS NOT NULL
+
         {% if var("MANUAL_FIX") %}
-        AND
+        WHERE
             {{ partition_load_manual('no_buffer') }}
         {% else %}
-        AND modified_timestamp >= (
+        WHERE modified_timestamp >= (
             SELECT
                 MAX(modified_timestamp)
             FROM

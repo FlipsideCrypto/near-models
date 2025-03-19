@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'incremental',
-    incremental_predicates = ["COALESCE(DBT_INTERNAL_DEST.block_timestamp::DATE,'2099-12-31') >= (select min(block_timestamp::DATE) from " ~ generate_tmp_view_name(this) ~ ")"],
+    incremental_predicates = ["dynamic_range_predicate_custom","block_timestamp::date"],
     merge_exclude_columns = ["inserted_timestamp"],
     unique_key = 'action_id',
     cluster_by = ['block_timestamp::date'],
@@ -20,7 +20,6 @@ WITH receipts AS (
         {{ ref('silver__receipts_final') }}
     WHERE
         _partition_by_block_number >= 59670000
-        AND block_id IS NOT NULL
 
     {% if var("MANUAL_FIX") %}
       AND {{ partition_load_manual('no_buffer') }}

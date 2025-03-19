@@ -1,6 +1,7 @@
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'delete+insert',
+    incremental_predicates = ["dynamic_range_predicate_custom","block_timestamp::date"],
     unique_key = 'tx_hash',
     tags = ['curated','scheduled_non_core'],
     cluster_by = ['_partition_by_block_number', 'block_timestamp::date']
@@ -24,8 +25,6 @@ WITH receipts AS (
         {{ ref('silver__receipts_final') }}
     WHERE
         receipt_succeeded
-    AND
-        block_id IS NOT NULL
         {% if var("MANUAL_FIX") %}
         AND {{ partition_load_manual('no_buffer') }}
 

@@ -4,7 +4,7 @@
     materialized = 'incremental',
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
-    incremental_predicates = ["COALESCE(DBT_INTERNAL_DEST.block_timestamp::DATE,'2099-12-31') >= (select min(block_timestamp::DATE) from " ~ generate_tmp_view_name(this) ~ ")"],
+    incremental_predicates = ["dynamic_range_predicate_custom","block_timestamp::date"],
     cluster_by = ['block_timestamp::DATE', 'modified_timestamp::DATE'],
     unique_key = 'action_id',
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,signer_id,receipt_object_id,receiver_id);",
@@ -29,14 +29,13 @@ WITH receipts AS (
         _partition_by_block_number
     FROM
         {{ ref('silver__receipts_final') }}
-    WHERE
-        block_id IS NOT NULL
+
         {% if var("MANUAL_FIX") %}
-        AND
+        WHERE
             {{ partition_load_manual('no_buffer') }}
         {% else %}
         {% if is_incremental() %}
-        AND modified_timestamp >= (
+        WHERE modified_timestamp >= (
                 SELECT
                     MAX(modified_timestamp)
                 FROM

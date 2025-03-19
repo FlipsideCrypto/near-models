@@ -1,6 +1,7 @@
 {{ config(
     materialized = 'incremental',
     merge_exclude_columns = ["inserted_timestamp"],
+    incremental_predicates = ["dynamic_range_predicate_custom","block_timestamp::date"],
     unique_key = 'receipt_object_id',
     cluster_by = ['modified_timestamp::date', '_partition_by_block_number'],
     tags = ['curated', 'social','scheduled_non_core']
@@ -35,7 +36,6 @@ WITH all_social_receipts AS (
             LOWER(signer_id) = 'social.near'
             OR LOWER(receiver_id) = 'social.near'
         )
-        AND block_id IS NOT NULL
 
     {% if var("MANUAL_FIX") %}
       AND {{ partition_load_manual('no_buffer') }}

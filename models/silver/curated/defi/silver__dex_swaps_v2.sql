@@ -1,14 +1,14 @@
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'merge',
-    incremental_predicates = ["COALESCE(DBT_INTERNAL_DEST.block_timestamp::DATE,'2099-12-31') >= (select min(block_timestamp::DATE) from " ~ generate_tmp_view_name(this) ~ ")"],
+    incremental_predicates = ["dynamic_range_predicate_custom","block_timestamp::date"],
     merge_exclude_columns = ["inserted_timestamp"],
     unique_key = 'dex_swaps_v2_id',
     cluster_by = ['block_timestamp::DATE'],
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,receipt_object_id,receiver_id,signer_id,token_out,token_in);",
     tags = ['curated','scheduled_non_core'],
 ) }}
-{# Note - multisource model #}
+
 -- depends on {{ ref('silver__logs_s3') }}
 -- depends on {{ ref('silver__receipts_final') }}
 
@@ -111,7 +111,6 @@ receipts AS (
             FROM
                 swap_logs
         ) 
-        AND block_id IS NOT NULL
 
     {% if var("MANUAL_FIX") %}
         AND {{ partition_load_manual('no_buffer') }}
