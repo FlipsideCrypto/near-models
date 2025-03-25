@@ -3,7 +3,7 @@
     cluster_by = ["utc_date"],
     unique_key = "atlas_daily_staked_supply_id",
     merge_exclude_columns = ["inserted_timestamp"],
-    tags = ['atlas', 'atlas_supply'],
+    tags = ['atlas', 'scheduled_core'],
     enabled = False
 ) }}
 

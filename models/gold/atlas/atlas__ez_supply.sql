@@ -8,7 +8,7 @@
             }
         }
     },
-    tags = ['atlas']
+    tags = ['scheduled_core']
 ) }}
 
 WITH supply AS (

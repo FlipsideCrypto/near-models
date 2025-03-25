@@ -2,7 +2,7 @@
     materialized = "table",
     cluster_by = ["utc_date"],
     unique_key = "atlas_daily_lockup_staking_balances_id",
-    tags = ['atlas', 'atlas_supply']
+    tags = ['atlas', 'scheduled_core']
 ) }}
 
 WITH lockup_receipts AS (
