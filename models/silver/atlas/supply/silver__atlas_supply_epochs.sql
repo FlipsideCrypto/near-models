@@ -16,15 +16,9 @@ WITH blocks AS (
         _partition_by_block_number
     FROM
         {{ ref('silver__blocks_final') }}
+
         {% if var("MANUAL_FIX") %}
             WHERE {{ partition_load_manual('no_buffer') }}
-        {% else %}
-            WHERE modified_timestamp >= (
-                SELECT
-                    MAX(modified_timestamp)
-                FROM
-                    {{ this }}
-            )
         {% endif %}
 ),
 epochs AS (
