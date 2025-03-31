@@ -27,7 +27,9 @@ AND modified_timestamp >= (
     {% endif %}
 ) 
 {% if not is_incremental() %}
-    {% do log('Is FR, loading from seed file', info=true) %}
+    {% if execute %}
+        {% do log('Is FR, loading from seed file', info=true) %}
+    {% endif %}
 ,
     tokenlist_seed AS (
         SELECT
