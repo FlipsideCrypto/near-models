@@ -19,19 +19,12 @@
 ) }}
 
 WITH 
-{% if var('STREAMLINE_PARTIAL_BACKFILL', false) %}
-tbl AS (
-    SELECT
-        block_id
-    FROM {{ ref('seeds__impacted_blocks' ) }}
-)
-{% else %}
-    {% if var('STREAMLINE_BACKFILL', false) %}
+{% if var('STREAMLINE_BACKFILL', false) %}
     last_3_days AS (
         SELECT
             140750000 AS block_id
     ),
-    {% else %}
+{% else %}
     last_3_days AS (
 
         SELECT
@@ -74,7 +67,6 @@ tbl AS (
         )
         AND block_hash IS NOT NULL
 )
-{% endif %}
 SELECT
     block_id,
     FLOOR(block_id, -3) AS partition_key,
