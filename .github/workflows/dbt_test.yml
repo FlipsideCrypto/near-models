@@ -43,7 +43,7 @@ jobs:
 
       - name: Run DBT Jobs
         run: |
-          dbt test -s models/gold tag:gap_test --exclude tag:atlas tag:deprecated
+          dbt test -s models/gold tag:gap_test --exclude tag:atlas tag:deprecated --vars '{"DBT_TEST_LOOKBACK_DAYS": 7}'
         continue-on-error: true
 
       - name: Log test results
