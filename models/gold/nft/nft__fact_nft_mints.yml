@@ -110,6 +110,9 @@ models:
 
       - name: TX_SUCCEEDED
         description: "{{ doc('tx_succeeded') }}"
+        tests:
+          - not_null:
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days'
 
       - name: FACT_NFT_MINTS_ID
         description: "{{doc('id')}}"
