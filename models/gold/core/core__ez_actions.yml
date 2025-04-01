@@ -17,19 +17,19 @@ models:
         description: "{{ doc('block_id')}}"
         tests:
           - not_null:
-              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days'
 
       - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp')}}"
         tests:
           - not_null:
-              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days'
 
       - name: TX_HASH
         description: "{{ doc('tx_hash')}}"
         tests:
           - not_null:
-              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days'
 
       - name: TX_SUCCEEDED
         description: "{{ doc('tx_succeeded')}}"
@@ -38,13 +38,13 @@ models:
               column_type_list:
                 - BOOLEAN
           - not_null:
-              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days'
 
       - name: TX_RECEIVER
         description: "{{ doc('tx_receiver')}}"
         tests:
           - not_null:
-              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days'
 
       - name: TX_SIGNER
         description: "{{ doc('tx_signer')}}"
@@ -55,7 +55,7 @@ models:
         description: "{{ doc('gas_used')}}"
         tests:
           - not_null:
-              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days'
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
@@ -65,7 +65,7 @@ models:
         description: "{{ doc('receipt_object_id')}}"
         tests:
           - not_null:
-              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days'
 
       - name: RECEIPT_PREDECESSOR_ID
         description: "{{ doc('predecessor_id')}}"
@@ -146,9 +146,9 @@ models:
         description: "{{ doc('action_id')}}"
         tests:
           - unique:
-              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days'
           - not_null:
-              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days'
 
       - name: INSERTED_TIMESTAMP
         description: "{{doc('inserted_timestamp')}}"

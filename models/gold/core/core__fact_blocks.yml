@@ -33,7 +33,7 @@ models:
         tests:
           - not_null
           - unique:
-              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days'
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
@@ -155,7 +155,7 @@ models:
         description: "{{ doc('gas_price')}}"
         tests:
           - not_null:
-              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days'
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
@@ -183,7 +183,7 @@ models:
         description: "{{ doc('latest_protocol_version')}}"
         tests:
           - not_null:
-              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days'
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
@@ -299,9 +299,9 @@ models:
         description: "{{doc('id')}}"
         tests:
           - unique:
-              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days'
           - not_null:
-              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days'
 
       - name: INSERTED_TIMESTAMP
         description: "{{doc('inserted_timestamp')}}"

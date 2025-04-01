@@ -24,19 +24,19 @@ models:
         description: "{{ doc('block_timestamp')}}"
         tests:
           - not_null:
-              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days'
 
       - name: TX_HASH
         description: "{{ doc('tx_hash')}}"
         tests:
           - not_null:
-              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days'
 
       - name: RECEIPT_ID
         description: "{{ doc('receipt_id')}}"
         tests:
           - not_null:
-              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days'
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
@@ -111,9 +111,9 @@ models:
         description: "{{doc('id')}}"
         tests:
           - unique:
-              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days'
           - not_null:
-              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days'
 
       - name: INSERTED_TIMESTAMP
         description: "{{doc('inserted_timestamp')}}"

@@ -17,7 +17,7 @@ models:
               column_type_list:
                 - TIMESTAMP_NTZ
           - not_null:
-              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days'
 
       - name: BLOCK_ID
         description: "{{ doc('block_id')}}"
@@ -35,7 +35,7 @@ models:
                 - STRING
                 - VARCHAR
           - not_null:
-              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days'
 
       - name: RECEIPT_ID
         description: "{{ doc('receipt_id')}}"
@@ -135,9 +135,9 @@ models:
         description: "{{doc('id')}}"
         tests:
           - unique:
-              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days'
           - not_null:
-              where: inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days'
 
       - name: INSERTED_TIMESTAMP
         description: "{{doc('inserted_timestamp')}}"

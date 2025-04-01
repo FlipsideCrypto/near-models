@@ -16,25 +16,25 @@ models:
         description: The NEAR account address for which the balance is recorded.
         tests:
           - not_null:
-              where: epoch_date > SYSDATE() - INTERVAL '7 days' 
+              where: epoch_date > SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days'
 
       - name: epoch_block_id
         description: The max block id in for the epoch.
         tests:
           - not_null:
-              where: epoch_date > SYSDATE() - INTERVAL '7 days'  
+              where: epoch_date > SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days'  
 
       - name: epoch_date
         description: The date and time at which the epoch began
         tests:
           - not_null:
-              where: epoch_date > SYSDATE() - INTERVAL '7 days' 
+              where: epoch_date > SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days' 
 
       - name: liquid
         description: The liquid balance of the NEAR account at this epoch.
         tests:
           - not_null:
-              where: epoch_date > SYSDATE() - INTERVAL '7 days' 
+              where: epoch_date > SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days' 
 
       - name: lockup_account_id
         description: The lockup delegator account ID for the NEAR account, if one exists.
@@ -58,7 +58,7 @@ models:
         description: The staked balance of the NEAR account at this epoch.
         tests:
           - not_null:
-              where: epoch_date > SYSDATE() - INTERVAL '7 days' 
+              where: epoch_date > SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days' 
 
       - name: storage_usage
         description: Storage usage of the NEAR account at this epoch.
@@ -70,9 +70,9 @@ models:
         description: "{{doc('id')}}"
         tests:
           - unique:
-              where: epoch_date > SYSDATE() - INTERVAL '7 days' 
+              where: epoch_date > SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days' 
           - not_null:
-              where: epoch_date > SYSDATE() - INTERVAL '7 days' 
+              where: epoch_date > SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days' 
 
       - name: INSERTED_TIMESTAMP
         description: "{{doc('inserted_timestamp')}}"
