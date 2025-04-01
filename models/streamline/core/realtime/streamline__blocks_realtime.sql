@@ -22,8 +22,8 @@ WITH
 {% if var('STREAMLINE_PARTIAL_BACKFILL', false) %}
 tbl AS (
     SELECT
-        distinct block_id
-    FROM near.tests_full.final_gaps_tx
+        block_id
+    FROM {{ ref('seeds__impacted_blocks' ) }}
 )
 {% else %}
     {% if var('STREAMLINE_BACKFILL', false) %}

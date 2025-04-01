@@ -15,7 +15,7 @@ WITH pool_events AS (
 
         {% if var("MANUAL_FIX") %}
         WHERE
-            {{ partition_load_manual('no_buffer') }}
+            True
         {% else %}
         {% if is_incremental() %}
         WHERE modified_timestamp >= (
