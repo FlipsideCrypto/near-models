@@ -26,7 +26,10 @@ WITH nft_mints AS (
         transaction_fee,
         implied_price,
         tx_status, -- todo drop this col eventually
-        tx_succeeded,
+        COALESCE(
+            tx_succeeded,
+            tx_status = 'Success'
+        ) AS tx_succeeded,
         mint_action_id,
         COALESCE(
             standard_nft_mint_id,
