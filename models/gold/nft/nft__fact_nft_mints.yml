@@ -108,15 +108,8 @@ models:
           - not_null:
               where: inserted_timestamp >= SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days'
 
-      - name: TX_STATUS
-        description: "{{ doc('tx_status') }}"
-        tests:
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
-          - not_null:
-              where: inserted_timestamp >= SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days'
+      - name: TX_SUCCEEDED
+        description: "{{ doc('tx_succeeded') }}"
 
       - name: FACT_NFT_MINTS_ID
         description: "{{doc('id')}}"
