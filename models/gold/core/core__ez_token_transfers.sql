@@ -9,7 +9,7 @@
 ) }}
 
 {% if execute %}
-    {% if is_incremental() %}
+    {% if is_incremental() and not var("MANUAL_FIX") %}
         {% set query %}
 
         SELECT

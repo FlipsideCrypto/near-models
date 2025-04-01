@@ -25,7 +25,11 @@ WITH nft_mints AS (
         gas_burnt,
         transaction_fee,
         implied_price,
-        tx_status, -- TODO migrate to tx_succeeded
+        tx_status, -- todo drop this col eventually
+        COALESCE(
+            tx_succeeded,
+            tx_status = 'Success'
+        ) AS tx_succeeded,
         mint_action_id,
         COALESCE(
             standard_nft_mint_id,

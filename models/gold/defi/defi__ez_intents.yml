@@ -125,19 +125,19 @@ models:
         description: "{{ doc('blockchain') }}"
         tests:
           - not_null:
-              where: token_id not in ('nep141:a35923162c49cf95e6bf26623385eb431ad920d3.factory.bridge.near', 'nep141:purge-558.meme-cooking.near', 'nep141:noear-324.meme-cooking.near', 'nep141:abg-966.meme-cooking.near', 'nep141:gnear-229.meme-cooking.near', 'nep141:gnosis-0xddafbb505ad214d7b80b1f830fccc89b60fb7a83.omft.near')
+              where: token_id not in ('nep141:a35923162c49cf95e6bf26623385eb431ad920d3.factory.bridge.near', 'nep141:purge-558.meme-cooking.near', 'nep141:noear-324.meme-cooking.near', 'nep141:abg-966.meme-cooking.near', 'nep141:gnear-229.meme-cooking.near', 'nep141:gnosis-0xddafbb505ad214d7b80b1f830fccc89b60fb7a83.omft.near') and token_id not like 'nep245%'
 
       - name: CONTRACT_ADDRESS
         description: "{{ doc('contract_address') }}"
         tests:
           - not_null:
-              where: token_id not in ('nep141:a35923162c49cf95e6bf26623385eb431ad920d3.factory.bridge.near', 'nep141:purge-558.meme-cooking.near', 'nep141:noear-324.meme-cooking.near', 'nep141:abg-966.meme-cooking.near', 'nep141:gnear-229.meme-cooking.near', 'nep141:gnosis-0xddafbb505ad214d7b80b1f830fccc89b60fb7a83.omft.near')
+              where: token_id not in ('nep141:a35923162c49cf95e6bf26623385eb431ad920d3.factory.bridge.near', 'nep141:purge-558.meme-cooking.near', 'nep141:noear-324.meme-cooking.near', 'nep141:abg-966.meme-cooking.near', 'nep141:gnear-229.meme-cooking.near', 'nep141:gnosis-0xddafbb505ad214d7b80b1f830fccc89b60fb7a83.omft.near') and token_id not like 'nep245%'
 
       - name: IS_NATIVE
         description: "{{ doc('is_native') }}"
         tests:
           - not_null:
-              where: token_id not in ('nep141:a35923162c49cf95e6bf26623385eb431ad920d3.factory.bridge.near', 'nep141:purge-558.meme-cooking.near', 'nep141:noear-324.meme-cooking.near', 'nep141:abg-966.meme-cooking.near', 'nep141:gnear-229.meme-cooking.near', 'nep141:gnosis-0xddafbb505ad214d7b80b1f830fccc89b60fb7a83.omft.near')
+              where: token_id not in ('nep141:a35923162c49cf95e6bf26623385eb431ad920d3.factory.bridge.near', 'nep141:purge-558.meme-cooking.near', 'nep141:noear-324.meme-cooking.near', 'nep141:abg-966.meme-cooking.near', 'nep141:gnear-229.meme-cooking.near', 'nep141:gnosis-0xddafbb505ad214d7b80b1f830fccc89b60fb7a83.omft.near') and token_id not like 'nep245%'
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - BOOLEAN
@@ -146,13 +146,13 @@ models:
         description: "{{ doc('symbol') }}"
         tests:
           - not_null:
-              where: token_id not in ('nep141:a35923162c49cf95e6bf26623385eb431ad920d3.factory.bridge.near', 'nep141:purge-558.meme-cooking.near', 'nep141:noear-324.meme-cooking.near', 'nep141:abg-966.meme-cooking.near', 'nep141:gnear-229.meme-cooking.near', 'nep141:gnosis-0xddafbb505ad214d7b80b1f830fccc89b60fb7a83.omft.near')
+              where: token_id not in ('nep141:a35923162c49cf95e6bf26623385eb431ad920d3.factory.bridge.near', 'nep141:purge-558.meme-cooking.near', 'nep141:noear-324.meme-cooking.near', 'nep141:abg-966.meme-cooking.near', 'nep141:gnear-229.meme-cooking.near', 'nep141:gnosis-0xddafbb505ad214d7b80b1f830fccc89b60fb7a83.omft.near') and token_id not like 'nep245%'
 
       - name: DECIMALS
         description: "{{ doc('decimals') }}"
         tests:
           - not_null:
-              where: token_id not in ('nep141:a35923162c49cf95e6bf26623385eb431ad920d3.factory.bridge.near', 'nep141:purge-558.meme-cooking.near', 'nep141:noear-324.meme-cooking.near', 'nep141:abg-966.meme-cooking.near', 'nep141:gnear-229.meme-cooking.near', 'nep141:gnosis-0xddafbb505ad214d7b80b1f830fccc89b60fb7a83.omft.near')
+              where: token_id not in ('nep141:a35923162c49cf95e6bf26623385eb431ad920d3.factory.bridge.near', 'nep141:purge-558.meme-cooking.near', 'nep141:noear-324.meme-cooking.near', 'nep141:abg-966.meme-cooking.near', 'nep141:gnear-229.meme-cooking.near', 'nep141:gnosis-0xddafbb505ad214d7b80b1f830fccc89b60fb7a83.omft.near') and token_id not like 'nep245%'
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
@@ -162,7 +162,7 @@ models:
         description: "{{ doc('amount_adj') }}"
         tests:
           - not_null:
-              where: token_id not in ('nep141:a35923162c49cf95e6bf26623385eb431ad920d3.factory.bridge.near', 'nep141:purge-558.meme-cooking.near', 'nep141:noear-324.meme-cooking.near', 'nep141:abg-966.meme-cooking.near', 'nep141:gnear-229.meme-cooking.near', 'nep141:gnosis-0xddafbb505ad214d7b80b1f830fccc89b60fb7a83.omft.near')
+              where: token_id not in ('nep141:a35923162c49cf95e6bf26623385eb431ad920d3.factory.bridge.near', 'nep141:purge-558.meme-cooking.near', 'nep141:noear-324.meme-cooking.near', 'nep141:abg-966.meme-cooking.near', 'nep141:gnear-229.meme-cooking.near', 'nep141:gnosis-0xddafbb505ad214d7b80b1f830fccc89b60fb7a83.omft.near') and token_id not like 'nep245%'
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER

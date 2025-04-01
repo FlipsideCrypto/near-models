@@ -88,7 +88,7 @@ WITH intents AS (
 
         {% if var("MANUAL_FIX") %}
         WHERE
-            {{ partition_load_manual('no_buffer', block_id) }}
+            {{ partition_load_manual('no_buffer', 'FLOOR(block_id, -3)') }}
         {% else %}
 
         {% if is_incremental() %}

@@ -13,7 +13,7 @@
         FROM
           {{ ref('silver__blocks_v2') }}
         WHERE
-          _inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
+          _inserted_timestamp >= SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days'
       {% endset %}
       {% set min_block_id = run_query(min_block_sql).columns[0].values()[0] %}
     {% else %}
