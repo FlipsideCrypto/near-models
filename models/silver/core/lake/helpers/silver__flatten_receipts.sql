@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'view',
-    tags = ['helper', 'receipt_map']
+    tags = ['helper', 'receipt_map', 'deprecated']
 ) }}
 
 WITH receipts AS (

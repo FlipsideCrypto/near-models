@@ -8,7 +8,7 @@
     cluster_by = ['block_timestamp::DATE', 'modified_timestamp::DATE'],
     unique_key = 'action_id',
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,signer_id,receipt_object_id,receiver_id);",
-    tags = ['actions', 'curated','scheduled_core', 'grail']
+    tags = ['actions', 'curated','scheduled_core', 'grail', 'deprecated']
 ) }}
 -- todo deprecate this model
 WITH receipts AS (

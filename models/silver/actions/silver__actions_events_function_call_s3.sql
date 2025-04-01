@@ -9,7 +9,7 @@
   cluster_by = ['block_timestamp::DATE', 'modified_timestamp::DATE'],
   unique_key = 'action_id',
   post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(action_id,tx_hash,receiver_id,predecessor_id,signer_id,method_name);",
-  tags = ['actions', 'curated','scheduled_core', 'grail']
+  tags = ['actions', 'curated','scheduled_core', 'grail', 'deprecated']
 ) }}
 -- todo deprecate this model
 WITH action_events AS (

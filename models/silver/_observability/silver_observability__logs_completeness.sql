@@ -2,7 +2,7 @@
     materialized = 'incremental',
     unique_key = 'test_timestamp',
     full_refresh = False,
-    tags = ['observability']
+    tags = ['observability', 'deprecated']
 ) }}
 -- TODO this can be deprecated. Not a good metric of completeness.
 WITH summary_stats AS (

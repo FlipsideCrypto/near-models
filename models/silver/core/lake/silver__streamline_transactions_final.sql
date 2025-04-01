@@ -3,7 +3,7 @@
   incremental_strategy = 'delete+insert',
   unique_key = 'tx_hash',
   cluster_by = ['block_timestamp::DATE','modified_timestamp::DATE', '_partition_by_block_number'],
-  tags = ['receipt_map', 'deprecated_lake_archive']
+  tags = ['receipt_map', 'deprecated']
 ) }}
 
 WITH int_txs AS (
