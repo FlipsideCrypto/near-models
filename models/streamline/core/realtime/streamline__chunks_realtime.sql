@@ -21,6 +21,20 @@
 ) }}
 
 WITH
+{% if var('STREAMLINE_GAPFILL', false) %}
+tbl AS (
+    SELECT
+        A.block_id,
+        A.block_timestamp_epoch,
+        A.chunk_hash
+    FROM
+        {{ ref('seeds__impacted_blocks') }} C
+    LEFT JOIN {{ ref('streamline__chunks') }} A ON A.block_id = C.block_id
+    LEFT JOIN {{ ref('streamline__chunks_complete') }} B ON A.chunk_hash = B.chunk_hash
+    WHERE
+        B.chunk_hash IS NULL
+)
+{% else %}
 {% if var('STREAMLINE_BACKFILL', false) %}
 last_3_days AS (
     SELECT
@@ -54,6 +68,7 @@ tbl AS (
         )
         AND B.chunk_hash IS NULL
 )
+{% endif %}
 SELECT
     block_id,
     block_timestamp_epoch,

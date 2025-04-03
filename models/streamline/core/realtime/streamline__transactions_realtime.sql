@@ -21,6 +21,26 @@
 ) }}
 
 WITH 
+{% if var('STREAMLINE_GAPFILL', false) %}
+tbl AS (
+    SELECT
+        A.block_id,
+        A.block_timestamp_epoch,
+        A.tx_hash,
+        A.signer_id,
+        A.shard_id,
+        A.chunk_hash,
+        A.height_created,
+        A.height_included
+    FROM
+        {{ ref('seeds__impacted_blocks') }} C
+        LEFT JOIN {{ ref('streamline__transactions') }} A ON A.block_id = C.block_id
+        LEFT JOIN {{ ref('streamline__transactions_complete') }} B ON A.tx_hash = B.tx_hash
+    WHERE
+        B.tx_hash IS NULL
+        AND A.signer_id IS NOT NULL
+)
+{% else %}
 {% if var('STREAMLINE_BACKFILL', false) %}
 last_3_days AS (
     SELECT
@@ -60,6 +80,7 @@ tbl AS (
         AND A.signer_id IS NOT NULL
         AND B.tx_hash IS NULL
 )
+{% endif %}
 SELECT
     shard_id,
     chunk_hash,
