@@ -32,7 +32,8 @@ tbl AS (
     LEFT JOIN {{ ref('streamline__chunks') }} A ON A.block_id = C.block_id
     LEFT JOIN {{ ref('streamline__chunks_complete') }} B ON A.chunk_hash = B.chunk_hash
     WHERE
-        B.chunk_hash IS NULL
+        A.chunk_hash IS NOT NULL
+        AND B.chunk_hash IS NULL
 )
 {% else %}
 {% if var('STREAMLINE_BACKFILL', false) %}

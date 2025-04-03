@@ -37,8 +37,8 @@ tbl AS (
         LEFT JOIN {{ ref('streamline__transactions') }} A ON A.block_id = C.block_id
         LEFT JOIN {{ ref('streamline__transactions_complete') }} B ON A.tx_hash = B.tx_hash
     WHERE
-        B.tx_hash IS NULL
-        AND A.signer_id IS NOT NULL
+        A.tx_hash IS NOT NULL
+        AND B.tx_hash IS NULL
 )
 {% else %}
 {% if var('STREAMLINE_BACKFILL', false) %}
