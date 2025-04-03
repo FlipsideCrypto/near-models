@@ -25,7 +25,7 @@ WITH
             block_id
         FROM
             {{ ref('seeds__impacted_blocks') }}
-    ),
+    )
     {% else %}
     {% if var('STREAMLINE_BACKFILL', false) %}
         last_3_days AS (
