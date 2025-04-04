@@ -124,4 +124,8 @@ def send_alert(webhook_url):
 if __name__ == '__main__':
 
     webhook_url = os.environ.get("SLACK_WEBHOOK_URL")
-    send_alert(webhook_url)
+    data = log_test_result()
+
+    # Only send an alert if there are failures
+    if data['fail_count'] > 0:
+        send_alert(webhook_url)
