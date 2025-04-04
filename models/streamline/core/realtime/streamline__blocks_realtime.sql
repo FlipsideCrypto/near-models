@@ -19,19 +19,29 @@
 ) }}
 
 WITH 
-{% if var('STREAMLINE_BACKFILL', false) %}
-    last_3_days AS (
+{% if var('STREAMLINE_GAPFILL', false) %}
+    tbl AS (
         SELECT
-            140750000 AS block_id
-    ),
-{% else %}
-    last_3_days AS (
-
-        SELECT
-            ZEROIFNULL(block_id) AS block_id
+            block_id
         FROM
-            {{ ref("_block_lookback") }}
-    ),
+            {{ ref('seeds__impacted_blocks') }} A 
+        LEFT JOIN {{ ref('streamline__blocks_complete') }} B ON A.block_id = B.block_id
+        WHERE B.block_id IS NULL
+    )
+    {% else %}
+    {% if var('STREAMLINE_BACKFILL', false) %}
+        last_3_days AS (
+            SELECT
+                140750000 AS block_id
+        ),
+    {% else %}
+        last_3_days AS (
+
+            SELECT
+                ZEROIFNULL(block_id) AS block_id
+            FROM
+                {{ ref("_block_lookback") }}
+        ),
     {% endif %}
 tbl AS (
     SELECT
@@ -67,6 +77,7 @@ tbl AS (
         )
         AND block_hash IS NOT NULL
 )
+{% endif %}
 SELECT
     block_id,
     FLOOR(block_id, -3) AS partition_key,
