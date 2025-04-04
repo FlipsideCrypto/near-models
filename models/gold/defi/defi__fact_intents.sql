@@ -62,27 +62,7 @@
     {% endif %}
 {% endif %}
 
-WITH intent_txs AS (
-
-    SELECT DISTINCT
-         tx_hash, 
-         modified_timestamp
-    FROM
-        {{ ref('core__ez_actions') }}
-    WHERE
-        block_timestamp >= '2024-11-01'
-        AND receipt_receiver_id = 'intents.near'
-        AND action_data:method_name::string = 'execute_intents'
-
-    {% if var("MANUAL_FIX") %}
-        AND
-            {{ partition_load_manual('no_buffer') }}
-        {% else %}
-        {% if is_incremental() %}
-            AND block_timestamp::DATE >= '{{min_bd}}'
-        {% endif %}
-    {% endif %}
-),
+WITH
 logs_base AS(
     SELECT
         block_timestamp,
@@ -121,8 +101,6 @@ nep245_logs AS (
         lb.*
     FROM 
         logs_base lb
-    JOIN 
-        intent_txs r ON r.tx_hash = lb.tx_hash
     WHERE
         TRY_PARSE_JSON(lb.clean_log) :standard :: STRING = 'nep245'
 
@@ -141,8 +119,6 @@ dip4_logs AS (
         try_parse_json(lb.clean_log):version :: string as version
     FROM 
         logs_base lb
-    JOIN 
-        intent_txs r ON r.tx_hash = lb.tx_hash
     WHERE
         TRY_PARSE_JSON(lb.clean_log) :standard :: STRING = 'dip4'
 
