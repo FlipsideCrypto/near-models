@@ -106,10 +106,7 @@ nep245_logs AS (
 
     {% if is_incremental() and not var("MANUAL_FIX") %}
         AND 
-            GREATEST(
-                COALESCE(lb.modified_timestamp, '1970-01-01'),
-                COALESCE(r.modified_timestamp, '1970-01-01')   
-            ) >= '{{max_mod}}'
+            COALESCE(lb.modified_timestamp, '1970-01-01') >= '{{max_mod}}'
     {% endif %}
 ),
 dip4_logs AS (
@@ -121,7 +118,11 @@ dip4_logs AS (
         logs_base lb
     WHERE
         TRY_PARSE_JSON(lb.clean_log) :standard :: STRING = 'dip4'
-
+    {% if is_incremental() and not var("MANUAL_FIX") %}
+        AND 
+            COALESCE(lb.modified_timestamp, '1970-01-01') >= '{{max_mod}}'
+    {% endif %}
+    
     qualify(row_number() over (partition by lb.receipt_id order by referral is not null desc) = 1)
 ),
 flatten_logs AS (
