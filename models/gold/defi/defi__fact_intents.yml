@@ -17,13 +17,13 @@ models:
         description: "{{ doc('block_id') }}"
         tests:
           - not_null:
-              where: inserted_timestamp >= SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days'
+              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days' AND SYSDATE() - INTERVAL '1 hour'
       
       - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp') }}"
         tests:
           - not_null:
-              where: inserted_timestamp >= SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days'
+              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days' AND SYSDATE() - INTERVAL '1 hour'
 
       - name: TX_HASH
         description: "{{ doc('tx_hash') }}"

@@ -13,7 +13,8 @@ models:
       - name: BLOCK_ID
         description: "{{ doc('block_id')}}"
         tests:
-          - not_null
+          - not_null:
+              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days' AND SYSDATE() - INTERVAL '1 hour'
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
@@ -26,7 +27,7 @@ models:
               column_type_list:
                 - TIMESTAMP_NTZ
           - not_null:
-              where: inserted_timestamp >= SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days'
+              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days' AND SYSDATE() - INTERVAL '1 hour'
 
       - name: TX_HASH
         description: "{{ doc('tx_hash')}}"

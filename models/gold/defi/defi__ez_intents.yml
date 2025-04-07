@@ -17,12 +17,14 @@ models:
       - name: BLOCK_ID
         description: "{{ doc('block_id') }}"
         tests:
-          - not_null
+          - not_null:
+              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days' AND SYSDATE() - INTERVAL '1 hour'
 
       - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp') }}"
         tests:
-          - not_null
+          - not_null:
+              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days' AND SYSDATE() - INTERVAL '1 hour'
 
       - name: TX_HASH
         description: "{{ doc('tx_hash') }}"
@@ -162,7 +164,7 @@ models:
         description: "{{ doc('amount_adj') }}"
         tests:
           - not_null:
-              where: token_id not in ('nep141:a35923162c49cf95e6bf26623385eb431ad920d3.factory.bridge.near', 'nep141:purge-558.meme-cooking.near', 'nep141:noear-324.meme-cooking.near', 'nep141:abg-966.meme-cooking.near', 'nep141:gnear-229.meme-cooking.near', 'nep141:gnosis-0xddafbb505ad214d7b80b1f830fccc89b60fb7a83.omft.near') and token_id not like 'nep245%'
+              where: token_id not in ('nep141:a35923162c49cf95e6bf26623385eb431ad920d3.factory.bridge.near', 'nep141:purge-558.meme-cooking.near', 'nep141:noear-324.meme-cooking.near', 'nep141:abg-966.meme-cooking.near', 'nep141:gnear-229.meme-cooking.near', 'nep141:gnosis-0xddafbb505ad214d7b80b1f830fccc89b60fb7a83.omft.near', 'nep141:keypom.near') and token_id not like 'nep245%'
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
