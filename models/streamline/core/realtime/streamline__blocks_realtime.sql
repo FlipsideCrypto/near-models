@@ -8,7 +8,7 @@
         target = "{{this.schema}}.{{this.identifier}}",
         params = {
             "external_table": "blocks_v2",
-            "sql_limit": "10000",
+            "sql_limit": "50000",
             "producer_batch_size": "5000",
             "worker_batch_size": "2500",
             "sql_source": "{{this.identifier}}",
@@ -24,9 +24,7 @@ WITH
         SELECT
             block_id
         FROM
-            {{ ref('seeds__impacted_blocks') }} A 
-        LEFT JOIN {{ ref('streamline__blocks_complete') }} B ON A.block_id = B.block_id
-        WHERE B.block_id IS NULL
+            {{ ref('seeds__impacted_blocks') }} A
     )
     {% else %}
     {% if var('STREAMLINE_BACKFILL', false) %}
