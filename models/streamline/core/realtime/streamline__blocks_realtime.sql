@@ -22,7 +22,7 @@ WITH
 {% if var('STREAMLINE_GAPFILL', false) %}
     tbl AS (
         SELECT
-            block_id
+            A.block_id
         FROM
             {{ ref('seeds__impacted_blocks') }} A 
         LEFT JOIN {{ ref('streamline__blocks_complete') }} B ON A.block_id = B.block_id
