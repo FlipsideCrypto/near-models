@@ -98,7 +98,7 @@ blocks AS (
         block_timestamp,
         modified_timestamp
     FROM
-        {{ ref('silver__blocks_v2') }}
+        {{ ref('silver__blocks_final') }}
     {% if var("MANUAL_FIX") %}
         WHERE
             {{ partition_load_manual('end', 'partition_key') }}
