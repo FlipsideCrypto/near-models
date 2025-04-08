@@ -2,7 +2,7 @@
     materialized = 'incremental',
     unique_key = "ez_near_daily_balances_id",
     incremental_strategy = 'merge',
-    incremental_predicates = ['DBT_INTERNAL_DEST.epoch_date::DATE >= (select min(epoch_date::DATE) from ' ~ generate_tmp_view_name(this) ~ ')'],
+    incremental_predicates = ["dynamic_range_predicate_custom","epoch_date::date"],
     cluster_by = ['epoch_date::DATE'],
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(account_id);",
     tags = ['scheduled_non_core']
