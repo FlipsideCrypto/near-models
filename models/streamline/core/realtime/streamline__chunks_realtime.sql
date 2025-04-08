@@ -10,7 +10,7 @@
         target = "{{this.schema}}.{{this.identifier}}",
         params = {
             "external_table": "chunks_v2",
-            "sql_limit": "60000",
+            "sql_limit": "200000",
             "producer_batch_size": "30000",
             "worker_batch_size": "7500",
             "sql_source": "{{this.identifier}}",
