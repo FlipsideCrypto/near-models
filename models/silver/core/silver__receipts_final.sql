@@ -101,7 +101,7 @@ blocks AS (
         {{ ref('silver__blocks_final') }}
     {% if var("MANUAL_FIX") %}
         WHERE
-            {{ partition_load_manual('end', 'partition_key') }}
+            {{ partition_load_manual('end') }}
         {% else %}
         {% if is_incremental() %}
             WHERE block_timestamp :: DATE >= '{{min_bd}}' :: DATE
