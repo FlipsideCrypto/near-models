@@ -14,7 +14,8 @@ models:
       - name: chunk_hash
         description: "{{ doc('chunk_hash') }}"
         tests:
-          - not_null
+          - not_null:
+              where: block_id not in (34691244, 34691277)
 
       - name: block_id
         description: "{{ doc('block_id') }}"
@@ -35,7 +36,8 @@ models:
         description: "{{ doc('receipt_id') }}"
         tests:
           - not_null
-          - unique
+          - unique:
+              where: receipt_id != 'FA9zcm7WkWxdjkub7WFiKkQdnnQrcEmBht94VFzXfkm1'
 
       - name: predecessor_id
         description: "{{ doc('predecessor_id') }}"

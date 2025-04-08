@@ -212,7 +212,8 @@ FINAL AS (
         outcome_json,
         tx_succeeded,
         outcome_json :outcome :status :Failure IS NULL AS receipt_succeeded,
-        _partition_by_block_number
+        _partition_by_block_number,
+        FALSE AS _is_initial_receipt
     FROM
         receipts_full
     UNION ALL
@@ -228,7 +229,8 @@ FINAL AS (
         outcome_json,
         tx_succeeded,
         tx_succeeded AS receipt_succeeded,
-        _partition_by_block_number
+        _partition_by_block_number,
+        TRUE AS _is_initial_receipt
     FROM
         initial_receipt_full
 )
