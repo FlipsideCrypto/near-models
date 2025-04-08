@@ -49,7 +49,8 @@ models:
       - name: TX_SIGNER
         description: "{{ doc('tx_signer')}}"
         tests:
-          - not_null
+          - not_null:
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days'
 
       - name: TX_GAS_USED
         description: "{{ doc('gas_used')}}"

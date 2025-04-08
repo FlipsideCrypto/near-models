@@ -98,10 +98,10 @@ blocks AS (
         block_timestamp,
         modified_timestamp
     FROM
-        {{ ref('silver__blocks_v2') }}
+        {{ ref('silver__blocks_final') }}
     {% if var("MANUAL_FIX") %}
         WHERE
-            {{ partition_load_manual('end', 'partition_key') }}
+            {{ partition_load_manual('end') }}
         {% else %}
         {% if is_incremental() %}
             WHERE block_timestamp :: DATE >= '{{min_bd}}' :: DATE
@@ -212,7 +212,8 @@ FINAL AS (
         outcome_json,
         tx_succeeded,
         outcome_json :outcome :status :Failure IS NULL AS receipt_succeeded,
-        _partition_by_block_number
+        _partition_by_block_number,
+        FALSE AS _is_initial_receipt
     FROM
         receipts_full
     UNION ALL
@@ -228,7 +229,8 @@ FINAL AS (
         outcome_json,
         tx_succeeded,
         tx_succeeded AS receipt_succeeded,
-        _partition_by_block_number
+        _partition_by_block_number,
+        TRUE AS _is_initial_receipt
     FROM
         initial_receipt_full
 )

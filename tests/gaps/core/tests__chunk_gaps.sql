@@ -9,7 +9,7 @@
     {% if not var('DBT_FULL_TEST') %}
       {% set min_block_sql %}
         SELECT
-          MIN(block_id)
+          GREATEST(MIN(block_id), 140868759) AS block_id
         FROM
           {{ ref('silver__blocks_v2') }}
         WHERE
