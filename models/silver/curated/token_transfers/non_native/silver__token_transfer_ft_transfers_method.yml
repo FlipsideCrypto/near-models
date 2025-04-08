@@ -1,0 +1,13 @@
+version: 2
+
+models:
+  - name: silver__token_transfer_ft_transfers_method
+    description: |-
+      This table records all the FT transfers by method.
+  
+    columns:
+      - name: TRANSFERS_ID
+        description: "{{doc('id')}}"
+        tests:
+          - not_null
+          - unique

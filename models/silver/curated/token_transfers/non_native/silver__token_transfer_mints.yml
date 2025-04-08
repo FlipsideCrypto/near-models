@@ -1,0 +1,13 @@
+version: 2
+
+models:
+  - name: silver__token_transfer_mints
+    description: |-
+      This table records all the mint actions.
+  
+    columns:
+      - name: MINT_ID
+        description: "{{doc('id')}}"
+        tests:
+          - not_null
+          - unique

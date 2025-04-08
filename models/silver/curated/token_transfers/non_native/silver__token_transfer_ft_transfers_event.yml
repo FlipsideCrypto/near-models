@@ -1,0 +1,13 @@
+version: 2
+
+models:
+  - name: silver__token_transfer_ft_transfers_event
+    description: |-
+      This table records all the FT transfers by event.
+  
+    columns:
+      - name: TRANSFERS_EVENT_ID
+        description: "{{doc('id')}}"
+        tests:
+          - not_null
+          - unique

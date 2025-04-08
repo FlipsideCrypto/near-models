@@ -1,10 +1,9 @@
 {{ config(
     materialized = 'incremental',
     merge_exclude_columns = ["inserted_timestamp"],
-    incremental_predicates = ["dynamic_range_predicate_custom","block_timestamp::date"],
     cluster_by = ['block_timestamp::DATE','modified_timestamp::Date'],
     unique_key = 'mint_id',
-    incremental_strategy = 'merge',
+    incremental_strategy = 'delete+insert',
     tags = ['curated','scheduled_non_core']
 ) }}
 

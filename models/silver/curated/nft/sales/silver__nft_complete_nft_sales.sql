@@ -1,10 +1,9 @@
 {{ config(
     materialized = 'incremental',
     merge_exclude_columns = ["inserted_timestamp"],
-    incremental_predicates = ["COALESCE(DBT_INTERNAL_DEST.block_timestamp::DATE,'2099-12-31') >= (select min(block_timestamp::DATE) from " ~ generate_tmp_view_name(this) ~ ")"],
     cluster_by = ['block_timestamp::DATE'],
     unique_key = 'nft_sales_id',
-    incremental_strategy = 'merge',
+    incremental_strategy = 'delete+insert',
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,seller_address,buyer_address,nft_address,token_id);",
     tags = ['curated','scheduled_non_core']
 ) }}
