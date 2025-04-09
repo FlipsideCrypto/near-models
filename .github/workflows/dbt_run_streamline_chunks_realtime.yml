@@ -4,8 +4,8 @@ run-name: dbt_run_streamline_chunks_realtime
 on:
   workflow_dispatch:
   schedule:
-    # Runs twice an hour
-    - cron: "5,35 * * * *"
+    # Runs on 10 and 40 minutes (see https://crontab.guru)
+    - cron: "10,40 * * * *"
 
 env:
   USE_VARS: "${{ vars.USE_VARS }}"

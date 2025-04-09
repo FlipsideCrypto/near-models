@@ -4,8 +4,8 @@ run-name: dbt_run_streamline_blocks_realtime
 on:
   workflow_dispatch:
   schedule:
-    # Runs twice an hour
-    - cron: "0,30 * * * *"
+    # Runs on 5 and 35 minutes (see https://crontab.guru)
+    - cron: "5,35 * * * *"
 
 env:
   USE_VARS: "${{ vars.USE_VARS }}"
