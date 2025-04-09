@@ -1,0 +1,29 @@
+{% macro config_near_high_level_abstractions(blockchain, network) -%}
+{#
+    This macro is used to generate the high level abstractions for the Near
+    blockchain.
+ #}
+{% set schema = blockchain ~ "_" ~ network %}
+
+- name: {{ schema }}.udf_get_latest_block_height
+  signature: []
+  return_type: INTEGER
+  sql: |
+    {{ near_live_table_latest_block_height() | indent(4) -}}
+
+- name: {{ schema -}}.tf_fact_blocks
+  signature:
+    - [_block_height, INTEGER, The start block height to get the blocks from]
+    - [row_count, INTEGER, The number of rows to fetch]
+  return_type:
+    - "TABLE(block_id NUMBER, block_timestamp TIMESTAMP_NTZ, block_hash STRING, block_author STRING, header OBJECT, block_challenges_result ARRAY, block_challenges_root STRING, chunk_headers_root STRING, chunk_tx_root STRING, chunk_mask ARRAY, chunk_receipts_root STRING, chunks ARRAY, chunks_included NUMBER, epoch_id STRING, epoch_sync_data_hash STRING, gas_price FLOAT, last_ds_final_block STRING, last_final_block STRING, latest_protocol_version INT, next_bp_hash STRING, next_epoch_id STRING, outcome_root STRING, prev_hash STRING, prev_height NUMBER, prev_state_root STRING, random_value STRING, rent_paid FLOAT, signature STRING, total_supply FLOAT, validator_proposals ARRAY, validator_reward FLOAT, fact_blocks_id STRING, inserted_timestamp TIMESTAMP_NTZ, modified_timestamp TIMESTAMP_NTZ)"
+  options: |
+    NOT NULL
+    RETURNS NULL ON NULL INPUT
+    VOLATILE
+    COMMENT = $$Returns the block data for a given block height. If to_latest is true, it will continue fetching blocks until the latest block. Otherwise, it will fetch blocks until the block_id height is reached.$$
+  sql: |
+    {{ near_live_table_fact_blocks(schema, blockchain, network) | indent(4) -}}
+    
+{%- endmacro -%}
+

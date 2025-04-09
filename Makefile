@@ -12,3 +12,19 @@ decoder_poc:
 	--profile near \
 	--target dev \
 	--profiles-dir ~/.dbt
+
+rm_logs:
+	@if [ -d logs ]; then \
+		rm -r logs 2>/dev/null || echo "Warning: Could not remove logs directory"; \
+	else \
+		echo "Logs directory does not exist"; \
+	fi
+
+# deploy live table udtf
+deploy_near_mainnet_lt: rm_logs
+	dbt run \
+	-s near_models.deploy.near.near__mainnet \
+	--vars '{UPDATE_UDFS_AND_SPS: true, ENABLE_LIVE_TABLE_QUERY: true}' \
+	--profiles-dir ~/.dbt \
+	--profile near \
+	--target dev
