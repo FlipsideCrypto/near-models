@@ -15,7 +15,7 @@ WITH logs AS (
 
     SELECT
         log_id,
-        receipt_object_id,
+        receipt_object_id, -- TODO rename to receipt_id
         tx_hash,
         block_id,
         block_timestamp,
