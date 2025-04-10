@@ -78,7 +78,7 @@ FROM
 SELECT
     block_height,
     DATE_PART('EPOCH', SYSDATE()) :: INTEGER AS request_timestamp,
-    _live.lt_near_tx_udf_api(
+    _live.lt_blocks_udf_api(
         'POST',
         '{Service}',
         {'Content-Type' : 'application/json'},
@@ -140,7 +140,7 @@ FROM {{raw_blocks}}
 {% endmacro %}
 
 {% macro near_live_table_fact_blocks(schema, blockchain, network) %}
-    {%- set near_live_table_fact_blocks = get_rendered_model('near_models', 'core__fact_blocks', schema, blockchain, network) -%}
+    {%- set near_live_table_fact_blocks = get_rendered_model('near_models', 'livetable_fact_blocks', schema, blockchain, network) -%}
     {{ near_live_table_fact_blocks }}
 {% endmacro %}
 

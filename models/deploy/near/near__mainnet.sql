@@ -11,7 +11,6 @@
 -- depends_on: {{ ref('near_models','core__fact_receipts') }}
 -- depends_on: {{ ref('near_models','silver__receipts_final') }}
 -- depends_on: {{ ref('near_models', 'core__ez_actions') }}
-
 {%- set configs = [
     config_near_high_level_abstractions
     ] -%}
