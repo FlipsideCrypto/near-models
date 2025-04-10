@@ -24,6 +24,20 @@
     COMMENT = $$Returns the block data for a given block height. If to_latest is true, it will continue fetching blocks until the latest block. Otherwise, it will fetch blocks until the block_id height is reached.$$
   sql: |
     {{ near_live_table_fact_blocks(schema, blockchain, network) | indent(4) -}}
+  
+  - name: {{ schema -}}.tf_fact_transactions
+  signature:
+    - [_block_height, INTEGER, The start block height to get the transactions from]
+    - [row_count, INTEGER, The number of rows to fetch]
+  return_type:
+    - "TABLE(tx_hash STRING, block_id NUMBER, block_timestamp TIMESTAMP_NTZ, nonce INT, signature STRING, tx_receiver STRING, tx_signer STRING, tx VARIANT, gas_used NUMBER, transaction_fee NUMBER, attached_gas NUMBER, tx_succeeded BOOLEAN, fact_transactions_id STRING, inserted_timestamp TIMESTAMP_NTZ, modified_timestamp TIMESTAMP_NTZ)"
+  options: |
+    NOT NULL
+    RETURNS NULL ON NULL INPUT
+    VOLATILE
+    COMMENT = $$Returns transaction details for blocks starting from a given height. Fetches up to the latest block if to_latest is true.$$
+  sql: |
+    {{ near_live_table_fact_transactions(schema, blockchain, network) | indent(4) -}}
     
 {%- endmacro -%}
 

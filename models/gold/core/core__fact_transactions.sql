@@ -1,5 +1,5 @@
 {{ config(
-    materialized = 'view',
+    materialized = var('LIVE_TABLE_MATERIALIZATION', 'view'),
     secure = false,
     tags = ['core']
 ) }}

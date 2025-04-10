@@ -145,7 +145,7 @@ FROM {{raw_blocks}}
 {% endmacro %}
 
 {% macro near_live_table_fact_transactions(schema, blockchain, network) %}
-    {%- set near_live_table_fact_transactions = get_rendered_model('livequery_models', 'near_fact_transactions', schema, blockchain, network) -%}
+    {%- set near_live_table_fact_transactions = get_rendered_model('near_models', 'livetable_fact_transactions', schema, blockchain, network) -%}
     {{ near_live_table_fact_transactions }}
 {% endmacro %}
 

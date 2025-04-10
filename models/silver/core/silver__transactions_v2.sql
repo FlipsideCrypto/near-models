@@ -1,7 +1,7 @@
 -- depends_on: {{ ref('bronze__transactions') }}
 -- depends_on: {{ ref('bronze__FR_transactions') }}
 {{ config (
-    materialized = "incremental",
+    materialized = var('LIVE_TABLE_MATERIALIZATION', 'incremental'),
     incremental_strategy = 'merge',
     incremental_predicates = ["dynamic_range_predicate","origin_block_timestamp::date"],
     unique_key = "tx_hash",
