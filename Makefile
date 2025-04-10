@@ -24,7 +24,7 @@ rm_logs:
 deploy_near_mainnet_lt: rm_logs
 	dbt run \
 	-s near_models.deploy.near.near__mainnet \
-	--vars '{UPDATE_UDFS_AND_SPS: true, ENABLE_LIVE_TABLE_QUERY: true, LIVE_TABLE_MATERIALIZATION: ephemeral}' \
+	--vars '{UPDATE_UDFS_AND_SPS: true, ENABLE_LIVE_TABLE: true, LIVE_TABLE_MATERIALIZATION: ephemeral}' \
 	--profiles-dir ~/.dbt \
 	--profile near \
 	--target dev

@@ -1,9 +1,9 @@
 {{ config (
-    materialized = 'view',
+    materialized = var('LIVE_TABLE_MATERIALIZATION', 'view'),
     tags = ['streamline_helper']
 ) }}
 
-{% if var('ENABLE_LIVE_TABLE_QUERY', false) %}
+{% if var('ENABLE_LIVE_TABLE', false) %}
     
     {%- set blockchain = this.schema -%}
     {%- set network = this.identifier -%}
