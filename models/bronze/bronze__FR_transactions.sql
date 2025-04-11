@@ -37,7 +37,7 @@
             bch.chunk_hash,
             bch.chunk_height_created,
             bch.chunk_height_included,
-            livetable.lt_chunks_udf_api(
+            live_table.lt_chunks_udf_api(
                 'POST',
                 '{Service}',
                 {'Content-Type' : 'application/json'},
@@ -77,7 +77,7 @@
             tx.chunk_hash,
             tx.chunk_height_created,
             tx.chunk_height_included,
-            livetable.lt_tx_udf_api(
+            live_table.lt_tx_udf_api(
                 'POST',
                 '{Service}',
                 {'Content-Type' : 'application/json', 'fsc-compression-mode' : 'auto'},
@@ -110,7 +110,7 @@
             'block_timestamp_epoch': DATE_PART('EPOCH_SECOND', TO_TIMESTAMP_NTZ(tx.block_timestamp_str))::INTEGER,
             'shard_id': tx.shard_id,
             'chunk_hash': tx.chunk_hash,
-            'chunk_height_created': tx.chunk_height_created,
+            'chunk_height_created': tx.chunk_height_created
         } as value,
         round(tx.block_height, -3) AS partition_key,
         CURRENT_TIMESTAMP() AS _inserted_timestamp

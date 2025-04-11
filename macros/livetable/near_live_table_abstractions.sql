@@ -85,7 +85,7 @@ FROM
 SELECT
     block_height,
     DATE_PART('EPOCH', SYSDATE()) :: INTEGER AS request_timestamp,
-    livetable.lt_blocks_udf_api(
+    live_table.lt_blocks_udf_api(
         'POST',
         '{Service}',
         {'Content-Type' : 'application/json'},
