@@ -76,3 +76,5 @@ SELECT
     '{{ invocation_id }}' AS _invocation_id
 FROM
     FINAL
+WHERE
+    actions != 'fee_detail'
