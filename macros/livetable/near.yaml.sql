@@ -11,6 +11,54 @@
   sql: |
     {{ near_live_table_latest_block_height() | indent(4) -}}
 
+- name: {{ schema }}.lt_tx_udf_api
+  signature:
+    - [method, STRING]
+    - [url, STRING]
+    - [headers, OBJECT]
+    - [DATA, VARIANT]
+    - [user_id, STRING]
+    - [SECRET, STRING]
+  return_type: VARIANT
+  func_type: EXTERNAL
+  api_integration: '{{ var("API_INTEGRATION") }}'
+  options: |
+    NOT NULL
+    MAX_BATCH_ROWS = 25
+  sql: udf_api
+
+- name: {{ schema }}.lt_blocks_udf_api
+  signature:
+    - [method, STRING]
+    - [url, STRING]
+    - [headers, OBJECT]
+    - [DATA, VARIANT]
+    - [user_id, STRING]
+    - [SECRET, STRING]
+  return_type: VARIANT
+  func_type: EXTERNAL
+  api_integration: '{{ var("API_INTEGRATION") }}'
+  options: |
+    NOT NULL
+    MAX_BATCH_ROWS = 25
+  sql: udf_api
+
+- name: {{ schema }}.lt_chunks_udf_api
+  signature:
+    - [method, STRING]
+    - [url, STRING]
+    - [headers, OBJECT]
+    - [DATA, VARIANT]
+    - [user_id, STRING]
+    - [SECRET, STRING]
+  return_type: VARIANT
+  func_type: EXTERNAL
+  api_integration: '{{ var("API_INTEGRATION") }}'
+  options: |
+    NOT NULL
+    MAX_BATCH_ROWS = 25
+  sql: udf_api
+
 - name: {{ schema -}}.tf_fact_blocks
   signature:
     - [_block_height, INTEGER, The start block height to get the blocks from]
@@ -52,5 +100,20 @@
     COMMENT = $$Returns receipt details for blocks starting from a given height. Fetches receipts for the specified number of blocks.$$
   sql: |
     {{ near_live_table_fact_receipts(schema, blockchain, network) | indent(4) -}}
+  
+  - name: {{ schema -}}.tf_ez_actions
+  signature:
+    - [_block_height, INTEGER, The start block height to get the actions from]
+    - [row_count, INTEGER, The number of rows to fetch]
+  return_type:
+    - "TABLE(block_id NUMBER, block_timestamp TIMESTAMP_NTZ, tx_hash STRING, tx_signer BOOLEAN, tx_receiver STRING, tx_gas_used STRING, tx_succeeded NUMBER, tx_fee NUMBER, receipt_id STRING, receipt_receiver_id STRING, receipt_signer_id STRING, receipt_predecessor_id STRING, receipt_succeeded BOOLEAN, receipt_gas_burnt NUMBER, receipt_status_value OBJECT, is_delegated NUMBER, action_index BOOLEAN, action_name STRING, action_data OBJECT, action_gas_price NUMBER, _partition_by_block_number NUMBER, actions_id STRING, inserted_timestamp TIMESTAMP_NTZ, modified_timestamp TIMESTAMP_NTZ, _invocation_id STRING)"
+  options: |
+    NOT NULL
+    RETURNS NULL ON NULL INPUT
+    VOLATILE
+    COMMENT = $$Returns decoded action details for blocks starting from a given height. Fetches actions for the specified number of blocks.$$
+  sql: |
+    {{ near_live_table_ez_actions(schema, blockchain, network) | indent(4) -}}
+
 {%- endmacro -%}
 

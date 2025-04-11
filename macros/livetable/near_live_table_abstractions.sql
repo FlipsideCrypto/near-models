@@ -3,13 +3,20 @@
 {% macro near_live_table_latest_block_height() %}
 WITH rpc_call AS (
     SELECT
-        live.udf_api(
-            'https://rpc.mainnet.near.org',
-            utils.udf_json_rpc_call('block', {'finality' : 'final'})
-        ):data::object AS rpc_result 
-    FROM dual
-    ORDER BY 1 
-    LIMIT 1 
+        DATE_PART('EPOCH', SYSDATE()) :: INTEGER AS request_timestamp,
+        _live.udf_api(
+                'POST',
+                '{Service}',
+                {'Content-Type' : 'application/json', 'fsc-compression-mode' : 'auto'},
+                {
+                    'jsonrpc' : '2.0',
+                    'method' : 'block',
+                    'id' : 'Flipside/block/' || request_timestamp,
+                    'params' : {'finality' : 'final'}
+                },
+                _utils.UDF_WHOAMI(),
+                'Vault/prod/near/quicknode/mainnet'
+        ):data::object AS rpc_result
 )
 SELECT
     rpc_result:result:header:height::INTEGER AS latest_block_height
@@ -78,7 +85,7 @@ FROM
 SELECT
     block_height,
     DATE_PART('EPOCH', SYSDATE()) :: INTEGER AS request_timestamp,
-    _live.lt_blocks_udf_api(
+    livetable.lt_blocks_udf_api(
         'POST',
         '{Service}',
         {'Content-Type' : 'application/json'},
@@ -140,21 +147,21 @@ FROM {{raw_blocks}}
 {% endmacro %}
 
 {% macro near_live_table_fact_blocks(schema, blockchain, network) %}
-    {%- set near_live_table_fact_blocks = get_rendered_model('near_models', 'livetable_fact_blocks', schema, blockchain, network) -%}
+    {%- set near_live_table_fact_blocks = livequery_base.get_rendered_model('near_models', 'livetable_fact_blocks', schema, blockchain, network) -%}
     {{ near_live_table_fact_blocks }}
 {% endmacro %}
 
 {% macro near_live_table_fact_transactions(schema, blockchain, network) %}
-    {%- set near_live_table_fact_transactions = get_rendered_model('near_models', 'livetable_fact_transactions', schema, blockchain, network) -%}
+    {%- set near_live_table_fact_transactions = livequery_base.get_rendered_model('near_models', 'livetable_fact_transactions', schema, blockchain, network) -%}
     {{ near_live_table_fact_transactions }}
 {% endmacro %}
 
 {% macro near_live_table_fact_receipts(schema, blockchain, network) %}
-    {%- set near_live_table_fact_receipts = get_rendered_model('near_models', 'livetable_fact_receipts', schema, blockchain, network) -%}
+    {%- set near_live_table_fact_receipts = livequery_base.get_rendered_model('near_models', 'livetable_fact_receipts', schema, blockchain, network) -%}
     {{ near_live_table_fact_receipts }}
 {% endmacro %}
 
 {% macro near_live_table_ez_actions(schema, blockchain, network) %}
-    {%- set near_live_table_ez_actions = get_rendered_model('livequery_models', 'near_ez_actions', schema, blockchain, network) -%}
+    {%- set near_live_table_ez_actions = livequery_base.get_rendered_model('near_models', 'livetable_ez_actions', schema, blockchain, network) -%}
     {{ near_live_table_ez_actions }}
 {% endmacro %}

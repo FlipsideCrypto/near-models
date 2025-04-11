@@ -20,10 +20,10 @@ rm_logs:
 		echo "Logs directory does not exist"; \
 	fi
 
-# deploy live table udtf
-deploy_near_mainnet_lt: rm_logs
+# deploy live table udtfs
+deploy_live_table_udtfs: rm_logs
 	dbt run \
-	-s near_models.deploy.near.near__mainnet \
+	-s near_models.deploy.near.live__table \
 	--vars '{UPDATE_UDFS_AND_SPS: true, ENABLE_LIVE_TABLE: true, LIVE_TABLE_MATERIALIZATION: ephemeral}' \
 	--profiles-dir ~/.dbt \
 	--profile near \
