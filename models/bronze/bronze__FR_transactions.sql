@@ -100,17 +100,18 @@
     SELECT
         tx.tx_result as data,
         {
-            'final_execution_status': tx.tx_result:final_execution_status,
-            'receipts': tx.tx_result:receipts,
-            'receipts_outcome': tx.tx_result:receipts_outcome,
-            'status': tx.tx_result:status,
-            'transaction': tx.tx_result:transaction,
-            'transaction_outcome': tx.tx_result:transaction_outcome,
-            'block_height': tx.block_height,
-            'block_timestamp_epoch': DATE_PART('EPOCH_SECOND', TO_TIMESTAMP_NTZ(tx.block_timestamp_str))::INTEGER,
-            'shard_id': tx.shard_id,
-            'chunk_hash': tx.chunk_hash,
-            'chunk_height_created': tx.chunk_height_created
+            'FINAL_EXECUTION_STATUS': tx.tx_result:final_execution_status,
+            'RECEIPTS': tx.tx_result:receipts,
+            'RECEIPTS_OUTCOME': tx.tx_result:receipts_outcome,
+            'STATUS': tx.tx_result:status,
+            'TRANSACTION': tx.tx_result:transaction,
+            'TRANSACTION_OUTCOME': tx.tx_result:transaction_outcome,
+            'BLOCK_ID': tx.block_height,
+            'BLOCK_TIMESTAMP_EPOCH': DATE_PART('EPOCH_SECOND', TO_TIMESTAMP_NTZ(tx.block_timestamp_str))::INTEGER,
+            'SHARD_ID': tx.shard_id,
+            'CHUNK_HASH': tx.chunk_hash,
+            'HEIGHT_CREATED': tx.chunk_height_created,
+            'HEIGHT_INCLUDED': tx.chunk_height_included
         } as value,
         round(tx.block_height, -3) AS partition_key,
         CURRENT_TIMESTAMP() AS _inserted_timestamp
