@@ -69,7 +69,7 @@
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
-    COMMENT = $$Returns the block data for a given block height. If to_latest is true, it will continue fetching blocks until the latest block. Otherwise, it will fetch blocks until the block_id height is reached.$$
+    COMMENT = $$Returns the block data for a given block height.Fetches blocks for the specified number of blocks $$
   sql: |
     {{ near_live_table_fact_blocks(schema, blockchain, network) | indent(4) -}}
   
@@ -83,7 +83,7 @@
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
-    COMMENT = $$Returns transaction details for blocks starting from a given height. Fetches up to the latest block if to_latest is true.$$
+    COMMENT = $$Returns transaction details for blocks starting from a given height.Fetches txs for the specified number of blocks.$$
   sql: |
     {{ near_live_table_fact_transactions(schema, blockchain, network) | indent(4) -}}
   
