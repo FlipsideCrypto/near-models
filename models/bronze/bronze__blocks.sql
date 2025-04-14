@@ -4,7 +4,7 @@
 
 ) }}
 
-{% if var('ENABLE_LIVE_TABLE_QUERY', false) %}
+{% if var('ENABLE_LIVE_TABLE', false) %}
     -- LIVE LOGIC: Call RPCs to populate live table
     SELECT 1
 {% else %}
