@@ -6,7 +6,7 @@ models:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - tx_hash
-            - action_id
+            - receipt_id
             - contract_address
             - from_address
             - to_address
@@ -28,11 +28,14 @@ models:
       - name: TX_HASH
         description: "{{ doc('tx_hash')}}"
 
+      - name: RECEIPT_ID
+        description: "{{ doc('receipt_id')}}"
+
+      - name: PREDECESSOR_ID
+        description: "{{ doc('predecessor_id')}}"
+
       - name: RN
         description: "Row number"
-
-      - name: ACTION_ID
-        description: "{{ doc('action_id')}}"
 
       - name: CONTRACT_ADDRESS
         description: "{{ doc('tx_signer')}}"
@@ -46,10 +49,8 @@ models:
       - name: TOKEN_ID
         description: "{{ doc('token_id')}}"
 
-      - name: _INSERTED_TIMESTAMP
-        description: "{{ doc('_inserted_timestamp')}}"
-
-
+      - name: _PARTITION_BY_BLOCK_NUMBER
+        description: "{{ doc('_partition_by_block_number')}}"
 
       - name: NFT_TRANSFERS_ID
         description: "{{doc('id')}}"
