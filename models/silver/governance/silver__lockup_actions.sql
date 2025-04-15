@@ -7,49 +7,37 @@
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,lockup_account_id,owner_account_id);",
     tags = ['curated', 'scheduled_non_core'],
 ) }}
-{# Note - multisource model #}
--- TODO ez_actions refactor
 
-WITH txs AS (
-
+WITH
+lockup_actions AS (
     SELECT
-        tx_hash,
-        tx_succeeded,
-        _partition_by_block_number,
-        inserted_timestamp AS _inserted_timestamp
-    FROM
-        {{ ref('silver__transactions_final') }}
-
-    {% if var("MANUAL_FIX") %}
-      WHERE {{ partition_load_manual('no_buffer') }}
-    {% else %}
-            {% if is_incremental() %}
-        WHERE modified_timestamp >= (
-            SELECT
-                MAX(modified_timestamp)
-            FROM
-                {{ this }}
-        )
-    {% endif %}
-    {% endif %}
-),
-function_calls AS (
-    SELECT
-        tx_hash,
-        action_id,
         block_timestamp,
         block_id,
-        signer_id,
-        receiver_id,
-        args,
-        deposit,
-        method_name,
-        _partition_by_block_number,
-        _inserted_timestamp
+        tx_hash,
+        receipt_id,
+        receipt_predecessor_id,
+        receipt_receiver_id,
+        receipt_signer_id,
+        action_data,
+        tx_succeeded,
+        receipt_succeeded,
+        _partition_by_block_number
     FROM
-        {{ ref('silver__actions_events_function_call_s3') }}
+        {{ ref('core__ez_actions') }}
     WHERE 
-        receipt_succeeded = TRUE
+        receipt_succeeded
+        AND tx_succeeded
+        AND action_name = 'FunctionCall'
+        AND action_data :method_name :: STRING in (
+            'on_lockup_create',
+            'create',
+            'new'
+        )
+        AND (
+            receipt_signer_id = 'lockup.near' 
+            OR receipt_predecessor_id = 'lockup.near'
+            OR receipt_receiver_id ILIKE '%lockup.near'
+        )
 
     {% if var("MANUAL_FIX") %}
       AND {{ partition_load_manual('no_buffer') }}
@@ -90,64 +78,27 @@ xfers AS (
     {% endif %}
     {% endif %}
 ),
-lockup_actions AS (
-    SELECT
-        tx_hash,
-        action_id,
-        SPLIT(
-            action_id,
-            '-'
-        ) [0] :: STRING AS receipt_object_id,
-        block_timestamp,
-        block_id,
-        signer_id,
-        receiver_id,
-        args,
-        deposit,
-        method_name,
-        _partition_by_block_number,
-        _inserted_timestamp
-    FROM
-        function_calls
-    WHERE
-        (
-            signer_id = 'lockup.near'
-            OR receiver_id = 'lockup.near'
-            OR receiver_id ILIKE '%lockup.near'
-        )
-        AND method_name IN (
-            'on_lockup_create',
-            'create',
-            'new'
-        )
-        AND tx_hash NOT IN (
-            'Ez6rNL3fP62c4nMroYUmjVR4MbqEeVoL6RzmuajGQrkS',
-            'TcCm1jzMFnwgAT3Wh2Qr1n2tR7ZVXKcv3ThKbXAhe7H',
-            'm3mf5maDHfD2MXjvRnxp38ZA5BAVnRumiebPEqjGmuC'
-        )
-),
 agg_arguments AS (
     SELECT
         tx_hash,
         OBJECT_AGG(
-            method_name,
-            receipt_object_id :: variant
-        ) AS receipt_object_ids,
+            action_data :method_name :: STRING,
+            receipt_id :: variant
+        ) AS receipt_ids,
         OBJECT_AGG(
-            method_name,
-            receiver_id :: variant
+            action_data :method_name :: STRING,
+            receipt_receiver_id :: variant
         ) AS receiver_ids,
         MIN(block_id) AS block_id,
         MIN(block_timestamp) AS block_timestamp,
         OBJECT_AGG(
-            method_name,
-            args
+            action_data :method_name :: STRING,
+            action_data :args :: variant
         ) AS args_all,
         COUNT(
-            DISTINCT method_name
+            DISTINCT action_data :method_name :: STRING
         ) AS method_count,
-        MIN(_partition_by_block_number) AS _partition_by_block_number,
-        MIN(_inserted_timestamp) AS _inserted_timestamp
+        MIN(_partition_by_block_number) AS _partition_by_block_number
     FROM
         lockup_actions
     GROUP BY
@@ -160,7 +111,7 @@ lockup_xfers AS (
         SPLIT(
             action_id,
             '-'
-        ) [0] :: STRING AS receipt_object_id,
+        ) [0] :: STRING AS receipt_id,
         block_timestamp,
         block_id,
         deposit,
@@ -179,7 +130,7 @@ lockup_xfers AS (
 parse_args_json AS (
     SELECT
         A.tx_hash,
-        receipt_object_ids,
+        receipt_ids,
         A.block_id,
         A.block_timestamp,
         COALESCE(
@@ -212,19 +163,18 @@ parse_args_json AS (
         ) AS vesting_schedule,
         args_all :new :transfers_information :: STRING AS transfers_information,
         args_all,
-        A._partition_by_block_number,
-        A._inserted_timestamp
+        A._partition_by_block_number
     FROM
         agg_arguments A
         LEFT JOIN lockup_xfers x
-        ON A.receipt_object_ids :new :: STRING = x.receipt_object_id
+        ON A.receipt_ids :new :: STRING = x.receipt_id
 ),
 FINAL AS (
     SELECT
-        f.tx_hash,
-        f.receipt_object_ids,
-        f.block_timestamp,
-        f.block_id,
+        tx_hash,
+        receipt_ids AS receipt_object_ids,
+        block_timestamp,
+        block_id,
         deposit,
         lockup_account_id,
         owner_account_id,
@@ -235,13 +185,9 @@ FINAL AS (
         vesting_schedule,
         transfers_information,
         args_all,
-        f._partition_by_block_number,
-        f._inserted_timestamp
+        _partition_by_block_number
     FROM
-        parse_args_json f
-        LEFT JOIN txs USING (tx_hash)
-    WHERE
-        tx_succeeded
+        parse_args_json
 )
 SELECT
     *,

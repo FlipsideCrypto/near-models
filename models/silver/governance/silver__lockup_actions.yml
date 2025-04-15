@@ -4,6 +4,7 @@ models:
   - name: silver__lockup_actions
     description: |-
       This table records all disbursements by the contract lockup.near.
+      TODOs - drop _inserted_timestamp, _modified_timestamp. Rename receipt_object_ids to receipt_ids.
 
     columns:
       - name: TX_HASH
