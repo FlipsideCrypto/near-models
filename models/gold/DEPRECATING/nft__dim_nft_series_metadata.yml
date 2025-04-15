@@ -3,7 +3,7 @@ version: 2
 models:
   - name: nft__dim_nft_series_metadata
     description: |-
-      Deprecated. Was dependent on an API from Pagoda that is no longer available. Please cease use, this table will be removed by 4/1/2025.
+      Deprecated. Was dependent on an API from Pagoda that is no longer available. Please cease use, this table will be removed by 5/15/2025.
 
     columns:
       - name: CONTRACT_ADDRESS

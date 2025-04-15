@@ -7,7 +7,8 @@
   merge_exclude_columns = ["inserted_timestamp"],
   unique_key = 'action_id',
   cluster_by = ['block_timestamp::DATE', 'modified_timestamp::DATE'],
-  tags = ['actions', 'curated','scheduled_non_core']
+  tags = ['actions', 'curated','scheduled_non_core'],
+  enabled = true
 ) }}
 
 {# NOTE - used downstream in Social models, no longer a gold view on just this #}
