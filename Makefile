@@ -28,3 +28,11 @@ deploy_live_table_udtfs: rm_logs
 	--profiles-dir ~/.dbt \
 	--profile near \
 	--target dev
+
+deploy_dynamic_table: rm_logs
+	dbt run \
+	-s near_models.live.live__fact_blocks_dt \
+	--vars '{UPDATE_UDFS_AND_SPS: true}' \
+	--profiles-dir ~/.dbt \
+	--profile near \
+	--target dev
