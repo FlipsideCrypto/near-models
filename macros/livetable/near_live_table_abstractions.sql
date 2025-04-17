@@ -147,21 +147,21 @@ FROM {{raw_blocks}}
 {% endmacro %}
 
 {% macro near_live_table_fact_blocks(schema, blockchain, network) %}
-    {%- set near_live_table_fact_blocks = livequery_base.get_rendered_model('near_models', 'livetable_fact_blocks', schema, blockchain, network) -%}
+    {%- set near_live_table_fact_blocks = livequery_models.get_rendered_model('near_models', 'livetable_fact_blocks', schema, blockchain, network) -%}
     {{ near_live_table_fact_blocks }}
 {% endmacro %}
 
 {% macro near_live_table_fact_transactions(schema, blockchain, network) %}
-    {%- set near_live_table_fact_transactions = livequery_base.get_rendered_model('near_models', 'livetable_fact_transactions', schema, blockchain, network) -%}
+    {%- set near_live_table_fact_transactions = livequery_models.get_rendered_model('near_models', 'livetable_fact_transactions', schema, blockchain, network) -%}
     {{ near_live_table_fact_transactions }}
 {% endmacro %}
 
 {% macro near_live_table_fact_receipts(schema, blockchain, network) %}
-    {%- set near_live_table_fact_receipts = livequery_base.get_rendered_model('near_models', 'livetable_fact_receipts', schema, blockchain, network) -%}
+    {%- set near_live_table_fact_receipts = livequery_models.get_rendered_model('near_models', 'livetable_fact_receipts', schema, blockchain, network) -%}
     {{ near_live_table_fact_receipts }}
 {% endmacro %}
 
 {% macro near_live_table_ez_actions(schema, blockchain, network) %}
-    {%- set near_live_table_ez_actions = livequery_base.get_rendered_model('near_models', 'livetable_ez_actions', schema, blockchain, network) -%}
+    {%- set near_live_table_ez_actions = livequery_models.get_rendered_model('near_models', 'livetable_ez_actions', schema, blockchain, network) -%}
     {{ near_live_table_ez_actions }}
 {% endmacro %}
