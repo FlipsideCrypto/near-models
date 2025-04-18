@@ -1,9 +1,9 @@
 
 {{ config(
     materialized='dynamic_table',
-    refresh_interval='5 minutes',
+    refresh_mode="auto",
     target_lag='1 minute',
-    snowflake_warehouse='DBT_CLOUD',  
+    snowflake_warehouse='DBT_CLOUD', 
     transient=false        
 ) }}
 
@@ -40,12 +40,7 @@ fetch_parameters AS (
 ),
 
 live_blocks_call AS (
-    WITH __dbt__cte__bronze__blocks AS (
-        -- LIVE LOGIC: Call RPCs to populate live table
-        SELECT 1
-    ),
-
-    __dbt__cte__bronze__FR_blocks AS (
+    WITH __dbt__cte__bronze__FR_blocks AS (
         WITH spine AS (
             
             
@@ -267,7 +262,4 @@ SELECT
     modified_timestamp
 FROM live_blocks_call
 WHERE
-    -- Filter based on block numbers greater than the max in the gold table.
-    -- This might be slightly redundant given the UDTF call starts at max_block_id + 1,
-    -- but ensures correctness if the UDTF were to behave unexpectedly.
     block_id > (SELECT max_block_id FROM max_gold_block)
