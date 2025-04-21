@@ -18,7 +18,7 @@ WITH oracle_prices AS (
         COALESCE(
             prices_oracle_id,
             {{ dbt_utils.generate_surrogate_key(
-                ['tx_hash', 'block_id', 'token_contract']
+                ['tx_hash', 'token_contract']
             ) }}
         ) AS fact_prices_id,
         inserted_timestamp,
