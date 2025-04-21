@@ -101,7 +101,7 @@ FINAL AS (
 SELECT
     *,
     {{ dbt_utils.generate_surrogate_key(
-        ['tx_hash', 'block_id', 'token_contract']
+        ['tx_hash', 'token_contract']
     ) }} AS prices_oracle_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
