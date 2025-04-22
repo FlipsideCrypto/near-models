@@ -45,23 +45,30 @@ The gold model `nft__fact_nft_transfers.sql` needs to be updated:
 - Model has been refactored to use `core__ez_actions` directly
 - Maintains same business logic and data structure, allowing for incremental processing
 
+### Architecture Changes
+- Simplified to single CTE structure using `core__ez_actions` for function call data
+- Improved args parsing with proper JSON handling for borrow actions
+- Added proper handling of segmented_data for borrow amount extraction
+
 ### Column Changes
 
 #### Columns Removed
 - `action_id` (replaced by receipt_id + action_index combination)
 - `_inserted_timestamp` (deprecated)
+- Removed dependency on deprecated `logs` column from actions table
 
 #### Columns Added
 - `receipt_id` (from core__ez_actions)
 - `action_index` (from core__ez_actions)
 - `predecessor_id` (from receipt_predecessor_id)
-- `signer_id` (from receipt_signer_id)
 
 #### Column Modifications
 - Changed `receiver_id` to come from `receipt_receiver_id`
 - Changed `method_name` to parse from `action_data :method_name`
 - Changed `args` to parse from `action_data :args`
 - Changed `_partition_by_block_number` to be calculated as `FLOOR(block_id, -3)`
+- Added COALESCE for amount_raw to handle both amount and max_amount fields
+- Changed segmented_data parsing to use proper JSON path for borrow actions
 
 ### Configuration Changes
 - Updated incremental predicates to use `dynamic_range_predicate_custom`
@@ -73,6 +80,8 @@ The gold model `nft__fact_nft_transfers.sql` needs to be updated:
 - Updated WHERE clause to filter on `action_name = 'FunctionCall'` first, then check `action_data :method_name`
 - Updated partition_load_manual to include partition key calculation
 - Added proper type casting for method_name and args from action_data
+- Added explicit NULL check on segmented_data in WHERE clause
+- Improved JSON parsing for borrow action data using proper path: `args:msg:Execute:actions[0]:Borrow`
 
 ---
 
