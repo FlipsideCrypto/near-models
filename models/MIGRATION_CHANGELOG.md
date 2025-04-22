@@ -37,4 +37,239 @@ The gold model `nft__fact_nft_transfers.sql` needs to be updated:
 1. Replace `action_id` with `receipt_id` in SELECT statement
 2. Remove `_inserted_timestamp` from COALESCE logic in inserted_timestamp/modified_timestamp
 
+---
+
+## silver__burrow_borrows
+
+### Major Changes
+- Model has been refactored to use `core__ez_actions` directly
+- Maintains same business logic and data structure, allowing for incremental processing
+
+### Column Changes
+
+#### Columns Removed
+- `action_id` (replaced by receipt_id + action_index combination)
+- `_inserted_timestamp` (deprecated)
+
+#### Columns Added
+- `receipt_id` (from core__ez_actions)
+- `action_index` (from core__ez_actions)
+- `predecessor_id` (from receipt_predecessor_id)
+- `signer_id` (from receipt_signer_id)
+
+#### Column Modifications
+- Changed `receiver_id` to come from `receipt_receiver_id`
+- Changed `method_name` to parse from `action_data :method_name`
+- Changed `args` to parse from `action_data :args`
+- Changed `_partition_by_block_number` to be calculated as `FLOOR(block_id, -3)`
+
+### Configuration Changes
+- Updated incremental predicates to use `dynamic_range_predicate_custom`
+- Added `modified_timestamp::DATE` to clustering keys
+- Added `receipt_id` to search optimization
+- Updated unique key to use combination of `receipt_id` and `action_index`
+
+### Query Changes
+- Updated WHERE clause to filter on `action_name = 'FunctionCall'` first, then check `action_data :method_name`
+- Updated partition_load_manual to include partition key calculation
+- Added proper type casting for method_name and args from action_data
+
+---
+
+## silver__burrow_collaterals
+
+### Major Changes
+- Model has been refactored to use both `core__ez_actions` and `silver__logs_s3` directly
+- Added proper handling of logs by joining directly to `silver__logs_s3` instead of using deprecated logs column
+- Maintains same business logic and data structure, allowing for incremental processing
+
+### Architecture Changes
+- Split data sourcing into two CTEs:
+  1. `actions` CTE from `core__ez_actions` for function call data
+  2. `logs` CTE from `silver__logs_s3` for event logs
+- Added smart log targeting using `target_log_index` calculation based on method_name
+- Implemented proper join logic between actions and logs using tx_hash, receipt_id, and calculated log_index
+
+### Column Changes
+
+#### Columns Removed
+- `action_id` (replaced by receipt_id + action_index combination)
+- `_inserted_timestamp` (deprecated)
+- Removed dependency on deprecated `logs` column from actions table
+
+#### Columns Added
+- `receipt_id` (from core__ez_actions)
+- `action_index` (from core__ez_actions)
+- `predecessor_id` (from receipt_predecessor_id)
+- `signer_id` (from receipt_signer_id)
+- `target_log_index` (calculated from method_name)
+
+#### Column Modifications
+- Changed `receiver_id` to come from `receipt_receiver_id`
+- Changed `method_name` to parse from `action_data :method_name`
+- Changed `args` to parse from `action_data :args`
+- Changed `_partition_by_block_number` to be calculated as `FLOOR(block_id, -3)`
+- Changed log parsing to use clean_log directly from logs table
+
+### Configuration Changes
+- Updated incremental predicates to use `dynamic_range_predicate_custom`
+- Added `modified_timestamp::DATE` to clustering keys
+- Added `receipt_id` to search optimization
+- Updated unique key to use combination of `receipt_id` and `action_index`
+
+### Query Changes
+- Updated WHERE clause to filter on `action_name = 'FunctionCall'` and specific method_names upfront
+- Updated partition_load_manual to include partition key calculation
+- Added proper type casting for method_name and args from action_data
+- Implemented LEFT JOIN to logs table with proper matching conditions
+- Maintained filtering logic for increase_collateral and decrease_collateral actions
+
+---
+
+## silver__burrow_deposits
+
+### Major Changes
+- Model has been refactored to use both `core__ez_actions` and `silver__logs_s3` directly
+- Added proper handling of logs by joining directly to `silver__logs_s3` instead of using deprecated logs column
+- Maintains same business logic and data structure, allowing for incremental processing
+
+### Architecture Changes
+- Split data sourcing into two CTEs:
+  1. `actions` CTE from `core__ez_actions` for function call data
+  2. `logs` CTE from `silver__logs_s3` for event logs
+- Simplified log handling by directly targeting log_index = 0 (deposits always use first log)
+- Implemented proper join logic between actions and logs using tx_hash and receipt_id
+
+### Column Changes
+
+#### Columns Removed
+- `action_id` (replaced by receipt_id + action_index combination)
+- `_inserted_timestamp` (deprecated)
+- Removed dependency on deprecated `logs` column from actions table
+
+#### Columns Added
+- `receipt_id` (from core__ez_actions)
+- `action_index` (from core__ez_actions)
+- `predecessor_id` (from receipt_predecessor_id)
+- `signer_id` (from receipt_signer_id)
+
+#### Column Modifications
+- Changed `receiver_id` to come from `receipt_receiver_id`
+- Changed `method_name` to parse from `action_data :method_name`
+- Changed `args` to parse from `action_data :args`
+- Changed `_partition_by_block_number` to be calculated as `FLOOR(block_id, -3)`
+- Changed log parsing to use clean_log directly from logs table
+
+### Configuration Changes
+- Updated incremental predicates to use `dynamic_range_predicate_custom`
+- Added `modified_timestamp::DATE` to clustering keys
+- Added `receipt_id` to search optimization
+- Updated unique key to use combination of `receipt_id` and `action_index`
+
+### Query Changes
+- Updated WHERE clause to filter on `action_name = 'FunctionCall'` and method_name upfront
+- Updated partition_load_manual to include partition key calculation
+- Added proper type casting for method_name and args from action_data
+- Implemented LEFT JOIN to logs table with proper matching conditions
+- Simplified log parsing by removing SUBSTRING operation and using TRY_PARSE_JSON directly
+
+---
+
+## silver__burrow_repays
+
+### Major Changes
+- Model has been refactored to use both `core__ez_actions` and `silver__logs_s3` directly
+- Added proper handling of logs by joining directly to `silver__logs_s3` instead of using deprecated logs column
+- Maintains same business logic and data structure, allowing for incremental processing
+
+### Architecture Changes
+- Split data sourcing into two CTEs:
+  1. `actions` CTE from `core__ez_actions` for function call data
+  2. `logs` CTE from `silver__logs_s3` for event logs
+- Simplified log handling by directly targeting log_index = 1 (repays always use second log)
+- Implemented proper join logic between actions and logs using tx_hash and receipt_id
+
+### Column Changes
+
+#### Columns Removed
+- `action_id` (replaced by receipt_id + action_index combination)
+- `_inserted_timestamp` (deprecated)
+- Removed dependency on deprecated `logs` column from actions table
+
+#### Columns Added
+- `receipt_id` (from core__ez_actions)
+- `action_index` (from core__ez_actions)
+- `predecessor_id` (from receipt_predecessor_id)
+- `signer_id` (from receipt_signer_id)
+
+#### Column Modifications
+- Changed `receiver_id` to come from `receipt_receiver_id`
+- Changed `method_name` to parse from `action_data :method_name`
+- Changed `args` to parse from `action_data :args`
+- Changed `_partition_by_block_number` to be calculated as `FLOOR(block_id, -3)`
+- Changed log parsing to use clean_log directly from logs table
+
+### Configuration Changes
+- Updated incremental predicates to use `dynamic_range_predicate_custom`
+- Added `modified_timestamp::DATE` to clustering keys
+- Added `receipt_id` to search optimization
+- Updated unique key to use combination of `receipt_id` and `action_index`
+
+### Query Changes
+- Updated WHERE clause to filter on `action_name = 'FunctionCall'` and method_names upfront
+- Added method_name IN clause to filter both ft_on_transfer and oracle_on_call
+- Updated partition_load_manual to include partition key calculation
+- Added proper type casting for method_name and args from action_data
+- Implemented LEFT JOIN to logs table with proper matching conditions
+- Maintained complex filtering logic for repay actions and args:msg conditions
+
+---
+
+## silver__burrow_withdraws
+
+### Major Changes
+- Model has been refactored to use both `core__ez_actions` and `silver__logs_s3` directly
+- Added proper handling of logs by joining directly to `silver__logs_s3` instead of using deprecated logs column
+- Maintains same business logic and data structure, allowing for incremental processing
+
+### Architecture Changes
+- Split data sourcing into two CTEs:
+  1. `actions` CTE from `core__ez_actions` for function call data
+  2. `logs` CTE from `silver__logs_s3` for event logs
+- Simplified log handling by directly targeting log_index = 0 (withdraws always use first log)
+- Implemented proper join logic between actions and logs using tx_hash and receipt_id
+
+### Column Changes
+
+#### Columns Removed
+- `action_id` (replaced by receipt_id + action_index combination)
+- `_inserted_timestamp` (deprecated)
+- Removed dependency on deprecated `logs` column from actions table
+
+#### Columns Added
+- `receipt_id` (from core__ez_actions)
+- `action_index` (from core__ez_actions)
+- `predecessor_id` (from receipt_predecessor_id)
+- `signer_id` (from receipt_signer_id)
+
+#### Column Modifications
+- Changed `receiver_id` to come from `receipt_receiver_id`
+- Changed `method_name` to parse from `action_data :method_name`
+- Changed `args` to parse from `action_data :args`
+- Changed `_partition_by_block_number` to be calculated as `FLOOR(block_id, -3)`
+- Changed log parsing to use clean_log directly from logs table
+
+### Configuration Changes
+- Updated incremental predicates to use `dynamic_range_predicate_custom`
+- Added `modified_timestamp::DATE` to clustering keys
+- Added `receipt_id` to search optimization
+- Updated unique key to use combination of `receipt_id` and `action_index`
+
+### Query Changes
+- Updated WHERE clause to filter on `action_name = 'FunctionCall'` and method_name upfront
+- Updated partition_load_manual to include partition key calculation
+- Added proper type casting for method_name and args from action_data
+- Implemented LEFT JOIN to logs table with proper matching conditions
+- Simplified log parsing by removing SUBSTRING operation and using TRY_PARSE_JSON directly
+
 --- 

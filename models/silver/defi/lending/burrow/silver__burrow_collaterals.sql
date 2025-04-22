@@ -1,11 +1,11 @@
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'merge',
-    incremental_predicates = ["COALESCE(DBT_INTERNAL_DEST.block_timestamp::DATE,'2099-12-31') >= (select min(block_timestamp::DATE) from " ~ generate_tmp_view_name(this) ~ ")"],
+    incremental_predicates = ["dynamic_range_predicate_custom","block_timestamp::date"],
     merge_exclude_columns = ["inserted_timestamp"],
     unique_key = "burrow_collaterals_id",
-    cluster_by = ['block_timestamp::DATE'],
-    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,sender_id);",
+    cluster_by = ['block_timestamp::DATE', 'modified_timestamp::DATE'],
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,receipt_id,sender_id);",
     tags = ['curated','scheduled_non_core']
 ) }}
 
@@ -13,29 +13,53 @@ WITH
 actions AS (
 
     SELECT
-        action_id AS action_id,
         block_id,
         block_timestamp,
         tx_hash,
-        method_name,
-        args,
-        logs,
-        receiver_id,
+        receipt_id,
+        action_index,
+        receipt_predecessor_id AS predecessor_id,
+        receipt_receiver_id AS receiver_id,
+        action_data :method_name :: STRING AS method_name,
+        (action_data :method_name :: STRING = 'ft_on_transfer') :: INT AS target_log_index,
+        action_data :args ::VARIANT AS args,
         receipt_succeeded,
-        _inserted_timestamp,
-        _partition_by_block_number
+        FLOOR(block_id, -3) AS _partition_by_block_number
     FROM
-        {{ ref('silver__actions_events_function_call_s3') }}
+        {{ ref('core__ez_actions') }}
+    WHERE
+        receipt_receiver_id = 'contract.main.burrow.near'
+        AND action_name = 'FunctionCall'
+        AND receipt_succeeded
+        AND method_name in ('ft_on_transfer', 'oracle_on_call')
+        {% if var("MANUAL_FIX") %}
+        AND {{ partition_load_manual('no_buffer', 'floor(block_id, -3)') }}
+        {% else %}
+        {% if is_incremental() %}
+            AND modified_timestamp >= (
+                SELECT
+                    MAX(modified_timestamp)
+                FROM
+                    {{ this }}
+            )
+        {% endif %}
+        {% endif %}
+),
+logs AS (
+    SELECT
+        tx_hash,
+        receipt_id,
+        clean_log,
+        log_index
+    FROM
+        {{ ref('silver__logs_s3') }}
     WHERE
         receiver_id = 'contract.main.burrow.near'
-        AND receipt_succeeded = TRUE
-
+        AND receipt_succeeded
         {% if var("MANUAL_FIX") %}
-        AND 
-        {{ partition_load_manual('no_buffer') }}
+        AND {{ partition_load_manual('no_buffer') }}
         {% else %}
-            {% if is_incremental() %}
-        
+        {% if is_incremental() %}
             AND modified_timestamp >= (
                 SELECT
                     MAX(modified_timestamp)
@@ -47,19 +71,28 @@ actions AS (
 ),
 FINAL AS (
     SELECT
-        *,
-        args :sender_id:: STRING AS sender_id,
+        block_id,
+        block_timestamp,
+        a.tx_hash,
+        a.receipt_id,
+        action_index,
+        predecessor_id,
         receiver_id AS contract_address,
-        CASE 
-            WHEN method_name = 'ft_on_transfer' THEN PARSE_JSON(SUBSTRING(logs [1], 12))
-            WHEN method_name = 'oracle_on_call' THEN PARSE_JSON(SUBSTRING(logs [0], 12))
-        END :: OBJECT  AS segmented_data,
+        args :sender_id :: STRING AS sender_id,
+        method_name,
+        args,
+        TRY_PARSE_JSON(l.clean_log) :: OBJECT AS segmented_data,
         segmented_data :data [0] :account_id AS account_id,
         segmented_data :data [0] :token_id AS token_contract_address,
         segmented_data :data [0] :amount :: NUMBER AS amount_raw,
-        segmented_data :event :: STRING AS actions
+        segmented_data :event :: STRING AS actions,
+        _partition_by_block_number
     FROM 
-        actions
+        actions a
+    LEFT JOIN logs l
+        ON a.tx_hash = l.tx_hash
+        AND a.receipt_id = l.receipt_id
+        AND a.target_log_index = l.log_index
     WHERE
         (
         (method_name = 'ft_on_transfer'
@@ -71,19 +104,20 @@ FINAL AS (
         )
     )
 SELECT
-    action_id,
     tx_hash,
     block_id,
     block_timestamp,
+    receipt_id,
+    action_index,
+    predecessor_id,
     sender_id,
     actions,
     contract_address,
     amount_raw,
     token_contract_address,
-    _inserted_timestamp,
     _partition_by_block_number,
     {{ dbt_utils.generate_surrogate_key(
-        ['action_id']
+        ['receipt_id', 'action_index']
     ) }} AS burrow_collaterals_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
