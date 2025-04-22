@@ -1,9 +1,13 @@
 
 {{ config(
     materialized='dynamic_table',
-    refresh_mode="auto",
     target_lag='1 minute',
     snowflake_warehouse='DBT_CLOUD', 
+    query_tag={
+        "model": "near_fact_bocks_live",
+        "environment": "{{ target.name }}"
+    },
+    refresh_mode='incremental',
     transient=false        
 ) }}
 
@@ -12,7 +16,7 @@ WITH max_gold_block AS (
     
     SELECT
         COALESCE(MAX(block_id), 0) AS max_block_id
-    FROM {{ ref('silver__blocks_final') }}
+    FROM {{ ref('core__fact_blocks') }}
 ),
 chain_head AS (
     SELECT
@@ -96,7 +100,7 @@ live_blocks_call AS (
             'BLOCK_ID',                 
             rb.block_height,             
             TRUE                         
-        ) AS value,
+        ) AS valuee,
         rb.rpc_data_result AS data,
         round(rb.block_height, -3) AS partition_key,
         CURRENT_TIMESTAMP() AS _inserted_timestamp
@@ -109,7 +113,7 @@ __dbt__cte__silver__blocks_v2 AS (
 WITH bronze_blocks AS (
 
     SELECT
-        VALUE :BLOCK_ID :: INT AS block_id,
+        VALUEE :BLOCK_ID :: INT AS block_id,
         DATA :header :hash :: STRING AS block_hash,
         DATA :header :timestamp :: INT AS block_timestamp_epoch,
         partition_key,
