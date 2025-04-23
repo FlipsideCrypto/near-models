@@ -1,7 +1,7 @@
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'merge',
-    incremental_predicates = ["COALESCE(DBT_INTERNAL_DEST.block_timestamp::DATE,'2099-12-31') >= (select min(block_timestamp::DATE) from " ~ generate_tmp_view_name(this) ~ ")"],
+    incremental_predicates = ["dynamic_range_predicate_custom","block_timestamp::date"],
     merge_exclude_columns = ["inserted_timestamp"],
     unique_key = 'bridge_allbridge_id',
     cluster_by = ['block_timestamp::DATE', 'modified_timestamp::DATE'],
@@ -10,39 +10,38 @@
 ) }}
 
 WITH functioncall AS (
-
     SELECT
         block_id,
         block_timestamp,
         tx_hash,
-        method_name,
-        args,
-        logs,
-        receiver_id,
-        signer_id,
+        receipt_id,
+        action_index,
+        receipt_predecessor_id AS predecessor_id,
+        receipt_receiver_id AS receiver_id,
+        receipt_signer_id AS signer_id,
+        action_data :method_name :: STRING AS method_name,
+        action_data :args :: VARIANT AS args,
         receipt_succeeded,
-        _inserted_timestamp,
-        _partition_by_block_number
+        FLOOR(block_id, -3) AS _partition_by_block_number
     FROM
-        {{ ref('silver__actions_events_function_call_s3') }}
+        {{ ref('core__ez_actions') }}
     WHERE
-        receiver_id = 'bridge.a11bd.near' 
-        
+        action_name = 'FunctionCall'
+        AND receiver_id = 'bridge.a11bd.near'
         {% if var("MANUAL_FIX") %}
-        AND
-            {{ partition_load_manual('no_buffer') }}
+        AND {{ partition_load_manual('no_buffer', 'floor(block_id, -3)') }}
         {% else %}
         {% if is_incremental() %}
         AND modified_timestamp >= (
-                SELECT
-                    MAX(modified_timestamp)
-                FROM
-                    {{ this }}
-            )
+            SELECT
+                MAX(modified_timestamp)
+            FROM
+                {{ this }}
+        )
         {% endif %}
         {% endif %}
 ),
-metadata  AS (
+metadata AS (
     SELECT
         contract_address,
         NAME,
@@ -57,6 +56,8 @@ outbound_near AS (
         block_id,
         block_timestamp,
         tx_hash,
+        receipt_id,
+        action_index,
         args :create_lock_args :token_id :: STRING AS token_address,
         args :create_lock_args :amount :: INT AS amount_raw,
         args :fee :: INT AS amount_fee_raw,
@@ -71,7 +72,6 @@ outbound_near AS (
         receipt_succeeded,
         method_name,
         'outbound' AS direction,
-        _inserted_timestamp,
         _partition_by_block_number
     FROM
         functioncall
@@ -84,6 +84,8 @@ inbound_to_near AS (
         block_id,
         block_timestamp,
         tx_hash,
+        receipt_id,
+        action_index,
         args :token_id :: STRING AS token_address,
         args :unlock_args :amount :: INT AS amount_raw,
         args :fee :: INT AS amount_fee_raw,
@@ -98,7 +100,6 @@ inbound_to_near AS (
         receipt_succeeded,
         method_name,
         'inbound' AS direction,
-        _inserted_timestamp,
         _partition_by_block_number
     FROM
         functioncall
@@ -131,12 +132,11 @@ FINAL AS (
         FINAL_UNION
         JOIN metadata m ON 
         FINAL_UNION.token_address = m.contract_address
-        
 )
 SELECT
     *,
     {{ dbt_utils.generate_surrogate_key(
-        ['tx_hash']
+        ['receipt_id', 'action_index']
     ) }} AS bridge_allbridge_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,

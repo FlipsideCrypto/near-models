@@ -1,7 +1,7 @@
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'merge',
-    incremental_predicates = ["COALESCE(DBT_INTERNAL_DEST.block_timestamp::DATE,'2099-12-31') >= (select min(block_timestamp::DATE) from " ~ generate_tmp_view_name(this) ~ ")"],
+    incremental_predicates = ["dynamic_range_predicate_custom","block_timestamp::date"],
     merge_exclude_columns = ["inserted_timestamp"],
     unique_key = 'bridge_multichain_id',
     cluster_by = ['block_timestamp::DATE', 'modified_timestamp::DATE'],
@@ -10,44 +10,44 @@
 ) }}
 
 WITH functioncall AS (
-
     SELECT
         block_id,
         block_timestamp,
         tx_hash,
-        method_name,
-        args,
-        logs,
-        receiver_id,
-        signer_id,
+        receipt_id,
+        action_index,
+        receipt_predecessor_id AS predecessor_id,
+        receipt_receiver_id AS receiver_id,
+        receipt_signer_id AS signer_id,
+        action_data :method_name :: STRING AS method_name,
+        action_data :args :: VARIANT AS args,
         receipt_succeeded,
-        _inserted_timestamp,
-        _partition_by_block_number
+        FLOOR(block_id, -3) AS _partition_by_block_number
     FROM
-        {{ ref('silver__actions_events_function_call_s3') }}
+        {{ ref('core__ez_actions') }}
     WHERE
-        method_name = 'ft_transfer'  -- Both directions utilize ft_transfer
-        
+        action_name = 'FunctionCall'
+        AND action_data :method_name :: STRING = 'ft_transfer'  -- Both directions utilize ft_transfer
         {% if var("MANUAL_FIX") %}
-        AND
-            {{ partition_load_manual('no_buffer') }}
+        AND {{ partition_load_manual('no_buffer', 'floor(block_id, -3)') }}
         {% else %}
         {% if is_incremental() %}
         AND modified_timestamp >= (
-                SELECT
-                    MAX(modified_timestamp)
-                FROM
-                    {{ this }}
-            )
+            SELECT
+                MAX(modified_timestamp)
+            FROM
+                {{ this }}
+        )
         {% endif %}
         {% endif %}
-
 ),
 inbound AS (
     SELECT
         block_id,
         block_timestamp,
         tx_hash,
+        receipt_id,
+        action_index,
         receiver_id AS token_address,
         args :amount :: INT AS amount_raw,
         args :memo :: STRING AS memo,
@@ -61,8 +61,7 @@ inbound AS (
         receipt_succeeded,
         method_name,
         'inbound' AS direction,
-        _partition_by_block_number,
-        _inserted_timestamp
+        _partition_by_block_number
     FROM
         functioncall
     WHERE
@@ -73,6 +72,8 @@ outbound AS (
         block_id,
         block_timestamp,
         tx_hash,
+        receipt_id,
+        action_index,
         receiver_id AS token_address,
         args :amount :: INT AS amount_raw,
         args :memo :: STRING AS memo,
@@ -89,8 +90,7 @@ outbound AS (
         receipt_succeeded,
         method_name,
         'outbound' AS direction,
-        _partition_by_block_number,
-        _inserted_timestamp
+        _partition_by_block_number
     FROM
         functioncall
     WHERE
@@ -113,7 +113,7 @@ SELECT
     'mpc-multichain.near' AS bridge_address,
     'multichain' AS platform,
     {{ dbt_utils.generate_surrogate_key(
-        ['tx_hash']
+        ['receipt_id', 'action_index']
     ) }} AS bridge_multichain_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
