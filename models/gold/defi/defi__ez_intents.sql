@@ -15,7 +15,7 @@
 {% set query %}
 
 SELECT
-    MIN(DATE_TRUNC('day', block_timestamp)) AS block_timestamp_day
+    MIN(DATE_TRUNC('day', block_timestamp))  - INTERVAL '1 day' AS block_timestamp_day
 FROM
     {{ ref('defi__fact_intents') }}
 WHERE
@@ -24,12 +24,13 @@ WHERE
             MAX(modified_timestamp)
         FROM
             {{ this }}
-    ) {% endset %}
+    ) 
+{% endset %}
     {% set min_block_timestamp_day = run_query(query).columns [0].values() [0] %}
     {% elif var('MANUAL_FIX') %}
     {% set query %}
 SELECT
-    MIN(DATE_TRUNC('day', block_timestamp)) AS block_timestamp_day
+    MIN(DATE_TRUNC('day', block_timestamp)) - INTERVAL '1 day' AS block_timestamp_day
 FROM
     {{ this }}
 WHERE
@@ -166,7 +167,7 @@ AND
     DATE_TRUNC(
         'day',
         HOUR
-    ) >= '{{ min_block_timestamp_day }}' - INTERVAL '6 hours'
+    ) >= '{{ min_block_timestamp_day }}'
 {% endif %}
 
 qualify(ROW_NUMBER() over (PARTITION BY COALESCE(token_address, symbol), HOUR
@@ -190,7 +191,7 @@ AND
     DATE_TRUNC(
         'day',
         HOUR
-    ) >= '{{ min_block_timestamp_day }}' - INTERVAL '6 hours'
+    ) >= '{{ min_block_timestamp_day }}'
 {% endif %}
 
 qualify(ROW_NUMBER() over (PARTITION BY COALESCE(token_address, symbol), HOUR
