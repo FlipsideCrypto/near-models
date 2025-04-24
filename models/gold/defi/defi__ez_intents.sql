@@ -154,6 +154,7 @@ prices AS (
         token_address AS contract_address,
         symbol,
         price,
+        is_native,
         HOUR
     FROM
         {{ ref('price__ez_prices_hourly') }}
@@ -177,6 +178,7 @@ prices_native AS (
         token_address AS contract_address,
         symbol,
         price,
+        is_native,
         HOUR
     FROM
         {{ ref('price__ez_prices_hourly') }}
@@ -254,7 +256,10 @@ FINAL AS (
         ASOF JOIN prices_native p2 match_condition (
             i.block_timestamp >= p2.hour
         )
-        ON l.contract_address = p2.contract_address
+        ON (
+            upper(l.symbol) = upper(p2.symbol)
+            AND (l.contract_address = 'native') = p2.is_native
+        )
 )
 SELECT
     *,
