@@ -15,7 +15,7 @@
 {% set query %}
 
 SELECT
-    MIN(DATE_TRUNC('day', block_timestamp)) AS block_timestamp_day
+    MIN(DATE_TRUNC('day', block_timestamp))  - INTERVAL '1 day' AS block_timestamp_day
 FROM
     {{ ref('defi__fact_intents') }}
 WHERE
@@ -24,12 +24,13 @@ WHERE
             MAX(modified_timestamp)
         FROM
             {{ this }}
-    ) {% endset %}
+    ) 
+{% endset %}
     {% set min_block_timestamp_day = run_query(query).columns [0].values() [0] %}
     {% elif var('MANUAL_FIX') %}
     {% set query %}
 SELECT
-    MIN(DATE_TRUNC('day', block_timestamp)) AS block_timestamp_day
+    MIN(DATE_TRUNC('day', block_timestamp)) - INTERVAL '1 day' AS block_timestamp_day
 FROM
     {{ this }}
 WHERE
@@ -70,10 +71,14 @@ WITH intents AS (
         amount_index,
         amount_raw,
         token_id,
-        SPLIT(
+        REGEXP_SUBSTR(
             token_id,
-            'nep141:'
-        ) [1] AS contract_address_raw,
+            'nep(141|245):(.*)',
+            1,
+            1,
+            'e',
+            2
+        ) AS contract_address_raw,
         referral,
         dip4_version,
         gas_burnt,
@@ -149,14 +154,40 @@ prices AS (
     SELECT
         token_address AS contract_address,
         symbol,
-        is_native,
         price,
+        is_native,
         HOUR
     FROM
         {{ ref('price__ez_prices_hourly') }}
+    WHERE
+        NOT is_native
 
 {% if is_incremental() or var('MANUAL_FIX') %}
-WHERE
+AND
+    DATE_TRUNC(
+        'day',
+        HOUR
+    ) >= '{{ min_block_timestamp_day }}'
+{% endif %}
+
+qualify(ROW_NUMBER() over (PARTITION BY COALESCE(token_address, symbol), HOUR
+ORDER BY
+    HOUR DESC) = 1)
+),
+prices_native AS (
+    SELECT
+        token_address AS contract_address,
+        symbol,
+        price,
+        is_native,
+        HOUR
+    FROM
+        {{ ref('price__ez_prices_hourly') }}
+    WHERE
+        is_native
+
+{% if is_incremental() or var('MANUAL_FIX') %}
+AND
     DATE_TRUNC(
         'day',
         HOUR
@@ -204,10 +235,13 @@ FINAL AS (
         ) AS amount_adj,
         -- We do not have USDC for every token on every chain, so fallback to 1
         IFF(l.symbol ilike 'USD%', COALESCE(p.price, 1), COALESCE(p.price, p2.price)) AS price,
-        amount_raw / pow(
-            10,
-            l.decimals
-        ) * IFF(l.symbol ilike 'USD%', COALESCE(p.price, 1), COALESCE(p.price, p2.price)) AS amount_usd
+        ZEROIFNULL(
+            amount_raw / pow(10, l.decimals) * IFF(
+                l.symbol ilike 'USD%',
+                COALESCE(p.price, 1),
+                COALESCE(p.price, p2.price)
+            )
+        ) AS amount_usd
     FROM
         intents i
         LEFT JOIN labels l
@@ -220,12 +254,12 @@ FINAL AS (
         ON (
             l.contract_address = p.contract_address
         )
-        ASOF JOIN prices p2 match_condition (
+        ASOF JOIN prices_native p2 match_condition (
             i.block_timestamp >= p2.hour
         )
         ON (
-            (l.contract_address = 'native') = p2.is_native
-            AND upper(l.symbol) = upper(p2.symbol)
+            upper(l.symbol) = upper(p2.symbol)
+            AND (l.contract_address = 'native') = p2.is_native
         )
 )
 SELECT
@@ -234,3 +268,7 @@ SELECT
     SYSDATE() AS modified_timestamp
 FROM
     FINAL
+
+qualify(ROW_NUMBER() over (PARTITION BY ez_intents_id
+ORDER BY
+    price IS NOT NULL DESC, is_native DESC) = 1)
