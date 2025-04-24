@@ -514,4 +514,81 @@ Query Changes:
 - Improved filtering by using native fields from `core__ez_actions`
 - Maintained same business logic for identifying and processing staking pool transactions
 
+## silver__token_transfer_deposit
+
+### Major Changes
+- Refactored to use `core__ez_actions` instead of `silver__actions_events_function_call_s3`
+- Improved data quality by adding explicit receipt and transaction success checks
+
+### Architecture Changes
+- Removed dependency on deprecated `silver__actions_events_function_call_s3`
+- Consolidated data sourcing into a single CTE from `core__ez_actions`
+- Improved incremental processing with dynamic range predicate
+
+### Column Changes
+#### Removed
+- `action_id` - Replaced with `receipt_id` and `action_index` for better granularity
+
+#### Added
+- `receipt_id` - Added for better transaction tracking
+- `action_index` - Added to handle multiple actions within a receipt
+- `modified_timestamp` - Added for incremental processing
+
+### Configuration Changes
+- Added dynamic range predicate for incremental processing
+- Updated clustering keys to include both `block_timestamp::DATE` and `modified_timestamp::DATE`
+- Changed surrogate key to use `receipt_id`, `action_index`, `predecessor_id`, `receiver_id`, and `amount_unadj`
+- Added search optimization on `EQUALITY(tx_hash,receipt_id,predecessor_id,receiver_id)`
+
+### Query Changes
+- Simplified data sourcing by using `core__ez_actions` directly
+- Added explicit success checks with `receipt_succeeded` and `tx_succeeded`
+- Improved filtering by using native fields from `core__ez_actions`
+- Maintained same business logic for identifying and processing token transfers
+
+## silver__token_transfer_native
+
+### Major Changes
+- Refactored to use `core__ez_actions` instead of `silver__actions_events_s3`
+- Improved data quality by adding explicit receipt and transaction success checks
+- Enhanced tokens_burnt calculation using action_gas_price and receipt_gas_burnt
+
+### Architecture Changes
+- Removed dependency on deprecated `silver__actions_events_s3`
+- Consolidated data sourcing into a single CTE from `core__ez_actions`
+- Improved incremental processing with dynamic range predicate
+
+### Column Changes
+#### Removed
+- `action_id` - Replaced with `receipt_id` and `action_index` for better granularity
+- `_inserted_timestamp` - Deprecated column
+
+#### Added
+- `receipt_id` - Added for better transaction tracking
+- `action_index` - Added to handle multiple actions within a receipt
+- `modified_timestamp` - Added for incremental processing
+
+#### Modified
+- Changed source of gas fields to use native fields from `core__ez_actions`:
+  * `gas_price` now uses `action_gas_price`
+  * `gas_burnt` now uses `receipt_gas_burnt`
+  * `tokens_burnt` calculation updated to use these new fields
+- Updated source of account fields to use receipt-level fields:
+  * `predecessor_id` from `receipt_predecessor_id`
+  * `receiver_id` from `receipt_receiver_id`
+  * `signer_id` from `receipt_signer_id`
+
+### Configuration Changes
+- Added dynamic range predicate for incremental processing
+- Updated clustering keys to include both `block_timestamp::DATE` and `modified_timestamp::DATE`
+- Changed surrogate key to use `receipt_id`, `action_index`, `predecessor_id`, `receiver_id`, and `amount_unadj`
+- Added search optimization on `EQUALITY(tx_hash,receipt_id,predecessor_id,receiver_id)`
+
+### Query Changes
+- Simplified data sourcing by using `core__ez_actions` directly
+- Added explicit success checks with `receipt_succeeded` and `tx_succeeded`
+- Improved filtering by using native fields from `core__ez_actions`
+- Enhanced tokens_burnt calculation using proper gas price and burnt values
+- Maintained same business logic for identifying and processing native transfers
+
 --- 

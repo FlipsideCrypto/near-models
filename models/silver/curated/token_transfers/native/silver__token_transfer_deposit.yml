@@ -3,79 +3,87 @@ version: 2
 models:
   - name: silver__token_transfer_deposit
     description: |-
-      This table records all the positive Deposit events from FunctionCalls.
+      This table records all positive NEAR token deposits from FunctionCalls using core__ez_actions.
+      It captures native NEAR token transfers through the deposit field.
 
     columns:
-      - name: TX_HASH
+      - name: tx_hash
         description: "{{ doc('tx_hash')}}"
         tests:
           - not_null
 
-      - name: ACTION_ID
-        description: "{{ doc('action_id')}}"
-        tests:
-          - not_null
-
-      - name: BLOCK_ID
+      - name: block_id
         description: "{{ doc('block_id')}}"
         tests:
           - not_null
 
-      - name: BLOCK_TIMESTAMP
+      - name: block_timestamp
         description: "{{ doc('block_timestamp')}}"
         tests:
-          - not_null:
-              where: _inserted_timestamp <= current_timestamp - interval '1 hour'
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: TIMESTAMP_NTZ
 
-      - name: AMOUNT_UNADJ
-        description: "{{ doc('amount_unadj')}}"
+      - name: receipt_id
+        description: "{{ doc('receipt_id')}}"
         tests:
           - not_null
 
-      - name: AMOUNT_ADJ
-        description: "{{ doc('amount_adj')}}"
+      - name: action_index
+        description: "{{ doc('action_index')}}"
         tests:
           - not_null
 
-      - name: PREDECESSOR_ID
+      - name: predecessor_id
         description: "{{ doc('predecessor_id')}}"
         tests:
           - not_null
 
-      - name: SIGNER_ID
+      - name: signer_id
         description: "{{ doc('signer_id')}}"
         tests:
           - not_null
 
-      - name: RECEIVER_ID
+      - name: receiver_id
         description: "{{ doc('receiver_id')}}"
         tests:
           - not_null
 
-      - name: RECEIPT_SUCCEEDED
+      - name: amount_unadj
+        description: "{{ doc('amount_unadj')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_greater_than:
+              value: 0
+
+      - name: amount_adj
+        description: "{{ doc('amount_adj')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_greater_than:
+              value: 0
+
+      - name: receipt_succeeded
         description: "{{ doc('receipt_succeeded')}}"
         tests:
           - not_null
+          - accepted_values:
+              values: [TRUE]
 
-      - name: _PARTITION_BY_BLOCK_NUMBER
+      - name: _partition_by_block_number
         description: "{{ doc('_partition_by_block_number')}}"
 
-      - name: _INSERTED_TIMESTAMP
-        description: "{{ doc('_inserted_timestamp')}}"
-
-
-
-      - name: TOKEN_TRANSFER_DEPOSIT_ID
+      - name: token_transfer_deposit_id
         description: "{{doc('id')}}"
         tests:
-          - not_null
           - unique
+          - not_null
 
-      - name: INSERTED_TIMESTAMP
+      - name: inserted_timestamp
         description: "{{doc('inserted_timestamp')}}"
 
-      - name: MODIFIED_TIMESTAMP
+      - name: modified_timestamp
         description: "{{doc('modified_timestamp')}}"
 
-      - name: _INVOCATION_ID
+      - name: _invocation_id
         description: "{{doc('invocation_id')}}"
