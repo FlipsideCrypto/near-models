@@ -166,7 +166,7 @@ AND
     DATE_TRUNC(
         'day',
         HOUR
-    ) >= '{{ min_block_timestamp_day }}'
+    ) >= '{{ min_block_timestamp_day }}' - INTERVAL '6 hours'
 {% endif %}
 
 qualify(ROW_NUMBER() over (PARTITION BY COALESCE(token_address, symbol), HOUR
@@ -190,7 +190,7 @@ AND
     DATE_TRUNC(
         'day',
         HOUR
-    ) >= '{{ min_block_timestamp_day }}'
+    ) >= '{{ min_block_timestamp_day }}' - INTERVAL '6 hours'
 {% endif %}
 
 qualify(ROW_NUMBER() over (PARTITION BY COALESCE(token_address, symbol), HOUR
@@ -267,3 +267,7 @@ SELECT
     SYSDATE() AS modified_timestamp
 FROM
     FINAL
+
+qualify(ROW_NUMBER() over (PARTITION BY ez_intents_id
+ORDER BY
+    price IS NOT NULL DESC, is_native DESC) = 1)
