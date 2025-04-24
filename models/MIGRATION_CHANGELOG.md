@@ -475,4 +475,43 @@ Query Changes:
   * Used clean_log field for reliable regex extraction
 - Enhanced source chain ID extraction by joining logs table with proper conditions
 
+---
+
+## silver__staking_pools_s3
+
+### Major Changes
+- **REQUIRES FULL REFRESH** - Model has been completely refactored to use `core__ez_actions`
+- Refactored to use `core__ez_actions` instead of `silver__actions_events_function_call_s3` and `silver__transactions_final`
+- Simplified query structure by removing unnecessary joins and CTEs
+- Improved data quality by adding explicit receipt success checks
+
+### Architecture Changes
+- Removed dependency on deprecated `silver__actions_events_function_call_s3`
+- Consolidated data sourcing into a single CTE from `core__ez_actions`
+- Improved incremental processing with dynamic range predicate
+
+### Column Changes
+#### Removed
+- No columns removed
+
+#### Added
+- `receipt_id` - Added for better transaction tracking and unique key generation
+
+#### Modified
+- Changed surrogate key generation to use `receipt_id` instead of `tx_hash`
+- Updated source of `address` to use `receipt_receiver_id` for new pools
+- Updated source of `owner` to use `tx_signer` for updated pools
+
+### Configuration Changes
+- Added dynamic range predicate for incremental processing
+- Updated clustering keys to include both `block_timestamp::DATE` and `modified_timestamp::DATE`
+- Changed unique key from `tx_hash` to `staking_pools_id`
+- Added search optimization on `EQUALITY(tx_hash,receipt_id,owner,address)`
+
+### Query Changes
+- Simplified data sourcing by using `core__ez_actions` directly
+- Added explicit success checks with `receipt_succeeded` and `tx_succeeded`
+- Improved filtering by using native fields from `core__ez_actions`
+- Maintained same business logic for identifying and processing staking pool transactions
+
 --- 
