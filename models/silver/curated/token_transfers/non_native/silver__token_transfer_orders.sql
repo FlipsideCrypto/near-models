@@ -2,89 +2,86 @@
     materialized = 'incremental',
     merge_exclude_columns = ["inserted_timestamp"],
     incremental_predicates = ["dynamic_range_predicate_custom","block_timestamp::date"],
-    cluster_by = ['block_timestamp::DATE','modified_timestamp::Date'],
+    cluster_by = ['block_timestamp::DATE', 'modified_timestamp::DATE'],
     unique_key = 'transfers_orders_id',
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,receipt_id,contract_address,from_address,to_address);",
     incremental_strategy = 'merge',
     tags = ['curated','scheduled_non_core']
 ) }}
 
-WITH actions_events AS (
-
+WITH order_logs AS (
     SELECT
         block_id,
         block_timestamp,
         tx_hash,
-        action_id,
+        receipt_id,
+        receiver_id,
+        predecessor_id,
         signer_id,
-        receiver_id,
-        action_name,
-        method_name,
-        deposit,
-        logs,
+        log_index,
+        try_parse_json(clean_log) AS log_data,
         receipt_succeeded,
-        _inserted_timestamp,
         _partition_by_block_number
-    FROM
-        {{ ref('silver__token_transfer_base') }}
+    FROM 
+        {{ ref('silver__logs_s3') }}
+    WHERE 
+        receipt_succeeded
+        AND is_standard -- Only look at EVENT_JSON formatted logs
+        AND try_parse_json(clean_log) :event :: STRING = 'order_added'
+
     {% if var("MANUAL_FIX") %}
-            WHERE {{ partition_load_manual('no_buffer') }}            
-    {% elif is_incremental() %}
-    WHERE modified_timestamp >= (
-        SELECT
-            MAX(modified_timestamp)
-        FROM
-            {{ this }}
-    )
+        AND {{ partition_load_manual('no_buffer') }}
+    {% else %}
+        {% if is_incremental() %}
+        AND modified_timestamp >= (
+            SELECT
+                MAX(modified_timestamp)
+            FROM
+                {{ this }}
+        )
+        {% endif %}
     {% endif %}
-),
-orders AS (
-    SELECT
-        block_id,
-        block_timestamp,
-        tx_hash,
-        action_id,
-        receiver_id,
-        TRY_PARSE_JSON(REPLACE(g.value, 'EVENT_JSON:')) AS DATA,
-        DATA :event :: STRING AS event,
-        g.index AS rn,
-        _inserted_timestamp,
-        _partition_by_block_number
-    FROM
-        actions_events
-        JOIN LATERAL FLATTEN(
-            input => logs
-        ) g
-    WHERE
-        DATA :event :: STRING = 'order_added'
 ),
 orders_final AS (
     SELECT
         block_id,
         block_timestamp,
         tx_hash,
-        action_id,
+        receipt_id,
+        receiver_id AS to_address,
+        predecessor_id,
+        signer_id,
+        log_index,
         f.value :sell_token :: STRING AS contract_address,
         f.value :owner_id :: STRING AS from_address,
-        receiver_id :: STRING AS to_address,
-        (
-            f.value :original_amount
-        ) :: variant AS amount_unadj,
+        f.value :original_amount :: variant AS amount_unadj,
         'order' AS memo,
-        f.index AS rn,
-        _inserted_timestamp,
+        log_index + f.index AS event_index,
         _partition_by_block_number
     FROM
-        orders
-        JOIN LATERAL FLATTEN(
-            input => DATA :data
+        order_logs,
+        LATERAL FLATTEN(
+            input => log_data :data
         ) f
     WHERE
         amount_unadj > 0
 )
-SELECT  
-    *,
+SELECT
+    block_timestamp,
+    block_id,
+    tx_hash,
+    receipt_id,
+    contract_address,
+    predecessor_id,
+    signer_id,
+    from_address,
+    to_address,
+    amount_unadj,
+    memo,
+    event_index,
+    _partition_by_block_number,
     {{ dbt_utils.generate_surrogate_key(
-        ['tx_hash', 'action_id','contract_address','amount_unadj','from_address','to_address','memo','rn']
+        ['receipt_id', 'contract_address', 'amount_unadj', 'from_address', 'to_address', 'event_index']
     ) }} AS transfers_orders_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,

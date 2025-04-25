@@ -5,7 +5,7 @@
     cluster_by = ["block_timestamp::DATE","modified_timestamp::DATE"],
     unique_key = "log_id",
     incremental_strategy = "merge",
-    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,receipt_object_id,receiver_id,predecessor_id,signer_id);",
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,receipt_id);",
     tags = ['curated', 'scheduled_core']
 ) }}
 
@@ -74,7 +74,6 @@ SELECT
     block_timestamp,
     block_id,
     tx_hash,
-    receipt_id AS receipt_object_id, -- maintain for cutover
     receipt_id,
     log_id,
     log_index,

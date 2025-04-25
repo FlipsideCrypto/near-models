@@ -1,10 +1,10 @@
 version: 2
 
 models:
-  - name: silver__token_transfer_ft_transfers_method
+  - name: silver__token_transfer_liquidity
     description: >
-      This model captures fungible token (FT) transfers from the NEAR blockchain using the ft_transfer method.
-      It processes function calls directly from core__ez_actions where method_name = 'ft_transfer'.
+      This model captures liquidity addition events from the NEAR blockchain. 
+      It processes logs from liquidity pool contracts that emit 'Liquidity added' events.
 
     columns:
       - name: BLOCK_TIMESTAMP
@@ -38,22 +38,8 @@ models:
           - dbt_expectations.expect_column_values_to_match_regex:
               regex: .*\.near$
 
-      - name: PREDECESSOR_ID
-        description: "{{doc('predecessor_id')}}"
-        tests:
-          - not_null
-
-      - name: SIGNER_ID
-        description: "{{doc('signer_id')}}"
-        tests:
-          - not_null
-
       - name: FROM_ADDRESS
         description: "{{doc('from_address')}}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_match_regex:
-              regex: .*\.near$
 
       - name: TO_ADDRESS
         description: "{{doc('to_address')}}"
@@ -74,8 +60,9 @@ models:
       - name: MEMO
         description: "{{doc('memo')}}"
         tests:
-          - dbt_expectations.expect_column_values_to_be_of_type:
-              column_type: STRING
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_set:
+              value_set: ['add_liquidity']
 
       - name: EVENT_INDEX
         description: "{{doc('event_index')}}"
@@ -84,10 +71,20 @@ models:
           - dbt_expectations.expect_column_values_to_be_of_type:
               column_type: NUMBER
 
+      - name: PREDECESSOR_ID
+        description: "{{doc('predecessor_id')}}"
+        tests:
+          - not_null
+
+      - name: SIGNER_ID
+        description: "{{doc('signer_id')}}"
+        tests:
+          - not_null
+
       - name: _PARTITION_BY_BLOCK_NUMBER
         description: "{{doc('_partition_by_block_number')}}"
 
-      - name: TRANSFERS_ID
+      - name: TRANSFERS_LIQUIDITY_ID
         description: "{{doc('id')}}"
         tests:
           - not_null
@@ -105,4 +102,4 @@ models:
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_of_type:
-              column_type: TIMESTAMP_NTZ
+              column_type: TIMESTAMP_NTZ 

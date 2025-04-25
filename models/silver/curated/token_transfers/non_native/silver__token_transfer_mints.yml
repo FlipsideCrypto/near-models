@@ -2,12 +2,104 @@ version: 2
 
 models:
   - name: silver__token_transfer_mints
-    description: |-
-      This table records all the mint actions.
-  
+    description: >
+      This model captures fungible token (FT) mint events from the NEAR blockchain. 
+      It processes standard EVENT_JSON formatted logs from token contracts that emit 
+      'ft_mint' events.
+
     columns:
+      - name: BLOCK_TIMESTAMP
+        description: "{{doc('block_timestamp')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: TIMESTAMP_NTZ
+
+      - name: BLOCK_ID
+        description: "{{doc('block_id')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: NUMBER
+
+      - name: TX_HASH
+        description: "{{doc('tx_hash')}}"
+        tests:
+          - not_null
+
+      - name: RECEIPT_ID
+        description: "{{doc('receipt_id')}}"
+        tests:
+          - not_null
+
+      - name: CONTRACT_ADDRESS
+        description: "{{doc('contract_address')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_match_regex:
+              regex: .*\.near$
+
+      - name: FROM_ADDRESS
+        description: "{{doc('from_address')}}"
+
+      - name: TO_ADDRESS
+        description: "{{doc('to_address')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_match_regex:
+              regex: .*\.near$
+
+      - name: AMOUNT_UNADJ
+        description: "{{doc('amount_unadj')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: FLOAT
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: MEMO
+        description: "{{doc('memo')}}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: STRING
+
+      - name: EVENT_INDEX
+        description: "{{doc('event_index')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: NUMBER
+
+      - name: PREDECESSOR_ID
+        description: "{{doc('predecessor_id')}}"
+        tests:
+          - not_null
+
+      - name: SIGNER_ID
+        description: "{{doc('signer_id')}}"
+        tests:
+          - not_null
+
+      - name: _PARTITION_BY_BLOCK_NUMBER
+        description: "{{doc('_partition_by_block_number')}}"
+
       - name: MINT_ID
         description: "{{doc('id')}}"
         tests:
           - not_null
           - unique
+
+      - name: INSERTED_TIMESTAMP
+        description: "{{doc('inserted_timestamp')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: TIMESTAMP_NTZ
+
+      - name: MODIFIED_TIMESTAMP
+        description: "{{doc('modified_timestamp')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: TIMESTAMP_NTZ

@@ -591,4 +591,336 @@ Query Changes:
 - Enhanced tokens_burnt calculation using proper gas price and burnt values
 - Maintained same business logic for identifying and processing native transfers
 
+## silver__token_transfer_base
+
+### Major Changes
+- Refactored to use `core__ez_actions` and `silver__logs_s3` instead of `silver__actions_events_function_call_s3`
+- Improved data quality by adding explicit receipt and transaction success checks
+- Enhanced log validation by using `silver__logs_s3` directly
+
+### Architecture Changes
+- Split data sourcing into two CTEs:
+  1. `base_actions` CTE from `core__ez_actions` for function call data
+  2. `logs_check` CTE from `silver__logs_s3` for log validation
+- Improved incremental processing with dynamic range predicate
+- Changed log validation to use clean_log from `silver__logs_s3`
+
+### Column Changes
+#### Removed
+- `action_id` - Replaced with `receipt_id` and `action_index` for better granularity
+- `_inserted_timestamp` - Deprecated column
+- Removed dependency on deprecated `logs` column from actions table
+
+#### Added
+- `receipt_id` - Added for better transaction tracking
+- `action_index` - Added to handle multiple actions within a receipt (always 0 for this model)
+
+#### Modified
+- Changed source of account fields to use receipt-level fields:
+  * `predecessor_id` from `receipt_predecessor_id`
+  * `receiver_id` from `receipt_receiver_id`
+  * `signer_id` from `receipt_signer_id`
+- Changed `method_name` to parse from `action_data :method_name`
+- Changed `deposit` to parse from `action_data :deposit`
+
+### Configuration Changes
+- Added dynamic range predicate for incremental processing
+- Updated clustering keys to include both `block_timestamp::DATE` and `modified_timestamp::DATE`
+- Changed surrogate key to use `receipt_id` and `action_index`
+- Added search optimization on `EQUALITY(tx_hash,receipt_id,predecessor_id,receiver_id)`
+
+### Query Changes
+- Simplified data sourcing by using `core__ez_actions` directly
+- Added explicit success checks with `receipt_succeeded` and `tx_succeeded`
+- Improved filtering by using native fields from `core__ez_actions`
+- Changed log validation to use proper join with `silver__logs_s3`
+- Maintained same business logic for identifying first actions with logs
+
+## silver__token_transfer_ft_transfers_event
+
+### Major Changes
+- Model has been refactored to use `silver__logs_s3` directly instead of `token_transfer_base`
+- Improved log handling by directly filtering for standard EVENT_JSON logs with ft_transfer events
+- Maintains same business logic for capturing FT transfer events
+
+### Architecture Changes
+- Removed dependency on deprecated `silver__token_transfer_base`
+- Now sources data directly from `silver__logs_s3`
+- Added upfront filtering for standard EVENT_JSON logs and ft_transfer events
+- Improved event indexing using log_index
+
+### Column Changes
+- Added `receipt_id` for better transaction tracking
+- Added `predecessor_id` and `signer_id` from logs table
+- Renamed `rn` to `event_index` for clarity
+- Changed `contract_address` to come directly from `receiver_id` in logs
+- Removed `action_id` (replaced by receipt_id)
+
+### Configuration Changes
+- Added `dynamic_range_predicate_custom` for incremental processing
+- Added `modified_timestamp::DATE` to clustering keys
+- Added search optimization on key fields (tx_hash, receipt_id, contract_address, from_address, to_address)
+- Changed surrogate key to use receipt_id instead of tx_hash for better uniqueness
+
+### Query Changes
+- Simplified log parsing by using `clean_log` directly from logs table
+- Added direct filtering for ft_transfer events in logs CTE
+- Maintained same business logic for amount validation and address extraction
+- Enhanced event indexing to properly track multiple events within a transaction
+
+### Testing Changes
+- Added comprehensive column-level tests:
+  * Type validation for all fields
+  * Regex validation for NEAR addresses
+  * Amount validation to ensure positive values
+  * Not-null constraints where appropriate
+- Added unique combination test across key fields
+
+## silver__token_transfer_liquidity
+
+⚠️ **REQUIRES FULL REFRESH** - Fixed from_address handling to to use predecessor_id
+
+### Major Changes
+- Model has been refactored to use `silver__logs_s3` directly instead of `token_transfer_base`
+- Improved log handling by directly filtering for 'Liquidity added' events
+- Fixed from_address to properly set NULL values for liquidity additions
+- Maintains same business logic for capturing liquidity addition events
+
+### Architecture Changes
+- Removed dependency on deprecated `silver__token_transfer_base`
+- Now sources data directly from `silver__logs_s3`
+- Added upfront filtering for liquidity logs with log_index = 0
+- Improved event indexing using log_index
+
+### Column Changes
+- Added `receipt_id` for better transaction tracking
+- Added `predecessor_id` and `signer_id` from logs table
+- Renamed `rn` to `event_index` for clarity
+- Changed `contract_address` to come directly from regex on log value
+- Removed `action_id` (replaced by receipt_id)
+- Fixed `from_address` to consistently use NULL for liquidity additions
+
+### Configuration Changes
+- Added `dynamic_range_predicate_custom` for incremental processing
+- Added `modified_timestamp::DATE` to clustering keys
+- Added search optimization on key fields (tx_hash, receipt_id, contract_address, to_address)
+- Changed surrogate key to use receipt_id instead of tx_hash for better uniqueness
+
+### Query Changes
+- Simplified log parsing by using `clean_log` directly from logs table
+- Added direct filtering for liquidity events in logs CTE
+- Improved log value extraction by removing unnecessary array access
+- Enhanced event indexing to properly track multiple events within a transaction
+- Maintained same regex pattern for extracting contract address and amount
+
+### Testing Changes
+- Added comprehensive column-level tests:
+  * Type validation for all fields
+  * Regex validation for NEAR addresses
+  * Amount validation to ensure positive values
+  * Not-null constraints where appropriate
+  * Value set validation for memo field
+
+## silver__logs_s3
+
+### Major Changes
+- **REQUIRES MANUAL MIGRATION** - Column `receipt_object_id` is being removed in favor of just `receipt_id`
+- Migration steps:
+  1. Verify no null values in receipt_id: `SELECT COUNT(*) FROM silver__logs_s3 where receipt_id is null;`
+  2. Execute ALTER TABLE command: `ALTER TABLE silver__logs_s3 RENAME COLUMN receipt_object_id TO receipt_id;`
+
+### Architecture Changes
+- Simplified column naming by removing redundant `receipt_object_id` column
+- All references to `receipt_object_id` in downstream models already use `receipt_id` or alias it to `receipt_id`
+
+### Column Changes
+#### Removed
+- `receipt_object_id` - Redundant column, functionality preserved through `receipt_id`
+
+### Configuration Changes
+- Updated search optimization to use `receipt_id` instead of `receipt_object_id`
+- No changes to unique key or clustering configuration
+
+### Query Changes
+- No changes to core query logic
+- Column renaming handled through ALTER TABLE command
+- All downstream models already compatible with `receipt_id`
+
+### Downstream Impact
+- `defi__fact_intents.sql` - Currently aliases `receipt_object_id` to `receipt_id`, will continue to work after migration
+- All other models using `silver__logs_s3` already reference `receipt_id` directly
+- No changes needed in downstream models as they are already aligned with the new structure
+
+### silver__token_transfer_mints
+
+**Major Changes**
+- Refactored model to use `silver__logs_s3` directly instead of `token_transfer_base`
+- Improved handling of mint events by directly filtering for 'ft_mint' log type
+- Added `event_index` to maintain event order within transactions
+- Full refresh required (FR) due to improved log handling and event ordering
+
+**Architecture**
+- Data sourcing split into two main CTEs:
+  - `ft_mint_logs`: Filters relevant mint events from `silver__logs_s3`
+  - `ft_mints_final`: Processes and formats mint events with proper field extraction
+
+**Column Changes**
+- Added:
+  - `event_index`: Tracks event order within transactions
+  - `receipt_id`: Links to originating receipt
+- Modified:
+  - `mint_id`: Now generated using consistent surrogate key pattern
+  - All timestamp fields now use TIMESTAMP_NTZ type
+
+**Configuration Changes**
+- Updated `incremental_predicates` to use dynamic range predicate
+- Added `modified_timestamp::DATE` to clustering keys
+- Maintained `merge` strategy for incremental processing
+- Optimized merge exclude columns for better performance
+
+**Query Changes**
+- Enhanced log filtering to ensure only successful mint events are processed
+- Improved amount validation to ensure positive values only
+- Added proper handling of NEAR account formats in address fields
+- Optimized field extraction from EVENT_JSON
+
+**Testing**
+- Added comprehensive column tests including:
+  - Data type validations
+  - Not null constraints where appropriate
+  - NEAR account format validation for addresses
+  - Positive amount validation
+  - Uniqueness check for mint_id
+- Enhanced model description to better reflect its purpose and data sources
+
+### silver__token_transfers_complete
+`2024-03-XX`
+### 🏗️ Architecture Changes
+- Improved incremental logic to prevent data gaps:
+  - Added execute block to calculate minimum block date and maximum modified timestamp
+  - Split filtering strategy: block_timestamp at CTE level, modified_timestamp after UNION ALL
+  - Added final CTE for cleaner deduplication with QUALIFY clause
+- Updated column names to align with new standards:
+  - Replaced `action_id` with `receipt_id`
+  - Replaced `rn` with `event_index`
+- Added comprehensive tests in YAML file for all columns
+- Added type validation tests for timestamps and numeric fields
+- Added value validation for transfer_type field
+
+### 🔄 Query Changes
+- Optimized incremental processing by:
+  - Using date-based filtering at source CTEs
+  - Applying modified_timestamp filter after UNION ALL
+  - Moving QUALIFY clause to final SELECT
+- Standardized WHERE clause structure across all CTEs
+- Added explicit column list in final_transfers CTE
+
+### 🎯 Functionality Changes
+- Maintained all existing transfer types and sources
+- Enhanced surrogate key generation using new column names
+- Added search optimization on key columns including receipt_id
+
+### silver__token_transfer_orders
+
+**Major Changes**
+- Refactored model to use `silver__logs_s3` directly instead of `token_transfer_base`
+- Improved handling of order events by directly filtering for 'order_added' log type
+- Added `event_index` to maintain event order within transactions
+- Full refresh required (FR) due to improved log handling and event ordering
+
+**Architecture**
+- Data sourcing split into two main CTEs:
+  - `order_logs`: Filters relevant order events from `silver__logs_s3`
+  - `orders_final`: Processes and formats order events with proper field extraction
+
+**Column Changes**
+- Added:
+  - `event_index`: Tracks event order within transactions
+  - `receipt_id`: Links to originating receipt
+  - `predecessor_id`: Links to transaction originator
+  - `signer_id`: Links to transaction signer
+- Modified:
+  - `transfers_orders_id`: Now generated using consistent surrogate key pattern
+  - All timestamp fields now use TIMESTAMP_NTZ type
+- Removed:
+  - `action_id`: Replaced by receipt_id and event_index
+  - `_inserted_timestamp`: Deprecated column
+
+**Configuration Changes**
+- Updated `incremental_predicates` to use dynamic range predicate
+- Added `modified_timestamp::DATE` to clustering keys
+- Maintained `merge` strategy for incremental processing
+- Added search optimization on key fields (tx_hash, receipt_id, contract_address, from_address, to_address)
+
+**Query Changes**
+- Enhanced log filtering to ensure only successful order events are processed
+- Improved amount validation to ensure positive values only
+- Added proper handling of NEAR account formats in address fields
+- Optimized field extraction from EVENT_JSON
+- Simplified log parsing by using clean_log directly
+
+**Testing**
+- Added comprehensive column tests including:
+  - Data type validations
+  - Not null constraints where appropriate
+  - NEAR account format validation for addresses
+  - Positive amount validation
+  - Value set validation for memo field
+  - Uniqueness check for transfers_orders_id
+- Enhanced model description to better reflect its purpose and data sources
+
+### silver__token_transfer_ft_transfers_method
+
+**Major Changes**
+- Refactored model to use both `core__ez_actions` and `silver__logs_s3` directly
+- Improved handling of ft_transfer method calls by properly joining actions with their logs
+- Added `event_index` to maintain action and log order within transactions
+- Changed from flattening logs array to proper join with logs table
+
+**Architecture**
+- Split data sourcing into three CTEs:
+  1. `ft_transfer_actions`: Filters relevant ft_transfer actions from `core__ez_actions`
+  2. `ft_transfer_logs`: Joins actions with their logs from `silver__logs_s3`
+  3. `ft_transfers_final`: Processes and formats transfer events with proper field extraction
+- Improved log handling by using clean_log field directly
+- Maintained regex-based field extraction from logs
+
+**Column Changes**
+- Added:
+  - `event_index`: Tracks combined action and log order within transactions
+  - `receipt_id`: Links to originating receipt
+  - `predecessor_id`: Links to transaction originator
+  - `signer_id`: Links to transaction signer
+- Modified:
+  - `transfers_id`: Now generated using consistent surrogate key pattern
+  - `from_address`: Now extracted from clean_log using regex
+  - `to_address`: Now extracted from clean_log using regex
+  - `amount_unadj`: Now extracted from clean_log using regex
+  - All timestamp fields now use TIMESTAMP_NTZ type
+- Removed:
+  - `action_id`: Replaced by receipt_id and event_index
+  - `_inserted_timestamp`: Deprecated column
+
+**Configuration Changes**
+- Updated `incremental_predicates` to use dynamic range predicate
+- Added `modified_timestamp::DATE` to clustering keys
+- Changed from 'delete+insert' to 'merge' strategy for incremental processing
+- Added search optimization on key fields (tx_hash, receipt_id, contract_address, from_address, to_address)
+
+**Query Changes**
+- Enhanced filtering to ensure only successful ft_transfer calls are processed
+- Improved log handling by properly joining actions with their logs
+- Added proper handling of NEAR account formats in address fields
+- Maintained regex-based field extraction for consistency
+- Added validation for required log fields (from, to, amount)
+
+**Testing**
+- Added comprehensive column tests including:
+  - Data type validations
+  - Not null constraints where appropriate
+  - NEAR account format validation for addresses
+  - Positive amount validation
+  - Uniqueness check for transfers_id
+- Enhanced model description to better reflect its purpose and data sources
+
 --- 

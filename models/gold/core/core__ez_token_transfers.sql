@@ -66,7 +66,7 @@ SELECT
     block_id,
     block_timestamp,
     tx_hash,
-    action_id,
+    receipt_id AS action_id,
     contract_address,
     from_address,
     to_address,
