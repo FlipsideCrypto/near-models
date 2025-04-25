@@ -6,7 +6,6 @@
 ) }}
 
 WITH lockup_receipts AS (
-
     SELECT
         *
     FROM
@@ -14,9 +13,18 @@ WITH lockup_receipts AS (
 ),
 function_call AS (
     SELECT
-        *
+        tx_hash,
+        block_timestamp,
+        receipt_id,
+        action_index,
+        receipt_receiver_id AS receiver_id,
+        action_data :method_name ::STRING AS method_name,
+        action_data :args ::VARIANT AS args,
+        receipt_succeeded
     FROM
-        {{ ref('silver__actions_events_function_call_s3') }}
+        {{ ref('core__ez_actions') }}
+    WHERE
+        action_name = 'FunctionCall'
 ),
 dates AS (
     SELECT

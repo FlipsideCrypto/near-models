@@ -923,4 +923,22 @@ Query Changes:
   - Uniqueness check for transfers_id
 - Enhanced model description to better reflect its purpose and data sources
 
+### silver__atlas_supply_daily_lockup_locked_balances
+**Date**: 2024-03-XX
+
+#### Changes
+- Architecture:
+  - Replaced `silver__actions_events_function_call_s3` with `core__ez_actions`
+  - Updated column mappings to match new schema:
+    - `receipt_receiver_id` → `receiver_id`
+    - `action_data :method_name` → `method_name`
+    - `action_data :args` → `args`
+  - Added `action_index` to function call CTE for better event tracking
+  - Added `receipt_succeeded` field from core__ez_actions
+
+#### Impact
+- No functional changes to the model's logic or output
+- Maintains same lockup contract tracking and vesting calculations
+- Preserves all existing downstream dependencies
+
 --- 
