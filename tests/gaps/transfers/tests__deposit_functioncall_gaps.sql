@@ -12,7 +12,7 @@ WITH deposit_functioncalls AS (
         block_timestamp,
         _partition_by_block_number
     FROM
-        {{ ref('core__ez_token_transfers') }}
+        {{ ref('core__ez_actions') }}
     WHERE
         action_data :deposit :: INT > 0
         AND receipt_succeeded
@@ -31,7 +31,7 @@ native_transfer_deposits AS (
     FROM
         {{ ref('silver__token_transfer_deposit') }}
 
-        AND inserted_timestamp BETWEEN SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days'
+        WHERE inserted_timestamp BETWEEN SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days'
             AND SYSDATE() - INTERVAL '1 hour'
 )
 SELECT
