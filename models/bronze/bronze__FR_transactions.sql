@@ -19,7 +19,7 @@
         -- Extract block info and the chunk_hash from each chunk header
         SELECT
             rb.block_height,
-            rb.rpc_data_result:header:timestamp::STRING AS block_timestamp_str,
+            rb.rpc_data_result:header:timestamp::INTEGER AS block_timestamp_int,
             ch.value:chunk_hash::STRING AS chunk_hash,
             ch.value:shard_id::INTEGER AS shard_id,
             ch.value:height_created::INTEGER AS chunk_height_created,
@@ -32,7 +32,7 @@
         -- Fetch full chunk details using the chunk_hash
         SELECT
             bch.block_height,
-            bch.block_timestamp_str,
+            bch.block_timestamp_int,
             bch.shard_id,
             bch.chunk_hash,
             bch.chunk_height_created,
@@ -56,7 +56,7 @@
         -- Flatten the transactions array from the actual chunk_data result
         SELECT
             rcd.block_height,
-            rcd.block_timestamp_str,
+            rcd.block_timestamp_int,
             rcd.shard_id,
             rcd.chunk_hash,
             rcd.chunk_height_created,
@@ -70,7 +70,7 @@
         SELECT
             DATE_PART('EPOCH', SYSDATE()) :: INTEGER AS request_timestamp,
             tx.block_height,
-            tx.block_timestamp_str,
+            tx.block_timestamp_int,
             tx.tx_hash,
             tx.tx_signer,
             tx.shard_id,
@@ -107,7 +107,7 @@
             'TRANSACTION': tx.tx_result:transaction,
             'TRANSACTION_OUTCOME': tx.tx_result:transaction_outcome,
             'BLOCK_ID': tx.block_height,
-            'BLOCK_TIMESTAMP_EPOCH': DATE_PART('EPOCH_SECOND', TO_TIMESTAMP_NTZ(tx.block_timestamp_str))::INTEGER,
+            'BLOCK_TIMESTAMP_EPOCH': DATE_PART('EPOCH_SECOND', TO_TIMESTAMP_NTZ(tx.block_timestamp_int))::INTEGER,
             'SHARD_ID': tx.shard_id,
             'CHUNK_HASH': tx.chunk_hash,
             'HEIGHT_CREATED': tx.chunk_height_created,
