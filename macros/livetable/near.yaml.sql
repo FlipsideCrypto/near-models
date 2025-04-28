@@ -3,7 +3,7 @@
     This macro is used to generate the high level abstractions for the Near
     blockchain.
  #}
-{% set schema = blockchain ~ "_" ~ network %}
+{% set schema = blockchain %}
 
 - name: {{ schema }}.udf_get_latest_block_height
   signature: []

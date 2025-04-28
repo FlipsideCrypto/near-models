@@ -8,15 +8,15 @@ DECLARE
     -- Configuration
     hybrid_table_name STRING DEFAULT 'NEAR_DEV.LIVE.HYBRID_FACT_TRANSACTIONS';
     udtf_name STRING DEFAULT 'NEAR_DEV.LIVE_TABLE.TF_FACT_TRANSACTIONS';
-    batch_table_name STRING DEFAULT 'NEAR_DEV.CORE.FACT_TRANSACTIONS';
     chain_head_udf STRING DEFAULT '_live.udf_api'; 
     secret_path STRING DEFAULT 'Vault/prod/near/quicknode/mainnet';
     pk_column STRING DEFAULT 'tx_hash';
     block_id_column STRING DEFAULT 'block_id';
     blocks_to_fetch_buffer INTEGER DEFAULT 385;
+    block_timestamp_column STRING DEFAULT 'block_timestamp';
+    pruning_threshold_minutes INTEGER DEFAULT 60;
 
     -- State Variables
-    max_processed_block INTEGER;
     chain_head_block INTEGER;
     start_block_for_udtf INTEGER;
     rows_merged INTEGER := 0;
@@ -24,18 +24,25 @@ DECLARE
 BEGIN
     
     CREATE HYBRID TABLE IF NOT EXISTS IDENTIFIER(:hybrid_table_name) (
-        tx_hash STRING PRIMARY KEY, block_id NUMBER, block_timestamp TIMESTAMP_NTZ, nonce INT,
-        signature STRING, tx_receiver STRING, tx_signer STRING, tx VARIANT, gas_used NUMBER,
-        transaction_fee NUMBER, attached_gas NUMBER, tx_succeeded BOOLEAN, fact_transactions_id STRING,
-        inserted_timestamp TIMESTAMP_NTZ, modified_timestamp TIMESTAMP_NTZ,
+        tx_hash STRING PRIMARY KEY, 
+        block_id NUMBER, 
+        block_timestamp TIMESTAMP_NTZ, 
+        nonce INT,
+        signature STRING, 
+        tx_receiver STRING, 
+        tx_signer STRING, 
+        tx VARIANT, 
+        gas_used NUMBER,
+        transaction_fee NUMBER, 
+        attached_gas NUMBER, 
+        tx_succeeded BOOLEAN, 
+        fact_transactions_id STRING,
+        inserted_timestamp TIMESTAMP_NTZ, 
+        modified_timestamp TIMESTAMP_NTZ,
         _hybrid_updated_at TIMESTAMP_LTZ DEFAULT SYSDATE()
     );
-
-
-    SELECT COALESCE(MAX(IDENTIFIER(:block_id_column)), 0) INTO :max_processed_block
-    FROM IDENTIFIER(:batch_table_name);
-
-   
+    
+    -- Get the chain head block height
     SELECT IDENTIFIER(:chain_head_udf)(
                'POST',
                '{Service}', 
@@ -56,7 +63,6 @@ BEGIN
     USING (
         SELECT *
         FROM TABLE(near_dev.live_table.tf_fact_transactions(:start_block_for_udtf,:blocks_to_fetch_buffer))
-        WHERE IDENTIFIER(:block_id_column) > :max_processed_block
     ) AS source
     ON target.tx_hash = source.tx_hash
     WHEN MATCHED THEN UPDATE SET
@@ -76,10 +82,14 @@ BEGIN
         source.inserted_timestamp, source.modified_timestamp, SYSDATE()
     );
 
-
     rows_merged := SQLROWCOUNT;
 
-    RETURN 'Fetched blocks starting from ' || :start_block_for_udtf || '. Merged ' || :rows_merged || ' new transaction rows with block_id > ' || :max_processed_block || '.';
+    DELETE FROM IDENTIFIER(:hybrid_table_name)
+    WHERE  IDENTIFIER(:block_timestamp_column) < (DATEADD('minute', - :pruning_threshold_minutes, CURRENT_TIMESTAMP()))::TIMESTAMP_NTZ(9);
+
+    rows_deleted := SQLROWCOUNT;
+
+    RETURN 'Fetched blocks starting from ' || :start_block_for_udtf || '. Merged ' || :rows_merged || ' new transaction rows.' || 'Deleted' || :rows_deleted || 'rows';
 
 EXCEPTION
     WHEN OTHER THEN

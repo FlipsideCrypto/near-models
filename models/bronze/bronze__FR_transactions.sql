@@ -37,7 +37,7 @@
             bch.chunk_hash,
             bch.chunk_height_created,
             bch.chunk_height_included,
-            live_table.lt_chunks_udf_api(
+            livetable.lt_chunks_udf_api(
                 'POST',
                 '{Service}',
                 {'Content-Type' : 'application/json'},
@@ -77,7 +77,7 @@
             tx.chunk_hash,
             tx.chunk_height_created,
             tx.chunk_height_included,
-            live_table.lt_tx_udf_api(
+            livetable.lt_tx_udf_api(
                 'POST',
                 '{Service}',
                 {'Content-Type' : 'application/json', 'fsc-compression-mode' : 'auto'},
