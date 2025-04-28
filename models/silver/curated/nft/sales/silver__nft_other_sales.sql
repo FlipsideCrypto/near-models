@@ -1,34 +1,34 @@
 {{ config(
     materialized = 'incremental',
     merge_exclude_columns = ["inserted_timestamp"],
-    cluster_by = ['block_timestamp::DATE'],
+    cluster_by = ['block_timestamp::DATE', 'modified_timestamp::DATE'],
     unique_key = 'nft_other_sales_id',
     incremental_strategy = 'merge',
+    incremental_predicates = ["dynamic_range_predicate_custom","block_timestamp::date"],
     tags = ['curated','scheduled_non_core']
 ) }}
 
-WITH actions_events AS (
-
+WITH actions AS (
     SELECT
         block_id,
         block_timestamp,
         tx_hash,
-        action_id,
-        signer_id,
-        receiver_id,
-        method_name,
-        deposit,
-        args,
-        logs,
-        attached_gas,
+        receipt_id,
+        action_index,
+        receipt_signer_id AS signer_id,
+        receipt_receiver_id AS receiver_id,
+        action_data :method_name :: STRING AS method_name,
+        action_data :args :: VARIANT AS args,
+        action_data :deposit :: INT AS deposit,
+        action_data :gas :: NUMBER AS attached_gas,
         _partition_by_block_number,
         _inserted_timestamp
     FROM
-        {{ ref('silver__actions_events_function_call_s3') }}
+        {{ ref('core__ez_actions') }}
     WHERE
-        receipt_succeeded = TRUE
-        AND logs [0] IS NOT NULL
-        AND  receiver_id IN (
+        receipt_succeeded
+        AND action_name = 'FunctionCall'
+        AND receipt_receiver_id IN (
             'apollo42.near',
             'market.tradeport.near',
             'market.nft.uniqart.near',
@@ -49,25 +49,45 @@ WITH actions_events AS (
         {% endif %}
     {% endif %}
 ),
-raw_logs AS (
+logs AS (
     SELECT
-        *,
-        l.index AS logs_index,
-        TRY_PARSE_JSON(REPLACE(l.value :: STRING, 'EVENT_JSON:', '')) AS event_json
+        l.tx_hash,
+        l.receipt_id,
+        l.block_id,
+        l.block_timestamp,
+        l.log_index,
+        l.receiver_id,
+        l.predecessor_id,
+        TRY_PARSE_JSON(clean_log) AS event_json,
+        event_json :event :: STRING AS event_type
     FROM
-        actions_events A,
-        LATERAL FLATTEN(
-            input => A.logs
-        ) l
+        {{ ref('silver__logs_s3') }} l
+    INNER JOIN actions a 
+    ON a.tx_hash = l.tx_hash
+    WHERE
+        l.is_standard
+    {% if var("MANUAL_FIX") %}
+      AND {{ partition_load_manual('no_buffer') }}
+    {% else %}
+        {% if is_incremental() %}
+        AND l.block_timestamp >= (
+            SELECT
+                MAX(block_timestamp) - INTERVAL '48 HOURS'
+            FROM
+                {{ this }}
+        )
+        {% endif %}
+    {% endif %}
 ),
------------------------- OTHER MARKETPLACES  -------------------------------
 other_nft_sales AS (
     SELECT
-        action_id,
+        receipt_id,
+        action_index,
         block_id,
         block_timestamp,
         tx_hash,
         attached_gas,
+        args AS LOG,
         COALESCE(
             args :market_data :owner_id,
             args :sale :owner_id,
@@ -98,15 +118,12 @@ other_nft_sales AS (
         COALESCE(
             args :price,
             args :offer_data :price,
-            args: market_data :price
+            args :market_data :price
         ) / 1e24 AS price,
         method_name,
-        args AS LOG,
-        logs_index,
-        _inserted_timestamp,
         _partition_by_block_number
     FROM
-        raw_logs
+        actions
     WHERE
         receiver_id IN (
             'apollo42.near',
@@ -115,129 +132,119 @@ other_nft_sales AS (
             'market.l2e.near',
             'market.fewandfar.near'
         )
-        AND method_name IN (
-            'resolve_purchase',
-            'resolve_offer'
-        )
+        AND method_name IN ('resolve_purchase', 'resolve_offer')
 ),
-------------------------------- MITTE  -------------------------------
+
 mitte_nft_sales AS (
     SELECT
-        action_id,
+        receipt_id,
+        log_index AS action_index,
         block_id,
         block_timestamp,
         tx_hash,
-        attached_gas,
+        NULL AS attached_gas,
+        event_json AS LOG,
         CASE
             WHEN SPLIT(
-                event_json :data :order [2],
+                LOG :data :order [2],
                 ':'
-            ) [1] = 'near' THEN event_json :data :order [6]
-            ELSE event_json :data :order [1]
+            ) [1] = 'near' THEN LOG :data :order [6]
+            ELSE LOG :data :order [1]
         END :: STRING AS seller_address,
         CASE
             WHEN SPLIT(
-                event_json :data :order [2],
+                LOG :data :order [2],
                 ':'
-            ) [1] = 'near' THEN event_json :data :order [1]
-            ELSE event_json :data :order [6]
+            ) [1] = 'near' THEN LOG :data :order [1]
+            ELSE LOG :data :order [6]
         END :: STRING AS buyer_address,
-        receiver_id AS platform_address,
+        predecessor_id AS platform_address,
         'Mitte' AS platform_name,
         CASE
             WHEN SPLIT(
-                event_json :data :order [2],
+                LOG :data :order [2],
                 ':'
             ) [1] = 'near' THEN SPLIT(
-                event_json :data :order [7],
+                LOG :data :order [7],
                 ':'
             ) [1]
             ELSE SPLIT(
-                event_json :data :order [2],
+                LOG :data :order [2],
                 ':'
             ) [1]
         END :: STRING AS nft_address,
         CASE
             WHEN SPLIT(
-                event_json :data :order [2],
+                LOG :data :order [2],
                 ':'
             ) [1] = 'near'
             AND SPLIT(
-                event_json :data :order [7],
+                LOG :data :order [7],
                 ':'
             ) [4] IS NULL THEN SPLIT(
-                event_json :data :order [7],
+                LOG :data :order [7],
                 ':'
             ) [2]
             WHEN SPLIT(
-                event_json :data :order [2],
+                LOG :data :order [2],
                 ':'
             ) [1] = 'near'
             AND SPLIT(
-                event_json :data :order [7],
+                LOG :data :order [7],
                 ':'
             ) [4] IS NOT NULL THEN SPLIT(
-                event_json :data :order [7],
+                LOG :data :order [7],
                 ':'
             ) [2] || ':' || SPLIT(
-                event_json :data :order [7],
+                LOG :data :order [7],
                 ':'
             ) [3]
             WHEN SPLIT(
-                event_json :data :order [2],
+                LOG :data :order [2],
                 ':'
             ) [4] IS NULL THEN SPLIT(
-                event_json :data :order [2],
+                LOG :data :order [2],
                 ':'
             ) [2]
             ELSE SPLIT(
-                event_json :data :order [2],
+                LOG :data :order [2],
                 ':'
             ) [2] || ':' || SPLIT(
-                event_json :data :order [2],
+                LOG :data :order [2],
                 ':'
             ) [3]
         END :: STRING AS token_id,
         CASE
             WHEN SPLIT(
-                event_json :data :order [2],
+                LOG :data :order [2],
                 ':'
             ) [1] = 'near' THEN SPLIT(
-                event_json :data :order [2],
+                LOG :data :order [2],
                 ':'
             ) [3]
             ELSE SPLIT(
-                event_json :data :order [7],
+                LOG :data :order [7],
                 ':'
             ) [3]
         END / 1e24 AS price,
-        event_json :event :: STRING AS method_name,
-        event_json AS LOG,
-        logs_index,
-        _inserted_timestamp,
+        LOG :event :: STRING AS method_name,
         _partition_by_block_number
     FROM
-        raw_logs
+        logs
     WHERE
         receiver_id = 'a.mitte-orderbook.near'
-        AND event_json :event :: STRING != 'nft_mint'
-        AND event_json :data :order [6] :: STRING != ''
+        AND LOG :event :: STRING != 'nft_mint'
+        AND LOG :data :order [6] :: STRING != ''
 ),
-------------------------------- FINAL   -------------------------------
 sales_union AS (
-    SELECT
-        *
-    FROM
-        other_nft_sales
+    SELECT * FROM other_nft_sales
     UNION ALL
-    SELECT
-        *
-    FROM
-        mitte_nft_sales
+    SELECT * FROM mitte_nft_sales
 ),
 FINAL AS (
     SELECT
-        action_id,
+        receipt_id,
+        action_index,
         block_id,
         block_timestamp,
         tx_hash,
@@ -251,23 +258,15 @@ FINAL AS (
         method_name,
         LOG,
         price,
-        NULL :: STRING AS affiliate_id,
-        NULL :: STRING AS affiliate_amount,
-        '{}' :: VARIANT AS royalties,
-        NULL :: FLOAT AS platform_fee,
-        logs_index,
-        _inserted_timestamp,
         _partition_by_block_number
-    FROM
-        sales_union s
+    FROM sales_union
 )
 SELECT
     *,
     {{ dbt_utils.generate_surrogate_key(
-        ['action_id', 'logs_index']
+        ['receipt_id', 'action_index']
     ) }} AS nft_other_sales_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
-FROM
-    FINAL
+FROM FINAL

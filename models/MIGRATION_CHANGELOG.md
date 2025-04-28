@@ -941,4 +941,78 @@ Query Changes:
 - Maintains same lockup contract tracking and vesting calculations
 - Preserves all existing downstream dependencies
 
+### silver__nft_paras_sales
+**Date**: 2024-03
+**Changes**:
+- Architecture:
+  - Migrated from `silver__actions_events_function_call_s3` to `core__ez_actions`
+  - Improved log handling by using `receipt_status_value` directly from `core__ez_actions`
+  - Updated unique key to use `receipt_id` and `action_index`
+  - Added dynamic range predicate for incremental updates
+  - Added `modified_timestamp::DATE` to clustering keys
+
+- Query Changes:
+  - Optimized data sourcing:
+    - Main CTE filters directly from `core__ez_actions` for both marketplace actions and NFT transfer payouts
+    - Added filtering for both receiver_id and predecessor_id to capture all Paras marketplace interactions
+  - Improved royalty handling by using `receipt_status_value` directly from actions
+  - Maintained complex COALESCE logic for handling various sale types (regular sales and offers)
+
+- Column Changes:
+  - Replaced `action_id` with `receipt_id` and `action_index`
+  - Added direct access to `receipt_status_value` for royalty extraction
+  - Maintained all existing business logic for:
+    - Price calculations using various args patterns
+    - Royalty extraction from SuccessValue
+    - Platform fee calculations (2% of sale price)
+
+- Configuration:
+  - Updated incremental predicates to use dynamic range on `block_timestamp::date`
+  - Modified clustering strategy to include both timestamp fields
+  - Preserved existing tag configuration
+
+### silver__nft_other_sales
+**Date**: 2024-03
+**Changes**:
+- Architecture:
+  - Migrated from `silver__actions_events_function_call_s3` to `core__ez_actions` for all action-based sales
+  - Migrated all log handling to `silver__logs_s3` with direct joins and event parsing
+  - Maintained separate CTEs for Mitte marketplace, using logs for event extraction
+  - Updated unique key to use `nft_other_sales_id` generated from `receipt_id` and `action_index`
+  - Added dynamic range predicate for incremental updates
+  - Added `modified_timestamp::DATE` to clustering keys
+
+- Query Changes:
+  - Split data sourcing into three CTEs:
+    - `actions`: Filters directly from `core__ez_actions` for all supported marketplaces
+    - `logs`: Processes event logs from `silver__logs_s3` with proper join conditions
+    - `mitte_logs`: Handles Mitte-specific event parsing with optimized log filtering
+  - Preserved all COALESCE and CASE logic for extracting:
+    - Seller address from various args patterns
+    - Buyer address from direct and offer-based purchases
+    - NFT contract and token identification
+    - Price calculations with proper decimal handling
+  - Improved marketplace-specific logic:
+    - Apollo42, TradePort, UniqArt, L2E, FewAndFar: Direct args parsing
+    - Mitte: Enhanced log parsing with proper order array handling
+  - Added proper join conditions between actions and logs using tx_hash and receipt_id
+
+- Column Changes:
+  - Replaced `action_id` with `receipt_id` and `action_index`
+  - Updated source fields to use receipt-level identifiers:
+    - `receipt_receiver_id` for platform_address
+    - `receipt_signer_id` for transaction attribution
+  - Maintained all business logic for:
+    - Price calculations (division by 1e24)
+    - Platform name mapping
+    - NFT contract and token ID extraction
+  - Added proper type casting for all extracted fields
+
+- Configuration:
+  - Updated incremental predicates to use dynamic range on `block_timestamp::date`
+  - Modified clustering strategy to include both timestamp fields
+  - Added search optimization on key fields
+  - Preserved existing tag configuration
+  - Updated merge strategy for better incremental processing
+
 --- 

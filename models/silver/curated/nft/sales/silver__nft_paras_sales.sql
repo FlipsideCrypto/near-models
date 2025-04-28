@@ -1,41 +1,39 @@
 {{ config(
     materialized = 'incremental',
     merge_exclude_columns = ["inserted_timestamp"],
-    cluster_by = ['block_timestamp::DATE'],
+    cluster_by = ['block_timestamp::DATE', 'modified_timestamp::DATE'],
     unique_key = 'nft_paras_sales_id',
     incremental_strategy = 'merge',
     incremental_predicates = ["dynamic_range_predicate_custom","block_timestamp::date"],
     tags = ['curated','scheduled_non_core']
 ) }}
-{# Note - multisource model #}
--- TODO ez_actions refactor
 
-WITH actions_events AS (
-
+WITH actions AS (
     SELECT
         block_id,
         block_timestamp,
         tx_hash,
-        action_id,
-        signer_id,
-        receiver_id,
-        predecessor_id,
-        method_name,
-        deposit,
-        args,
-        logs,
-        attached_gas,
-        _partition_by_block_number,
-        _inserted_timestamp
+        receipt_id,
+        action_index,
+        receipt_signer_id AS signer_id,
+        receipt_receiver_id AS receiver_id,
+        receipt_predecessor_id AS predecessor_id,
+        action_data :method_name :: STRING AS method_name,
+        action_data :args :: VARIANT AS args,
+        action_data :deposit :: INT AS deposit,
+        action_data :gas :: NUMBER AS attached_gas,
+        receipt_status_value,
+        _partition_by_block_number
     FROM
-        {{ ref('silver__actions_events_function_call_s3') }}
+        {{ ref('core__ez_actions') }}
     WHERE
-        receipt_succeeded = TRUE
-        AND logs [0] IS NOT NULL 
-        AND receiver_id = 'marketplace.paras.near'
+        receipt_succeeded
+        AND action_name = 'FunctionCall'
+        AND (receipt_receiver_id = 'marketplace.paras.near' OR receipt_predecessor_id = 'marketplace.paras.near')
         AND method_name IN (
             'resolve_purchase',
-            'resolve_offer'
+            'resolve_offer',
+            'nft_transfer_payout'
         )
     {% if var("MANUAL_FIX") %}
       AND {{ partition_load_manual('no_buffer') }}
@@ -50,48 +48,10 @@ WITH actions_events AS (
         {% endif %}
     {% endif %}
 ),
--- TODO: Delete this dependencie including SuccessValue in the new version of actions events.
-status_value AS (
+paras_nft_sales AS (
     SELECT
-        tx_hash,
-        outcome_json :outcome :status AS status_value,
-        TRY_PARSE_JSON(REPLACE(outcome_json :outcome :logs[0] :: STRING, 'EVENT_JSON:', '')) AS event,
-        PARSE_JSON(BASE64_DECODE_STRING(outcome_json :outcome :status :SuccessValue)) as SuccessValue,
-        _partition_by_block_number,
-        inserted_timestamp AS _inserted_timestamp
-    FROM
-        {{ ref('silver__receipts_final') }}
-    WHERE
-        predecessor_id = 'marketplace.paras.near'
-    AND 
-        event:event = 'nft_transfer'
-
-    {% if var("MANUAL_FIX") %}
-      AND {{ partition_load_manual('no_buffer') }}
-    {% else %}
-        {% if is_incremental() %}
-        AND modified_timestamp >= (
-            SELECT
-                MAX(modified_timestamp)
-            FROM
-                {{ this }}
-        )
-        {% endif %}
-    {% endif %}
-),
-raw_logs AS (
-    SELECT
-        *,
-        l.index AS logs_index
-    FROM
-        actions_events A,
-        LATERAL FLATTEN(
-            input => A.logs
-        ) l
-),
-paras_nft AS (
-    SELECT
-        action_id,
+        receipt_id,
+        action_index,
         block_id,
         block_timestamp,
         tx_hash,
@@ -120,35 +80,34 @@ paras_nft AS (
         COALESCE(
             args :price,
             args :offer_data :price,
-            args: market_data :price
+            args :market_data :price
         ) / 1e24 AS price,
         method_name,
         args AS LOG,
-        logs_index,
-        _inserted_timestamp,
         _partition_by_block_number
     FROM
-        raw_logs
+        actions
+    WHERE
+        method_name in ('resolve_purchase', 'resolve_offer')
 ),
-------------------------------- FINAL   -------------------------------
 FINAL AS (
     SELECT
         m.*,
         NULL :: STRING AS affiliate_id,
-        NULL  :: STRING AS affiliate_amount,
-        COALESCE(SuccessValue:payout, SuccessValue) :: VARIANT AS royalties,
+        NULL :: STRING AS affiliate_amount,
+        l.receipt_status_value :SuccessValue :payout :: VARIANT AS royalties,
         price * 0.02 :: FLOAT AS platform_fee
     FROM
-        paras_nft m
+        paras_nft_sales m
     LEFT JOIN
-        status_value r 
+        (select tx_hash, receipt_status_value from actions where method_name = 'nft_transfer_payout') l 
     ON
-        m.tx_hash = r.tx_hash
+        m.tx_hash = l.tx_hash
 )
 SELECT
     *,
     {{ dbt_utils.generate_surrogate_key(
-        ['action_id', 'logs_index']
+        ['receipt_id', 'action_index']
     ) }} AS nft_paras_sales_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
