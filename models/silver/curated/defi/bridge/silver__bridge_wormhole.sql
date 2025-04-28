@@ -135,7 +135,7 @@ inbound_src_id AS (
         logs
     WHERE
         receiver_id = 'contract.portalbridge.near'
-        tx_hash IN (
+        AND tx_hash IN (
             SELECT
                 DISTINCT tx_hash
             FROM

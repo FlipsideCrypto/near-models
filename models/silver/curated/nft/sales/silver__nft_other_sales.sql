@@ -21,8 +21,7 @@ WITH actions AS (
         action_data :args :: VARIANT AS args,
         action_data :deposit :: INT AS deposit,
         action_data :gas :: NUMBER AS attached_gas,
-        _partition_by_block_number,
-        _inserted_timestamp
+        FLOOR(block_id, -3) AS _partition_by_block_number
     FROM
         {{ ref('core__ez_actions') }}
     WHERE
@@ -37,7 +36,7 @@ WITH actions AS (
             'a.mitte-orderbook.near'
         )
     {% if var("MANUAL_FIX") %}
-      AND {{ partition_load_manual('no_buffer') }}
+      AND {{ partition_load_manual('no_buffer', 'floor(block_id, -3)') }}
     {% else %}
         {% if is_incremental() %}
         AND modified_timestamp >= (
@@ -59,7 +58,8 @@ logs AS (
         l.receiver_id,
         l.predecessor_id,
         TRY_PARSE_JSON(clean_log) AS event_json,
-        event_json :event :: STRING AS event_type
+        event_json :event :: STRING AS event_type,
+        l._partition_by_block_number
     FROM
         {{ ref('silver__logs_s3') }} l
     INNER JOIN actions a 
