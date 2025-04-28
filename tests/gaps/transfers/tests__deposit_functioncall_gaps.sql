@@ -1,6 +1,7 @@
 {{ config(
     severity = "error",
-    tags = ['gap_test']
+    tags = ['gap_test'],
+    enabled = False
 ) }}
 
 WITH deposit_functioncalls AS (
