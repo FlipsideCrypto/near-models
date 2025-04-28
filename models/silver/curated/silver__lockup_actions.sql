@@ -56,7 +56,7 @@ lockup_actions AS (
 xfers AS (
     SELECT
         tx_hash,
-        action_id,
+        receipt_id,
         block_timestamp,
         block_id,
         amount_unadj :: INT AS deposit,
@@ -107,11 +107,7 @@ agg_arguments AS (
 lockup_xfers AS (
     SELECT
         tx_hash,
-        action_id,
-        SPLIT(
-            action_id,
-            '-'
-        ) [0] :: STRING AS receipt_id,
+        receipt_id,
         block_timestamp,
         block_id,
         deposit,
