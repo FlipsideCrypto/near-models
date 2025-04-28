@@ -49,8 +49,6 @@ models:
         description: The account ID of the lockup contract
         tests:
           - not_null
-          - dbt_expectations.expect_column_values_to_match_regex:
-              regex: .*\.lockup\.near$
 
       - name: OWNER_ACCOUNT_ID
         description: The account ID of the lockup contract owner

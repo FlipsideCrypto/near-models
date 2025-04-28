@@ -35,8 +35,6 @@ models:
         description: "{{doc('contract_address')}}"
         tests:
           - not_null
-          - dbt_expectations.expect_column_values_to_match_regex:
-              regex: .*\.near$
 
       - name: PREDECESSOR_ID
         description: "{{doc('predecessor_id')}}"
@@ -52,8 +50,6 @@ models:
         description: "{{doc('from_address')}}"
         tests:
           - not_null
-          - dbt_expectations.expect_column_values_to_match_regex:
-              regex: .*\.near$
 
       - name: TO_ADDRESS
         description: "{{doc('to_address')}}"

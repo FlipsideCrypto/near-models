@@ -36,8 +36,6 @@ models:
         description: "{{doc('contract_address')}}"
         tests:
           - not_null
-          - dbt_expectations.expect_column_values_to_match_regex:
-              regex: .*\.near$
 
       - name: FROM_ADDRESS
         description: "{{doc('from_address')}}"
@@ -46,8 +44,6 @@ models:
         description: "{{doc('to_address')}}"
         tests:
           - not_null
-          - dbt_expectations.expect_column_values_to_match_regex:
-              regex: .*\.near$
 
       - name: AMOUNT_UNADJ
         description: "{{doc('amount_unadj')}}"

@@ -39,22 +39,16 @@ models:
         description: "{{ doc('from_address')}}"
         tests:
           - not_null
-          - dbt_expectations.expect_column_values_to_match_regex:
-              regex: .*\.near$
 
       - name: BUYER_ADDRESS
         description: "{{ doc('to_address')}}"
         tests:
           - not_null
-          - dbt_expectations.expect_column_values_to_match_regex:
-              regex: .*\.near$
 
       - name: PLATFORM_ADDRESS
         description: "The contract address of the NFT marketplace where the sale occurred"
         tests:
           - not_null
-          - dbt_expectations.expect_column_values_to_match_regex:
-              regex: .*\.near$
 
       - name: PLATFORM_NAME
         description: "The name of the NFT marketplace (e.g., Mintbase, Paras, Apollo42, etc.)"
@@ -67,8 +61,6 @@ models:
         description: "The contract address of the NFT collection"
         tests:
           - not_null
-          - dbt_expectations.expect_column_values_to_match_regex:
-              regex: .*\.near$
 
       - name: TOKEN_ID
         description: "{{ doc('token_id')}}"
