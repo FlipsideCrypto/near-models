@@ -5,7 +5,6 @@
     merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = ['block_timestamp::DATE', 'modified_timestamp::DATE'],
     unique_key = 'token_transfer_deposit_id',
-    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,receipt_id,predecessor_id,receiver_id);",
     tags = ['curated','scheduled_non_core']
 ) }}
 

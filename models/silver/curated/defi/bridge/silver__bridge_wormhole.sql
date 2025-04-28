@@ -5,7 +5,6 @@
     merge_exclude_columns = ["inserted_timestamp"],
     unique_key = 'bridge_wormhole_id',
     cluster_by = ['block_timestamp::DATE', 'modified_timestamp::DATE'],
-    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,destination_address,source_address);",
     tags = ['curated','scheduled_non_core', 'grail'],
 ) }}
 

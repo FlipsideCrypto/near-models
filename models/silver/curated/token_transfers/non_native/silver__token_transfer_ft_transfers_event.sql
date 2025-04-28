@@ -5,7 +5,6 @@
     incremental_predicates = ["dynamic_range_predicate_custom","block_timestamp::date"],
     cluster_by = ['block_timestamp::DATE', 'modified_timestamp::DATE'],
     unique_key = 'transfers_event_id',
-    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,receipt_id,contract_address,from_address,to_address);",
     tags = ['curated','scheduled_non_core']
 ) }}
 

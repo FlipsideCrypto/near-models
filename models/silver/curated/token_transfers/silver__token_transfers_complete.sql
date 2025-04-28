@@ -4,7 +4,6 @@
     unique_key = 'transfers_complete_id',
     incremental_strategy = 'merge',
     incremental_predicates = ["dynamic_range_predicate_custom","block_timestamp::date"],
-    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,receipt_id,contract_address,from_address,to_address);",
     tags = ['curated','scheduled_non_core']
 ) }}
 
