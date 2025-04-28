@@ -3,56 +3,108 @@ version: 2
 models:
   - name: silver__nft_complete_nft_sales
     description: |-
-      This table records all the NFT sales actions of the mainy Near marketplaces..
+      This table records all NFT sales actions across the main NEAR marketplaces, including Mintbase, Paras, and other marketplaces like Apollo42, TradePort, and Mitte.
+      The model combines data from marketplace-specific models and standardizes the output format.
 
     columns:
       - name: RECEIPT_ID
         description: "{{ doc('receipt_id')}}"
+        tests:
+          - not_null
 
       - name: BLOCK_ID
         description: "{{ doc('block_id')}}"
+        tests:
+          - not_null
 
       - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp')}}"
         tests:
-          - not_null:
-              where: _inserted_timestamp <= current_timestamp - interval '10 hour'
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: TIMESTAMP_NTZ
 
       - name: TX_HASH
         description: "{{ doc('tx_hash')}}"
+        tests:
+          - not_null
 
       - name: GAS_BURNED
         description: "{{ doc('attached_gas')}}"
+        tests:
+          - not_null
 
       - name: SELLER_ADDRESS
         description: "{{ doc('from_address')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_match_regex:
+              regex: .*\.near$
 
       - name: BUYER_ADDRESS
         description: "{{ doc('to_address')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_match_regex:
+              regex: .*\.near$
 
       - name: PLATFORM_ADDRESS
-        description: "{{ doc('tx_signer')}}"
+        description: "The contract address of the NFT marketplace where the sale occurred"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_match_regex:
+              regex: .*\.near$
 
       - name: PLATFORM_NAME
-        description: "Platform Name"
+        description: "The name of the NFT marketplace (e.g., Mintbase, Paras, Apollo42, etc.)"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Mintbase', 'Paras', 'Apollo42', 'TradePort', 'UniqArt', 'L2E', 'FewAndFar', 'Mitte']
 
       - name: NFT_ADDRESS
-        description: "NFT Address"
+        description: "The contract address of the NFT collection"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_match_regex:
+              regex: .*\.near$
 
       - name: TOKEN_ID
         description: "{{ doc('token_id')}}"
+        tests:
+          - not_null
 
       - name: PRICE
         description: "{{ doc('raw_price')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: FLOAT
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
 
       - name: PRICE_USD
         description: "{{ doc('price_usd')}}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: FLOAT
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
 
       - name: METHOD_NAME
         description: "{{ doc('method_name')}}"
+        tests:
+          - not_null
 
-      - name: LOGS
+      - name: LOG
         description: "{{ doc('logs')}}"
+        tests:
+          - not_null
+
+      - name: LOGS_INDEX
+        description: "The index of the log entry for this sale, used to maintain order and uniqueness"
+        tests:
+          - not_null
 
       - name: AFFILIATE_ID
         description: "{{ doc('affiliate_id')}}"
@@ -60,14 +112,25 @@ models:
       - name: AFFILIATE_AMOUNT
         description: "{{ doc('affiliate_amount')}}"
 
+      - name: AFFILIATE_AMOUNT_USD
+        description: "The USD value of the affiliate amount at the time of the sale"
+
       - name: ROYALTIES
         description: "{{ doc('royalties')}}"
 
       - name: PLATFORM_FEE
         description: "{{ doc('platform_fee')}}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              include_null: true
 
-      - name: _INSERTED_TIMESTAMP
-        description: "{{ doc('_inserted_timestamp')}}"
+      - name: PLATFORM_FEE_USD
+        description: "The USD value of the platform fee at the time of the sale"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              include_null: true
 
       - name: _PARTITION_BY_BLOCK_NUMBER
         description: "{{ doc('_partition_by_block_number')}}"
@@ -80,9 +143,19 @@ models:
 
       - name: INSERTED_TIMESTAMP
         description: "{{doc('inserted_timestamp')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: TIMESTAMP_NTZ
 
       - name: MODIFIED_TIMESTAMP
         description: "{{doc('modified_timestamp')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: TIMESTAMP_NTZ
 
       - name: _INVOCATION_ID
         description: "{{doc('invocation_id')}}"
+        tests:
+          - not_null
