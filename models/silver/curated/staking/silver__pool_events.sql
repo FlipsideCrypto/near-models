@@ -13,7 +13,7 @@ WITH receipts AS (
         tx_hash,
         block_id,
         block_timestamp,
-        receipt_id AS receipt_object_id,
+        receipt_id,
         receiver_id,
         receipt_json :receipt :Action :signer_id :: STRING AS signer_id,
         predecessor_id,
@@ -42,7 +42,7 @@ FINAL AS (
         tx_hash,
         block_id,
         block_timestamp,
-        receipt_object_id,
+        receipt_id AS receipt_object_id, -- slated for rename to receipt_id
         receiver_id,
         signer_id,
         predecessor_id,

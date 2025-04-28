@@ -38,7 +38,7 @@ dates AS (
 new_lockup_txs AS (
     -- new lockup contract created
     SELECT
-        receipt_object_id,
+        receipt_object_id, -- slated for rename to receipt_id
         tx_hash,
         block_timestamp,
         receiver_id AS lockup_account_id,

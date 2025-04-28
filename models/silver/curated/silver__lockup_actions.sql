@@ -172,7 +172,7 @@ parse_args_json AS (
 FINAL AS (
     SELECT
         tx_hash,
-        receipt_ids AS receipt_object_ids,
+        receipt_ids AS receipt_object_ids, -- slated for rename to receipt_ids
         block_timestamp,
         block_id,
         deposit,

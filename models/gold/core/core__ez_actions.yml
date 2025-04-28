@@ -63,7 +63,7 @@ models:
                 - INTEGER
 
       - name: RECEIPT_ID
-        description: "{{ doc('receipt_object_id')}}"
+        description: "{{ doc('receipt_id')}}"
         tests:
           - not_null:
               where: inserted_timestamp >= SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days'

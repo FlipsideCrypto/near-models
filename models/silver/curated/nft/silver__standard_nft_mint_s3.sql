@@ -203,7 +203,7 @@ mint_events AS (
 )
 SELECT
     tx_hash,
-    receipt_id AS receipt_object_id, -- for cutover
+    receipt_id AS receipt_object_id, -- slated for rename to receipt_id
     receipt_id,
     block_id,
     block_timestamp,
