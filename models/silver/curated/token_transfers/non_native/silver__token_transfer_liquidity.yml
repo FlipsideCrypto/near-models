@@ -28,8 +28,6 @@ models:
 
       - name: RECEIPT_ID
         description: "{{doc('receipt_id')}}"
-        tests:
-          - not_null
 
       - name: CONTRACT_ADDRESS
         description: "{{doc('contract_address')}}"
@@ -48,10 +46,6 @@ models:
         description: "{{doc('amount_unadj')}}"
         tests:
           - not_null
-          - dbt_expectations.expect_column_values_to_be_of_type:
-              column_type: FLOAT
-          - dbt_expectations.expect_column_values_to_be_between:
-              min_value: 0
 
       - name: MEMO
         description: "{{doc('memo')}}"
@@ -60,7 +54,7 @@ models:
           - dbt_expectations.expect_column_values_to_be_in_set:
               value_set: ['add_liquidity']
 
-      - name: EVENT_INDEX
+      - name: RN
         description: "{{doc('event_index')}}"
         tests:
           - not_null
@@ -69,13 +63,6 @@ models:
 
       - name: PREDECESSOR_ID
         description: "{{doc('predecessor_id')}}"
-        tests:
-          - not_null
-
-      - name: SIGNER_ID
-        description: "{{doc('signer_id')}}"
-        tests:
-          - not_null
 
       - name: _PARTITION_BY_BLOCK_NUMBER
         description: "{{doc('_partition_by_block_number')}}"

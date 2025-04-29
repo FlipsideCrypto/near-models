@@ -74,18 +74,18 @@ SELECT
     block_timestamp,
     block_id,
     tx_hash,
+    receipt_id AS action_id,
     receipt_id,
     contract_address,
     from_address,
     to_address,
     amount_unadj,
     memo,
-    event_index,
+    event_index AS rn,
     predecessor_id,
-    signer_id,
     _partition_by_block_number,
     {{ dbt_utils.generate_surrogate_key(
-        ['receipt_id', 'contract_address', 'amount_unadj', 'to_address', 'event_index']
+        ['receipt_id', 'contract_address', 'amount_unadj', 'to_address', 'rn']
     ) }} AS mint_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,

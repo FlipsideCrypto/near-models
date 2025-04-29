@@ -104,6 +104,7 @@ SELECT
     block_timestamp,
     block_id,
     tx_hash,
+    receipt_id AS action_id,
     receipt_id,
     contract_address,
     predecessor_id,
@@ -112,10 +113,10 @@ SELECT
     to_address,
     amount_unadj,
     memo,
-    event_index,
+    event_index AS rn,
     _partition_by_block_number,
     {{ dbt_utils.generate_surrogate_key(
-        ['receipt_id', 'contract_address', 'amount_unadj', 'from_address', 'to_address', 'event_index']
+        ['receipt_id', 'contract_address', 'amount_unadj', 'from_address', 'to_address', 'rn']
     ) }} AS transfers_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,

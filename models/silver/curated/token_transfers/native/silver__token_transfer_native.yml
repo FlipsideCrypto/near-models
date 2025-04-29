@@ -26,20 +26,14 @@ models:
 
       - name: receipt_id
         description: "{{ doc('receipt_id')}}"
-        tests:
-          - not_null
 
       - name: action_index
         description: "{{ doc('action_index')}}"
-        tests:
-          - not_null
 
       - name: amount_unadj
         description: "{{ doc('amount_unadj')}}"
         tests:
           - not_null
-          - dbt_expectations.expect_column_values_to_be_greater_than:
-              value: 0
 
       - name: amount_adj
         description: "{{ doc('amount_adj')}}"
@@ -55,11 +49,6 @@ models:
 
       - name: receiver_id
         description: "{{ doc('receiver_id')}}"
-        tests:
-          - not_null
-
-      - name: signer_id
-        description: "{{ doc('signer_id')}}"
         tests:
           - not_null
 

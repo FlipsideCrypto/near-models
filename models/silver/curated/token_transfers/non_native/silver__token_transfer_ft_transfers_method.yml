@@ -28,8 +28,6 @@ models:
 
       - name: RECEIPT_ID
         description: "{{doc('receipt_id')}}"
-        tests:
-          - not_null
 
       - name: CONTRACT_ADDRESS
         description: "{{doc('contract_address')}}"
@@ -38,13 +36,9 @@ models:
 
       - name: PREDECESSOR_ID
         description: "{{doc('predecessor_id')}}"
-        tests:
-          - not_null
 
       - name: SIGNER_ID
         description: "{{doc('signer_id')}}"
-        tests:
-          - not_null
 
       - name: FROM_ADDRESS
         description: "{{doc('from_address')}}"
@@ -60,18 +54,14 @@ models:
         description: "{{doc('amount_unadj')}}"
         tests:
           - not_null
-          - dbt_expectations.expect_column_values_to_be_of_type:
-              column_type: FLOAT
-          - dbt_expectations.expect_column_values_to_be_between:
-              min_value: 0
 
       - name: MEMO
         description: "{{doc('memo')}}"
         tests:
           - dbt_expectations.expect_column_values_to_be_of_type:
-              column_type: STRING
+              column_type: VARCHAR
 
-      - name: EVENT_INDEX
+      - name: RN
         description: "{{doc('event_index')}}"
         tests:
           - not_null

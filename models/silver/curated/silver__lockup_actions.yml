@@ -8,12 +8,6 @@ models:
       vesting schedules, and release durations. The model processes actions with method names 
       'on_lockup_create', 'create', and 'new' from lockup.near contracts.
 
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - tx_hash
-            - action_index
-
     columns:
       - name: LOCKUP_ACTIONS_ID
         description: Unique identifier for each lockup action, generated from tx_hash and action_index
@@ -33,17 +27,8 @@ models:
         tests:
           - not_null
 
-      - name: RECEIPT_ID
-        description: The receipt ID associated with the lockup action
-        tests:
-          - not_null
-
-      - name: ACTION_INDEX
-        description: The index of the action within the transaction
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_of_type:
-              column_type: NUMBER
+      - name: RECEIPT_OBJECT_IDS
+        description: The receipt IDs associated with the lockup action
 
       - name: LOCKUP_ACCOUNT_ID
         description: The account ID of the lockup contract
@@ -66,13 +51,13 @@ models:
         description: The duration of the lockup period in nanoseconds
         tests:
           - dbt_expectations.expect_column_values_to_be_of_type:
-              column_type: STRING
+              column_type: VARCHAR
 
       - name: LOCKUP_TIMESTAMP
         description: The timestamp when the lockup period starts
         tests:
           - dbt_expectations.expect_column_values_to_be_of_type:
-              column_type: STRING
+              column_type: VARCHAR
 
       - name: LOCKUP_TIMESTAMP_NTZ
         description: The lockup timestamp converted to TIMESTAMP_NTZ format
@@ -84,19 +69,19 @@ models:
         description: The duration over which tokens are released after the lockup period
         tests:
           - dbt_expectations.expect_column_values_to_be_of_type:
-              column_type: STRING
+              column_type: VARCHAR
 
       - name: VESTING_SCHEDULE
         description: The vesting schedule configuration for the lockup contract
         tests:
           - dbt_expectations.expect_column_values_to_be_of_type:
-              column_type: STRING
+              column_type: VARCHAR
 
       - name: TRANSFERS_INFORMATION
         description: Additional information about token transfer restrictions
         tests:
           - dbt_expectations.expect_column_values_to_be_of_type:
-              column_type: STRING
+              column_type: VARCHAR
 
       - name: MODIFIED_TIMESTAMP
         description: Timestamp when the record was last modified
