@@ -79,7 +79,7 @@ SELECT
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
     {{ dbt_utils.generate_surrogate_key(
-        ['HOUR', 'token_address', 'p.symbol']
+        ['source', 'HOUR', 'token_address', 'p.symbol','blockchain', 'price']
     ) }} AS complete_token_prices_id,
     '{{ invocation_id }}' AS _invocation_id
 FROM

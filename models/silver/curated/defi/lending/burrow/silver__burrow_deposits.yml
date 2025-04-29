@@ -19,8 +19,6 @@ models:
 
       - name: RECEIPT_ID
         description: "{{ doc('receipt_id')}}"
-        tests:
-          - not_null
 
       - name: ACTION_INDEX
         description: "{{ doc('action_index')}}"

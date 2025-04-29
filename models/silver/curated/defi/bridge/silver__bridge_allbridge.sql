@@ -17,7 +17,6 @@ WITH functioncall AS (
         action_index,
         receipt_predecessor_id AS predecessor_id,
         receipt_receiver_id AS receiver_id,
-        receipt_signer_id AS signer_id,
         action_data :method_name :: STRING AS method_name,
         action_data :args :: VARIANT AS args,
         receipt_succeeded,
