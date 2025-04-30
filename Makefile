@@ -28,3 +28,15 @@ deploy_livetable_udtfs: rm_logs
 	--profiles-dir ~/.dbt \
 	--profile near \
 	--target dev
+
+compile_sp_macro: rm_logs
+	dbt compile --select _compile_sp_macro \
+	--profiles-dir ~/.dbt \
+	--profile near \
+	--target dev
+
+compile_task: rm_logs
+	dbt compile --select _compile_task \
+	--profiles-dir ~/.dbt \
+	--profile near \
+	--target dev

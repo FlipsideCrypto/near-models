@@ -1,19 +1,17 @@
-{% macro fact_transactions_live(schema) %}
+{% macro create_sp_refresh_fact_transactions_live() %}
 
-CREATE OR REPLACE PROCEDURE near_dev.live_table.sp_update_recent_hybrid_transactions()
+CREATE PROCEDURE IF NOT EXISTS {{ target.database }}.livetable.sp_refresh_fact_transactions_live() -- Update to if not exists
 RETURNS STRING
 LANGUAGE SQL
 AS
 DECLARE
     -- Configuration
-    hybrid_table_name STRING DEFAULT 'NEAR_DEV.LIVE.HYBRID_FACT_TRANSACTIONS';
-    udtf_name STRING DEFAULT 'NEAR_DEV.LIVE_TABLE.TF_FACT_TRANSACTIONS';
+    hybrid_table_name STRING DEFAULT '{{ target.database }}.CORE_LIVE.HYBRID_FACT_TRANSACTIONS';
+    udtf_name STRING DEFAULT '{{ target.database }}.LIVETABLE.TF_FACT_TRANSACTIONS';
     chain_head_udf STRING DEFAULT '_live.udf_api'; 
     secret_path STRING DEFAULT 'Vault/prod/near/quicknode/mainnet';
     pk_column STRING DEFAULT 'tx_hash';
-    block_id_column STRING DEFAULT 'block_id';
     blocks_to_fetch_buffer INTEGER DEFAULT 385;
-    block_timestamp_column STRING DEFAULT 'block_timestamp';
     pruning_threshold_minutes INTEGER DEFAULT 60;
 
     -- State Variables
@@ -23,7 +21,9 @@ DECLARE
 
 BEGIN
     
-    CREATE HYBRID TABLE IF NOT EXISTS IDENTIFIER(:hybrid_table_name) (
+    CREATE SCHEMA IF NOT EXISTS {{ target.database }}.core_live;
+    
+    CREATE HYBRID TABLE IF NOT EXISTS IDENTIFIER(:hybrid_table_name) ( -- TODO: Add index for hybrid table
         tx_hash STRING PRIMARY KEY, 
         block_id NUMBER, 
         block_timestamp TIMESTAMP_NTZ, 
@@ -40,9 +40,11 @@ BEGIN
         inserted_timestamp TIMESTAMP_NTZ, 
         modified_timestamp TIMESTAMP_NTZ,
         _hybrid_updated_at TIMESTAMP_LTZ DEFAULT SYSDATE()
+
+        INDEX idx_tx_hash ON IDENTIFIER(:hybrid_table_name) (tx_hash)
     );
-    
-    -- Get the chain head block height
+
+   
     SELECT IDENTIFIER(:chain_head_udf)(
                'POST',
                '{Service}', 
@@ -62,7 +64,7 @@ BEGIN
     MERGE INTO IDENTIFIER(:hybrid_table_name) AS target
     USING (
         SELECT *
-        FROM TABLE(near_dev.live_table.tf_fact_transactions(:start_block_for_udtf,:blocks_to_fetch_buffer))
+        FROM TABLE({{ target.database }}.livetable.tf_fact_transactions(:start_block_for_udtf,:blocks_to_fetch_buffer))
     ) AS source
     ON target.tx_hash = source.tx_hash
     WHEN MATCHED THEN UPDATE SET
@@ -81,6 +83,7 @@ BEGIN
         source.gas_used, source.transaction_fee, source.attached_gas, source.tx_succeeded, source.fact_transactions_id,
         source.inserted_timestamp, source.modified_timestamp, SYSDATE()
     );
+
 
     rows_merged := SQLROWCOUNT;
 
