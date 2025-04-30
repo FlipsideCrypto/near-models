@@ -10,36 +10,6 @@
   full_refresh = false
 ) }}
 
-{% if var('NEAR_MIGRATE_ARCHIVE', False) %}
-    {% if execute %}
-        {% do log('Migrating transactions ' ~ var('RANGE_START') ~ ' to ' ~ var('RANGE_END'), info=True) %}
-        {% do log('Invocation ID: ' ~ invocation_id, info=True) %}
-    {% endif %}
-
-  SELECT
-    chunk_hash,
-    block_id,
-    block_timestamp,
-    tx_hash,
-    tx_receiver,
-    tx_signer,
-    transaction_json,
-    outcome_json,
-    OBJECT_CONSTRUCT() AS status_json,
-    tx_succeeded,
-    gas_used,
-    transaction_fee,
-    attached_gas,
-    _partition_by_block_number,
-    transactions_final_id,
-    inserted_timestamp,
-    modified_timestamp,
-    '{{ invocation_id }}' AS _invocation_id
-  FROM
-    {{ ref('_migrate_txs') }}
-
-  {% else %}
-
 WITH txs_with_receipts AS (
   SELECT
     chunk_hash,
@@ -142,5 +112,3 @@ SELECT
   '{{ invocation_id }}' AS _invocation_id
 FROM
   transactions_final
-
-{% endif %}
