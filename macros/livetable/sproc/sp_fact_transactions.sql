@@ -6,7 +6,7 @@ LANGUAGE SQL
 AS
 DECLARE
     -- Configuration
-    hybrid_table_name STRING DEFAULT '{{ target.database }}.CORE_LIVE.HYBRID_FACT_TRANSACTIONS';
+    hybrid_table_name STRING DEFAULT '{{ target.database }}.CORE_LIVE.FACT_TRANSACTIONS';
     udtf_name STRING DEFAULT '{{ target.database }}.LIVETABLE.TF_FACT_TRANSACTIONS';
     chain_head_udf STRING DEFAULT '_live.udf_api'; 
     secret_path STRING DEFAULT 'Vault/prod/near/quicknode/mainnet';
