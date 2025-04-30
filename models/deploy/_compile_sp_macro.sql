@@ -1,0 +1,1 @@
+    {{ create_sp_refresh_fact_transactions_live() }} 
