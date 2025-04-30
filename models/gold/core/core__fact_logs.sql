@@ -15,7 +15,7 @@ SELECT
     block_id,
     block_timestamp,
     tx_hash,
-    COALESCE(receipt_id, receipt_object_id) AS receipt_id,
+    receipt_id,
     predecessor_id,
     receiver_id,
     signer_id,

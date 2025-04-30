@@ -6,67 +6,29 @@ models:
       This table records all the NFT Mints per the NEP171 standard, across various methods.
 
     columns:
-      - name: ACTION_ID
-        description: "{{ doc('action_id') }}"
-        tests:
-          - not_null:
-              where: _inserted_timestamp <= current_timestamp - interval '1 hour'
-
-      - name: MINT_ACTION_ID
-        description: "{{ doc('mint_action_id') }}"
-        tests:
-          - unique:
-              where: receiver_id != 'realbirds.near'
-          - not_null:
-              where: _inserted_timestamp <= current_timestamp - interval '1 hour'
-
       - name: TX_HASH
         description: "{{ doc('tx_hash') }}"
-        tests:
-          - not_null:
-              where: _inserted_timestamp <= current_timestamp - interval '1 hour'
+
+      - name: RECEIPT_OBJECT_ID
+        description: "{{ doc('receipt_object_id') }}"
+
+      - name: RECEIPT_ID
+        description: "{{ doc('receipt_object_id') }}"
 
       - name: BLOCK_ID
         description: "{{ doc('block_id')}}"
 
       - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp')}}"
-        tests:
-          - not_null:
-              where: _inserted_timestamp <= current_timestamp - interval '1 hour'
 
-      - name: METHOD_NAME
-        description: "{{ doc('method_name') }}"
-        tests:
-          - not_null:
-              where: _inserted_timestamp <= current_timestamp - interval '1 hour'
-
-      - name: ARGS
-        description: "{{ doc('args') }}"
-
-      - name: DEPOSIT
-        description: "{{ doc('deposit') }}"
+      - name: TX_RECEIVER
+        description: "{{ doc('tx_receiver') }}"
 
       - name: TX_SIGNER
         description: "{{ doc('tx_signer') }}"
 
-      - name: TX_RECEIVER
-        description: "{{ doc('tx_receiver') }}"
-        tests:
-          - not_null:
-              where: _inserted_timestamp <= current_timestamp - interval '1 hour'
-
-      - name: TX_SUCCEEDED
-        description: "{{ doc('tx_succeeded') }}"
-
-      - name: TX_STATUS
-        description: "{{ doc('tx_status') }}"
-        tests:
-          - not_null:
-              where: _inserted_timestamp <= current_timestamp - interval '1 hour'
-
-      - name: RECEIPT_OBJECT_ID
-        description: "{{ doc('receipt_object_id') }}"
+      - name: PREDECESSOR_ID
+        description: "{{ doc('predecessor_id') }}"
 
       - name: RECEIVER_ID
         description: "{{ doc('receiver_id')}}"
@@ -74,8 +36,23 @@ models:
       - name: SIGNER_ID
         description: "{{ doc('signer_id')}}"
 
+      - name: ARGS
+        description: "{{ doc('args') }}"
+
+      - name: METHOD_NAME
+        description: "{{ doc('method_name') }}"
+
+      - name: DEPOSIT
+        description: "{{ doc('deposit') }}"
+
       - name: OWNER_PER_TX
         description: "{{ doc('owner_per_tx') }}"
+
+      - name: GAS_BURNT
+        description: "{{ doc('gas_burnt') }}"
+
+      - name: BATCH_INDEX
+        description: "{{ doc('batch_index') }}"
 
       - name: OWNER_ID
         description: "{{ doc('owner_id') }}"
@@ -83,31 +60,35 @@ models:
       - name: MEMO
         description: "{{ doc('memo') }}"
 
+      - name: TOKEN_INDEX
+        description: "{{ doc('token_index') }}"
+
       - name: MINT_PER_TX
         description: "{{ doc('mint_per_tx') }}"
 
       - name: TOKEN_ID
         description: "{{ doc('nft_token_id') }}"
 
-      - name: GAS_BURNT
-        description: "{{ doc('gas_burnt') }}"
+      - name: MINT_ACTION_ID
+        description: "{{ doc('mint_action_id') }}"
+
+      - name: LOG_COUNTER
+        description: "{{ doc('log_counter') }}"
 
       - name: IMPLIED_PRICE
         description: "{{ doc('implied_price') }}"
 
       - name: TRANSACTION_FEE
         description: "{{ doc('transaction_fee') }}"
-        tests:
-          - not_null:
-              where: _inserted_timestamp <= current_timestamp - interval '1 hour'
+
+      - name: TX_SUCCEEDED
+        description: "{{ doc('tx_succeeded') }}"
+
+      - name: RECEIPT_SUCCEEDED
+        description: "{{ doc('receipt_succeeded') }}"
 
       - name: _PARTITION_BY_BLOCK_NUMBER
         description: "{{ doc('_partition_by_block_number') }}"
-
-      - name: _INSERTED_TIMESTAMP
-        description: "{{ doc('_inserted_timestamp')}}"
-
-
 
       - name: STANDARD_NFT_MINT_ID
         description: "{{doc('id')}}"

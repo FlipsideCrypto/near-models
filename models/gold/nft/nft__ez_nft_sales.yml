@@ -3,7 +3,10 @@ version: 2
 models:
   - name: nft__ez_nft_sales
     description: |-
-      This table records all the NFT sales actions of the main Near marketplaces.
+      This view provides a standardized interface for all NFT sales across NEAR marketplaces.
+      It includes sales from Mintbase, Paras, and other marketplaces (Apollo42, TradePort, UniqArt, L2E, FewAndFar, Mitte).
+      The view handles price conversions to USD and includes platform fees, royalties, and affiliate information where available.
+
     columns:
       - name: RECEIPT_ID
         description: "{{ doc('receipt_id')}}"
@@ -12,12 +15,15 @@ models:
 
       - name: BLOCK_ID
         description: "{{ doc('block_id')}}"
+        tests:
+          - not_null
 
       - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp')}}"
         tests:
-          - not_null:
-              where: inserted_timestamp <= current_timestamp - interval '10 hour'
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: TIMESTAMP_NTZ
 
       - name: TX_HASH
         description: "{{ doc('tx_hash')}}"
@@ -40,17 +46,19 @@ models:
           - not_null
 
       - name: PLATFORM_ADDRESS
-        description: "Platform Address"
+        description: "The contract address of the NFT marketplace where the sale occurred"
         tests:
           - not_null
 
       - name: PLATFORM_NAME
-        description: "Platform Name"
+        description: "The name of the NFT marketplace (e.g., Mintbase, Paras, Apollo42, etc.)"
         tests:
           - not_null
+          - accepted_values:
+              values: ['Mintbase', 'Paras', 'Apollo42', 'TradePort', 'UniqArt', 'L2E', 'FewAndFar', 'Mitte']
 
       - name: NFT_ADDRESS
-        description: "NFT Address"
+        description: "The contract address of the NFT collection"
         tests:
           - not_null
 
@@ -63,9 +71,18 @@ models:
         description: "{{ doc('raw_price')}}"
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: FLOAT
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
 
       - name: PRICE_USD
         description: "{{ doc('price_usd')}}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: FLOAT
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
 
       - name: METHOD_NAME
         description: "{{ doc('method_name')}}"
@@ -77,26 +94,46 @@ models:
         tests:
           - not_null
 
-      - name: LOGS_INDEX
-        description: "ROW NUMBER"
-
       - name: AFFILIATE_ID
         description: "{{ doc('affiliate_id')}}"
 
       - name: AFFILIATE_AMOUNT
         description: "{{ doc('affiliate_amount')}}"
 
+      - name: AFFILIATE_AMOUNT_USD
+        description: "The USD value of the affiliate amount at the time of the sale"
+
       - name: ROYALTIES
         description: "{{ doc('royalties')}}"
 
       - name: PLATFORM_FEE
         description: "{{ doc('platform_fee')}}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
 
-      - name: NFT_SALES_ID
+      - name: PLATFORM_FEE_USD
+        description: "The USD value of the platform fee at the time of the sale"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: EZ_NFT_SALES_ID
         description: "{{doc('id')}}"
+        tests:
+          - not_null
+          - unique
 
       - name: INSERTED_TIMESTAMP
         description: "{{doc('inserted_timestamp')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: TIMESTAMP_NTZ
 
       - name: MODIFIED_TIMESTAMP
         description: "{{doc('modified_timestamp')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: TIMESTAMP_NTZ

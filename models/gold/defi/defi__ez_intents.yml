@@ -32,7 +32,7 @@ models:
           - not_null
       
       - name: RECEIPT_ID
-        description: "{{ doc('receipt_object_id') }}"
+        description: "{{ doc('receipt_id') }}"
         tests:
           - not_null
 

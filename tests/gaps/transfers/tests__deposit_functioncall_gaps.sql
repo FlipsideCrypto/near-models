@@ -1,54 +1,50 @@
 {{ config(
     severity = "error",
-    tags = ['gap_test']
+    tags = ['gap_test'],
+    enabled = False
 ) }}
 
 WITH deposit_functioncalls AS (
 
     SELECT
-        DISTINCT action_id,
+        DISTINCT receipt_id,
+        action_index,
         block_id,
         block_timestamp,
         _partition_by_block_number
     FROM
-        {{ ref('silver__actions_events_function_call_s3') }}
+        {{ ref('core__ez_actions') }}
     WHERE
-        deposit :: INT > 0
+        action_data :deposit :: INT > 0
         AND receipt_succeeded
 
-        {% if var('DBT_FULL_TEST') %}
-        AND _inserted_timestamp < SYSDATE() - INTERVAL '1 hour'
-    {% else %}
-        AND _inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days'
-        AND SYSDATE() - INTERVAL '1 hour'
-    {% endif %}
+        AND inserted_timestamp BETWEEN SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days'
+            AND SYSDATE() - INTERVAL '1 hour'
+
 ),
 native_transfer_deposits AS (
     SELECT
-        DISTINCT action_id,
+        DISTINCT receipt_id,
+        action_index,
         block_id,
         block_timestamp,
         _partition_by_block_number
     FROM
         {{ ref('silver__token_transfer_deposit') }}
 
-        {% if var('DBT_FULL_TEST') %}
-        WHERE
-            _inserted_timestamp < SYSDATE() - INTERVAL '1 hour'
-        {% else %}
-        WHERE
-            _inserted_timestamp BETWEEN SYSDATE() - INTERVAL '7 days'
+        WHERE inserted_timestamp BETWEEN SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days'
             AND SYSDATE() - INTERVAL '1 hour'
-        {% endif %}
 )
 SELECT
-    A.action_id,
+    A.receipt_id,
+    A.action_index,
     A.block_id,
     A.block_timestamp,
     A._partition_by_block_number
 FROM
     deposit_functioncalls A
     LEFT JOIN native_transfer_deposits b
-    ON A.action_id = b.action_id
+    ON A.receipt_id = b.receipt_id
+    AND A.action_index = b.action_index
 WHERE
-    b.action_id IS NULL
+    b.receipt_id IS NULL

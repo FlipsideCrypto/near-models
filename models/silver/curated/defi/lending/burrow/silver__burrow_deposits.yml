@@ -2,18 +2,12 @@ version: 2
 models:
   - name: silver__burrow_deposits
     columns:
-      - name: action_id
-        description: "{{ doc('action_id')}}"
-        tests:
-          - not_null
-          - unique
-
       - name: TX_HASH
         description: "{{ doc('tx_hash')}}"
         tests:
           - not_null
 
-      - name: block_id
+      - name: BLOCK_ID
         description: "{{ doc('block_id')}}"
         tests:
           - not_null
@@ -21,8 +15,16 @@ models:
       - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp')}}"
         tests:
-          - not_null:
-              where: _inserted_timestamp <= current_timestamp - interval '1 hour'
+          - not_null
+
+      - name: RECEIPT_ID
+        description: "{{ doc('receipt_id')}}"
+
+      - name: ACTION_INDEX
+        description: "{{ doc('action_index')}}"
+
+      - name: PREDECESSOR_ID
+        description: "{{ doc('predecessor_id')}}"
 
       - name: SENDER_ID
         description: "{{ doc('sender_id')}}"
@@ -44,7 +46,7 @@ models:
 
       - name: BURROW_DEPOSITS_ID
         description: "{{doc('id')}}"
-        test:
+        tests:
           - not_null
           - unique
 

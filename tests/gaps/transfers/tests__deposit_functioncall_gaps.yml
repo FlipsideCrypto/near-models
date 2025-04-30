@@ -5,3 +5,4 @@ tests:
   description: |-
     This test checks for gaps in Deposits from FunctionCalls and the silver model. 
     For best use, aggregate the results around _PARTITION_BY_BLOCK_NUMBER and run MANUAL FIX logic on these ranges.
+    Note - the migrated transfers table drops action_id. Tbd but needed to drop use of the functioncall table.

@@ -5,7 +5,7 @@
     cluster_by = ["block_timestamp::DATE","modified_timestamp::DATE"],
     unique_key = "log_id",
     incremental_strategy = "merge",
-    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,receipt_object_id,receiver_id,predecessor_id,signer_id);",
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,receipt_id);",
     tags = ['curated', 'scheduled_core']
 ) }}
 
@@ -71,8 +71,20 @@ FINAL AS (
         )
 )
 SELECT
-    *,
-    receipt_id AS receipt_object_id, -- maintain for a run but then need to copy values over and then drop
+    block_timestamp,
+    block_id,
+    tx_hash,
+    receipt_id,
+    log_id,
+    log_index,
+    receiver_id,
+    predecessor_id,
+    signer_id,
+    clean_log,
+    is_standard,
+    gas_burnt,
+    receipt_succeeded,
+    _partition_by_block_number,
     {{ dbt_utils.generate_surrogate_key(
         ['log_id']
     ) }} AS logs_id,

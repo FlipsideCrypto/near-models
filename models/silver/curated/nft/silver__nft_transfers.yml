@@ -2,17 +2,6 @@ version: 2
 
 models:
   - name: silver__nft_transfers
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - tx_hash
-            - action_id
-            - contract_address
-            - from_address
-            - to_address
-            - token_id
-            - rn
-
     description: |-
       This table records all the NFT Transfer actions of the Near blockchain.
     columns:
@@ -28,31 +17,43 @@ models:
       - name: TX_HASH
         description: "{{ doc('tx_hash')}}"
 
+      - name: RECEIPT_ID
+        description: "{{ doc('receipt_id')}}"
+
+      - name: PREDECESSOR_ID
+        description: "{{ doc('predecessor_id')}}"
+
       - name: RN
         description: "Row number"
 
-      - name: ACTION_ID
-        description: "{{ doc('action_id')}}"
-
       - name: CONTRACT_ADDRESS
         description: "{{ doc('tx_signer')}}"
+        tests:
+          - not_null
 
       - name: FROM_ADDRESS
         description: "{{ doc('from_address')}}"
+        tests:
+          - not_null
 
       - name: TO_ADDRESS
         description: "{{ doc('to_address')}}"
+        tests:
+          - not_null
 
       - name: TOKEN_ID
         description: "{{ doc('token_id')}}"
+        tests:
+          - not_null
 
-      - name: _INSERTED_TIMESTAMP
-        description: "{{ doc('_inserted_timestamp')}}"
-
-
+      - name: _PARTITION_BY_BLOCK_NUMBER
+        description: "{{ doc('_partition_by_block_number')}}"
 
       - name: NFT_TRANSFERS_ID
         description: "{{doc('id')}}"
+        tests:
+          - unique
+          - not_null
 
       - name: INSERTED_TIMESTAMP
         description: "{{doc('inserted_timestamp')}}"

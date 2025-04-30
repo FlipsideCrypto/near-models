@@ -1,11 +1,10 @@
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'merge',
-    incremental_predicates = ["COALESCE(DBT_INTERNAL_DEST.block_timestamp::DATE,'2099-12-31') >= (select min(block_timestamp::DATE) from " ~ generate_tmp_view_name(this) ~ ")"],
+    incremental_predicates = ["dynamic_range_predicate_custom","block_timestamp::date"],
     merge_exclude_columns = ["inserted_timestamp"],
     unique_key = "burrow_borrows_id",
-    cluster_by = ['block_timestamp::DATE'],
-    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,sender_id);",
+    cluster_by = ['block_timestamp::DATE', 'modified_timestamp::DATE'],
     tags = ['curated','scheduled_non_core']
 ) }}
 
@@ -13,25 +12,27 @@ WITH --borrows from Burrow LendingPool contracts
 borrows AS (
 
     SELECT
-        action_id as action_id,
         block_id,
         block_timestamp,
         tx_hash,
-        method_name,
-        args,
-        receiver_id,
+        receipt_id,
+        action_index,
+        receipt_predecessor_id AS predecessor_id,
+        receipt_receiver_id AS receiver_id,
+        action_data :method_name :: STRING AS method_name,
+        action_data :args :: VARIANT AS args,
         receipt_succeeded,
-        _inserted_timestamp,
-        _partition_by_block_number
+        FLOOR(block_id, -3) AS _partition_by_block_number
     FROM
-        {{ ref('silver__actions_events_function_call_s3') }}
+        {{ ref('core__ez_actions') }}
     WHERE
-        receiver_id = 'contract.main.burrow.near'
-        AND method_name = 'oracle_on_call'
-        AND receipt_succeeded = TRUE
+        receipt_receiver_id = 'contract.main.burrow.near'
+        AND action_name = 'FunctionCall'
+        AND receipt_succeeded
+        AND action_data :method_name :: STRING = 'oracle_on_call'
 
         {% if var("MANUAL_FIX") %}
-        AND {{ partition_load_manual('no_buffer') }}
+        AND {{ partition_load_manual('no_buffer', 'floor(block_id, -3)') }}
         {% else %}
         {% if is_incremental() %}
             AND modified_timestamp >= (
@@ -61,19 +62,20 @@ FINAL AS (
         segmented_data IS NOT NULL
 )
 SELECT
-    action_id,
     tx_hash,
     block_id,
     block_timestamp,
+    receipt_id,
+    action_index,
+    predecessor_id,
     sender_id,
     actions,
     contract_address,
     amount_raw,
     token_contract_address,
-    _inserted_timestamp,
     _partition_by_block_number,
     {{ dbt_utils.generate_surrogate_key(
-        ['action_id']
+        ['receipt_id', 'action_index']
     ) }} AS burrow_borrows_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,

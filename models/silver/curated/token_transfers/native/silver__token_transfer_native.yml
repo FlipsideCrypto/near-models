@@ -3,94 +3,91 @@ version: 2
 models:
   - name: silver__token_transfer_native
     description: |-
-      This table records all the Transfer actions of the Near blockchain.
+      This table records all native NEAR token transfers using core__ez_actions.
+      It captures direct Transfer actions on the NEAR blockchain.
 
     columns:
-      - name: TX_HASH
+      - name: tx_hash
         description: "{{ doc('tx_hash')}}"
         tests:
           - not_null
 
-      - name: ACTION_ID
-        description: "{{ doc('action_id')}}"
-        tests:
-          - not_null
-
-      - name: BLOCK_ID
+      - name: block_id
         description: "{{ doc('block_id')}}"
         tests:
           - not_null
 
-      - name: BLOCK_TIMESTAMP
+      - name: block_timestamp
         description: "{{ doc('block_timestamp')}}"
         tests:
-          - not_null:
-              where: _inserted_timestamp <= current_timestamp - interval '1 hour'
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: TIMESTAMP_NTZ
 
-      - name: AMOUNT_UNADJ
+      - name: receipt_id
+        description: "{{ doc('receipt_id')}}"
+
+      - name: action_index
+        description: "{{ doc('action_index')}}"
+
+      - name: amount_unadj
         description: "{{ doc('amount_unadj')}}"
         tests:
           - not_null
 
-      - name: AMOUNT_ADJ
+      - name: amount_adj
         description: "{{ doc('amount_adj')}}"
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_greater_than:
+              value: 0
 
-      - name: PREDECESSOR_ID
+      - name: predecessor_id
         description: "{{ doc('predecessor_id')}}"
         tests:
           - not_null
 
-      - name: SIGNER_ID
-        description: "{{ doc('signer_id')}}"
-        tests:
-          - not_null
-
-      - name: RECEIVER_ID
+      - name: receiver_id
         description: "{{ doc('receiver_id')}}"
         tests:
           - not_null
 
-      - name: RECEIPT_SUCCEEDED
+      - name: receipt_succeeded
         description: "{{ doc('receipt_succeeded')}}"
         tests:
           - not_null
+          - accepted_values:
+              values: [TRUE]
 
-      - name: GAS_PRICE
+      - name: gas_price
         description: "{{ doc('gas_price')}}"
         tests:
           - not_null
 
-      - name: GAS_BURNT
+      - name: gas_burnt
         description: "{{ doc('gas_burnt')}}"
         tests:
           - not_null
 
-      - name: TOKENS_BURNT
+      - name: tokens_burnt
         description: "{{ doc('tokens_burnt')}}"
         tests:
           - not_null
 
-      - name: _PARTITION_BY_BLOCK_NUMBER
+      - name: _partition_by_block_number
         description: "{{ doc('_partition_by_block_number')}}"
 
-      - name: _INSERTED_TIMESTAMP
-        description: "{{ doc('_inserted_timestamp')}}"
-
-
-
-      - name: TOKEN_TRANSFER_NATIVE_ID
+      - name: token_transfer_native_id
         description: "{{doc('id')}}"
         tests:
-          - not_null
           - unique
+          - not_null
 
-      - name: INSERTED_TIMESTAMP
+      - name: inserted_timestamp
         description: "{{doc('inserted_timestamp')}}"
 
-      - name: MODIFIED_TIMESTAMP
+      - name: modified_timestamp
         description: "{{doc('modified_timestamp')}}"
 
-      - name: _INVOCATION_ID
+      - name: _invocation_id
         description: "{{doc('invocation_id')}}"

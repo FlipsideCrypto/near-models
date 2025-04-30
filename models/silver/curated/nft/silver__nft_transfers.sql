@@ -1,35 +1,39 @@
 {{ config(
     materialized = 'incremental',
-    incremental_predicates = ["COALESCE(DBT_INTERNAL_DEST.block_timestamp::DATE,'2099-12-31') >= (select min(block_timestamp::DATE) from " ~ generate_tmp_view_name(this) ~ ")"],
+    incremental_predicates = ["dynamic_range_predicate_custom","block_timestamp::date"],
     merge_exclude_columns = ["inserted_timestamp"],
-    cluster_by = ['block_timestamp::DATE'],
+    cluster_by = ['block_timestamp::DATE', 'modified_timestamp::DATE'],
     unique_key = 'nft_transfers_id',
     incremental_strategy = 'merge',
-    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,action_id,contract_address,from_address,to_address,token_id);",
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,receipt_id,contract_address,from_address,to_address,token_id);",
     tags = ['curated','scheduled_non_core']
 ) }}
 
-WITH actions_events AS (
-
+WITH nft_logs AS (
     SELECT
         block_id,
         block_timestamp,
         tx_hash,
-        action_id,
+        receipt_id,
         signer_id,
         receiver_id,
-        logs,
-        _inserted_timestamp,
-        _partition_by_block_number
+        predecessor_id,
+        TRY_PARSE_JSON(clean_log) AS DATA,
+        log_index AS logs_rn,
+        FLOOR(block_id, -3) AS _partition_by_block_number
     FROM
-        {{ ref('silver__actions_events_function_call_s3') }}
+        {{ ref('silver__logs_s3') }}
     WHERE
-        receipt_succeeded = TRUE
-        AND logs [0] IS NOT NULL
+        is_standard
+        AND receipt_succeeded
+        AND TRY_PARSE_JSON(clean_log) :event :: STRING IN (
+            'nft_transfer',
+            'nft_mint'
+        )
         {% if var("MANUAL_FIX") %}
-        AND {{ partition_load_manual('no_buffer') }}
+        AND {{ partition_load_manual('no_buffer', 'floor(block_id, -3)') }}
         {% else %}
-            {% if is_incremental() %}
+        {% if is_incremental() %}
             AND modified_timestamp >= (
                 SELECT
                     MAX(modified_timestamp)
@@ -38,40 +42,15 @@ WITH actions_events AS (
             )
         {% endif %}
         {% endif %}
-), 
-
---------------------------------    NFT Transfers    --------------------------------
-nft_logs AS (
-    SELECT
-        block_id,
-        signer_id,
-        block_timestamp,
-        tx_hash,
-        action_id,
-        TRY_PARSE_JSON(REPLACE(b.value, 'EVENT_JSON:')) AS DATA,
-        receiver_id AS contract_id,
-        b.index as logs_rn,
-        _inserted_timestamp,
-        _partition_by_block_number
-    FROM
-        actions_events
-        JOIN LATERAL FLATTEN(
-            input => logs
-        ) b
-    WHERE
-        DATA :event IN (
-            'nft_transfer',
-            'nft_mint'
-        )
 ),
---------------------------------        FINAL      --------------------------------
 nft_transfers AS (
     SELECT
         block_id,
         block_timestamp,
         tx_hash,
-        action_id,
-        contract_id :: STRING AS contract_address,
+        receipt_id,
+        predecessor_id,
+        receiver_id AS contract_address,
         COALESCE(
             A.value :old_owner_id,
             signer_id
@@ -80,62 +59,54 @@ nft_transfers AS (
             A.value :new_owner_id,
             A.value :owner_id
         ) :: STRING AS to_address,
-        A.value :token_ids AS token_ids,
+        A.value :token_ids :: ARRAY AS token_ids,
         token_ids [0] :: STRING AS token_id,
         logs_rn + A.index as transfer_rn,
-        _inserted_timestamp,
         _partition_by_block_number
     FROM
-        nft_logs
-        JOIN LATERAL FLATTEN(
-            input => DATA :data
+        nft_logs,
+        LATERAL FLATTEN(
+            input => DATA :data :: ARRAY
         ) A
     WHERE
         token_id IS NOT NULL
 ),
-
 nft_final AS (
     SELECT
         block_id,
         block_timestamp,
         tx_hash,
-        action_id,
+        receipt_id,
+        predecessor_id,
         contract_address,
         from_address,
         to_address,
         B.value :: STRING AS token_id,
         transfer_rn + B.index as rn,
-        _inserted_timestamp,
         _partition_by_block_number
     FROM
-        nft_transfers
-    JOIN LATERAL FLATTEN(
+        nft_transfers,
+        LATERAL FLATTEN(
             input => token_ids
         ) B
-),
-FINAL AS (
-    SELECT
-        block_id,
-        block_timestamp,
-        tx_hash,
-        action_id,
-        rn,
-        contract_address,
-        from_address,
-        to_address,
-        token_id,
-        _inserted_timestamp,
-        _partition_by_block_number
-    FROM
-        nft_final
 )
 SELECT
-    *,
+    block_id,
+    block_timestamp,
+    tx_hash,
+    receipt_id,
+    predecessor_id,
+    rn,
+    contract_address,
+    from_address,
+    to_address,
+    token_id,
+    _partition_by_block_number,
     {{ dbt_utils.generate_surrogate_key(
-        ['tx_hash', 'action_id','contract_address','from_address','to_address','token_id','rn']
+        ['tx_hash', 'receipt_id', 'contract_address', 'from_address', 'to_address', 'token_id', 'rn']
     ) }} AS nft_transfers_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
 FROM
-    FINAL
+    nft_final

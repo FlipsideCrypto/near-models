@@ -1,6 +1,6 @@
 {{ config(
     materialized = "incremental",
-    incremental_predicates = ["COALESCE(DBT_INTERNAL_DEST.block_timestamp::DATE,'2099-12-31') >= (select min(block_timestamp::DATE) from " ~ generate_tmp_view_name(this) ~ ")"],
+    incremental_predicates = ["dynamic_range_predicate_custom", "block_timestamp::DATE"],
     cluster_by = ["block_timestamp::DATE"],
     unique_key = "mint_action_id",
     incremental_strategy = "merge",
@@ -8,24 +8,22 @@
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,tx_signer,tx_receiver,receipt_object_id,receiver_id,signer_id,owner_id,token_id);",
     tags = ['curated','scheduled_non_core']
 ) }}
-{# Note - multisource model #}
--- TODO ez_actions refactor
 
 WITH logs AS (
 
     SELECT
         log_id,
-        receipt_object_id, -- TODO rename to receipt_id
+        receipt_id,
         tx_hash,
         block_id,
         block_timestamp,
+        predecessor_id,
         receiver_id,
         signer_id,
         gas_burnt,
         clean_log,
         is_standard,
-        _partition_by_block_number,
-        _inserted_timestamp
+        _partition_by_block_number
     FROM
         {{ ref('silver__logs_s3') }}
     {% if var("MANUAL_FIX") %}
@@ -41,42 +39,28 @@ WITH logs AS (
     {% endif %}
     {% endif %}
 ),
-tx AS (
-    SELECT
-        tx_hash,
-        tx_signer,
-        tx_receiver,
-        tx_succeeded,
-        transaction_fee
-    FROM
-        {{ ref('silver__transactions_final') }}
-    {% if var("MANUAL_FIX") %}
-      WHERE {{ partition_load_manual('no_buffer') }}
-    {% else %}
-            {% if is_incremental() %}
-        WHERE modified_timestamp >= (
-            SELECT
-                MAX(modified_timestamp)
-            FROM
-                {{ this }}
-        )
-    {% endif %}
-    {% endif %}
-),
 function_call AS (
     SELECT
-        action_id,
         tx_hash,
-        TRY_PARSE_JSON(args) AS args_json,
-        method_name,
-        deposit
+        receipt_id,
+        action_data :method_name :: STRING AS method_name,
+        action_data :args :: STRING AS args_json,
+        action_data :deposit :: FLOAT AS deposit,
+        receipt_succeeded,
+        tx_succeeded,
+        tx_receiver,
+        tx_signer,
+        tx_fee,
+        action_index
     FROM
-        {{ ref("silver__actions_events_function_call_s3") }}
+        {{ ref("core__ez_actions") }}
+    WHERE
+        action_name = 'FunctionCall'
     {% if var("MANUAL_FIX") %}
-      WHERE {{ partition_load_manual('no_buffer') }}
+      AND {{ partition_load_manual('no_buffer') }}
     {% else %}
-            {% if is_incremental() %}
-        WHERE modified_timestamp >= (
+    {% if is_incremental() %}
+        AND modified_timestamp >= (
             SELECT
                 MAX(modified_timestamp)
             FROM
@@ -88,15 +72,11 @@ function_call AS (
 standard_logs AS (
     SELECT
         log_id AS logs_id,
-        concat_ws(
-            '-',
-            receipt_object_id,
-            '0'
-        ) AS action_id,
+        receipt_id,
         tx_hash,
-        receipt_object_id,
         block_id,
         block_timestamp,
+        predecessor_id,
         receiver_id,
         signer_id,
         gas_burnt,
@@ -104,8 +84,7 @@ standard_logs AS (
         COUNT(*) over (
             PARTITION BY tx_hash
         ) AS log_counter,
-        _partition_by_block_number,
-        _inserted_timestamp
+        _partition_by_block_number
     FROM
         logs
     WHERE
@@ -117,25 +96,32 @@ nft_events AS (
         function_call.method_name,
         function_call.deposit,
         function_call.args_json,
-        clean_log :data AS DATA,
-        clean_log :event AS event,
-        clean_log :standard AS STANDARD,
-        clean_log :version AS version
+        clean_log :data :: VARIANT AS DATA,
+        clean_log :event :: VARIANT AS event,
+        clean_log :standard :: STRING AS STANDARD,
+        clean_log :version :: STRING AS version,
+        function_call.receipt_succeeded,
+        function_call.tx_succeeded,
+        function_call.tx_receiver,
+        function_call.tx_signer,
+        function_call.tx_fee,
+        function_call.action_index
     FROM
         standard_logs
         INNER JOIN function_call
-        ON standard_logs.action_id = function_call.action_id
+        ON standard_logs.receipt_id = function_call.receipt_id
+        AND function_call.action_index = 0
     WHERE
         STANDARD = 'nep171' -- nep171 nft STANDARD, version  nep245 IS multitoken STANDARD,  nep141 IS fungible token STANDARD
         AND event = 'nft_mint'
 ),
 raw_mint_events AS (
     SELECT
-        action_id,
         tx_hash,
-        receipt_object_id,
+        receipt_id,
         block_id,
         block_timestamp,
+        predecessor_id,
         receiver_id,
         signer_id,
         gas_burnt,
@@ -153,7 +139,11 @@ raw_mint_events AS (
         ) AS memo,
         log_counter,
         _partition_by_block_number,
-        _inserted_timestamp
+        receipt_succeeded,
+        tx_succeeded,
+        tx_receiver,
+        tx_signer,
+        tx_fee
     FROM
         nft_events,
         LATERAL FLATTEN(
@@ -162,11 +152,11 @@ raw_mint_events AS (
 ),
 mint_events AS (
     SELECT
-        action_id,
         tx_hash,
-        receipt_object_id,
+        receipt_id,
         block_id,
         block_timestamp,
+        predecessor_id,
         receiver_id,
         signer_id,
         args_json,
@@ -184,7 +174,7 @@ mint_events AS (
         VALUE :: STRING AS token_id,
         concat_ws(
             '-',
-            action_id,
+            receipt_id || '-' || '0',
             COALESCE(
                 batch_index,
                 '0'
@@ -200,68 +190,48 @@ mint_events AS (
         ) AS mint_action_id,
         log_counter,
         _partition_by_block_number,
-        _inserted_timestamp
+        receipt_succeeded,
+        tx_succeeded,
+        tx_receiver,
+        tx_signer,
+        tx_fee
     FROM
         raw_mint_events,
         LATERAL FLATTEN(
             input => tokens
         )
-),
-mint_tx AS (
-    SELECT
-        tx_hash,
-        tx_signer,
-        tx_receiver,
-        tx_succeeded,
-        transaction_fee
-    FROM
-        tx
-    WHERE
-        tx_hash IN (
-            SELECT
-                DISTINCT tx_hash
-            FROM
-                mint_events
-        )
-),
-FINAL AS (
-    SELECT
-        mint_events.action_id,
-        mint_events.mint_action_id,
-        mint_events.tx_hash,
-        mint_events.block_id,
-        mint_events.block_timestamp,
-        mint_events.method_name,
-        mint_events.args_json AS args,
-        mint_events.deposit,
-        mint_tx.tx_signer AS tx_signer,
-        mint_tx.tx_receiver AS tx_receiver,
-        mint_tx.tx_succeeded AS tx_succeeded,
-        mint_events.receipt_object_id,
-        mint_events.receiver_id,
-        mint_events.signer_id,
-        mint_events.owner_id,
-        mint_events.token_id,
-        mint_events.memo,
-        mint_events.owner_per_tx,
-        mint_events.mint_per_tx,
-        mint_events.gas_burnt,
-        -- gas burnt during receipt processing
-        mint_tx.transaction_fee,
-        -- gas burnt during entire transaction processing
-        mint_events.log_counter,
-        (
-            mint_events.deposit / mint_events.log_counter
-        ) :: FLOAT AS implied_price,
-        mint_events._partition_by_block_number,
-        mint_events._inserted_timestamp
-    FROM
-        mint_events
-        INNER JOIN mint_tx
-        ON mint_events.tx_hash = mint_tx.tx_hash
 )
 SELECT
-    *,
+    tx_hash,
+    receipt_id AS receipt_object_id, -- slated for rename to receipt_id
+    receipt_id,
+    block_id,
+    block_timestamp,
+    tx_receiver,
+    tx_signer,
+    predecessor_id,
+    receiver_id,
+    signer_id,
+    TRY_PARSE_JSON(args_json) AS args,
+    method_name,
+    deposit,
+    owner_per_tx,
+    gas_burnt,
+    batch_index,
+    owner_id,
+    memo,
+    token_index,
+    mint_per_tx,
+    token_id,
+    mint_action_id,
+    log_counter,
+    (
+        deposit / log_counter
+    ) :: FLOAT AS implied_price,
+    tx_fee AS transaction_fee,
+    tx_succeeded,
+    receipt_succeeded,
+    _partition_by_block_number,
     {{ dbt_utils.generate_surrogate_key(
         ['mint_action_id']
     ) }} AS standard_nft_mint_id,
@@ -269,4 +239,4 @@ SELECT
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
 FROM
-    FINAL
+    mint_events

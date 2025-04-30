@@ -11,7 +11,7 @@
 WITH receipts AS (
 
     SELECT
-        receipt_id AS receipt_object_id,
+        receipt_id AS receipt_object_id, -- slated for rename to receipt_id
         tx_hash,
         block_timestamp,
         receipt_json AS receipt_actions,
@@ -37,7 +37,7 @@ WITH receipts AS (
 ),
 FINAL AS (
     SELECT
-        receipt_object_id,
+        receipt_object_id, -- slated for rename to receipt_id
         tx_hash,
         block_timestamp,
         predecessor_id,

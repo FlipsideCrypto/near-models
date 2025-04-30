@@ -70,7 +70,7 @@ WITH swap_logs AS (
 
     SELECT
         tx_hash,
-        receipt_object_id,
+        receipt_id,
         block_id,
         block_timestamp,
         receiver_id,
@@ -96,7 +96,7 @@ WITH swap_logs AS (
 ),
 receipts AS (
     SELECT
-        receipt_id AS receipt_object_id,
+        receipt_id, -- slated for rename to receipt_id
         receipt_json AS receipt_actions,
         receiver_id,
         receipt_json :receipt :Action :signer_id :: STRING AS signer_id,
@@ -105,9 +105,9 @@ receipts AS (
     FROM
         {{ ref('silver__receipts_final') }}
     WHERE
-        receipt_object_id IN (
+        receipt_id IN (
             SELECT
-                receipt_object_id
+                receipt_id
             FROM
                 swap_logs
         ) 
@@ -123,13 +123,13 @@ receipts AS (
 swap_outcome AS (
     SELECT
         tx_hash,
-        receipt_object_id,
+        receipt_id,
         block_id,
         block_timestamp,
         receiver_id,
         signer_id,
         ROW_NUMBER() over (
-            PARTITION BY receipt_object_id
+            PARTITION BY receipt_id
             ORDER BY
                 log_index ASC
         ) - 1 AS swap_index,
@@ -162,7 +162,7 @@ swap_outcome AS (
 parse_actions AS (
     SELECT
         tx_hash,
-        o.receipt_object_id,
+        o.receipt_id,
         block_id,
         block_timestamp,
         receiver_id,
@@ -212,7 +212,7 @@ parse_actions AS (
         o._partition_by_block_number
     FROM
         swap_outcome o
-        LEFT JOIN receipts r USING (receipt_object_id)
+        LEFT JOIN receipts r USING (receipt_id)
 
     {% if is_incremental() and not var("MANUAL_FIX") %}
         WHERE
@@ -225,7 +225,7 @@ parse_actions AS (
 FINAL AS (
     SELECT
         tx_hash,
-        receipt_object_id,
+        receipt_id AS receipt_object_id, -- slated for rename to receipt_id
         block_id,
         block_timestamp,
         receiver_id,

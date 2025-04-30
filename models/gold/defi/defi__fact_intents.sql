@@ -68,7 +68,7 @@ logs_base AS(
         block_timestamp,
         block_id,
         tx_hash,
-        receipt_object_id AS receipt_id,
+        receipt_id,
         log_index,
         receiver_id,
         predecessor_id,

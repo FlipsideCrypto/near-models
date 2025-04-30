@@ -9,9 +9,9 @@
 ) }}
 
 WITH mintbase_nft_sales AS (
-
     SELECT
-        action_id,
+        receipt_id,
+        action_index,
         block_id,
         block_timestamp,
         tx_hash,
@@ -25,12 +25,11 @@ WITH mintbase_nft_sales AS (
         method_name,
         LOG,
         price,
-        logs_index,
+        log_index AS logs_index,
         affiliate_id,
         affiliate_amount,
         royalties,
         platform_fee,
-        _inserted_timestamp,
         _partition_by_block_number
     FROM
         {{ ref('silver__nft_mintbase_sales') }}
@@ -49,7 +48,8 @@ WITH mintbase_nft_sales AS (
 ),
 paras_nft_sales AS (
     SELECT
-        action_id,
+        receipt_id,
+        action_index,
         block_id,
         block_timestamp,
         tx_hash,
@@ -63,12 +63,11 @@ paras_nft_sales AS (
         method_name,
         LOG,
         price,
-        logs_index,
+        0 AS logs_index,
         affiliate_id,
         affiliate_amount,
         royalties,
         platform_fee,
-        _inserted_timestamp,
         _partition_by_block_number
     FROM
         {{ ref('silver__nft_paras_sales') }}
@@ -87,7 +86,8 @@ paras_nft_sales AS (
 ),
 other_nft_sales AS (
     SELECT
-        action_id,
+        receipt_id,
+        action_index,
         block_id,
         block_timestamp,
         tx_hash,
@@ -101,12 +101,11 @@ other_nft_sales AS (
         method_name,
         LOG,
         price,
-        logs_index,
-        affiliate_id,
-        affiliate_amount,
-        royalties,
-        platform_fee,
-        _inserted_timestamp,
+        0 AS logs_index,
+        NULL AS affiliate_id,
+        NULL AS affiliate_amount,
+        NULL AS royalties,
+        NULL AS platform_fee,
         _partition_by_block_number
     FROM
         {{ ref('silver__nft_other_sales') }}
@@ -132,7 +131,6 @@ prices AS (
         ) AS block_timestamp_hour,
         price as price_usd
     FROM
-        
         {{ ref('silver__complete_token_prices') }}
     WHERE
         token_address = 'wrap.near' qualify ROW_NUMBER() over (
@@ -157,11 +155,10 @@ sales_union AS (
         *
     FROM
         other_nft_sales
-
 ),
 FINAL AS (
     SELECT
-        split_part(action_id, '-', 1) AS receipt_id,
+        receipt_id,
         block_id,
         block_timestamp,
         tx_hash,
@@ -183,7 +180,6 @@ FINAL AS (
         royalties,
         platform_fee AS platform_fee,
         platform_fee * p.price_usd AS platform_fee_usd,
-        _inserted_timestamp,
         _partition_by_block_number
     FROM
         sales_union s

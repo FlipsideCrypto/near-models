@@ -1,42 +1,44 @@
 {{ config(
     materialized = 'incremental',
+    incremental_strategy = 'merge',
     incremental_predicates = ["dynamic_range_predicate_custom","block_timestamp::date"],
     merge_exclude_columns = ["inserted_timestamp"],
-    cluster_by = ['block_timestamp::DATE','modified_timestamp::Date'],
+    cluster_by = ['block_timestamp::DATE', 'modified_timestamp::DATE'],
     unique_key = 'transfers_liquidity_id',
-    incremental_strategy = 'merge',
     tags = ['curated','scheduled_non_core']
 ) }}
 
-
-
-WITH actions_events AS (
-
+WITH liquidity_logs AS (
     SELECT
         block_id,
         block_timestamp,
         tx_hash,
-        action_id,
-        signer_id,
+        receipt_id,
         receiver_id,
-        action_name,
-        method_name,
-        deposit,
-        logs,
+        predecessor_id,
+        signer_id,
+        log_index,
+        clean_log :: STRING AS log_data,
         receipt_succeeded,
-        _inserted_timestamp,
         _partition_by_block_number
-    FROM
-        {{ ref('silver__token_transfer_base') }}
+    FROM 
+        {{ ref('silver__logs_s3') }}
+    WHERE 
+        receipt_succeeded
+        AND log_index = 0 -- Liquidity logs are always first
+        AND clean_log :: STRING like 'Liquidity added [%minted % shares'
+
     {% if var("MANUAL_FIX") %}
-            WHERE {{ partition_load_manual('no_buffer') }}            
-    {% elif is_incremental() %}
-    WHERE modified_timestamp >= (
-        SELECT
-            MAX(modified_timestamp)
-        FROM
-            {{ this }}
-    )
+        AND {{ partition_load_manual('no_buffer') }}
+    {% else %}
+        {% if is_incremental() %}
+        AND modified_timestamp >= (
+            SELECT
+                MAX(modified_timestamp)
+            FROM
+                {{ this }}
+        )
+        {% endif %}
     {% endif %}
 ),
 add_liquidity AS (
@@ -44,7 +46,7 @@ add_liquidity AS (
         block_id,
         block_timestamp,
         tx_hash,
-        action_id,
+        receipt_id,
         REGEXP_SUBSTR(
             SPLIT.value,
             '"\\d+ ([^"]*)["]',
@@ -53,7 +55,7 @@ add_liquidity AS (
             'e',
             1
         ) :: STRING AS contract_address,
-        NULL AS from_address,
+        predecessor_id AS from_address,
         receiver_id AS to_address,
         REGEXP_SUBSTR(
             SPLIT.value,
@@ -64,30 +66,41 @@ add_liquidity AS (
             1
         ) :: variant AS amount_unadj,
         'add_liquidity' AS memo,
-        INDEX AS rn,
-        _inserted_timestamp,
+        log_index + INDEX AS event_index,
+        predecessor_id,
+        signer_id,
         _partition_by_block_number
     FROM
-        actions_events,
+        liquidity_logs,
         LATERAL FLATTEN (
             input => SPLIT(
                 REGEXP_SUBSTR(
-                    logs [0],
+                    log_data,
                     '\\["(.*?)"\\]'
                 ),
                 ','
             )
         ) SPLIT
-    WHERE
-        logs [0] LIKE 'Liquidity added [%minted % shares'
 )
 SELECT
-    *,
-  {{ dbt_utils.generate_surrogate_key(
-    ['tx_hash', 'action_id','contract_address','amount_unadj','from_address','to_address','memo','rn']
-  ) }} AS transfers_liquidity_id,
-  SYSDATE() AS inserted_timestamp,
-  SYSDATE() AS modified_timestamp,
-  '{{ invocation_id }}' AS _invocation_id
+    block_timestamp,
+    block_id,
+    tx_hash,
+    receipt_id AS action_id,
+    receipt_id,
+    contract_address,
+    from_address,
+    to_address,
+    amount_unadj,
+    memo,
+    event_index AS rn,
+    predecessor_id,
+    _partition_by_block_number,
+    {{ dbt_utils.generate_surrogate_key(
+        ['receipt_id', 'contract_address', 'amount_unadj', 'to_address', 'rn']
+    ) }} AS transfers_liquidity_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
 FROM
     add_liquidity

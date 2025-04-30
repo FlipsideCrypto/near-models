@@ -1,50 +1,77 @@
 {{ config(
     materialized = 'incremental',
     merge_exclude_columns = ["inserted_timestamp"],
-    cluster_by = ['block_timestamp::DATE','modified_timestamp::Date'],
+    incremental_predicates = ["dynamic_range_predicate_custom","block_timestamp::date"],
+    cluster_by = ['block_timestamp::DATE', 'modified_timestamp::DATE'],
     unique_key = 'transfers_id',
-    incremental_strategy = 'delete+insert',
+    incremental_strategy = 'merge',
     tags = ['curated','scheduled_non_core']
 ) }}
 
-WITH actions_events AS (
-
+WITH ft_transfer_actions AS (
     SELECT
         block_id,
         block_timestamp,
         tx_hash,
-        action_id,
-        signer_id,
-        receiver_id,
-        action_name,
-        method_name,
-        deposit,
-        logs,
+        receipt_id,
+        action_index,
+        receipt_receiver_id AS contract_address,
+        receipt_predecessor_id AS predecessor_id,
+        receipt_signer_id AS signer_id,
         receipt_succeeded,
-        _inserted_timestamp,
         _partition_by_block_number
-    FROM
-        {{ ref('silver__token_transfer_base') }}
+    FROM 
+        {{ ref('core__ez_actions') }}
+    WHERE 
+        action_name = 'FunctionCall'
+        AND action_data :method_name :: STRING = 'ft_transfer'
+        AND receipt_succeeded
+
     {% if var("MANUAL_FIX") %}
-            WHERE {{ partition_load_manual('no_buffer') }}            
-    {% elif is_incremental() %}
-    WHERE modified_timestamp >= (
-        SELECT
-            MAX(modified_timestamp)
-        FROM
-            {{ this }}
-    )
+        AND {{ partition_load_manual('no_buffer') }}
+    {% else %}
+        {% if is_incremental() %}
+        AND modified_timestamp >= (
+            SELECT
+                MAX(modified_timestamp)
+            FROM
+                {{ this }}
+        )
+        {% endif %}
     {% endif %}
 ),
-ft_transfers_method AS (
+ft_transfer_logs AS (
+    SELECT
+        l.block_id,
+        l.block_timestamp,
+        l.tx_hash,
+        l.receipt_id,
+        l.log_index,
+        l.clean_log AS log_value,
+        l._partition_by_block_number,
+        a.contract_address,
+        a.predecessor_id,
+        a.signer_id,
+        a.action_index
+    FROM
+        {{ ref('silver__logs_s3') }} l
+        INNER JOIN ft_transfer_actions a
+        ON l.tx_hash = a.tx_hash 
+        AND l.receipt_id = a.receipt_id
+    WHERE
+        l.receipt_succeeded
+),
+ft_transfers_final AS (
     SELECT
         block_id,
         block_timestamp,
         tx_hash,
-        action_id,
-        receiver_id AS contract_address,
+        receipt_id,
+        contract_address,
+        predecessor_id,
+        signer_id,
         REGEXP_SUBSTR(
-            VALUE,
+            log_value,
             'from ([^ ]+)',
             1,
             1,
@@ -52,7 +79,7 @@ ft_transfers_method AS (
             1
         ) :: STRING AS from_address,
         REGEXP_SUBSTR(
-            VALUE,
+            log_value,
             'to ([^ ]+)',
             1,
             1,
@@ -60,31 +87,39 @@ ft_transfers_method AS (
             1
         ) :: STRING AS to_address,
         REGEXP_SUBSTR(
-            VALUE,
+            log_value,
             '\\d+'
         ) :: variant AS amount_unadj,
         '' AS memo,
-        b.index AS rn,
-        _inserted_timestamp,
+        log_index + action_index AS event_index,
         _partition_by_block_number
     FROM
-        actions_events
-        JOIN LATERAL FLATTEN(
-            input => logs
-        ) b
+        ft_transfer_logs
     WHERE
-        method_name = 'ft_transfer'
-        AND from_address IS NOT NULL
+        from_address IS NOT NULL
         AND to_address IS NOT NULL
         AND amount_unadj IS NOT NULL
 )
 SELECT
-    *,
-  {{ dbt_utils.generate_surrogate_key(
-    ['tx_hash', 'action_id','contract_address','amount_unadj','from_address','to_address','memo','rn']
-  ) }} AS transfers_id,
-  SYSDATE() AS inserted_timestamp,
-  SYSDATE() AS modified_timestamp,
-  '{{ invocation_id }}' AS _invocation_id
+    block_timestamp,
+    block_id,
+    tx_hash,
+    receipt_id AS action_id,
+    receipt_id,
+    contract_address,
+    predecessor_id,
+    signer_id,
+    from_address,
+    to_address,
+    amount_unadj,
+    memo,
+    event_index AS rn,
+    _partition_by_block_number,
+    {{ dbt_utils.generate_surrogate_key(
+        ['receipt_id', 'contract_address', 'amount_unadj', 'from_address', 'to_address', 'rn']
+    ) }} AS transfers_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
 FROM
-    ft_transfers_method
+    ft_transfers_final

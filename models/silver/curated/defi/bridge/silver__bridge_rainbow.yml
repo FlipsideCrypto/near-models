@@ -3,7 +3,7 @@ version: 2
 models:
   - name: silver__bridge_rainbow
     description: |-
-      Extracts data from actions table to build a view of bridge activity through the Rainbow Bridge. Methods defined and explained [here](https://github.com/aurora-is-near/rainbow-token-connector/tree)
+      Extracts data from core__ez_actions and silver__logs_s3 to build a view of bridge activity through the Rainbow Bridge. Methods defined and explained [here](https://github.com/aurora-is-near/rainbow-token-connector/tree)
     tests:
       - dbt_utils.recency:
           datepart: week
@@ -16,22 +16,32 @@ models:
 
       - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
 
       - name: TX_HASH
         description: "{{ doc('tx_hash')}}"
         tests:
-          - not_null:
-              where: _inserted_timestamp <= CURRENT_TIMESTAMP - interval '1 hour'
+          - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
                 - VARCHAR
 
+      - name: RECEIPT_ID
+        description: "{{ doc('receipt_id')}}"
+
+      - name: ACTION_INDEX
+        description: "{{ doc('action_index')}}"
+
       - name: TOKEN_ADDRESS
         description: "{{ doc('token_contract')}}"
         tests:
           - not_null:
-              where: _inserted_timestamp <= CURRENT_TIMESTAMP - interval '1 hour' AND receipt_succeeded
+              where: receipt_succeeded
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
@@ -41,7 +51,7 @@ models:
         description: "{{ doc('amount_raw')}}"
         tests:
           - not_null:
-              where: _inserted_timestamp <= CURRENT_TIMESTAMP - interval '1 hour' AND receipt_succeeded
+              where: receipt_succeeded
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - INTEGER
@@ -51,7 +61,7 @@ models:
         description: "{{ doc('amount_adj')}}"
         tests:
           - not_null:
-              where: _inserted_timestamp <= CURRENT_TIMESTAMP - interval '1 hour' AND receipt_succeeded
+              where: receipt_succeeded
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - INTEGER
@@ -64,7 +74,7 @@ models:
         description: "{{ doc('destination_address')}}"
         tests:
           - not_null:
-              where: _inserted_timestamp <= CURRENT_TIMESTAMP - interval '1 hour' AND receipt_succeeded
+              where: receipt_succeeded
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
@@ -75,15 +85,27 @@ models:
 
       - name: BRIDGE_ADDRESS
         description: "{{ doc('contract_address')}}"
+        tests:
+          - not_null
 
       - name: PLATFORM
         description: "{{ doc('platform')}}"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['rainbow']
 
       - name: DESTINATION_CHAIN_ID
         description: "{{ doc('chain_id')}}"
+        tests:
+          - not_null:
+              where: receipt_succeeded
 
       - name: SOURCE_CHAIN_ID
         description: "{{ doc('chain_id')}}"
+        tests:
+          - not_null:
+              where: receipt_succeeded
 
       - name: RECEIPT_SUCCEEDED
         description: "{{ doc('receipt_succeeded')}}"
@@ -92,12 +114,15 @@ models:
 
       - name: METHOD_NAME
         description: "{{ doc('method_name')}}"
+        tests:
+          - not_null
 
       - name: DIRECTION
         description: "{{ doc('direction')}}"
-
-      - name: _INSERTED_TIMESTAMP
-        description: "{{ doc('_inserted_timestamp')}}"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['inbound', 'outbound']
 
       - name: _PARTITION_BY_BLOCK_NUMBER
         description: "{{ doc('_partition_by_block_number')}}"
@@ -106,6 +131,7 @@ models:
         description: "{{ doc('id')}}"
         tests:
           - unique
+          - not_null
 
       - name: INSERTED_TIMESTAMP
         description: "{{ doc('inserted_timestamp')}}"

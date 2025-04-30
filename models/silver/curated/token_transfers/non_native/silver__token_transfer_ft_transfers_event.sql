@@ -1,70 +1,56 @@
 {{ config(
     materialized = 'incremental',
+    incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
-    cluster_by = ['block_timestamp::DATE','modified_timestamp::Date'],
+    incremental_predicates = ["dynamic_range_predicate_custom","block_timestamp::date"],
+    cluster_by = ['block_timestamp::DATE', 'modified_timestamp::DATE'],
     unique_key = 'transfers_event_id',
-    incremental_strategy = 'delete+insert',
     tags = ['curated','scheduled_non_core']
 ) }}
 
-
-WITH actions_events AS (
-
+WITH ft_transfer_logs AS (
     SELECT
         block_id,
         block_timestamp,
         tx_hash,
-        action_id,
-        signer_id,
-        receiver_id,
-        action_name,
-        method_name,
-        deposit,
-        logs,
-        receipt_succeeded,
-        _inserted_timestamp,
-        _partition_by_block_number
-    FROM
-        {{ ref('silver__token_transfer_base') }}
-    {% if var("MANUAL_FIX") %}
-            WHERE {{ partition_load_manual('no_buffer') }}            
-    {% elif is_incremental() %}
-    WHERE modified_timestamp >= (
-        SELECT
-            MAX(modified_timestamp)
-        FROM
-            {{ this }}
-    )
-    {% endif %}
-),
-ft_transfers_event AS (
-    SELECT
-        block_id,
-        block_timestamp,
-        tx_hash,
-        action_id,
-        TRY_PARSE_JSON(REPLACE(VALUE, 'EVENT_JSON:')) AS DATA,
-        b.index AS logs_rn,
+        receipt_id,
         receiver_id AS contract_address,
-        _inserted_timestamp,
+        predecessor_id,
+        signer_id,
+        log_index,
+        try_parse_json(clean_log) AS log_data,
+        receipt_succeeded,
         _partition_by_block_number
-    FROM
-        actions_events
-        JOIN LATERAL FLATTEN(
-            input => logs
-        ) b
-    WHERE
-        DATA :event :: STRING IN (
-            'ft_transfer'
+    FROM 
+        {{ ref('silver__logs_s3') }}
+    WHERE 
+        receipt_succeeded
+        AND is_standard -- Only look at EVENT_JSON formatted logs
+        AND try_parse_json(clean_log) :event :: STRING = 'ft_transfer'
+
+    {% if var("MANUAL_FIX") %}
+        AND {{ partition_load_manual('no_buffer') }}
+    {% else %}
+        {% if is_incremental() %}
+        AND modified_timestamp >= (
+            SELECT
+                MAX(modified_timestamp)
+            FROM
+                {{ this }}
         )
+        {% endif %}
+    {% endif %}
 ),
 ft_transfers_final AS (
     SELECT
         block_id,
         block_timestamp,
         tx_hash,
-        action_id,
+        receipt_id,
         contract_address,
+        predecessor_id,
+        signer_id,
+        log_index,
         NVL(
             f.value :old_owner_id,
             NULL
@@ -75,24 +61,35 @@ ft_transfers_final AS (
         ) :: STRING AS to_address,
         f.value :amount :: variant AS amount_unadj,
         f.value :memo :: STRING AS memo,
-        logs_rn + f.index AS rn,
-        _inserted_timestamp,
+        log_index + f.index AS event_index,
         _partition_by_block_number
     FROM
-        ft_transfers_event
-        JOIN LATERAL FLATTEN(
-            input => DATA :data
+        ft_transfer_logs,
+        LATERAL FLATTEN(
+            input => log_data :data
         ) f
     WHERE
         amount_unadj > 0
 )
 SELECT
-    *,
-  {{ dbt_utils.generate_surrogate_key(
-    ['tx_hash', 'action_id','contract_address','amount_unadj','from_address','to_address','memo','rn']
-  ) }} AS transfers_event_id,
-  SYSDATE() AS inserted_timestamp,
-  SYSDATE() AS modified_timestamp,
-  '{{ invocation_id }}' AS _invocation_id
+    block_timestamp,
+    block_id,
+    tx_hash,
+    receipt_id AS action_id,
+    receipt_id,
+    contract_address,
+    predecessor_id,
+    from_address,
+    to_address,
+    amount_unadj,
+    memo,
+    event_index AS rn,
+    _partition_by_block_number,
+    {{ dbt_utils.generate_surrogate_key(
+        ['receipt_id', 'contract_address', 'amount_unadj', 'from_address', 'to_address', 'rn']
+    ) }} AS transfers_event_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
 FROM
     ft_transfers_final

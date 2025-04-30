@@ -1,11 +1,11 @@
 version: 2
 
 models:
-  - name: silver__token_transfer_mints
+  - name: silver__token_transfer_orders
     description: >
-      This model captures fungible token (FT) mint events from the NEAR blockchain. 
-      It processes standard EVENT_JSON formatted logs from token contracts that emit 
-      'ft_mint' events.
+      This model captures order addition events from the NEAR blockchain. 
+      It processes standard EVENT_JSON formatted logs from contracts that emit 
+      'order_added' events.
 
     columns:
       - name: BLOCK_TIMESTAMP
@@ -35,8 +35,13 @@ models:
         tests:
           - not_null
 
+      - name: PREDECESSOR_ID
+        description: "{{doc('predecessor_id')}}"
+
       - name: FROM_ADDRESS
         description: "{{doc('from_address')}}"
+        tests:
+          - not_null
 
       - name: TO_ADDRESS
         description: "{{doc('to_address')}}"
@@ -46,13 +51,10 @@ models:
       - name: AMOUNT_UNADJ
         description: "{{doc('amount_unadj')}}"
         tests:
-          - not_null`
+          - not_null
 
       - name: MEMO
         description: "{{doc('memo')}}"
-        tests:
-          - dbt_expectations.expect_column_values_to_be_of_type:
-              column_type: VARCHAR
 
       - name: RN
         description: "{{doc('event_index')}}"
@@ -61,13 +63,10 @@ models:
           - dbt_expectations.expect_column_values_to_be_of_type:
               column_type: NUMBER
 
-      - name: PREDECESSOR_ID
-        description: "{{doc('predecessor_id')}}"
-
       - name: _PARTITION_BY_BLOCK_NUMBER
         description: "{{doc('_partition_by_block_number')}}"
 
-      - name: MINT_ID
+      - name: TRANSFERS_ORDERS_ID
         description: "{{doc('id')}}"
         tests:
           - not_null
@@ -85,4 +84,4 @@ models:
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_of_type:
-              column_type: TIMESTAMP_NTZ
+              column_type: TIMESTAMP_NTZ 

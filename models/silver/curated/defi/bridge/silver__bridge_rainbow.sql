@@ -5,33 +5,55 @@
     merge_exclude_columns = ["inserted_timestamp"],
     unique_key = 'bridge_rainbow_id',
     cluster_by = ['block_timestamp::DATE', 'modified_timestamp::DATE'],
-    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,destination_address,source_address);",
     tags = ['curated','scheduled_non_core', 'grail'],
 ) }}
 
 WITH functioncall AS (
-
     SELECT
         block_id,
         block_timestamp,
         tx_hash,
-        method_name,
-        args,
-        logs,
-        receiver_id,
-        signer_id,
+        receipt_id,
+        action_index,
+        receipt_predecessor_id AS predecessor_id,
+        receipt_receiver_id AS receiver_id,
+        receipt_signer_id AS signer_id,
+        action_data :method_name :: STRING AS method_name,
+        action_data :args :: VARIANT AS args,
         receipt_succeeded,
-        _inserted_timestamp,
-        _partition_by_block_number
+        FLOOR(block_id, -3) AS _partition_by_block_number
     FROM
-        {{ ref('silver__actions_events_function_call_s3') }}
-
+        {{ ref('core__ez_actions') }}
+    WHERE
+        action_name = 'FunctionCall'
         {% if var("MANUAL_FIX") %}
-        WHERE
-            {{ partition_load_manual('no_buffer') }}
+        AND {{ partition_load_manual('no_buffer', 'floor(block_id, -3)') }}
         {% else %}
         {% if is_incremental() %}
-        WHERE modified_timestamp >= (
+        AND modified_timestamp >= (
+            SELECT
+                MAX(modified_timestamp)
+            FROM
+                {{ this }}
+        )
+        {% endif %}
+        {% endif %}
+),
+
+logs AS (
+    SELECT 
+        tx_hash,
+        receipt_id,
+        receiver_id,
+        predecessor_id,
+        clean_log,
+        log_index
+    FROM {{ ref('silver__logs_s3') }}
+    {% if var("MANUAL_FIX") %}
+        WHERE {{ partition_load_manual('no_buffer') }}
+    {% else %}
+        {% if is_incremental() %}
+            WHERE modified_timestamp >= (
                 SELECT
                     MAX(modified_timestamp)
                 FROM
@@ -40,6 +62,7 @@ WITH functioncall AS (
         {% endif %}
         {% endif %}
 ),
+
 outbound_near_to_aurora AS (
     -- ft_transfer_call sends token to aurora
     -- EVM address logged in method action under msg
@@ -47,6 +70,8 @@ outbound_near_to_aurora AS (
         block_id,
         block_timestamp,
         tx_hash,
+        receipt_id,
+        action_index,
         receiver_id AS token_address,
         args :amount :: INT AS amount_raw,
         args :memo :: STRING AS memo,
@@ -62,7 +87,6 @@ outbound_near_to_aurora AS (
         method_name,
         'aurora' AS bridge_address,
         'outbound' AS direction,
-        _inserted_timestamp,
         _partition_by_block_number
     FROM
         functioncall
@@ -74,6 +98,7 @@ outbound_near_to_aurora AS (
             OR receiver_id LIKE '%.factory.bridge.near'
         )
 ),
+
 inbound_aurora_to_near AS (
     -- ft_transfer called on token contract, signed by relay.aurora
     -- recipient in actions JSON of ft_transfer, signer evm address in log of "submit" method
@@ -82,6 +107,8 @@ inbound_aurora_to_near AS (
         block_id,
         block_timestamp,
         tx_hash,
+        receipt_id,
+        action_index,
         receiver_id AS token_address,
         args :amount :: INT AS amount_raw,
         args :memo :: STRING AS memo,
@@ -92,7 +119,6 @@ inbound_aurora_to_near AS (
         method_name,
         'aurora' AS bridge_address,
         'inbound' AS direction,
-        _inserted_timestamp,
         _partition_by_block_number,
         args
     FROM
@@ -111,29 +137,38 @@ inbound_aurora_to_near AS (
             )
         )
 ),
+
 inbound_a2n_src_address AS (
     SELECT
         tx_hash,
+        receipt_id,
         REGEXP_SUBSTR(
-            logs [0] :: STRING,
+            clean_log,
             '0x[0-9a-fA-F]{40}'
         ) AS source_address
     FROM
-        functioncall
+        logs
     WHERE
-        tx_hash IN (
-            SELECT
-                tx_hash
-            FROM
-                inbound_aurora_to_near
-        )
-        AND method_name = 'submit'
+        receiver_id = 'aurora'
+        AND predecessor_id = 'relay.aurora'
+        AND log_index = 0
+        AND clean_log like 'signer_address%'
+        AND
+            tx_hash IN (
+                SELECT
+                    tx_hash
+                FROM
+                    inbound_aurora_to_near
+            )
 ),
+
 inbound_a2n_final AS (
     SELECT
         A.block_id,
         A.block_timestamp,
         A.tx_hash,
+        A.receipt_id,
+        A.action_index,
         A.token_address,
         A.amount_raw,
         A.memo,
@@ -145,13 +180,13 @@ inbound_a2n_final AS (
         A.method_name,
         A.bridge_address,
         A.direction,
-        A._inserted_timestamp,
         A._partition_by_block_number
     FROM
         inbound_aurora_to_near A
         LEFT JOIN inbound_a2n_src_address b
         ON A.tx_hash = b.tx_hash
 ),
+
 outbound_near_to_eth AS (
     -- determined by finish_withdraw method call on factory.bridge.near
     -- if signed by aurora relayer, likely aurora<->eth bridge
@@ -159,6 +194,8 @@ outbound_near_to_eth AS (
         block_id,
         block_timestamp,
         tx_hash,
+        receipt_id,
+        action_index,
         signer_id = 'relay.aurora' AS is_aurora,
         receiver_id AS token_address,
         args :amount :: INT AS amount_raw,
@@ -183,7 +220,6 @@ outbound_near_to_eth AS (
         method_name,
         'factory.bridge.near' AS bridge_address,
         'outbound' AS direction,
-        _inserted_timestamp,
         _partition_by_block_number
     FROM
         functioncall
@@ -199,8 +235,64 @@ outbound_near_to_eth AS (
         )
         AND method_name = 'withdraw'
 ),
+inbound_eth_to_near_txs AS (
+    SELECT
+        DISTINCT tx_hash
+    FROM 
+        functioncall
+    WHERE
+        receiver_id in ('factory.bridge.near', 'aurora')
+        AND method_name = 'finish_deposit'
+),
+inbound_logs AS (
+    SELECT
+        receipt_id,
+        ARRAY_AGG(clean_log) WITHIN GROUP (ORDER BY log_index) AS logs
+    FROM
+        logs
+    WHERE
+        tx_hash IN (
+            SELECT
+                tx_hash
+            FROM
+                inbound_eth_to_near_txs
+        )
+    GROUP BY
+        1
+),
 inbound_eth_to_near AS (
     -- determined by finish_deposit method call on factory.bridge.near
+    SELECT
+        fc.tx_hash,
+        fc.receipt_id,
+        block_id,
+        block_timestamp,
+        method_name,
+        args,
+        receiver_id,
+        signer_id,
+        logs,
+        receipt_succeeded,
+        _partition_by_block_number
+    FROM
+        functioncall fc
+    LEFT JOIN inbound_logs l
+        ON fc.receipt_id = l.receipt_id
+    WHERE
+        tx_hash IN (
+            SELECT
+                DISTINCT tx_hash
+            FROM
+                inbound_eth_to_near_txs
+        )
+        AND method_name IN (
+            'mint',
+            'ft_transfer_call',
+            'deposit',
+            'finish_deposit'
+        )
+),
+aggregate_inbound_eth_to_near_txs AS (
     SELECT
         tx_hash,
         MIN(block_id) AS block_id,
@@ -219,26 +311,9 @@ inbound_eth_to_near AS (
             )
         ) AS actions,
         booland_agg(receipt_succeeded) AS receipt_succeeded,
-        MIN(_inserted_timestamp) AS _inserted_timestamp,
         MIN(_partition_by_block_number) AS _partition_by_block_number
     FROM
-        functioncall
-    WHERE
-        tx_hash IN (
-            SELECT
-                DISTINCT tx_hash
-            FROM
-                functioncall
-            WHERE
-                receiver_id in ('factory.bridge.near', 'aurora')
-                AND method_name = 'finish_deposit'
-        )
-        AND method_name IN (
-            'mint',
-            'ft_transfer_call',
-            'deposit',
-            'finish_deposit'
-        )
+        inbound_eth_to_near
     GROUP BY
         1
 ),
@@ -281,10 +356,9 @@ inbound_e2n_final_ft AS (
         ) AS method_name,
         'factory.bridge.near' AS bridge_address,
         'inbound' AS direction,
-        _inserted_timestamp,
         _partition_by_block_number
     FROM
-        inbound_eth_to_near
+        aggregate_inbound_eth_to_near_txs
     WHERE
         actions :finish_deposit :receiver_id :: STRING != 'aurora'
 ),
@@ -314,10 +388,9 @@ inbound_e2n_final_eth AS (
         'mint' AS method_name,
         'prover.bridge.near' AS bridge_address,
         'inbound' AS direction,
-        _inserted_timestamp,
         _partition_by_block_number
     FROM
-        inbound_eth_to_near
+        aggregate_inbound_eth_to_near_txs
     WHERE
         actions :finish_deposit :receiver_id :: STRING = 'aurora'
         
@@ -338,7 +411,6 @@ FINAL AS (
         method_name,
         bridge_address,
         direction,
-        _inserted_timestamp,
         _partition_by_block_number
     FROM
         outbound_near_to_aurora
@@ -358,7 +430,6 @@ FINAL AS (
         method_name,
         bridge_address,
         direction,
-        _inserted_timestamp,
         _partition_by_block_number
     FROM
         inbound_a2n_final
@@ -378,7 +449,6 @@ FINAL AS (
         method_name,
         bridge_address,
         direction,
-        _inserted_timestamp,
         _partition_by_block_number
     FROM
         outbound_near_to_eth
@@ -398,7 +468,6 @@ FINAL AS (
         method_name,
         bridge_address,
         direction,
-        _inserted_timestamp,
         _partition_by_block_number
     FROM
         inbound_e2n_final_ft
@@ -418,7 +487,6 @@ FINAL AS (
         method_name,
         bridge_address,
         direction,
-        _inserted_timestamp,
         _partition_by_block_number
     FROM
         inbound_e2n_final_eth
