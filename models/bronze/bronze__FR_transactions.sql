@@ -37,7 +37,7 @@
             bch.chunk_hash,
             bch.chunk_height_created,
             bch.chunk_height_included,
-            live_table.lt_chunks_udf_api(
+            livetable.lt_chunks_udf_api(
                 'POST',
                 '{Service}',
                 {'Content-Type' : 'application/json'},
@@ -48,7 +48,7 @@
                     'params': {'chunk_id': bch.chunk_hash}
                 },
                 _utils.UDF_WHOAMI(),
-                'Vault/prod/near/quicknode/mainnet'
+                'Vault/prod/near/quicknode/livetable/mainnet'
             ):data:result AS chunk_data 
         FROM block_chunk_hashes bch
     ),
@@ -77,7 +77,7 @@
             tx.chunk_hash,
             tx.chunk_height_created,
             tx.chunk_height_included,
-            live_table.lt_tx_udf_api(
+            livetable.lt_tx_udf_api(
                 'POST',
                 '{Service}',
                 {'Content-Type' : 'application/json', 'fsc-compression-mode' : 'auto'},
@@ -92,7 +92,7 @@
                             }
                 },
                 _utils.UDF_WHOAMI(),
-                'Vault/prod/near/quicknode/mainnet'
+                'Vault/prod/near/quicknode/livetable/mainnet'
             ):data:result AS tx_result
         FROM chunk_txs tx
     )
