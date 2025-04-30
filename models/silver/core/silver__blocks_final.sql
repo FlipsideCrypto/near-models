@@ -10,29 +10,6 @@
     full_refresh = false
 ) }}
 
-{% if var('NEAR_MIGRATE_ARCHIVE', False) %}
-    {% if execute %}
-        {% do log('Migrating blocks ' ~ var('RANGE_START') ~ ' to ' ~ var('RANGE_END'), info=True) %}
-        {% do log('Invocation ID: ' ~ invocation_id, info=True) %}
-    {% endif %}
-    SELECT
-        block_id,
-        block_timestamp,
-        block_hash,
-        prev_hash,
-        block_author,
-        chunks_json,
-        header_json,
-        _partition_by_block_number,
-        blocks_final_id,
-        inserted_timestamp,
-        modified_timestamp,
-        '{{ invocation_id }}' AS _invocation_id
-    FROM
-        {{ ref('_migrate_blocks') }}
-
-{% else %}
-
 WITH blocks AS (
     SELECT
         block_id,
@@ -66,5 +43,3 @@ SELECT
     '{{ invocation_id }}' AS _invocation_id
 FROM
     blocks
-
-{% endif %}

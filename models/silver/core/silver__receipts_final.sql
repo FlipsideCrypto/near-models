@@ -10,64 +10,37 @@
     full_refresh = false
 ) }}
 
-{% if var('NEAR_MIGRATE_ARCHIVE', False) %}
-    {% if execute %}
-        {% do log('Migrating receipts ' ~ var('RANGE_START') ~ ' to ' ~ var('RANGE_END'), info=True) %}
-        {% do log('Invocation ID: ' ~ invocation_id, info=True) %}
-    {% endif %}
+{% if execute and not var("MANUAL_FIX") %}
+    {% if is_incremental() %}
+        {% set max_mod_query %}
+        SELECT
+            COALESCE(MAX(modified_timestamp), '1970-01-01') modified_timestamp
+        FROM
+            {{ this }}
+        {% endset %}
+    
+        {% set max_mod = run_query(max_mod_query) [0] [0] %}
+        {% do log('max_mod: ' ~ max_mod, info=True) %}
+        {% set min_block_date_query %}
+        SELECT
+            MIN(origin_block_timestamp :: DATE) block_timestamp
+        FROM
+            {{ ref('silver__transactions_v2') }}
+        WHERE
+            modified_timestamp >= '{{max_mod}}'
+        {% endset %}
 
-    SELECT
-        chunk_hash,
-        block_id,
-        block_timestamp,
-        tx_hash,
-        receipt_id,
-        predecessor_id,
-        receiver_id,
-        receipt_json,
-        outcome_json,
-        tx_succeeded,
-        receipt_succeeded,
-        _partition_by_block_number,
-        receipts_final_id,
-        inserted_timestamp,
-        modified_timestamp,
-        '{{ invocation_id }}' AS _invocation_id
-    FROM
-        {{ ref('_migrate_receipts') }}
-
-{% else %}
-    {% if execute and not var("MANUAL_FIX") %}
-        {% if is_incremental() %}
-            {% set max_mod_query %}
-            SELECT
-                COALESCE(MAX(modified_timestamp), '1970-01-01') modified_timestamp
-            FROM
-                {{ this }}
-            {% endset %}
-        
-            {% set max_mod = run_query(max_mod_query) [0] [0] %}
-            {% do log('max_mod: ' ~ max_mod, info=True) %}
-            {% set min_block_date_query %}
-            SELECT
-                MIN(origin_block_timestamp :: DATE) block_timestamp
-            FROM
-                {{ ref('silver__transactions_v2') }}
-            WHERE
-                modified_timestamp >= '{{max_mod}}'
-            {% endset %}
-
-            {% set min_bd = run_query(min_block_date_query) [0] [0] %}
+        {% set min_bd = run_query(min_block_date_query) [0] [0] %}
+        {% do log('min_bd: ' ~ min_bd, info=True) %}
+        {% if not min_bd or min_bd == 'None' %}
+            {% set min_bd = '2099-01-01' %}
             {% do log('min_bd: ' ~ min_bd, info=True) %}
-            {% if not min_bd or min_bd == 'None' %}
-                {% set min_bd = '2099-01-01' %}
-                {% do log('min_bd: ' ~ min_bd, info=True) %}
-            {% endif %}
-
-            {% do log('min_block_date: ' ~ min_bd, info=True) %}
-
         {% endif %}
+
+        {% do log('min_block_date: ' ~ min_bd, info=True) %}
+
     {% endif %}
+{% endif %}
 
 WITH txs_with_receipts AS (
     SELECT
@@ -246,5 +219,3 @@ FROM
     FINAL
 
 qualify(row_number() over (partition by receipt_id order by modified_timestamp desc) = 1)
-
-{% endif %}
