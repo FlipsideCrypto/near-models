@@ -29,6 +29,12 @@ deploy_livetable_udtfs: rm_logs
 	--profile near \
 	--target dev
 
+deploy_tx_sproc: rm_logs
+	dbt run-operation create_sp_refresh_fact_transactions_live \
+	--profiles-dir ~/.dbt \
+	--profile near \
+	--target dev
+
 compile_sp_macro: rm_logs
 	dbt compile --select _compile_sp_macro \
 	--profiles-dir ~/.dbt \

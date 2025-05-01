@@ -15,7 +15,7 @@ WITH rpc_call AS (
                     'params' : {'finality' : 'final'}
                 },
                 _utils.UDF_WHOAMI(),
-                'Vault/prod/near/quicknode/mainnet'
+                'Vault/prod/near/quicknode/livetable/mainnet'
         ):data::object AS rpc_result
 )
 SELECT
@@ -96,7 +96,7 @@ SELECT
             'params':{'block_id': block_height}
         },
         _utils.UDF_WHOAMI(),
-        'Vault/prod/near/quicknode/mainnet'
+        'Vault/prod/near/quicknode/livetable/mainnet'
     ):data.result AS rpc_data_result
 from
     {{spine}}
