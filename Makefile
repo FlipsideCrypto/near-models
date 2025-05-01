@@ -21,10 +21,28 @@ rm_logs:
 	fi
 
 # deploy live table udtfs
-deploy_live_table_udtfs: rm_logs
+deploy_livetable_udtfs: rm_logs
 	dbt run \
 	-s near_models.deploy.livetable \
 	--vars '{UPDATE_UDFS_AND_SPS: true, ENABLE_LIVE_TABLE: true, LIVE_TABLE_MATERIALIZATION: ephemeral}' \
+	--profiles-dir ~/.dbt \
+	--profile near \
+	--target dev
+
+deploy_tx_sproc: rm_logs
+	dbt run-operation create_sp_refresh_fact_transactions_live \
+	--profiles-dir ~/.dbt \
+	--profile near \
+	--target dev
+
+compile_sp_macro: rm_logs
+	dbt compile --select _compile_sp_macro \
+	--profiles-dir ~/.dbt \
+	--profile near \
+	--target dev
+
+compile_task: rm_logs
+	dbt compile --select _compile_task \
 	--profiles-dir ~/.dbt \
 	--profile near \
 	--target dev

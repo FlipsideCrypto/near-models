@@ -24,7 +24,7 @@
   api_integration: '{{ var("API_INTEGRATION") }}'
   options: |
     NOT NULL
-    MAX_BATCH_ROWS = 25
+    MAX_BATCH_ROWS = 150
   sql: udf_api
 
 - name: {{ schema }}.lt_blocks_udf_api
@@ -40,7 +40,7 @@
   api_integration: '{{ var("API_INTEGRATION") }}'
   options: |
     NOT NULL
-    MAX_BATCH_ROWS = 25
+    MAX_BATCH_ROWS = 120
   sql: udf_api
 
 - name: {{ schema }}.lt_chunks_udf_api
@@ -56,7 +56,7 @@
   api_integration: '{{ var("API_INTEGRATION") }}'
   options: |
     NOT NULL
-    MAX_BATCH_ROWS = 25
+    MAX_BATCH_ROWS = 35
   sql: udf_api
 
 - name: {{ schema -}}.tf_fact_blocks
