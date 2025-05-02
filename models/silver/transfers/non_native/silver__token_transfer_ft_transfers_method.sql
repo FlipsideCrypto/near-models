@@ -8,6 +8,61 @@
     tags = ['curated','scheduled_non_core']
 ) }}
 
+
+{% if execute %}
+
+    {% if is_incremental() and not var("MANUAL_FIX") %}
+    {% do log("Incremental and not MANUAL_FIX", info=True) %}
+    {% set max_mod_query %}
+
+    SELECT
+        MAX(modified_timestamp) modified_timestamp
+    FROM
+        {{ this }}
+
+    {% endset %}
+
+        {% set max_mod = run_query(max_mod_query) [0] [0] %}
+        {% if not max_mod or max_mod == 'None' %}
+            {% set max_mod = '2099-01-01' %}
+        {% endif %}
+
+        {% do log("max_mod: " ~ max_mod, info=True) %}
+
+        {% set min_block_date_query %}
+    SELECT
+        MIN(
+            block_timestamp :: DATE
+        )
+    FROM
+        (
+            SELECT
+                MIN(block_timestamp) block_timestamp
+            FROM
+                {{ ref('core__ez_actions') }} A
+            WHERE
+                modified_timestamp >= '{{max_mod}}'
+            UNION ALL
+            SELECT
+                MIN(block_timestamp) block_timestamp
+            FROM
+                {{ ref('silver__logs_s3') }} A
+            WHERE
+                modified_timestamp >= '{{max_mod}}'
+        ) 
+    {% endset %}
+
+        {% set min_bd = run_query(min_block_date_query) [0] [0] %}
+        {% if not min_bd or min_bd == 'None' %}
+            {% set min_bd = '2099-01-01' %}
+        {% endif %}
+
+        {% do log("min_bd: " ~ min_bd, info=True) %}
+
+    {% endif %}
+
+{% endif %}
+
 WITH ft_transfer_actions AS (
     SELECT
         block_id,
@@ -31,12 +86,7 @@ WITH ft_transfer_actions AS (
         AND {{ partition_load_manual('no_buffer') }}
     {% else %}
         {% if is_incremental() %}
-        AND modified_timestamp >= (
-            SELECT
-                MAX(modified_timestamp)
-            FROM
-                {{ this }}
-        )
+            WHERE block_timestamp :: DATE >= '{{min_bd}}'
         {% endif %}
     {% endif %}
 ),
@@ -60,6 +110,14 @@ ft_transfer_logs AS (
         AND l.receipt_id = a.receipt_id
     WHERE
         l.receipt_succeeded
+   {% if var("MANUAL_FIX") %}
+        AND
+            {{ partition_load_manual('no_buffer') }}
+        {% else %}
+        {% if is_incremental() %}
+            AND block_timestamp :: DATE >= '{{min_bd}}'
+        {% endif %}
+    {% endif %}
 ),
 ft_transfers_final AS (
     SELECT
