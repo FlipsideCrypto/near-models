@@ -3,7 +3,7 @@
     merge_exclude_columns = ["inserted_timestamp"],
     unique_key = 'address',
     cluster_by = 'address',
-    tags = ['labels','scheduled_non_core'],
+    tags = ['scheduled_non_core'],
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(address); DELETE FROM {{ this }} WHERE _is_deleted = TRUE;"
 ) }}
 

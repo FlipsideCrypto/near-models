@@ -6,7 +6,7 @@
     unique_key = 'nft_transfers_id',
     incremental_strategy = 'merge',
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,receipt_id,contract_address,from_address,to_address,token_id);",
-    tags = ['curated','scheduled_non_core']
+    tags = ['scheduled_non_core']
 ) }}
 
 WITH nft_logs AS (

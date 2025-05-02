@@ -1,6 +1,7 @@
 {{ config(
     materialized = 'view',
-    unique_key = 'token_contract'
+    unique_key = 'token_contract',
+    tags = ['scheduled_non_core']
 ) }}
 
 WITH labels_seed AS (

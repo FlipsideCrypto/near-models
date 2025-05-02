@@ -1,7 +1,7 @@
 {{ config(
     materialized = 'view',
     secure = false,
-    tags = ['core', 'governance'],
+    tags = ['scheduled_non_core'],
     meta ={ 'database_tags':{ 'table':{ 'PURPOSE': 'STAKING, GOVERNANCE' }}}
 ) }}
 

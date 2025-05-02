@@ -2,7 +2,7 @@
     materialized = 'table',
     cluster_by = 'wallet_address',
     unique_key = 'wallet_address',
-    tags = ['labels','scheduled_non_core']
+    tags = ['scheduled_non_core']
 ) }}
 
 WITH labels AS (

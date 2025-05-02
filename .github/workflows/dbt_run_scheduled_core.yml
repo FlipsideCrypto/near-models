@@ -4,8 +4,8 @@ run-name: dbt_run_scheduled_core
 on:
   workflow_dispatch:
   schedule:
-    # Runs hourly on minute 25 (see https://crontab.guru)
-    - cron: "25 * * * *"
+    # Runs twice an hour on minutes 0 and 30 (see https://crontab.guru)
+    - cron: "0,30 * * * *"
 
 env:
   USE_VARS: "${{ vars.USE_VARS }}"
@@ -43,7 +43,7 @@ jobs:
       - name: Run DBT Jobs
         run: |
           dbt seed;
-          dbt run -s tag:scheduled_core tag:scheduled_non_core models/gold --exclude tag:deprecated;
+          dbt run -s tag:scheduled_core --exclude tag:deprecated;
       - name: Store logs
         uses: actions/upload-artifact@v4
         with:

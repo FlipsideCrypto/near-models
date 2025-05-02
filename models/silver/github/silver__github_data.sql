@@ -3,7 +3,7 @@
     merge_exclude_columns = ["inserted_timestamp"],
     unique_key = ['_res_id'],
     cluster_by = ['_inserted_timestamp::DATE'],
-    tags = ['activity','scheduled_non_core']
+    tags = ['scheduled_non_core']
 ) }}
 
 WITH github AS (

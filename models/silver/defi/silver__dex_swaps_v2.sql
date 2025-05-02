@@ -6,7 +6,7 @@
     unique_key = 'dex_swaps_v2_id',
     cluster_by = ['block_timestamp::DATE'],
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,receipt_object_id,receiver_id,signer_id,token_out,token_in);",
-    tags = ['curated','scheduled_non_core'],
+    tags = ['scheduled_non_core'],
 ) }}
 
 -- depends on {{ ref('silver__logs_s3') }}

@@ -4,7 +4,7 @@
     unique_key = 'transfers_complete_id',
     incremental_strategy = 'merge',
     incremental_predicates = ["dynamic_range_predicate_custom","block_timestamp::date"],
-    tags = ['curated','scheduled_non_core']
+    tags = ['scheduled_non_core']
 ) }}
 
 {% if execute %}

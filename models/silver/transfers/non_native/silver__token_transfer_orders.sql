@@ -5,7 +5,7 @@
     cluster_by = ['block_timestamp::DATE', 'modified_timestamp::DATE'],
     unique_key = 'transfers_orders_id',
     incremental_strategy = 'merge',
-    tags = ['curated','scheduled_non_core']
+    tags = ['scheduled_non_core']
 ) }}
 
 WITH order_logs AS (

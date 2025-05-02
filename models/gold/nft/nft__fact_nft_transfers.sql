@@ -1,7 +1,7 @@
 {{ config(
     materialized = 'view',
     meta ={ 'database_tags':{ 'table':{ 'PURPOSE': 'NFT' }}},
-    tags = ['core', 'nft']
+    tags = ['scheduled_non_core']
 ) }}
 
 

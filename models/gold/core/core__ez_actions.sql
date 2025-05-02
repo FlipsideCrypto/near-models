@@ -6,7 +6,7 @@
     cluster_by = ['block_timestamp::DATE', 'modified_timestamp::DATE'],
     unique_key = 'actions_id',
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,receipt_id,receipt_receiver_id,receipt_signer_id,receipt_predecessor_id);",
-    tags = ['actions', 'curated', 'scheduled_core', 'grail']
+    tags = ['scheduled_core']
 ) }}
 -- depends_on: {{ ref('silver__transactions_final') }}
 -- depends_on: {{ ref('silver__receipts_final') }}
