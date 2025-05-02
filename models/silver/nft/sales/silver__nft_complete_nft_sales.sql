@@ -5,7 +5,7 @@
     unique_key = 'nft_sales_id',
     incremental_strategy = 'delete+insert',
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,seller_address,buyer_address,nft_address,token_id);",
-    tags = ['curated','scheduled_non_core']
+    tags = ['scheduled_non_core']
 ) }}
 
 WITH mintbase_nft_sales AS (

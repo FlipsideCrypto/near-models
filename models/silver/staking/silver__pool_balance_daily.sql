@@ -3,7 +3,7 @@
     cluster_by = ['date_day'],
     unique_key = '_id',
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(address);",
-    tags = ['curated','scheduled_non_core']
+    tags = ['scheduled_non_core']
 ) }}
 
 WITH pool_balances AS (

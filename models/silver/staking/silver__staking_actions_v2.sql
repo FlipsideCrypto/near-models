@@ -3,7 +3,7 @@
     unique_key = 'staking_actions_v2_id',
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
-    tags = ['curated', 'scheduled_non_core'],
+    tags = ['scheduled_non_core'],
     cluster_by = [ 'block_timestamp::date','_partition_by_block_number'],
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,receiver_id,signer_id);",
 ) }}

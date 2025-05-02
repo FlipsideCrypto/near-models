@@ -5,7 +5,7 @@
     incremental_predicates = ["dynamic_range_predicate_custom","block_timestamp::date"],
     cluster_by = ['block_timestamp::DATE', 'modified_timestamp::DATE'],
     unique_key = 'transfers_event_id',
-    tags = ['curated','scheduled_non_core']
+    tags = ['scheduled_non_core']
 ) }}
 
 WITH ft_transfer_logs AS (

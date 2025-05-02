@@ -6,7 +6,7 @@
     cluster_by = ['block_timestamp::DATE'],
     incremental_predicates = ["dynamic_range_predicate_custom","block_timestamp::date"],
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,receipt_id,token_id);",
-    tags = ['intents','curated','scheduled_non_core']
+    tags = ['scheduled_non_core']
 ) }}
 -- depends_on: {{ ref('core__ez_actions') }}
 -- depends_on: {{ ref('silver__logs_s3') }}

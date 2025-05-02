@@ -2,7 +2,7 @@
     materialized = 'view',
     secure = false,
     meta ={ 'database_tags':{ 'table':{ 'PURPOSE': 'DEFI, BRIDGING' }} },
-    tags = ['core', 'grail']
+    tags = ['scheduled_non_core']
 ) }}
 
 WITH 

@@ -1,7 +1,7 @@
 {{ config(
     materialized = 'view',
     secure = false,
-    tags = ['core']
+    tags = ['scheduled_core']
 ) }}
 
 WITH logs AS (

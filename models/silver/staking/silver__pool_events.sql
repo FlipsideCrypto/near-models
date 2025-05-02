@@ -3,7 +3,7 @@
     incremental_strategy = 'merge',
     incremental_predicates = ["dynamic_range_predicate_custom","block_timestamp::date"],
     unique_key = 'pool_events_id',
-    tags = ['curated','scheduled_non_core'],
+    tags = ['scheduled_non_core'],
     cluster_by = ['_partition_by_block_number', 'block_timestamp::date']
 ) }}
 

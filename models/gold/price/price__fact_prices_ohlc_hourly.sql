@@ -1,7 +1,8 @@
 {{ config(
     materialized = 'view',
     persist_docs ={ "relation": true,
-    "columns": true }
+    "columns": true },
+    tags = ['scheduled_non_core']
 ) }}
 
 SELECT

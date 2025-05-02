@@ -2,7 +2,7 @@
     materialized = 'view',
     secure = false,
     meta ={ 'database_tags':{ 'table':{ 'PURPOSE': 'DEFI, LENDING' }} },
-    tags = ['core']
+    tags = ['scheduled_non_core']
 ) }}
 
 WITH burrow AS (

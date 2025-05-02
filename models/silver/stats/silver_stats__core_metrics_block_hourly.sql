@@ -3,7 +3,7 @@
     incremental_strategy = 'delete+insert',
     unique_key = "block_timestamp_hour",
     cluster_by = ['block_timestamp_hour::DATE'],
-    tags = ['stats','scheduled_non_core']
+    tags = ['stats', 'scheduled_non_core']
 ) }}
 /* run incremental timestamp value first then use it as a static value */
 {% if execute %}

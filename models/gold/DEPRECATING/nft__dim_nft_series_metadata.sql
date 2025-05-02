@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'view',
-    tags = ['core', 'nft', 'pagoda', 'deprecated']
+    tags = ['deprecated']
 ) }}
 -- reminder update bi_analytics with deprecating flag
 

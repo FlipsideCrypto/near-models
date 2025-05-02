@@ -5,7 +5,7 @@
     merge_exclude_columns = ["inserted_timestamp"],
     incremental_strategy = "merge",
     incremental_predicates = ["dynamic_range_predicate_custom","block_timestamp::date"],
-    tags = ['atlas', 'scheduled_core']
+    tags = ['scheduled_non_core']
 ) }}
 
 WITH receipts AS (

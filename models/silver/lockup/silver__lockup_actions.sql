@@ -5,7 +5,7 @@
     unique_key = 'tx_hash',
     cluster_by = [ 'block_timestamp::date'],
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,lockup_account_id,owner_account_id);",
-    tags = ['curated', 'scheduled_non_core'],
+    tags = ['scheduled_non_core'],
 ) }}
 
 {% if execute %}

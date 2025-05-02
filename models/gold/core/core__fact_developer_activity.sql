@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'view',
-    tags = ['core', 'activity']
+    tags = ['scheduled_non_core']
 ) }}
 
 WITH github_data AS (

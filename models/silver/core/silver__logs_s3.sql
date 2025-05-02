@@ -6,7 +6,7 @@
     unique_key = "log_id",
     incremental_strategy = "merge",
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,receipt_id);",
-    tags = ['curated', 'scheduled_core']
+    tags = ['scheduled_core']
 ) }}
 
 WITH receipts AS (
