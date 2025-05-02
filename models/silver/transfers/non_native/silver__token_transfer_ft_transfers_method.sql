@@ -74,7 +74,8 @@ WITH ft_transfer_actions AS (
         receipt_predecessor_id AS predecessor_id,
         receipt_signer_id AS signer_id,
         receipt_succeeded,
-        _partition_by_block_number
+        _partition_by_block_number,
+        modified_timestamp
     FROM 
         {{ ref('core__ez_actions') }}
     WHERE 
@@ -86,7 +87,30 @@ WITH ft_transfer_actions AS (
         AND {{ partition_load_manual('no_buffer') }}
     {% else %}
         {% if is_incremental() %}
-            WHERE block_timestamp :: DATE >= '{{min_bd}}'
+            AND block_timestamp :: DATE >= '{{min_bd}}'
+        {% endif %}
+    {% endif %}
+),
+logs AS (
+    SELECT
+        block_id,
+        block_timestamp,
+        tx_hash,
+        receipt_id,
+        log_index,
+        clean_log AS log_value,
+        _partition_by_block_number,
+        modified_timestamp
+    FROM
+        {{ ref('silver__logs_s3') }}
+    WHERE
+        receipt_succeeded
+   {% if var("MANUAL_FIX") %}
+        AND
+            {{ partition_load_manual('no_buffer') }}
+        {% else %}
+        {% if is_incremental() %}
+            AND block_timestamp :: DATE >= '{{min_bd}}'
         {% endif %}
     {% endif %}
 ),
@@ -97,26 +121,23 @@ ft_transfer_logs AS (
         l.tx_hash,
         l.receipt_id,
         l.log_index,
-        l.clean_log AS log_value,
+        l.log_value,
         l._partition_by_block_number,
         a.contract_address,
         a.predecessor_id,
         a.signer_id,
         a.action_index
     FROM
-        {{ ref('silver__logs_s3') }} l
-        INNER JOIN ft_transfer_actions a
+        logs l
+    INNER JOIN ft_transfer_actions a
         ON l.tx_hash = a.tx_hash 
         AND l.receipt_id = a.receipt_id
-    WHERE
-        l.receipt_succeeded
-   {% if var("MANUAL_FIX") %}
-        AND
-            {{ partition_load_manual('no_buffer') }}
-        {% else %}
-        {% if is_incremental() %}
-            AND block_timestamp :: DATE >= '{{min_bd}}'
-        {% endif %}
+    {% if is_incremental() and not var("MANUAL_FIX") %}
+        WHERE
+            GREATEST(
+                COALESCE(l.modified_timestamp, '1970-01-01'),
+                COALESCE(a.modified_timestamp, '1970-01-01')   
+            ) >= '{{max_mod}}'
     {% endif %}
 ),
 ft_transfers_final AS (

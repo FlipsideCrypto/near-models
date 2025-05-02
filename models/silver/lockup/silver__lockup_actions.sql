@@ -119,7 +119,7 @@ xfers AS (
       WHERE {{ partition_load_manual('no_buffer') }}
     {% else %}
     {% if is_incremental() %}
-        AND block_timestamp :: DATE >= '{{min_bd}}'
+        WHERE block_timestamp :: DATE >= '{{min_bd}}'
     {% endif %}
     {% endif %}
 ),
@@ -152,12 +152,12 @@ agg_arguments AS (
 ),
 lockup_xfers AS (
     SELECT
-        tx_hash,
-        receipt_id,
-        block_timestamp,
-        block_id,
-        deposit,
-        _partition_by_block_number,
+        xfers.tx_hash,
+        xfers.receipt_id,
+        xfers.block_timestamp,
+        xfers.block_id,
+        xfers.deposit,
+        xfers._partition_by_block_number,
         xfers.modified_timestamp
     FROM
         xfers
