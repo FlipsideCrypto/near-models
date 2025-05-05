@@ -9,7 +9,7 @@
   signature: []
   return_type: INTEGER
   sql: |
-    {{ near_live_table_latest_block_height() | indent(4) -}}
+    {{ near_livetable_latest_block_height() | indent(4) -}}
 
 - name: {{ schema }}.lt_tx_udf_api
   signature:
@@ -71,21 +71,21 @@
     VOLATILE
     COMMENT = $$Returns the block data for a given block height.Fetches blocks for the specified number of blocks $$
   sql: |
-    {{ near_live_table_fact_blocks(schema, blockchain, network) | indent(4) -}}
+    {{ near_livetable_fact_blocks(schema, blockchain, network) | indent(4) -}}
   
   - name: {{ schema -}}.tf_fact_transactions
   signature:
     - [_block_height, INTEGER, The start block height to get the transactions from]
     - [row_count, INTEGER, The number of rows to fetch]
   return_type:
-    - "TABLE(tx_hash STRING, block_id NUMBER, block_timestamp TIMESTAMP_NTZ, nonce INT, signature STRING, tx_receiver STRING, tx_signer STRING, tx VARIANT, gas_used NUMBER, transaction_fee NUMBER, attached_gas NUMBER, tx_succeeded BOOLEAN, fact_transactions_id STRING, inserted_timestamp TIMESTAMP_NTZ, modified_timestamp TIMESTAMP_NTZ)"
+    - "TABLE(tx_hash STRING, block_id NUMBER, block_timestamp TIMESTAMP_NTZ, nonce INT, signature STRING, tx_receiver STRING, tx_signer STRING, tx VARIANT, gas_used NUMBER, transaction_fee NUMBER, attached_gas NUMBER, tx_succeeded BOOLEAN, fact_transactions_id STRING, inserted_timestamp TIMESTAMP_NTZ, modified_timestamp TIMESTAMP_NTZ, data VARIANT, value OBJECT, partition_key NUMBER)"
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
     COMMENT = $$Returns transaction details for blocks starting from a given height.Fetches txs for the specified number of blocks.$$
   sql: |
-    {{ near_live_table_fact_transactions(schema, blockchain, network) | indent(4) -}}
+    {{ near_livetable_fact_transactions(schema, blockchain, network) | indent(4) -}}
   
   - name: {{ schema -}}.tf_fact_receipts
   signature:
@@ -99,7 +99,7 @@
     VOLATILE
     COMMENT = $$Returns receipt details for blocks starting from a given height. Fetches receipts for the specified number of blocks.$$
   sql: |
-    {{ near_live_table_fact_receipts(schema, blockchain, network) | indent(4) -}}
+    {{ near_livetable_fact_receipts(schema, blockchain, network) | indent(4) -}}
   
   - name: {{ schema -}}.tf_ez_actions
   signature:
@@ -113,7 +113,7 @@
     VOLATILE
     COMMENT = $$Returns decoded action details for blocks starting from a given height. Fetches actions for the specified number of blocks.$$
   sql: |
-    {{ near_live_table_ez_actions(schema, blockchain, network) | indent(4) -}}
+    {{ near_livetable_ez_actions(schema, blockchain, network) | indent(4) -}}
 
 {%- endmacro -%}
 
