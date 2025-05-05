@@ -35,6 +35,12 @@ deploy_tx_sproc: rm_logs
 	--profile near \
 	--target dev
 
+deploy_tx_task: rm_logs
+	dbt run-operation create_fact_tx_sproc_task \
+	--profiles-dir ~/.dbt \
+	--profile near \
+	--target dev
+
 compile_sp_macro: rm_logs
 	dbt compile --select _compile_sp_macro \
 	--profiles-dir ~/.dbt \
@@ -46,3 +52,10 @@ compile_task: rm_logs
 	--profiles-dir ~/.dbt \
 	--profile near \
 	--target dev
+
+test_deploy_sf_tasks: rm_logs
+	dbt run --select _dummy_model \
+	--profiles-dir ~/.dbt \
+	--profile near \
+	--target dev
+
