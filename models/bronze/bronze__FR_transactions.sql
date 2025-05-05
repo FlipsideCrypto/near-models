@@ -48,7 +48,7 @@
                     'params': {'chunk_id': bch.chunk_hash}
                 },
                 _utils.UDF_WHOAMI(),
-                'Vault/prod/near/quicknode/mainnet'
+                'Vault/prod/near/quicknode/livetable/mainnet'
             ):data:result AS chunk_data 
         FROM block_chunk_hashes bch
     ),
@@ -92,7 +92,7 @@
                             }
                 },
                 _utils.UDF_WHOAMI(),
-                'Vault/prod/near/quicknode/mainnet'
+                'Vault/prod/near/quicknode/livetable/mainnet'
             ):data:result AS tx_result
         FROM chunk_txs tx
     )

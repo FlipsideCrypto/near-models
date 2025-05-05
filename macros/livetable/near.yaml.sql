@@ -56,7 +56,7 @@
   api_integration: '{{ var("API_INTEGRATION") }}'
   options: |
     NOT NULL
-    MAX_BATCH_ROWS = 35
+    MAX_BATCH_ROWS = 25
   sql: udf_api
 
 - name: {{ schema -}}.tf_fact_blocks

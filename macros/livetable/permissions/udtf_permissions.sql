@@ -11,4 +11,4 @@
         GRANT USAGE ON FUNCTION {{ udtf }} TO ROLE {{ target.role }};
     {% endfor %}
 
-    {% return udtf_permissions %}
+{% endmacro %}
