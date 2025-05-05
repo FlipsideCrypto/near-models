@@ -1,7 +1,10 @@
 {% macro create_sp_refresh_fact_transactions_live() %}
 
 {% set procedure_sql %}
-    CREATE PROCEDURE IF NOT EXISTS {{ target.database }}.livetable.sp_refresh_fact_transactions_live() -- Update to if not exists
+    
+    CREATE SCHEMA IF NOT EXISTS {{ target.database }}.livetable;
+
+    CREATE PROCEDURE IF NOT EXISTS {{ target.database }}.livetable.sp_refresh_fact_transactions_live()
     RETURNS STRING
     LANGUAGE SQL
     AS
@@ -13,7 +16,7 @@
         chain_head_udf STRING DEFAULT '_live.udf_api'; 
         secret_path STRING DEFAULT 'Vault/prod/near/quicknode/livetable/mainnet';
         pk_column STRING DEFAULT 'tx_hash';
-        blocks_to_fetch_buffer INTEGER DEFAULT 1;
+        blocks_to_fetch_buffer INTEGER DEFAULT 385;
         block_timestamp_column STRING DEFAULT 'block_timestamp';
         pruning_threshold_minutes INTEGER DEFAULT 60;
 
@@ -26,7 +29,7 @@
         
         CREATE SCHEMA IF NOT EXISTS {{ target.database }}.core_live;
         
-        CREATE HYBRID TABLE IF NOT EXISTS IDENTIFIER(:hybrid_table_name) ( -- TODO: Add index for hybrid table
+        CREATE HYBRID TABLE IF NOT EXISTS IDENTIFIER(:hybrid_table_name) ( 
             tx_hash STRING PRIMARY KEY, 
             block_id NUMBER, 
             block_timestamp TIMESTAMP_NTZ, 
@@ -42,7 +45,6 @@
             fact_transactions_id STRING,
             inserted_timestamp TIMESTAMP_NTZ, 
             modified_timestamp TIMESTAMP_NTZ,
-            _hybrid_updated_at TIMESTAMP_LTZ DEFAULT SYSDATE(),
 
             INDEX idx_tx_signer (tx_signer),
             INDEX idx_tx_receiver (tx_receiver)
@@ -85,8 +87,7 @@
             target.tx_succeeded = source.tx_succeeded,
             target.fact_transactions_id = source.fact_transactions_id, 
             target.inserted_timestamp = source.inserted_timestamp,
-            target.modified_timestamp = source.modified_timestamp, 
-            target._hybrid_updated_at = SYSDATE()
+            target.modified_timestamp = source.modified_timestamp
         WHEN NOT MATCHED THEN INSERT (
             tx_hash, 
             block_id, 
@@ -102,8 +103,7 @@
             tx_succeeded, 
             fact_transactions_id,
             inserted_timestamp, 
-            modified_timestamp, 
-            _hybrid_updated_at
+            modified_timestamp
         ) VALUES (
             source.tx_hash, 
             source.block_id, 
@@ -119,8 +119,7 @@
             source.tx_succeeded, 
             source.fact_transactions_id,
             source.inserted_timestamp, 
-            source.modified_timestamp, 
-            SYSDATE()
+            source.modified_timestamp
         );
 
 
@@ -141,6 +140,9 @@
 {% endset %}
 
 
-{% do run_query(procedure_sql) %}
+{% if execute %}
+    {% do run_query(procedure_sql) %}
+    {% do log("Deployed stored procedure: livetable.sp_refresh_fact_transactions_live", info=True) %}
+{% endif %}
 
 {% endmacro %}
