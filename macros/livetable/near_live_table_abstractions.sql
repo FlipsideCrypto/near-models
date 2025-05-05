@@ -1,6 +1,6 @@
 -- Get Near Chain Head
 
-{% macro near_live_table_latest_block_height() %}
+{% macro near_livetable_latest_block_height() %}
 WITH rpc_call AS (
     SELECT
         DATE_PART('EPOCH', SYSDATE()) :: INTEGER AS request_timestamp,
@@ -24,7 +24,7 @@ FROM
     rpc_call
 {% endmacro %}
 
-{% macro near_live_table_min_max_block_height(start_block, block_count) %}
+{% macro near_livetable_min_max_block_height(start_block, block_count) %}
 SELECT
     {{ start_block }} AS min_height,
     min_height + {{ block_count }} AS max_height, 
@@ -33,14 +33,14 @@ FROM
 {% endmacro %}
 
 -- Get Near Block Data
-{% macro near_live_table_target_blocks(start_block, block_count) %}
+{% macro near_livetable_target_blocks(start_block, block_count) %}
     
     WITH heights AS (
         SELECT
             min_height,
             max_height,
         FROM (
-             {{- near_live_table_min_max_block_height(start_block=start_block, block_count=block_count) | indent(13) -}}
+             {{- near_livetable_min_max_block_height(start_block=start_block, block_count=block_count) | indent(13) -}}
         )
     ),
     block_spine AS (
@@ -59,7 +59,7 @@ FROM
     FROM block_spine
 {% endmacro %}
 
-{% macro near_live_table_get_spine(table_name) %}
+{% macro near_livetable_get_spine(table_name) %}
 SELECT
     block_height,
     ROW_NUMBER() OVER (ORDER BY block_height) - 1 as partition_num
@@ -81,7 +81,7 @@ FROM
     )
 {% endmacro %}
    
-{% macro near_live_table_get_raw_block_data(spine) %} 
+{% macro near_livetable_get_raw_block_data(spine) %} 
 SELECT
     block_height,
     DATE_PART('EPOCH', SYSDATE()) :: INTEGER AS request_timestamp,
@@ -103,7 +103,7 @@ from
 
 {% endmacro %}
 
-{% macro near_live_table_extract_raw_block_data(raw_blocks) %}
+{% macro near_livetable_extract_raw_block_data(raw_blocks) %}
 SELECT 
     block_data:header:height::string as block_id,
     TO_TIMESTAMP_NTZ(
@@ -146,22 +146,22 @@ FROM {{raw_blocks}}
 
 {% endmacro %}
 
-{% macro near_live_table_fact_blocks(schema, blockchain, network) %}
-    {%- set near_live_table_fact_blocks = livequery_models.get_rendered_model('near_models', 'livetable_fact_blocks', schema, blockchain, network) -%}
-    {{ near_live_table_fact_blocks }}
+{% macro near_livetable_fact_blocks(schema, blockchain, network) %}
+    {%- set near_livetable_fact_blocks = livequery_models.get_rendered_model('near_models', 'livetable_fact_blocks', schema, blockchain, network) -%}
+    {{ near_livetable_fact_blocks }}
 {% endmacro %}
 
-{% macro near_live_table_fact_transactions(schema, blockchain, network) %}
-    {%- set near_live_table_fact_transactions = livequery_models.get_rendered_model('near_models', 'livetable_fact_transactions', schema, blockchain, network) -%}
-    {{ near_live_table_fact_transactions }}
+{% macro near_livetable_fact_transactions(schema, blockchain, network) %}
+    {%- set near_livetable_fact_transactions = livequery_models.get_rendered_model('near_models', 'livetable_fact_transactions', schema, blockchain, network) -%}
+    {{ near_livetable_fact_transactions }}
 {% endmacro %}
 
-{% macro near_live_table_fact_receipts(schema, blockchain, network) %}
-    {%- set near_live_table_fact_receipts = livequery_models.get_rendered_model('near_models', 'livetable_fact_receipts', schema, blockchain, network) -%}
-    {{ near_live_table_fact_receipts }}
+{% macro near_livetable_fact_receipts(schema, blockchain, network) %}
+    {%- set near_livetable_fact_receipts = livequery_models.get_rendered_model('near_models', 'livetable_fact_receipts', schema, blockchain, network) -%}
+    {{ near_livetable_fact_receipts }}
 {% endmacro %}
 
-{% macro near_live_table_ez_actions(schema, blockchain, network) %}
-    {%- set near_live_table_ez_actions = livequery_models.get_rendered_model('near_models', 'livetable_ez_actions', schema, blockchain, network) -%}
-    {{ near_live_table_ez_actions }}
+{% macro near_livetable_ez_actions(schema, blockchain, network) %}
+    {%- set near_livetable_ez_actions = livequery_models.get_rendered_model('near_models', 'livetable_ez_actions', schema, blockchain, network) -%}
+    {{ near_livetable_ez_actions }}
 {% endmacro %}
