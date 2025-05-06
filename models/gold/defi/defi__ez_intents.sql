@@ -8,6 +8,10 @@
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,receipt_id);",
     tags = ['scheduled_non_core']
 ) }}
+-- depends on {{ ref('defi__fact_intents') }}
+-- depends on {{ ref('silver__defuse_tokens_metadata') }}
+-- depends on {{ ref('silver__ft_contract_metadata') }}
+-- depends on {{ ref('price__ez_prices_hourly') }}
 
 {% if execute %}
 
