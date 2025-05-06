@@ -11,46 +11,54 @@
 
 {% if execute %}
 
-{% if is_incremental() %}
-{% set query %}
+    {% if is_incremental() %}
+        {% set max_mod_query %}
+            SELECT
+                MAX(modified_timestamp) modified_timestamp
+            FROM
+                {{ this }}
+        {% endset %}
+        {% set max_mod = run_query(max_mod_query) [0] [0] %}
+        {% if not max_mod or max_mod == 'None' %}
+            {% set max_mod = '2099-01-01' %}
+        {% endif %}
 
-SELECT
-    MIN(DATE_TRUNC('day', block_timestamp))  - INTERVAL '1 day' AS block_timestamp_day
-FROM
-    {{ ref('defi__fact_intents') }}
-WHERE
-    modified_timestamp >= (
-        SELECT
-            MAX(modified_timestamp)
-        FROM
-            {{ this }}
-    ) 
-{% endset %}
-    {% set min_block_timestamp_day = run_query(query).columns [0].values() [0] %}
-    {% elif var('MANUAL_FIX') %}
+        
     {% set query %}
-SELECT
-    MIN(DATE_TRUNC('day', block_timestamp)) - INTERVAL '1 day' AS block_timestamp_day
-FROM
-    {{ this }}
-WHERE
-    FLOOR(
-        block_id,
-        -3
-    ) = {{ var('RANGE_START') }}
 
+        SELECT
+            MIN(DATE_TRUNC('day', block_timestamp))  - INTERVAL '1 day' AS block_timestamp_day
+        FROM
+            {{ ref('defi__fact_intents') }}
+        WHERE
+            modified_timestamp >= {{ max_mod }}
     {% endset %}
-    {% set min_block_timestamp_day = run_query(query).columns [0].values() [0] %}
-{% endif %}
+    
+        {% set min_bd = run_query(query).columns [0].values() [0] %}
+    {% elif var('MANUAL_FIX') %}
+        {% set query %}
+            SELECT
+                MIN(DATE_TRUNC('day', block_timestamp)) - INTERVAL '1 day' AS block_timestamp_day
+            FROM
+                {{ this }}
+            WHERE
+                FLOOR(
+                    block_id,
+                    -3
+                ) = {{ var('RANGE_START') }}
 
-{% if not min_block_timestamp_day or min_block_timestamp_day == 'None' %}
-    {% set min_block_timestamp_day = '2024-11-01' %}
-{% endif %}
+        {% endset %}
+        {% set min_bd = run_query(query).columns [0].values() [0] %}
+    {% endif %}
 
-{{ log(
-    "min_block_timestamp_day: " ~ min_block_timestamp_day,
-    info = True
-) }}
+    {% if not min_bd or min_bd == 'None' %}
+        {% set min_bd = '2024-11-01' %}
+    {% endif %}
+
+    {{ log(
+        "min_bd: " ~ min_bd,
+        info = True
+    ) }}
 {% endif %}
 
 WITH intents AS (
@@ -96,23 +104,17 @@ WITH intents AS (
             {{ partition_load_manual('no_buffer', 'FLOOR(block_id, -3)') }}
         {% else %}
 
-        {% if is_incremental() %}
-            WHERE
-                GREATEST(
-                    modified_timestamp,
-                    '2000-01-01'
-                ) >= DATEADD(
-                    'minute',
-                    -5,(
-                        SELECT
-                            MAX(
-                                modified_timestamp
-                            )
-                        FROM
-                            {{ this }}
+            {% if is_incremental() %}
+                WHERE
+                    GREATEST(
+                        modified_timestamp,
+                        '2000-01-01'
+                    ) >= DATEADD(
+                        'minute',
+                        -5,
+                        {{ max_mod }}
                     )
-                )
-        {% endif %}
+            {% endif %}
         {% endif %}
 ),
 labels AS (
@@ -167,7 +169,7 @@ AND
     DATE_TRUNC(
         'day',
         HOUR
-    ) >= '{{ min_block_timestamp_day }}'
+    ) >= '{{ min_bd }}'
 {% endif %}
 
 qualify(ROW_NUMBER() over (PARTITION BY COALESCE(token_address, symbol), HOUR
@@ -191,7 +193,7 @@ AND
     DATE_TRUNC(
         'day',
         HOUR
-    ) >= '{{ min_block_timestamp_day }}'
+    ) >= '{{ min_bd }}'
 {% endif %}
 
 qualify(ROW_NUMBER() over (PARTITION BY COALESCE(token_address, symbol), HOUR
