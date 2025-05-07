@@ -1,9 +1,55 @@
 {{ config(
-    materialized = 'view',
-    secure = false,
-    meta ={ 'database_tags':{ 'table':{ 'PURPOSE': 'DEFI, LENDING' }} },
-    tags = ['scheduled_non_core']
+    materialized = 'incremental',
+    incremental_strategy = 'merge',
+    incremental_predicates = ["dynamic_range_predicate_custom","block_timestamp::date"],
+    merge_exclude_columns = ["inserted_timestamp"],
+    unique_key = 'ez_lending_id',
+    cluster_by = ['block_timestamp::DATE'],
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,contract_address,token_address,sender_id,actions,amount_raw,amount_adj);",
+    tags = ['scheduled_non_core'],
+    meta ={ 'database_tags':{ 'table':{ 'PURPOSE': 'DEFI, LENDING' }} }
 ) }}
+-- depends on {{ ref('silver__burrow_lending') }}
+-- depends on {{ ref('silver__ft_contract_metadata') }}
+-- depends on {{ ref('silver__complete_token_prices') }}
+
+{% if execute %}
+
+    {% if is_incremental() %}
+        {% set max_mod_query %}
+            SELECT
+                MAX(modified_timestamp) modified_timestamp
+            FROM
+                {{ this }}
+            WHERE
+                modified_timestamp >= {{ max_mod }}
+        {% endset %}
+        {% set max_mod = run_query(max_mod_query) [0] [0] %}
+        {% if not max_mod or max_mod == 'None' %}
+            {% set max_mod = '2099-01-01' %}
+        {% endif %}
+
+        {% set query %}
+            SELECT
+                MIN(DATE_TRUNC('day', block_timestamp)) AS block_timestamp_day
+            FROM
+                {{ ref('silver__burrow_lending') }}
+            WHERE
+                modified_timestamp >= {{ max_mod }}
+        {% endset %}
+        {% set min_bd = run_query(query).columns [0].values() [0] %}
+    {% endif %}
+
+    {% if not min_bd or min_bd == 'None' %}
+        {% set min_bd = '2024-11-01' %}
+    {% endif %}
+
+    {{ log(
+        "min_bd: " ~ min_bd,
+        info = True
+    ) }}
+{% endif %}
+
 
 WITH lending AS (
 
@@ -23,6 +69,15 @@ WITH lending AS (
         modified_timestamp
     FROM
         {{ ref('silver__burrow_lending') }}
+    {% if var('MANUAL_FIX') %}
+        WHERE {{ partition_load_manual('no_buffer', 'floor(block_id, -3)') }}
+    {% else %}
+        {% if is_incremental() %}
+            WHERE modified_timestamp > (
+                SELECT MAX(modified_timestamp) FROM {{ this }}
+            )
+        {% endif %}
+    {% endif %}
 ),
 labels AS (
     SELECT
@@ -58,6 +113,13 @@ prices AS (
         AVG(price) AS price_usd
     FROM
         {{ ref('silver__complete_token_prices') }}
+    {% if is_incremental() or var('MANUAL_FIX') %}
+        WHERE
+            DATE_TRUNC(
+                'day',
+                HOUR
+            ) >= '{{ min_bd }}'
+    {% endif %}
     GROUP BY
         1,
         2
@@ -83,8 +145,8 @@ FINAL AS (
         p.price_usd,
         amount * p.price_usd AS amount_usd,
         l.ez_lending_id,
-        l.inserted_timestamp,
-        l.modified_timestamp
+        SYSDATE() AS inserted_timestamp,
+        SYSDATE() AS modified_timestamp
     FROM
         lending l
         LEFT JOIN labels lb

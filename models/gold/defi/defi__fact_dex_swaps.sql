@@ -25,8 +25,8 @@ SELECT
     swap_input_data,
     LOG,
     dex_swaps_v2_id AS fact_dex_swaps_id,
-    inserted_timestamp,
-    modified_timestamp
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp
 FROM
     {{ ref('silver__dex_swaps_v2') }}
         

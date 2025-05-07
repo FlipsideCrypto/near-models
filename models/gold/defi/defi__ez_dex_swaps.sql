@@ -163,8 +163,8 @@ FINAL AS (
         s.swap_input_data,
         s.log,
         s.ez_dex_swaps_id,
-        s.inserted_timestamp,
-        s.modified_timestamp
+        SYSDATE() AS inserted_timestamp,
+        SYSDATE() AS modified_timestamp
     FROM
         dex_swaps s
         LEFT JOIN labels l1

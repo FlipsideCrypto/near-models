@@ -154,8 +154,8 @@ FINAL AS (
         b.direction,
         b.receipt_succeeded,
         b.ez_bridge_activity_id,
-        b.inserted_timestamp,
-        b.modified_timestamp
+        SYSDATE() AS inserted_timestamp,
+        SYSDATE() AS modified_timestamp
     FROM fact_bridging b
         LEFT JOIN {{ ref('seeds__portalbridge_tokenids') }} w
             ON b.token_address = w.wormhole_contract_address

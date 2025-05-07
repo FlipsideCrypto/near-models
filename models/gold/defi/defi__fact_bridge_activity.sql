@@ -205,23 +205,23 @@ FINAL AS (
         allbridge
 )
 SELECT
-        block_id,
-        block_timestamp,
-        tx_hash,
-        token_address,
-        amount_raw AS amount_unadj,
-        amount_adj,
-        destination_address,
-        source_address,
-        platform,
-        bridge_address,
-        LOWER(destination_chain) AS destination_chain,
-        LOWER(source_chain) AS source_chain,
-        method_name,
-        direction,
-        receipt_succeeded,
-        fact_bridge_activity_id,
-        inserted_timestamp,
-        modified_timestamp
+    block_id,
+    block_timestamp,
+    tx_hash,
+    token_address,
+    amount_raw AS amount_unadj,
+    amount_adj,
+    destination_address,
+    source_address,
+    platform,
+    bridge_address,
+    LOWER(destination_chain) AS destination_chain,
+    LOWER(source_chain) AS source_chain,
+    method_name,
+    direction,
+    receipt_succeeded,
+    fact_bridge_activity_id,
+    SYSDATE() AS inserted_timestamp,
+        SYSDATE() AS modified_timestamp
 FROM
     FINAL
