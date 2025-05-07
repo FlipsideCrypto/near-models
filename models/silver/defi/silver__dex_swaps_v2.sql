@@ -4,8 +4,7 @@
     incremental_predicates = ["dynamic_range_predicate_custom","block_timestamp::date"],
     merge_exclude_columns = ["inserted_timestamp"],
     unique_key = 'dex_swaps_v2_id',
-    cluster_by = ['block_timestamp::DATE'],
-    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,receipt_object_id,receiver_id,signer_id,token_out,token_in);",
+    cluster_by = ['block_timestamp::DATE', 'modified_timestamp::DATE'],
     tags = ['scheduled_non_core'],
 ) }}
 
