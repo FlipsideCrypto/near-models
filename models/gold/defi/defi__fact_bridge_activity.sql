@@ -1,12 +1,54 @@
 {{ config(
-    materialized = 'view',
-    secure = false,
-    meta ={ 'database_tags':{ 'table':{ 'PURPOSE': 'DEFI, BRIDGING' }} },
-    tags = ['scheduled_non_core']
+    materialized = 'incremental',
+    incremental_strategy = 'merge',
+    incremental_predicates = ["dynamic_range_predicate_custom","block_timestamp::date"],
+    merge_exclude_columns = ["inserted_timestamp"],
+    unique_key = 'fact_bridge_activity_id',
+    cluster_by = ['block_timestamp::DATE'],
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,token_address,destination_address,source_address,platform,bridge_address,destination_chain,source_chain,method_name,direction,receipt_succeeded);",
+    tags = ['scheduled_non_core'],
+    meta ={ 'database_tags':{ 'table':{ 'PURPOSE': 'DEFI, BRIDGING' }} }
 ) }}
+-- depends on {{ ref('silver__bridge_rainbow') }}
+-- depends on {{ ref('silver__bridge_wormhole') }}
+-- depends on {{ ref('silver__bridge_multichain') }}
+-- depends on {{ ref('silver__bridge_allbridge') }}
 
-WITH 
-rainbow AS (
+{% if execute %}
+
+    {% if is_incremental() %}
+        {% set max_mod_query %}
+            SELECT
+                MAX(modified_timestamp) modified_timestamp
+            FROM
+                {{ this }}
+        {% endset %}
+        {% set max_mod = run_query(max_mod_query) [0] [0] %}
+        {% if not max_mod or max_mod == 'None' %}
+            {% set max_mod = '2099-01-01' %}
+        {% endif %}
+
+        {% set query %}
+            SELECT
+                MIN(DATE_TRUNC('day', block_timestamp)) AS block_timestamp_day
+            FROM
+                (
+                    select min(block_timestamp) block_timestamp from {{ ref('silver__bridge_rainbow') }}
+                    union all
+                    select min(block_timestamp) block_timestamp from {{ ref('silver__bridge_wormhole') }}
+                    union all
+                    select min(block_timestamp) block_timestamp from {{ ref('silver__bridge_multichain') }}
+                    union all
+                    select min(block_timestamp) block_timestamp from {{ ref('silver__bridge_allbridge') }}
+                )
+            WHERE
+                modified_timestamp >= {{ max_mod }}
+        {% endset %}
+        {% set min_bd = run_query(query).columns [0].values() [0] %}
+    {% endif %}
+{% endif %}
+
+WITH rainbow AS (
 
     SELECT
         block_id,
@@ -29,6 +71,15 @@ rainbow AS (
         modified_timestamp
     FROM
         {{ ref('silver__bridge_rainbow') }}
+    {% if var('MANUAL_FIX') %}
+        AND {{ partition_load_manual('no_buffer', 'floor(block_id, -3)') }}
+    {% else %}
+        {% if is_incremental() %}
+            WHERE modified_timestamp > (
+                SELECT MAX(modified_timestamp) FROM {{ this }}
+            )
+        {% endif %}
+    {% endif %}
 ),
 wormhole AS (
     SELECT
@@ -52,6 +103,15 @@ wormhole AS (
         modified_timestamp
     FROM
         {{ ref('silver__bridge_wormhole') }} b
+    {% if var('MANUAL_FIX') %}
+        WHERE {{ partition_load_manual('no_buffer', 'floor(block_id, -3)') }}
+    {% else %}
+        {% if is_incremental() %}
+            WHERE modified_timestamp > (
+                SELECT MAX(modified_timestamp) FROM {{ this }}
+            )
+        {% endif %}
+    {% endif %}
     LEFT JOIN {{ ref('seeds__wormhole_ids') }} id ON b.destination_chain_id = id.id
     LEFT JOIN {{ ref('seeds__wormhole_ids') }} id2 ON b.source_chain_id = id2.id
 ),
@@ -77,6 +137,15 @@ multichain AS (
         modified_timestamp
     FROM
         {{ ref('silver__bridge_multichain') }} b
+    {% if var('MANUAL_FIX') %}
+        WHERE {{ partition_load_manual('no_buffer', 'floor(block_id, -3)') }}
+    {% else %}
+        {% if is_incremental() %}
+            WHERE modified_timestamp > (
+                SELECT MAX(modified_timestamp) FROM {{ this }}
+            )
+        {% endif %}
+    {% endif %}
     LEFT JOIN {{ ref('seeds__multichain_ids') }} id ON b.destination_chain_id = id.id
     LEFT JOIN {{ ref('seeds__multichain_ids') }} id2 ON b.source_chain_id = id2.id
 ),
@@ -102,6 +171,15 @@ allbridge AS (
         modified_timestamp
     FROM
         {{ ref('silver__bridge_allbridge') }} b
+    {% if var('MANUAL_FIX') %}
+        WHERE {{ partition_load_manual('no_buffer', 'floor(block_id, -3)') }}
+    {% else %}
+        {% if is_incremental() %}
+            WHERE modified_timestamp > (
+                SELECT MAX(modified_timestamp) FROM {{ this }}
+            )
+        {% endif %}
+    {% endif %}
     LEFT JOIN {{ ref('seeds__allbridge_ids') }} id ON b.destination_chain_id = id.id
     LEFT JOIN {{ ref('seeds__allbridge_ids') }} id2 ON b.source_chain_id = id2.id
 ),
