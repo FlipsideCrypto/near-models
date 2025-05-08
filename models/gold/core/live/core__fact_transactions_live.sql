@@ -26,9 +26,11 @@ WITH core_tx AS (
     SELECT * FROM {{ ref('core__fact_transactions') }}
 ),
 bronze_tx AS (
-    SELECT * FROM {{ ref('bronze__FR_transactions') }}
+    SELECT
+        btx.* 
+    FROM {{ ref('bronze__FR_transactions') }} btx
+    QUALIFY ROW_NUMBER() OVER (PARTITION BY btx.data:transaction:hash ORDER BY btx.value:block_id DESC) = 1 
 )
-
 SELECT
     tx_hash,
     block_id,
