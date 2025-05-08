@@ -6,7 +6,7 @@
     CREATE SCHEMA IF NOT EXISTS {{ target.database }}.core_live;
     CREATE SCHEMA IF NOT EXISTS {{ target.database }}.bronze_live;
 
-    CREATE PROCEDURE IF NOT EXISTS {{ target.database }}.livetable.sp_refresh_fact_transactions_live()
+    CREATE OR REPLACE PROCEDURE {{ target.database }}.livetable.sp_refresh_fact_transactions_live()
     RETURNS STRING
     LANGUAGE SQL
     AS
@@ -19,7 +19,7 @@
         chain_head_udf STRING DEFAULT '_live.udf_api'; 
         secret_path STRING DEFAULT 'Vault/prod/near/quicknode/livetable/mainnet';
         pk_column STRING DEFAULT 'tx_hash';
-        blocks_to_fetch_buffer INTEGER DEFAULT 385;
+        blocks_to_fetch_buffer INTEGER DEFAULT 1;
         block_timestamp_column STRING DEFAULT 'block_timestamp';
         pruning_threshold_minutes INTEGER DEFAULT 60;
 
@@ -28,7 +28,7 @@
         start_block_for_udtf INTEGER;
         rows_merged_gold INTEGER := 0;
         rows_merged_bronze_stage INTEGER := 0;
-        rows_deleted INTEGER := 0;
+        rows_deleted_gold INTEGER := 0;
         temp_table_name STRING;
         final_return_message STRING;
         error_message STRING;
@@ -59,7 +59,7 @@
         CREATE HYBRID TABLE IF NOT EXISTS IDENTIFIER(:bronze_rpc_responses_table_name) (
             TX_HASH STRING PRIMARY KEY,
             PARTITION_KEY NUMBER,
-            RPC_RESPONSE_DATA VARIANT,
+            DATA VARIANT,
             SHARD_ID NUMBER,
             CHUNK_HASH STRING,
             BRONZE_BLOCK_ID NUMBER,
@@ -67,9 +67,7 @@
             HEIGHT_CREATED NUMBER,
             HEIGHT_INCLUDED NUMBER,
             REQUEST_TIMESTAMP NUMBER DEFAULT (DATE_PART('EPOCH_SECOND', SYSDATE())::NUMBER),
-            METADATA VARIANT DEFAULT NULL,
- 
-            INDEX idx_rpc_request_ts (REQUEST_TIMESTAMP)
+            METADATA VARIANT DEFAULT NULL
         );
 
         SELECT IDENTIFIER(:chain_head_udf)(
@@ -145,14 +143,14 @@
         DELETE FROM IDENTIFIER(:gold_hybrid_table_name)
         WHERE  IDENTIFIER(:block_timestamp_column) < (DATEADD('minute', - :pruning_threshold_minutes, CURRENT_TIMESTAMP()))::TIMESTAMP_NTZ(9);
 
-        rows_deleted := SQLROWCOUNT;
+        rows_deleted_gold := SQLROWCOUNT;
 
         MERGE INTO IDENTIFIER(:bronze_rpc_responses_table_name) AS target
         USING (
             SELECT
                 TX_HASH,
                 PARTITION_KEY,
-                DATA AS RPC_RESPONSE_DATA,
+                DATA AS DATA,
                 VALUE:SHARD_ID::NUMBER AS SHARD_ID,
                 VALUE:CHUNK_HASH::STRING AS CHUNK_HASH,
                 VALUE:BLOCK_ID::NUMBER AS BRONZE_BLOCK_ID,
@@ -167,7 +165,7 @@
         ON target.tx_hash = source.tx_hash
         WHEN MATCHED THEN UPDATE SET
             target.PARTITION_KEY = source.PARTITION_KEY,
-            target.RPC_RESPONSE_DATA = source.RPC_RESPONSE_DATA,
+            target.DATA = source.DATA,
             target.SHARD_ID = source.SHARD_ID,
             target.CHUNK_HASH = source.CHUNK_HASH,
             target.BRONZE_BLOCK_ID = source.BRONZE_BLOCK_ID,
@@ -202,7 +200,7 @@
         WHEN NOT MATCHED THEN INSERT (
             TX_HASH,
             PARTITION_KEY,
-            RPC_RESPONSE_DATA,
+            DATA,
             SHARD_ID,
             CHUNK_HASH,
             BRONZE_BLOCK_ID,
@@ -214,7 +212,7 @@
         ) VALUES (
             source.TX_HASH,
             source.PARTITION_KEY,
-            source.RPC_RESPONSE_DATA,
+            source.DATA,
             source.SHARD_ID,
             source.CHUNK_HASH,
             source.BRONZE_BLOCK_ID,
