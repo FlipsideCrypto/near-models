@@ -99,6 +99,7 @@
                 INSERTED_TIMESTAMP, MODIFIED_TIMESTAMP
 
             FROM IDENTIFIER(:temp_table_name)
+            QUALIFY ROW_NUMBER() OVER (PARTITION BY TX_HASH ORDER BY block_timestamp DESC) = 1
         ) AS source
         ON target.tx_hash = source.tx_hash
         WHEN MATCHED THEN UPDATE SET
@@ -161,6 +162,7 @@
                 
             FROM IDENTIFIER(:temp_table_name)
             WHERE TX_HASH IS NOT NULL
+            QUALIFY ROW_NUMBER() OVER (PARTITION BY TX_HASH ORDER BY block_timestamp DESC) = 1
         ) AS source
         ON target.tx_hash = source.tx_hash
         WHEN MATCHED THEN UPDATE SET
