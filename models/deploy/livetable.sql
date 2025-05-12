@@ -16,4 +16,4 @@
     config_near_high_level_abstractions
     ] -%}
 
-{{- livequery_models.ephemeral_deploy(configs) -}}
+{{- near_models.lt_ephemeral_deploy(configs) -}}

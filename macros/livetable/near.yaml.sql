@@ -125,7 +125,7 @@
     {% if execute and (var("UPDATE_UDFS_AND_SPS") or var("DROP_UDFS_AND_SPS")) and model.unique_id in selected_resources %}
         {% set sql %}
             {% for config in configs %}
-                {{- livequery_models.crud_udfs_by_chain(config, blockchain, network, var("DROP_UDFS_AND_SPS")) -}}
+                {{- livequery_models.crud_udfs_by_chain(config, this.schema, network, var("DROP_UDFS_AND_SPS")) -}}
             {%- endfor -%}
         {%- endset -%}
         {%- if var("DROP_UDFS_AND_SPS") -%}
@@ -133,7 +133,7 @@
         {%- else -%}
             {%- do log("Deploy partner udfs: " ~ this.database ~ "." ~ schema, true) -%}
         {%- endif -%}
-        {# {%- do run_query(sql ~ livequery_models.apply_grants_by_schema(schema)) -%} #}
+        {%- do run_query(sql ~ livequery_models.apply_grants_by_schema(schema)) -%}
     {%- endif -%}
     SELECT '{{ model.schema }}' as schema_
 {%- endmacro -%}
