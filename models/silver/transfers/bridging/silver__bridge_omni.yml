@@ -1,0 +1,145 @@
+version: 2
+
+models:
+  - name: silver__bridge_omni
+    description: |-
+      Extracts data from core__ez_actions and silver__logs_s3 to build a view of bridge activity through the Omni Bridge. An overview explanation of the bridge can be seen [here](https://docs.near.org/chain-abstraction/omnibridge/overview) and the technnical documentations [here](https://github.com/Near-One/omni-bridge?tab=readme-ov-file)
+    tests:
+      - dbt_utils.recency:
+          datepart: week
+          field: block_timestamp
+          interval: 1
+    
+    columns:
+      - name: BLOCK_ID
+        description: "{{ doc('block_id') }}"
+
+      - name: BLOCK_TIMESTAMP
+        description: "{{ doc('block_timestamp') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
+
+      - name: TX_HASH
+        description: "{{ doc('tx_hash') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: RECEIPT_ID
+        description: "{{ doc('receipt_id')}}"
+
+      - name: ACTION_INDEX
+        description: "{{ doc('action_index')}}"
+
+      - name: TOKEN_ADDRESS
+        description: "{{ doc('token_contract')}}"
+        tests:
+          - not_null:
+              where: receipt_succeeded
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: AMOUNT_RAW
+        description: "{{ doc('amount_raw')}}"
+        tests:
+          - not_null:
+              where: receipt_succeeded
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - INTEGER
+                - NUMBER
+
+      - name: AMOUNT_ADJ
+        description: "{{ doc('amount_adj')}}"
+        tests:
+          - not_null:
+              where: receipt_succeeded
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - INTEGER
+                - NUMBER
+
+      - name: MEMO
+        description: "{{ doc('memo')}}"
+
+      - name: DESTINATION_ADDRESS
+        description: "{{ doc('destination_address')}}"
+        tests:
+          - not_null:
+              where: receipt_succeeded
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: SOURCE_ADDRESS
+        description: "{{ doc('source_address')}}"
+
+      - name: BRIDGE_ADDRESS
+        description: "{{ doc('contract_address')}}"
+        tests:
+          - not_null
+
+      - name: PLATFORM
+        description: "{{ doc('platform')}}"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['rainbow']
+
+      - name: DESTINATION_CHAIN_ID
+        description: "{{ doc('chain_id')}}"
+        tests:
+          - not_null:
+              where: receipt_succeeded
+
+      - name: SOURCE_CHAIN_ID
+        description: "{{ doc('chain_id')}}"
+        tests:
+          - not_null:
+              where: receipt_succeeded
+
+      - name: RECEIPT_SUCCEEDED
+        description: "{{ doc('receipt_succeeded')}}"
+        tests:
+          - not_null
+
+      - name: METHOD_NAME
+        description: "{{ doc('method_name')}}"
+        tests:
+          - not_null
+
+      - name: DIRECTION
+        description: "{{ doc('direction')}}"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['inbound', 'outbound']
+
+      - name: _PARTITION_BY_BLOCK_NUMBER
+        description: "{{ doc('_partition_by_block_number')}}"
+
+      - name: BRIDGE_OMNI_ID
+        description: "{{ doc('id')}}"
+        tests:
+          - unique
+          - not_null
+
+      - name: INSERTED_TIMESTAMP
+        description: "{{ doc('inserted_timestamp')}}"
+
+      - name: MODIFIED_TIMESTAMP
+        description: "{{ doc('modified_timestamp')}}"
+
+      - name: _INVOCATION_ID
+        description: "{{ doc('invocation_id')}}"
+              
+      

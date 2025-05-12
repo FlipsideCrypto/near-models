@@ -1,3 +1,17 @@
+{{ config(
+    materialized = 'incremental',
+    incremental_strategy = 'merge',
+    merge_exclude_columns = ["inserted_timestamp"],
+    unique_key = 'bridge_omni_id',
+    cluster_by = ['block_timestamp::DATE', 'modified_timestamp::DATE'],
+    tags = ['scheduled_non_core'],
+    incremental_predicates = ["dynamic_range_predicate_custom","block_timestamp::date"]
+)}}
+
+-- token id in fact intents since it was deployed by the omni bridge contract
+-- OBJECT KEYS (JSON) on InitTransferEvent/FinTransferEvent
+-- DISTINCT (Recipient U Sender).split(:)[0]
+
 WITH near_omni_contracts AS (
     SELECT 
         contract_address
@@ -31,7 +45,7 @@ actions AS (
         _invocation_id,
         FLOOR(block_id, -3) AS _partition_by_block_number
     FROM
-        near.core.ez_actions
+        {{ ref('core__ez_actions') }}
     WHERE 
         action_name = 'FunctionCall'
         AND (
@@ -40,8 +54,28 @@ actions AS (
             OR receipt_predecessor_id IN (SELECT contract_address FROM near_omni_contracts)
             OR action_data:args:receiver_id :: STRING IN (SELECT contract_address FROM near_omni_contracts)
         )
-        -- AND tx_hash in ('23pWQ6HFpnsrchXpkWdmDmPbkBWLc5q6YB3XSZG4uJT3')
-        -- AND block_timestamp >= CURRENT_DATE - INTERVAL '30 day'
+        {% if var("MANUAL_FIX") %}
+        AND {{ partition_load_manual('no_buffer', 'floor(block_id, -3)') }}
+        {% else %}
+        {% if is_incremental() %}
+        AND modified_timestamp >= (
+            SELECT
+                MAX(modified_timestamp)
+            FROM
+                {{ this }}
+        )
+        {% endif %}
+        {% endif %}
+),
+has_mint_burn AS (
+    SELECT 
+        tx_hash,
+        MAX(CASE WHEN method_name = 'mint' THEN TRUE ELSE FALSE END) AS has_mint,
+        MAX(CASE WHEN method_name = 'burn' THEN TRUE ELSE FALSE END) AS has_burn
+    FROM 
+        actions
+    GROUP BY 
+        1
 ),
 logs AS (
     SELECT
@@ -62,8 +96,20 @@ logs AS (
         _invocation_id
     FROM
         near.silver.logs_s3
-    -- WHERE
-    --     block_timestamp >= CURRENT_DATE - INTERVAL '30 day'
+    {% if var("MANUAL_FIX") %}
+    WHERE
+        {{ partition_load_manual('no_buffer', 'floor(block_id, -3)') }}
+    {% else %}
+        {% if is_incremental() %}
+            WHERE
+                modified_timestamp >= (
+                    SELECT
+                        MAX(modified_timestamp)
+                    FROM
+                        {{ this }}
+                )
+        {% endif %}
+    {% endif %}
 ),
 joined AS (
     SELECT
@@ -86,83 +132,18 @@ joined AS (
         logs_id,
         inserted_timestamp,
         modified_timestamp,
+        COALESCE(mb.has_mint, FALSE) AS has_mint,
+        COALESCE(mb.has_burn, FALSE) AS has_burn,
         _invocation_id,
         _partition_by_block_number
     FROM
         actions
     JOIN logs 
         USING (block_id, tx_hash, receipt_id)
-)
--- ,parsed_logs AS (
---     SELECT
---         tx_hash,
---         block_timestamp,
---         clean_log,
---         CASE 
---             WHEN REGEXP_SUBSTR(clean_log, '"sender":\\s*"([^:]+):', 1, 1, 'e') IS NOT NULL
---             THEN REGEXP_SUBSTR(clean_log, '"sender":\\s*"([^:]+):', 1, 1, 'e')
---             ELSE NULL
---         END AS sender_chain,
-        
---         -- Extract recipient chain identifier before the colon
---         CASE 
---             WHEN REGEXP_SUBSTR(clean_log, '"recipient":\\s*"([^:]+):', 1, 1, 'e') IS NOT NULL
---             THEN REGEXP_SUBSTR(clean_log, '"recipient":\\s*"([^:]+):', 1, 1, 'e')
---             ELSE NULL
---         END AS recipient_chain,
---     FROM
---         joined
--- ),
--- chain_ids AS(
---     SELECT
---         sender_chain AS chain_id,
---         COUNT(*) AS count,
---         MIN(block_timestamp) AS min_block_timestamp,
---         MAX(block_timestamp) AS max_block_timestamp
---     FROM
---         parsed_logs
---     WHERE
---         sender_chain IS NOT NULL
---     GROUP BY 1
---     UNION ALL
---     SELECT
---         recipient_chain AS chain_id,
---         COUNT(*) AS count,
---         MIN(block_timestamp) AS min_block_timestamp,
---         MAX(block_timestamp) AS max_block_timestamp
---     FROM
---         parsed_logs
---     WHERE
---         recipient_chain IS NOT NULL
---     GROUP BY 1
--- )
--- select chain_id, count, min_block_timestamp, max_block_timestamp from chain_ids order by count desc;
-
--- where  (
---             LOWER(action_data) LIKE '%transfer_message%' 
---             OR LOWER(action_data) LIKE '%finaltransfer%'
---             OR LOWER(action_data) LIKE '%fin_transfer_callback%'
---             OR LOWER(action_data) LIKE '%ft_on_transfer%'
---             OR LOWER(action_data) LIKE '%ft_resolve_transfer%'
---             OR LOWER(clean_log) LIKE '%InitTransferEvent%'
---             OR LOWER(clean_log) LIKE '%FinTransferEvent%'
---         ) 
---         AND (
---             LOWER(action_data) LIKE '%"base:%' 
---             OR LOWER(action_data) LIKE '%:base:%' 
---             OR LOWER(action_data) LIKE '%"base:%' 
---             OR LOWER(action_data) LIKE '%:base:%'
---             OR LOWER(clean_log) LIKE '%"base:%' 
---             OR LOWER(clean_log) LIKE '%:base:%' 
---             OR LOWER(clean_log) LIKE '%"base:%' 
---             OR LOWER(clean_log) LIKE '%:base:%'
---         );
-
--- token id in fact intents since it was deployed by the omni bridge contract
--- OBJECT KEYS (JSON) on InitTransferEvent/FinTransferEvent
--- DISTINCT (Recipient U Sender).split(:)[0]
-
-,inbound_omni AS (
+    LEFT JOIN has_mint_burn mb
+        USING (tx_hash)
+),
+inbound_omni AS (
     -- determined by having fin_transfer (initialization), fin_transfer_callback (the actual bridge log) with a FinTransferEvent, and mint method calls. the first two interacts with omni.bridge.near, whereas the latter seems to be *chain*.bridge.near
 
     SELECT
@@ -179,6 +160,8 @@ joined AS (
         receipt_id,
         clean_log,
         receipt_succeeded,
+        has_mint,
+        FALSE AS has_burn,
         TRY_PARSE_JSON(REGEXP_SUBSTR(clean_log :: STRING, '\\{.*\\}')) AS event_json,
         TRY_PARSE_JSON(REGEXP_SUBSTR(clean_log :: STRING, '\\{.*\\}')):"FinTransferEvent":"transfer_message" AS transfer_data,
         transfer_data:amount :: STRING AS amount_raw,
@@ -197,17 +180,8 @@ joined AS (
     FROM
         joined
     WHERE
-        tx_hash IN (
-            SELECT
-                DISTINCT tx_hash
-            FROM
-                actions
-            WHERE
-                method_name = 'mint'
-            GROUP BY 1
-        )
-        AND clean_log :: STRING LIKE '%FinTransferEvent%'
-) select token_address, token_chain, count(*) from inbound_omni group by 1,2 order by 3 desc;
+        clean_log :: STRING LIKE '%FinTransferEvent%'
+) ,
 outbound_omni AS (
     -- determined by having a sequence of action: ft_on_transfer, burn, and ft_resolve_transfer in that order. an outbound tx must have at least a burn associated with it.
 
@@ -225,6 +199,8 @@ outbound_omni AS (
         receipt_id,
         clean_log,
         receipt_succeeded,
+        FALSE AS has_mint,
+        has_burn,
         TRY_PARSE_JSON(REGEXP_SUBSTR(clean_log :: STRING, '\\{.*\\}')) AS event_json,
         TRY_PARSE_JSON(REGEXP_SUBSTR(clean_log :: STRING, '\\{.*\\}')):"InitTransferEvent":"transfer_message" AS transfer_data,
         transfer_data:amount :: STRING AS amount_raw,
@@ -243,16 +219,7 @@ outbound_omni AS (
     FROM
         joined
     WHERE
-        tx_hash IN (
-            SELECT DISTINCT 
-                tx_hash
-            FROM
-                actions
-            WHERE
-                method_name = 'burn'
-            GROUP BY 1
-        )
-        AND clean_log :: STRING LIKE '%InitTransferEvent%'
+        clean_log :: STRING LIKE '%InitTransferEvent%'
 ), 
 final AS (
     SELECT
@@ -270,6 +237,8 @@ final AS (
         receipt_succeeded,
         method_name,
         bridge_address,
+        has_mint,
+        has_burn,
         _partition_by_block_number
     FROM
         inbound_omni
@@ -289,18 +258,20 @@ final AS (
         receipt_succeeded,
         method_name,
         bridge_address,
+        has_mint,
+        has_burn,
         _partition_by_block_number
     FROM
         outbound_omni
 ) 
--- select
---     count(*),
---     count(case when direction = 'inbound' then 1 end) as inbound_count,
---     count(case when direction = 'outbound' then 1 end) as outbound_count,
---     min(block_timestamp) as min_block_timestamp,
---     max(block_timestamp) as max_block_timestamp,
---     array_agg(distinct source_chain_id) as source_chain_ids,
---     array_agg(distinct destination_chain_id) as destination_chain_ids,
---     count(case when receipt_succeeded = false then 1 end) as failed_count,
---     count(case when receipt_succeeded = true then 1 end) as succeeded_count
--- from final
+SELECT
+    *,
+    'omni' AS platform,
+    {{ dbt_utils.generate_surrogate_key(
+        ['tx_hash', 'source_chain_id', 'destination_address', 'token_address', 'amount_raw']
+    ) }} AS bridge_omni_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
+FROM 
+    final
