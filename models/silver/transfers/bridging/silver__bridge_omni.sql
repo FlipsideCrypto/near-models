@@ -268,6 +268,7 @@ final AS (
 ) 
 SELECT
     *,
+    amount_raw AS amount_adj,
     'omni' AS platform,
     {{ dbt_utils.generate_surrogate_key(
         ['tx_hash', 'source_chain_id', 'destination_address', 'token_address', 'amount_raw']
