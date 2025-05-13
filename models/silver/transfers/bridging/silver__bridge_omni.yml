@@ -93,7 +93,7 @@ models:
         tests:
           - not_null
           - accepted_values:
-              values: ['rainbow']
+              values: ['omni']
 
       - name: DESTINATION_CHAIN_ID
         description: "{{ doc('chain_id')}}"
