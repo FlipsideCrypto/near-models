@@ -72,12 +72,10 @@ WITH rainbow AS (
     FROM
         {{ ref('silver__bridge_rainbow') }}
     {% if var('MANUAL_FIX') %}
-        AND {{ partition_load_manual('no_buffer', 'floor(block_id, -3)') }}
+        WHERE {{ partition_load_manual('no_buffer', 'floor(block_id, -3)') }}
     {% else %}
         {% if is_incremental() %}
-            WHERE modified_timestamp > (
-                SELECT MAX(modified_timestamp) FROM {{ this }}
-            )
+            WHERE modified_timestamp > {{ max_mod }}
         {% endif %}
     {% endif %}
 ),
@@ -107,9 +105,7 @@ wormhole AS (
         WHERE {{ partition_load_manual('no_buffer', 'floor(block_id, -3)') }}
     {% else %}
         {% if is_incremental() %}
-            WHERE modified_timestamp > (
-                SELECT MAX(modified_timestamp) FROM {{ this }}
-            )
+            WHERE modified_timestamp > {{ max_mod }}
         {% endif %}
     {% endif %}
     LEFT JOIN {{ ref('seeds__wormhole_ids') }} id ON b.destination_chain_id = id.id
@@ -141,9 +137,7 @@ multichain AS (
         WHERE {{ partition_load_manual('no_buffer', 'floor(block_id, -3)') }}
     {% else %}
         {% if is_incremental() %}
-            WHERE modified_timestamp > (
-                SELECT MAX(modified_timestamp) FROM {{ this }}
-            )
+            WHERE modified_timestamp > {{ max_mod }}
         {% endif %}
     {% endif %}
     LEFT JOIN {{ ref('seeds__multichain_ids') }} id ON b.destination_chain_id = id.id
@@ -175,9 +169,7 @@ allbridge AS (
         WHERE {{ partition_load_manual('no_buffer', 'floor(block_id, -3)') }}
     {% else %}
         {% if is_incremental() %}
-            WHERE modified_timestamp > (
-                SELECT MAX(modified_timestamp) FROM {{ this }}
-            )
+            WHERE modified_timestamp > {{ max_mod }}
         {% endif %}
     {% endif %}
     LEFT JOIN {{ ref('seeds__allbridge_ids') }} id ON b.destination_chain_id = id.id
@@ -222,6 +214,6 @@ SELECT
     receipt_succeeded,
     fact_bridge_activity_id,
     SYSDATE() AS inserted_timestamp,
-        SYSDATE() AS modified_timestamp
+    SYSDATE() AS modified_timestamp
 FROM
     FINAL

@@ -76,9 +76,7 @@ WITH fact_bridging AS (
         WHERE {{ partition_load_manual('no_buffer', 'floor(block_id, -3)') }}
     {% else %}
         {% if is_incremental() %}
-            WHERE modified_timestamp > (
-                SELECT MAX(modified_timestamp) FROM {{ this }}
-            )
+            WHERE modified_timestamp > {{ max_mod }}
         {% endif %}
     {% endif %}
 ),
