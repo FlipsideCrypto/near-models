@@ -156,6 +156,11 @@ FROM {{raw_blocks}}
     {{ near_livetable_fact_transactions }}
 {% endmacro %}
 
+{% macro near_livetable_bronze_transactions(schema, blockchain, network) %}
+    {%- set near_livetable_bronze_transactions = livequery_models.get_rendered_model('near_models', 'livetable_bronze_transactions', schema, blockchain, network) -%}
+    {{ near_livetable_bronze_transactions }}
+{% endmacro %}
+
 {% macro near_livetable_fact_receipts(schema, blockchain, network) %}
     {%- set near_livetable_fact_receipts = livequery_models.get_rendered_model('near_models', 'livetable_fact_receipts', schema, blockchain, network) -%}
     {{ near_livetable_fact_receipts }}

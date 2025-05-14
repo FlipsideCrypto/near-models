@@ -87,6 +87,20 @@
   sql: |
     {{ near_livetable_fact_transactions(schema, blockchain, network) | indent(4) -}}
   
+  - name: {{ schema -}}.tf_bronze_transactions
+  signature:
+    - [_block_height, INTEGER, The start block height to get the transactions from]
+    - [row_count, INTEGER, The number of rows to fetch]
+  return_type:
+    - "TABLE(data VARIANT, value OBJECT, partition_key NUMBER(38,0), _inserted_timestamp TIMESTAMP_LTZ(9))"
+  options: |
+    NOT NULL
+    RETURNS NULL ON NULL INPUT
+    VOLATILE
+    COMMENT = $$Returns transaction details for blocks starting from a given height.Fetches txs for the specified number of blocks.$$
+  sql: |
+    {{ near_livetable_bronze_transactions(schema, blockchain, network) | indent(4) -}}
+  
   - name: {{ schema -}}.tf_fact_receipts
   signature:
     - [_block_height, INTEGER, The start block height to get the receipts from]
