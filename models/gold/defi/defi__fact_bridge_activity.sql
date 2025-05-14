@@ -28,23 +28,6 @@
             {% set max_mod = '2099-01-01' %}
         {% endif %}
 
-        {% set query %}
-            SELECT
-                MIN(DATE_TRUNC('day', block_timestamp)) AS block_timestamp_day
-            FROM
-                (
-                    select min(block_timestamp) block_timestamp from {{ ref('silver__bridge_rainbow') }}
-                    union all
-                    select min(block_timestamp) block_timestamp from {{ ref('silver__bridge_wormhole') }}
-                    union all
-                    select min(block_timestamp) block_timestamp from {{ ref('silver__bridge_multichain') }}
-                    union all
-                    select min(block_timestamp) block_timestamp from {{ ref('silver__bridge_allbridge') }}
-                )
-            WHERE
-                modified_timestamp >= {{ max_mod }}
-        {% endset %}
-        {% set min_bd = run_query(query).columns [0].values() [0] %}
     {% endif %}
 {% endif %}
 
