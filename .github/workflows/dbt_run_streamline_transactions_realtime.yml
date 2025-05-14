@@ -51,3 +51,10 @@ jobs:
           path: |
             logs
             target
+
+notify-failure:
+  needs: [dbt]
+  if: failure()
+  uses: ./.github/workflows/slack_notify.yml
+  secrets:
+    SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

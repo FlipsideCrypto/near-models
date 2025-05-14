@@ -71,3 +71,10 @@ jobs:
       - name: push changes to docs
         run: |
           git push -f --set-upstream origin docs
+
+  notify-failure:
+    needs: [scheduled_run]
+    if: failure()
+    uses: ./.github/workflows/slack_notify.yml
+    secrets:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
