@@ -35,7 +35,7 @@
         FROM
             {{ ref('defi__fact_intents') }}
         WHERE
-            modified_timestamp >= {{ max_mod }}
+            modified_timestamp >= '{{ max_mod }}'
     {% endset %}
     
         {% set min_bd = run_query(query).columns [0].values() [0] %}
@@ -116,7 +116,7 @@ WITH intents AS (
                     ) >= DATEADD(
                         'minute',
                         -5,
-                        {{ max_mod }}
+                        '{{ max_mod }}'
                     )
             {% endif %}
         {% endif %}
