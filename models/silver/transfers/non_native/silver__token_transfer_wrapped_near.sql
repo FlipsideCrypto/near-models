@@ -38,9 +38,7 @@ WITH actions AS (
         AND action_data :method_name :: STRING IN (
             'near_deposit',
             'near_withdraw'
-        ) 
-        -- temp lookback for dev
-        AND block_timestamp :: DATE > sysdate() - interval '90 days'
+        )
     {% if var("MANUAL_FIX") %}
         AND {{ partition_load_manual(
             'no_buffer',
