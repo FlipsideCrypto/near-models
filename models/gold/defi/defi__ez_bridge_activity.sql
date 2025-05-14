@@ -1,56 +1,12 @@
 {{ config(
-    materialized = 'incremental',
-    incremental_strategy = 'merge',
-    incremental_predicates = ["dynamic_range_predicate_custom","block_timestamp::date"],
-    merge_exclude_columns = ["inserted_timestamp"],
-    unique_key = 'ez_bridge_activity_id',
-    cluster_by = ['block_timestamp::DATE'],
-    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,token_address,destination_address,source_address,platform,bridge_address,destination_chain,source_chain,method_name,direction,receipt_succeeded);",
-    tags = ['scheduled_non_core'],
-    meta ={ 'database_tags':{ 'table':{ 'PURPOSE': 'DEFI, BRIDGING' }} }
+    materialized = 'view',
+    secure = false,
+    meta ={ 'database_tags':{ 'table':{ 'PURPOSE': 'DEFI, BRIDGING' }} },
+    tags = ['scheduled_non_core']
 ) }}
--- depends on {{ ref('defi__fact_bridge_activity') }}
--- depends on {{ ref('silver__ft_contract_metadata') }}
--- depends on {{ ref('silver__complete_token_prices') }}
-
-{% if execute %}
-
-    {% if is_incremental() %}
-        {% set max_mod_query %}
-            SELECT
-                MAX(modified_timestamp) modified_timestamp
-            FROM
-                {{ this }}
-            WHERE
-                modified_timestamp >= {{ max_mod }}
-        {% endset %}
-        {% set max_mod = run_query(max_mod_query) [0] [0] %}
-        {% if not max_mod or max_mod == 'None' %}
-            {% set max_mod = '2099-01-01' %}
-        {% endif %}
-
-        {% set query %}
-            SELECT
-                MIN(DATE_TRUNC('day', block_timestamp)) AS block_timestamp_day
-            FROM
-                {{ ref('fact_bridge_activity') }}
-            WHERE
-                modified_timestamp >= {{ max_mod }}
-        {% endset %}
-        {% set min_bd = run_query(query).columns [0].values() [0] %}
-    {% endif %}
-
-    {% if not min_bd or min_bd == 'None' %}
-        {% set min_bd = '2024-11-01' %}
-    {% endif %}
-
-    {{ log(
-        "min_bd: " ~ min_bd,
-        info = True
-    ) }}
-{% endif %}
 
 WITH fact_bridging AS (
+
     SELECT
         block_id,
         block_timestamp,
@@ -72,13 +28,6 @@ WITH fact_bridging AS (
         modified_timestamp
     FROM
         {{ ref('defi__fact_bridge_activity') }}
-    {% if var('MANUAL_FIX') %}
-        WHERE {{ partition_load_manual('no_buffer', 'floor(block_id, -3)') }}
-    {% else %}
-        {% if is_incremental() %}
-            WHERE modified_timestamp > {{ max_mod }}
-        {% endif %}
-    {% endif %}
 ),
 labels AS (
     SELECT 
@@ -100,14 +49,6 @@ prices AS (
         MAX(SYMBOL) AS symbol
     FROM
         {{ ref('silver__complete_token_prices') }}
-    {% if is_incremental() or var('MANUAL_FIX') %}
-
-        WHERE
-            DATE_TRUNC(
-                'day',
-                HOUR
-            ) >= '{{ min_bd }}'
-    {% endif %}
     GROUP BY
         1,
         2
@@ -152,8 +93,8 @@ FINAL AS (
         b.direction,
         b.receipt_succeeded,
         b.ez_bridge_activity_id,
-        SYSDATE() AS inserted_timestamp,
-        SYSDATE() AS modified_timestamp
+        b.inserted_timestamp,
+        b.modified_timestamp
     FROM fact_bridging b
         LEFT JOIN {{ ref('seeds__portalbridge_tokenids') }} w
             ON b.token_address = w.wormhole_contract_address

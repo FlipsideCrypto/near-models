@@ -1,72 +1,12 @@
 {{ config(
-    materialized = 'incremental',
-    incremental_strategy = 'merge',
-    incremental_predicates = ["dynamic_range_predicate_custom","block_timestamp::date"],
-    merge_exclude_columns = ["inserted_timestamp"],
-    unique_key = 'ez_dex_swaps_id',
-    cluster_by = ['block_timestamp::DATE'],
-    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,receipt_object_id,receiver_id,signer_id,token_out,token_in);",
-    tags = ['scheduled_non_core'],
-    meta ={ 'database_tags':{ 'table':{ 'PURPOSE': 'DEFI, SWAPS' }} }
+    materialized = 'view',
+    secure = false,
+    meta ={ 'database_tags':{ 'table':{ 'PURPOSE': 'DEFI, SWAPS' }} },
+    tags = ['scheduled_non_core']
 ) }}
 
--- depends on {{ ref('silver__dex_swaps_v2') }}
--- depends on {{ ref('silver__ft_contract_metadata') }}
--- depends on {{ ref('silver__complete_token_prices') }}
-
-{% if execute %}
-
-    {% if is_incremental() %}
-        {% set max_mod_query %}
-            SELECT
-                MAX(modified_timestamp) modified_timestamp
-            FROM
-                {{ this }}
-        {% endset %}
-        {% set max_mod = run_query(max_mod_query) [0] [0] %}
-        {% if not max_mod or max_mod == 'None' %}
-            {% set max_mod = '2099-01-01' %}
-        {% endif %}
-
-        
-    {% set query %}
-
-        SELECT
-            MIN(DATE_TRUNC('day', block_timestamp))  - INTERVAL '1 day' AS block_timestamp_day
-        FROM
-            {{ ref('silver__dex_swaps_v2') }}
-        WHERE
-            modified_timestamp >= {{ max_mod }}
-    {% endset %}
-    
-        {% set min_bd = run_query(query).columns [0].values() [0] %}
-    {% elif var('MANUAL_FIX') %}
-        {% set query %}
-            SELECT
-                MIN(DATE_TRUNC('day', block_timestamp)) - INTERVAL '1 day' AS block_timestamp_day
-            FROM
-                {{ this }}
-            WHERE
-                FLOOR(
-                    block_id,
-                    -3
-                ) = {{ var('RANGE_START') }}
-
-        {% endset %}
-        {% set min_bd = run_query(query).columns [0].values() [0] %}
-    {% endif %}
-
-    {% if not min_bd or min_bd == 'None' %}
-        {% set min_bd = '2024-11-01' %}
-    {% endif %}
-
-    {{ log(
-        "min_bd: " ~ min_bd,
-        info = True
-    ) }}
-{% endif %}
-
 WITH dex_swaps AS (
+
     SELECT
         tx_hash,
         receipt_object_id,
@@ -86,22 +26,6 @@ WITH dex_swaps AS (
         modified_timestamp
     FROM
         {{ ref('silver__dex_swaps_v2') }}
-
-    {% if var("MANUAL_FIX") %}
-        WHERE {{ partition_load_manual('no_buffer', 'floor(block_id, -3)') }}
-    {% else %}
-        {% if is_incremental() %}
-            WHERE
-                GREATEST(
-                    modified_timestamp,
-                    '2000-01-01'
-                ) >= DATEADD(
-                    'minute',
-                    -5,
-                    {{ max_mod }}
-                )
-        {% endif %}
-    {% endif %}
 ),
 labels AS (
     SELECT
@@ -122,14 +46,6 @@ prices AS (
         AVG(price) AS price_usd
     FROM
         {{ ref('silver__complete_token_prices') }}
-    {% if is_incremental() or var('MANUAL_FIX') %}
-
-        WHERE
-            DATE_TRUNC(
-                'day',
-                HOUR
-            ) >= '{{ min_bd }}'
-    {% endif %}
     GROUP BY
         1,
         2
@@ -163,8 +79,8 @@ FINAL AS (
         s.swap_input_data,
         s.log,
         s.ez_dex_swaps_id,
-        SYSDATE() AS inserted_timestamp,
-        SYSDATE() AS modified_timestamp
+        s.inserted_timestamp,
+        s.modified_timestamp
     FROM
         dex_swaps s
         LEFT JOIN labels l1
