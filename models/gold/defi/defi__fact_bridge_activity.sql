@@ -84,6 +84,8 @@ wormhole AS (
         modified_timestamp
     FROM
         {{ ref('silver__bridge_wormhole') }} b
+    LEFT JOIN {{ ref('seeds__wormhole_ids') }} id ON b.destination_chain_id = id.id
+    LEFT JOIN {{ ref('seeds__wormhole_ids') }} id2 ON b.source_chain_id = id2.id
     {% if var('MANUAL_FIX') %}
         WHERE {{ partition_load_manual('no_buffer', 'floor(block_id, -3)') }}
     {% else %}
@@ -91,8 +93,6 @@ wormhole AS (
             WHERE modified_timestamp > '{{ max_mod }}'
         {% endif %}
     {% endif %}
-    LEFT JOIN {{ ref('seeds__wormhole_ids') }} id ON b.destination_chain_id = id.id
-    LEFT JOIN {{ ref('seeds__wormhole_ids') }} id2 ON b.source_chain_id = id2.id
 ),
 multichain AS (
     SELECT
@@ -116,6 +116,8 @@ multichain AS (
         modified_timestamp
     FROM
         {{ ref('silver__bridge_multichain') }} b
+    LEFT JOIN {{ ref('seeds__multichain_ids') }} id ON b.destination_chain_id = id.id
+    LEFT JOIN {{ ref('seeds__multichain_ids') }} id2 ON b.source_chain_id = id2.id
     {% if var('MANUAL_FIX') %}
         WHERE {{ partition_load_manual('no_buffer', 'floor(block_id, -3)') }}
     {% else %}
@@ -123,8 +125,6 @@ multichain AS (
             WHERE modified_timestamp > '{{ max_mod }}'
         {% endif %}
     {% endif %}
-    LEFT JOIN {{ ref('seeds__multichain_ids') }} id ON b.destination_chain_id = id.id
-    LEFT JOIN {{ ref('seeds__multichain_ids') }} id2 ON b.source_chain_id = id2.id
 ),
 allbridge AS (
     SELECT
@@ -148,6 +148,8 @@ allbridge AS (
         modified_timestamp
     FROM
         {{ ref('silver__bridge_allbridge') }} b
+    LEFT JOIN {{ ref('seeds__allbridge_ids') }} id ON b.destination_chain_id = id.id
+    LEFT JOIN {{ ref('seeds__allbridge_ids') }} id2 ON b.source_chain_id = id2.id
     {% if var('MANUAL_FIX') %}
         WHERE {{ partition_load_manual('no_buffer', 'floor(block_id, -3)') }}
     {% else %}
@@ -155,8 +157,6 @@ allbridge AS (
             WHERE modified_timestamp > '{{ max_mod }}'
         {% endif %}
     {% endif %}
-    LEFT JOIN {{ ref('seeds__allbridge_ids') }} id ON b.destination_chain_id = id.id
-    LEFT JOIN {{ ref('seeds__allbridge_ids') }} id2 ON b.source_chain_id = id2.id
 ),
 FINAL AS (
     SELECT
