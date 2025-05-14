@@ -15,7 +15,10 @@
     {% set max_mod_query %}
 
     SELECT
-        MAX(modified_timestamp) modified_timestamp
+        GREATEST(
+            MAX(modified_timestamp),
+            DATEADD(DAY, -3, SYSDATE()) -- lockup actions are rare, so avoid large table scans between events
+        ) AS modified_timestamp
     FROM
         {{ this }}
 
@@ -30,9 +33,7 @@
 
         {% set min_block_date_query %}
     SELECT
-        MIN(
-            block_timestamp :: DATE
-        )
+        MIN(block_timestamp :: DATE)
     FROM
         (
             SELECT
@@ -115,11 +116,13 @@ xfers AS (
     FROM
         {{ ref('silver__token_transfer_native') }}
 
+    WHERE
+        predecessor_id = 'lockup.near'
     {% if var("MANUAL_FIX") %}
-      WHERE {{ partition_load_manual('no_buffer') }}
+      AND {{ partition_load_manual('no_buffer') }}
     {% else %}
     {% if is_incremental() %}
-        WHERE block_timestamp :: DATE >= '{{min_bd}}'
+        AND block_timestamp :: DATE >= '{{min_bd}}'
     {% endif %}
     {% endif %}
 ),
@@ -161,7 +164,7 @@ lockup_xfers AS (
         xfers.modified_timestamp
     FROM
         xfers
-    LEFT JOIN lockup_actions l
+    LEFT JOIN agg_arguments l
     ON xfers.tx_hash = l.tx_hash
     WHERE
         l.tx_hash IS NOT NULL
