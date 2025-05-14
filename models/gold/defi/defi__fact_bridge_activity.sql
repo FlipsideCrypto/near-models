@@ -58,7 +58,7 @@ WITH rainbow AS (
         WHERE {{ partition_load_manual('no_buffer', 'floor(block_id, -3)') }}
     {% else %}
         {% if is_incremental() %}
-            WHERE modified_timestamp > {{ max_mod }}
+            WHERE modified_timestamp > '{{ max_mod }}'
         {% endif %}
     {% endif %}
 ),
@@ -88,7 +88,7 @@ wormhole AS (
         WHERE {{ partition_load_manual('no_buffer', 'floor(block_id, -3)') }}
     {% else %}
         {% if is_incremental() %}
-            WHERE modified_timestamp > {{ max_mod }}
+            WHERE modified_timestamp > '{{ max_mod }}'
         {% endif %}
     {% endif %}
     LEFT JOIN {{ ref('seeds__wormhole_ids') }} id ON b.destination_chain_id = id.id
@@ -120,7 +120,7 @@ multichain AS (
         WHERE {{ partition_load_manual('no_buffer', 'floor(block_id, -3)') }}
     {% else %}
         {% if is_incremental() %}
-            WHERE modified_timestamp > {{ max_mod }}
+            WHERE modified_timestamp > '{{ max_mod }}'
         {% endif %}
     {% endif %}
     LEFT JOIN {{ ref('seeds__multichain_ids') }} id ON b.destination_chain_id = id.id
@@ -152,7 +152,7 @@ allbridge AS (
         WHERE {{ partition_load_manual('no_buffer', 'floor(block_id, -3)') }}
     {% else %}
         {% if is_incremental() %}
-            WHERE modified_timestamp > {{ max_mod }}
+            WHERE modified_timestamp > '{{ max_mod }}'
         {% endif %}
     {% endif %}
     LEFT JOIN {{ ref('seeds__allbridge_ids') }} id ON b.destination_chain_id = id.id
