@@ -4,7 +4,7 @@ run-name: dbt_run_full_observability
 on:
   workflow_dispatch:
   schedule:
-    # Runs “At 00:00 on day-of-month 1.” (see https://crontab.guru)
+    # Runs "At 00:00 on day-of-month 1." (see https://crontab.guru)
     - cron: "0 0 1 * *"
 
 env:
@@ -45,3 +45,10 @@ jobs:
       - name: Run DBT Jobs
         run: |
           dbt run --threads 2 --vars '{"OBSERV_FULL_TEST":True}' -m tag:observability
+
+notify-failure:
+  needs: [run_dbt_jobs]
+  if: failure()
+  uses: ./.github/workflows/slack_notify.yml
+  secrets:
+    SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
