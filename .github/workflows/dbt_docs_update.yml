@@ -19,7 +19,7 @@ env:
   SCHEMA: "${{ vars.SCHEMA }}"
 
 jobs:
-  scheduled_run:
+  run_dbt_jobs:
     name: docs_update
     runs-on: ubuntu-latest
     environment:
@@ -73,7 +73,7 @@ jobs:
           git push -f --set-upstream origin docs
 
   notify-failure:
-    needs: [scheduled_run]
+    needs: [run_dbt_jobs]
     if: failure()
     uses: ./.github/workflows/slack_notify.yml
     secrets:

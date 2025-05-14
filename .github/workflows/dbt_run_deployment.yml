@@ -37,7 +37,7 @@ concurrency:
   group: ${{ github.workflow }}
 
 jobs:
-  dbt:
+  run_dbt_jobs:
     runs-on: ubuntu-latest
     environment:
       name: workflow_prod
@@ -71,7 +71,7 @@ jobs:
             target
 
 notify-failure:
-  needs: [dbt]
+  needs: [run_dbt_jobs]
   if: failure()
   uses: ./.github/workflows/slack_notify.yml
   secrets:
