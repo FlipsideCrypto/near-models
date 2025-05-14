@@ -1,7 +1,7 @@
 {{ config(
     materialized = 'incremental',
-    incremental_predicates = ["dynamic_range_predicate_custom","block_timestamp::date"],
     incremental_strategy = 'merge',
+    incremental_predicates = ["dynamic_range_predicate_custom","block_timestamp::date"],
     merge_exclude_columns = ["inserted_timestamp"],
     unique_key = 'bridge_rainbow_id',
     cluster_by = ['block_timestamp::DATE', 'modified_timestamp::DATE'],
