@@ -18,7 +18,11 @@ WITH actions AS (
         receipt_receiver_id AS contract_address,
         receipt_receiver_id AS from_address,
         receipt_predecessor_id AS to_address,
-        action_data :args :amount :: STRING AS amount_unadj,
+        action_data :method_name :: STRING AS method_name,
+        COALESCE(
+            action_data :args :amount,
+            action_data :deposit
+         ) :: STRING AS amount_unadj,
         NULL AS memo,
         action_index AS rn,
         FLOOR(
@@ -60,6 +64,7 @@ SELECT
     tx_hash,
     receipt_id,
     contract_address,
+    method_name,
     from_address,
     to_address,
     amount_unadj,
