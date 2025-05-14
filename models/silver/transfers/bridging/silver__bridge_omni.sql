@@ -19,7 +19,8 @@ WITH near_omni_contracts AS (
         VALUES
             ('omni.bridge.near'), -- Main Omni Bridge contract
             ('omni-provider.bridge.near'), -- Helper contract
-            ('vaa-prover.bridge.near') -- Wormhole verification helper contract
+            ('vaa-prover.bridge.near'), -- Wormhole verification helper contract,
+            ('omni-relayer.bridge.near') -- Omni Relayer contract
     ) AS contracts(contract_address)
 ),
 actions AS (
@@ -54,6 +55,7 @@ actions AS (
             OR receipt_predecessor_id IN (SELECT contract_address FROM near_omni_contracts)
             OR action_data:args:receiver_id :: STRING IN (SELECT contract_address FROM near_omni_contracts)
         )
+        AND block_timestamp >= '2025-01-01'
         {% if var("MANUAL_FIX") %}
         AND {{ partition_load_manual('no_buffer', 'floor(block_id, -3)') }}
         {% else %}
@@ -95,19 +97,24 @@ logs AS (
         modified_timestamp,
         _invocation_id
     FROM
-        near.silver.logs_s3
-    {% if var("MANUAL_FIX") %}
+        {{ ref('silver__logs_s3') }}
     WHERE
-        {{ partition_load_manual('no_buffer', 'floor(block_id, -3)') }}
+        block_timestamp >= '2025-01-01'
+        AND (
+            receiver_id IN (SELECT contract_address FROM near_omni_contracts) 
+            OR predecessor_id IN (SELECT contract_address FROM near_omni_contracts)
+            OR signer_id IN (SELECT contract_address FROM near_omni_contracts)
+        )
+    {% if var("MANUAL_FIX") %}
+    AND {{ partition_load_manual('no_buffer', 'floor(block_id, -3)') }}
     {% else %}
         {% if is_incremental() %}
-            WHERE
-                modified_timestamp >= (
-                    SELECT
-                        MAX(modified_timestamp)
-                    FROM
-                        {{ this }}
-                )
+        AND modified_timestamp >= (
+            SELECT
+                MAX(modified_timestamp)
+            FROM
+                {{ this }}
+        )
         {% endif %}
     {% endif %}
 ),
@@ -169,8 +176,8 @@ inbound_omni AS (
         SPLIT_PART(transfer_data:recipient :: STRING, ':', 2) AS destination_address,
         SPLIT_PART(transfer_data:sender :: STRING, ':', 1) AS source_chain,
         SPLIT_PART(transfer_data:sender :: STRING, ':', 2) AS source_address,
-        SPLIT_PART(transfer_data:token :: STRING, ':', 1) AS token_chain,
         SPLIT_PART(transfer_data:token :: STRING, ':', 2) AS token_address,
+        transfer_data:token :: STRING AS raw_token_id,
         transfer_data:origin_nonce::NUMBER AS origin_nonce,
         transfer_data:destination_nonce::NUMBER AS destination_nonce,
         transfer_data:msg :: STRING AS memo,
@@ -208,8 +215,8 @@ outbound_omni AS (
         SPLIT_PART(transfer_data:recipient :: STRING, ':', 2) AS destination_address,
         SPLIT_PART(transfer_data:sender :: STRING, ':', 1) AS source_chain,
         SPLIT_PART(transfer_data:sender :: STRING, ':', 2) AS source_address,
-        SPLIT_PART(transfer_data:token :: STRING, ':', 1) AS token_chain,
         SPLIT_PART(transfer_data:token :: STRING, ':', 2) AS token_address,
+        transfer_data:token :: STRING AS raw_token_id,
         transfer_data:origin_nonce::NUMBER AS origin_nonce,
         transfer_data:destination_nonce::NUMBER AS destination_nonce,
         transfer_data:msg :: STRING AS memo,
@@ -233,7 +240,7 @@ final AS (
         source_address,
         destination_chain as destination_chain_id,
         source_chain as source_chain_id,
-        token_chain as token_chain_id,
+        raw_token_id,
         direction,
         receipt_succeeded,
         method_name,
@@ -255,7 +262,7 @@ final AS (
         source_address,
         destination_chain as destination_chain_id,
         source_chain as source_chain_id,
-        token_chain as token_chain_id,
+        raw_token_id,
         direction,
         receipt_succeeded,
         method_name,
