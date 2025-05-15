@@ -73,7 +73,7 @@ SELECT
     memo,
     -- TODO do we need so many amount columns?
     amount_unadj AS amount_raw,
-    amount_unadj :: FLOAT AS amount_raw_precise,
+    TRY_CAST(amount_unadj AS FLOAT) AS amount_raw_precise,
     IFF(
         C.decimals IS NOT NULL,
         utils.udf_decimal_adjust(
@@ -82,7 +82,7 @@ SELECT
         ),
         NULL
     ) AS amount_precise,
-    amount_precise :: FLOAT AS amount,
+    TRY_CAST(amount_precise AS FLOAT) AS amount,
     IFF(
         C.decimals IS NOT NULL
         AND price IS NOT NULL,
