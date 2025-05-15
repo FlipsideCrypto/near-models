@@ -1,0 +1,114 @@
+version: 2
+
+models:
+  - name: silver__token_transfer_wrapped_near
+    description: >
+      This model tracks wrapped NEAR token transfers, capturing both deposits and withdrawals
+      of NEAR tokens through the wrap.near contract. It includes transaction details, addresses,
+      and amounts for each transfer.
+
+    columns:
+      - name: block_id
+        description: The unique identifier of the block containing the transfer
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: NUMBER
+
+      - name: block_timestamp
+        description: The timestamp when the block was created
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: TIMESTAMP_NTZ
+
+      - name: tx_hash
+        description: The hash of the transaction containing the transfer
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: VARCHAR
+
+      - name: receipt_id
+        description: The unique identifier of the receipt containing the transfer
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: VARCHAR
+
+      - name: contract_address
+        description: The address of the wrap.near contract
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: VARCHAR
+
+      - name: method_name
+        description: The method name of the transfer (near_deposit or near_withdraw)
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: VARCHAR
+
+      - name: from_address
+        description: The address sending the wrapped NEAR tokens
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: VARCHAR
+
+      - name: to_address
+        description: The address receiving the wrapped NEAR tokens
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: VARCHAR
+
+      - name: amount_unadj
+        description: The unadjusted amount of wrapped NEAR tokens transferred
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: VARCHAR
+
+      - name: memo
+        description: Optional memo associated with the transfer
+
+      - name: rn
+        description: The action index within the transaction
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: NUMBER
+
+      - name: _partition_by_block_number
+        description: The block number used for partitioning
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: NUMBER
+
+      - name: transfers_wrapped_near_id
+        description: The unique identifier for each transfer
+        tests:
+          - not_null
+          - unique
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: VARCHAR
+
+      - name: inserted_timestamp
+        description: The timestamp when the record was inserted
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: TIMESTAMP_NTZ
+
+      - name: modified_timestamp
+        description: The timestamp when the record was last modified
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: TIMESTAMP_NTZ
+
+      - name: _invocation_id
+        description: The unique identifier for the dbt run that created this record

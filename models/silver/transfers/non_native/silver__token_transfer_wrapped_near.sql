@@ -22,7 +22,7 @@ WITH actions AS (
         COALESCE(
             action_data :args :amount,
             action_data :deposit
-         ) :: STRING AS amount_unadj,
+         ) :: variant AS amount_unadj,
         NULL AS memo,
         action_index AS rn,
         FLOOR(
