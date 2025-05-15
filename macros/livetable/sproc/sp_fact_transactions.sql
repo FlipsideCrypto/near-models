@@ -14,11 +14,10 @@
     DECLARE
         -- Configuration
         gold_hybrid_table_name STRING DEFAULT '{{ target.database }}.CORE_LIVE.FACT_TRANSACTIONS';
-        bronze_rpc_responses_table_name STRING DEFAULT '{{ target.database }}.BRONZE_LIVE.TRANSACTIONS';
         chain_head_udf STRING DEFAULT '_live.udf_api'; 
         secret_path STRING DEFAULT 'Vault/prod/near/quicknode/livetable/mainnet';
         pk_column STRING DEFAULT 'tx_hash';
-        blocks_to_fetch_buffer INTEGER DEFAULT 1;
+        blocks_to_fetch_buffer INTEGER DEFAULT 295;
         block_timestamp_column STRING DEFAULT 'block_timestamp';
         pruning_threshold_minutes INTEGER DEFAULT 60;
 
@@ -26,9 +25,7 @@
         chain_head_block INTEGER;
         start_block_for_udtf INTEGER;
         rows_merged_gold INTEGER := 0;
-        rows_merged_bronze_stage INTEGER := 0;
         rows_deleted_gold INTEGER := 0;
-        temp_table_name STRING;
         final_return_message STRING;
         error_message STRING;
 
@@ -55,20 +52,6 @@
             INDEX idx_tx_receiver (tx_receiver)
         );
 
-        CREATE HYBRID TABLE IF NOT EXISTS IDENTIFIER(:bronze_rpc_responses_table_name) (
-            TX_HASH STRING PRIMARY KEY,
-            PARTITION_KEY NUMBER,
-            DATA VARIANT,
-            SHARD_ID NUMBER,
-            CHUNK_HASH STRING,
-            BRONZE_BLOCK_ID NUMBER,
-            BLOCK_TIMESTAMP_EPOCH NUMBER,
-            HEIGHT_CREATED NUMBER,
-            HEIGHT_INCLUDED NUMBER,
-            REQUEST_TIMESTAMP NUMBER DEFAULT (DATE_PART('EPOCH_SECOND', SYSDATE())::NUMBER),
-            METADATA VARIANT DEFAULT NULL
-        );
-
         SELECT IDENTIFIER(:chain_head_udf)(
                 'POST',
                 '{Service}', 
@@ -85,10 +68,6 @@
 
         start_block_for_udtf := :chain_head_block - :blocks_to_fetch_buffer + 1;
 
-        temp_table_name := '{{ target.database }}.LIVETABLE.UDTF_TX_OUTPUT_TEMP_' || REPLACE(UUID_STRING(),'-','_');
-
-        CREATE TEMPORARY TABLE IDENTIFIER(:temp_table_name)
-            AS SELECT * FROM TABLE({{ target.database }}.LIVETABLE.TF_FACT_TRANSACTIONS(:start_block_for_udtf, :blocks_to_fetch_buffer));
 
         MERGE INTO IDENTIFIER(:gold_hybrid_table_name) AS target
         USING (
@@ -97,8 +76,7 @@
                 GAS_USED, TRANSACTION_FEE, ATTACHED_GAS, TX_SUCCEEDED, FACT_TRANSACTIONS_ID,
                 INSERTED_TIMESTAMP, MODIFIED_TIMESTAMP
 
-            FROM IDENTIFIER(:temp_table_name)
-            QUALIFY ROW_NUMBER() OVER (PARTITION BY TX_HASH ORDER BY block_timestamp DESC) = 1
+            FROM TABLE({{ target.database }}.LIVETABLE.TF_FACT_TRANSACTIONS(:start_block_for_udtf, :blocks_to_fetch_buffer))
         ) AS source
         ON target.tx_hash = source.tx_hash
         WHEN MATCHED THEN UPDATE SET
@@ -145,123 +123,14 @@
 
         rows_deleted_gold := SQLROWCOUNT;
 
-        MERGE INTO IDENTIFIER(:bronze_rpc_responses_table_name) AS target
-        USING (
-            SELECT
-                TX_HASH,
-                PARTITION_KEY,
-                DATA AS DATA,
-                VALUE:SHARD_ID::NUMBER AS SHARD_ID,
-                VALUE:CHUNK_HASH::STRING AS CHUNK_HASH,
-                VALUE:BLOCK_ID::NUMBER AS BRONZE_BLOCK_ID,
-                VALUE:BLOCK_TIMESTAMP_EPOCH::NUMBER AS BLOCK_TIMESTAMP_EPOCH,
-                VALUE:HEIGHT_CREATED::NUMBER AS HEIGHT_CREATED,
-                VALUE:HEIGHT_INCLUDED::NUMBER AS HEIGHT_INCLUDED,
-                TX_SIGNER
-                
-            FROM IDENTIFIER(:temp_table_name)
-            WHERE TX_HASH IS NOT NULL
-            QUALIFY ROW_NUMBER() OVER (PARTITION BY TX_HASH ORDER BY block_timestamp DESC) = 1
-        ) AS source
-        ON target.tx_hash = source.tx_hash
-        WHEN MATCHED THEN UPDATE SET
-            target.PARTITION_KEY = source.PARTITION_KEY,
-            target.DATA = source.DATA,
-            target.SHARD_ID = source.SHARD_ID,
-            target.CHUNK_HASH = source.CHUNK_HASH,
-            target.BRONZE_BLOCK_ID = source.BRONZE_BLOCK_ID,
-            target.BLOCK_TIMESTAMP_EPOCH = source.BLOCK_TIMESTAMP_EPOCH,
-            target.HEIGHT_CREATED = source.HEIGHT_CREATED,
-            target.HEIGHT_INCLUDED = source.HEIGHT_INCLUDED,
-            target.REQUEST_TIMESTAMP = (DATE_PART('EPOCH_SECOND', SYSDATE())::NUMBER),
-            target.METADATA = {
-                'app_name': 'livetable_sproc',
-                'batch_id': NULL, 
-                'request_id': NULL,
-                'request': {
-                    'data': {
-                        'id': 'Flipside/EXPERIMENTAL_tx_status/' || target.REQUEST_TIMESTAMP::STRING || '/' || source.TX_HASH,
-                        'jsonrpc': '2.0',
-                        'method': 'EXPERIMENTAL_tx_status',
-                        'params': {
-                            'sender_account_id': source.TX_SIGNER,
-                            'tx_hash': source.TX_HASH,
-                            'wait_until': 'FINAL'
-                        }
-                    },
-                    'headers': {
-                        'Content-Type': 'application/json',
-                        'fsc-compression-mode': 'auto'
-                    },
-                    'method': 'POST',
-                    'secret_name': :secret_path,
-                    'url': '{Service}'
-                }
-            }
-        WHEN NOT MATCHED THEN INSERT (
-            TX_HASH,
-            PARTITION_KEY,
-            DATA,
-            SHARD_ID,
-            CHUNK_HASH,
-            BRONZE_BLOCK_ID,
-            BLOCK_TIMESTAMP_EPOCH,
-            HEIGHT_CREATED,
-            HEIGHT_INCLUDED,
-            METADATA
-            -- REQUEST_TIMESTAMP will use DEFAULT
-        ) VALUES (
-            source.TX_HASH,
-            source.PARTITION_KEY,
-            source.DATA,
-            source.SHARD_ID,
-            source.CHUNK_HASH,
-            source.BRONZE_BLOCK_ID,
-            source.BLOCK_TIMESTAMP_EPOCH,
-            source.HEIGHT_CREATED,
-            source.HEIGHT_INCLUDED,
-            { 
-                'app_name': 'livetable_sproc',
-                'batch_id': NULL,
-                'request_id': NULL,
-                'request': {
-                    'data': {
-                        'id': 'Flipside/EXPERIMENTAL_tx_status/' || (DATE_PART('EPOCH_SECOND', SYSDATE())::NUMBER)::STRING || '/' || source.TX_HASH,
-                        'jsonrpc': '2.0',
-                        'method': 'EXPERIMENTAL_tx_status',
-                        'params': {
-                            'sender_account_id': source.TX_SIGNER,
-                            'tx_hash': source.TX_HASH,
-                            'wait_until': 'FINAL'
-                        }
-                    },
-                    'headers': {
-                        'Content-Type': 'application/json',
-                        'fsc-compression-mode': 'auto'
-                    },
-                    'method': 'POST',
-                    'secret_name': :secret_path,
-                    'url': '{Service}'
-                }
-            }
 
-        );
+        final_return_message := 'Gold: Merged ' || :rows_merged_gold || ', Pruned ' || :rows_deleted_gold || '. ';
 
-        rows_merged_bronze_stage := SQLROWCOUNT;
-
-        DROP TABLE IDENTIFIER(:temp_table_name);
-
-        final_return_message := 'Gold: Merged ' || :rows_merged_gold || ', Pruned ' || :rows_deleted_gold || '. ' ||
-                                'Bronze Stage: Upserted ' || :rows_merged_bronze_stage || ' RPC responses.';
         RETURN final_return_message;
 
     EXCEPTION
         WHEN OTHER THEN
             error_message := 'ERROR in sp_refresh_fact_transactions_live: ' || SQLERRM;
-            BEGIN
-                DROP TABLE IF EXISTS IDENTIFIER(:temp_table_name);
-            EXCEPTION WHEN OTHER THEN null;
-            END;
             RETURN error_message;
     END
     $$;
