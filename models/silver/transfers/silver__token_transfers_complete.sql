@@ -37,6 +37,8 @@
             SELECT MIN(block_timestamp) block_timestamp FROM {{ ref('silver__token_transfer_orders') }} WHERE modified_timestamp >= '{{max_mod}}'
             UNION ALL
             SELECT MIN(block_timestamp) block_timestamp FROM {{ ref('silver__token_transfer_liquidity') }} WHERE modified_timestamp >= '{{max_mod}}'
+            UNION ALL
+            SELECT MIN(block_timestamp) block_timestamp FROM {{ ref('silver__token_transfer_wrapped_near') }} WHERE modified_timestamp >= '{{max_mod}}'
         )
         {% endset %}
 
@@ -60,7 +62,7 @@ WITH native_transfers AS (
         predecessor_id AS from_address,
         receiver_id AS to_address,
         NULL AS memo,
-        amount_unadj,
+        amount_unadj :: STRING AS amount_unadj,
         'native' AS transfer_type,
         _partition_by_block_number,
         modified_timestamp
@@ -85,7 +87,7 @@ native_deposits AS (
         predecessor_id AS from_address,
         receiver_id AS to_address,
         NULL AS memo,
-        amount_unadj,
+        amount_unadj :: STRING AS amount_unadj,
         'native' AS transfer_type,
         _partition_by_block_number,
         modified_timestamp
@@ -110,7 +112,7 @@ ft_transfers_method AS (
         from_address,
         to_address,
         memo,
-        amount_unadj,
+        amount_unadj :: STRING AS amount_unadj,
         'nep141' AS transfer_type,
         _partition_by_block_number,
         modified_timestamp
@@ -134,7 +136,7 @@ ft_transfers_event AS (
         from_address,
         to_address,
         memo,
-        amount_unadj,
+        amount_unadj :: STRING AS amount_unadj,
         'nep141' AS transfer_type,
         _partition_by_block_number,
         modified_timestamp
@@ -158,7 +160,7 @@ mints AS (
         from_address,
         to_address,
         memo,
-        amount_unadj,
+        amount_unadj :: STRING AS amount_unadj,
         'nep141' AS transfer_type,
         _partition_by_block_number,
         modified_timestamp
@@ -182,7 +184,7 @@ orders AS (
         from_address,
         to_address,
         memo,
-        amount_unadj,
+        amount_unadj :: STRING AS amount_unadj,
         'nep141' AS transfer_type,
         _partition_by_block_number,
         modified_timestamp
@@ -206,12 +208,36 @@ liquidity AS (
         from_address,
         to_address,
         memo,
-        amount_unadj,
+        amount_unadj :: STRING AS amount_unadj,
         'nep141' AS transfer_type,
         _partition_by_block_number,
         modified_timestamp
     FROM
         {{ ref('silver__token_transfer_liquidity') }}
+    WHERE 1=1
+        {% if var("MANUAL_FIX") %}
+            AND {{ partition_load_manual('no_buffer') }}
+        {% elif is_incremental() %}
+            AND block_timestamp::DATE >= '{{min_bd}}'
+        {% endif %}
+),
+wrapped_near AS (
+    SELECT
+        block_id,
+        block_timestamp,
+        tx_hash,
+        receipt_id AS action_id,
+        rn,
+        contract_address,
+        from_address,
+        to_address,
+        memo,
+        amount_unadj :: STRING AS amount_unadj,
+        'nep141' AS transfer_type,
+        _partition_by_block_number,
+        modified_timestamp
+    FROM
+        {{ ref('silver__token_transfer_wrapped_near') }}
     WHERE 1=1
         {% if var("MANUAL_FIX") %}
             AND {{ partition_load_manual('no_buffer') }}
@@ -233,7 +259,8 @@ all_transfers AS (
     SELECT * FROM orders
     UNION ALL
     SELECT * FROM liquidity
-
+    UNION ALL
+    SELECT * FROM wrapped_near
 ),
 final_transfers AS (
     SELECT

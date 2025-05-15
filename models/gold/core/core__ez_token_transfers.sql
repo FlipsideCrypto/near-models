@@ -71,7 +71,8 @@ SELECT
     from_address,
     to_address,
     memo,
-    amount_unadj :: STRING AS amount_raw,
+    -- TODO do we need so many amount columns?
+    amount_unadj AS amount_raw,
     amount_unadj :: FLOAT AS amount_raw_precise,
     IFF(
         C.decimals IS NOT NULL,

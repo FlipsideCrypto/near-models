@@ -63,7 +63,7 @@ orders_final AS (
             input => log_data :data
         ) f
     WHERE
-        amount_unadj > 0
+        amount_unadj :: INT > 0
 )
 SELECT
     block_timestamp,
