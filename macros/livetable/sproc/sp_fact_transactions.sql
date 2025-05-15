@@ -15,7 +15,6 @@
         -- Configuration
         gold_hybrid_table_name STRING DEFAULT '{{ target.database }}.CORE_LIVE.FACT_TRANSACTIONS';
         bronze_rpc_responses_table_name STRING DEFAULT '{{ target.database }}.BRONZE_LIVE.TRANSACTIONS';
-        udtf_name STRING DEFAULT '{{ target.database }}.LIVETABLE.TF_FACT_TRANSACTIONS';
         chain_head_udf STRING DEFAULT '_live.udf_api'; 
         secret_path STRING DEFAULT 'Vault/prod/near/quicknode/livetable/mainnet';
         pk_column STRING DEFAULT 'tx_hash';

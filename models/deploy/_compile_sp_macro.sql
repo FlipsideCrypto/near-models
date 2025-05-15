@@ -1,1 +1,1 @@
-    {{ create_sp_refresh_fact_transactions_live() }} 
+    {{ create_sp_refresh_bronze_transactions_live() }} 
