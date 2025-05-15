@@ -16,8 +16,8 @@ WITH actions AS (
         tx_hash,
         receipt_id,
         receipt_receiver_id AS contract_address,
-        IFF(method_name = 'near_deposit', receipt_receiver_id, receipt_predecessor_id) AS from_address,
-        IFF(method_name = 'near_deposit', receipt_predecessor_id, receipt_receiver_id) AS to_address,
+        IFF(action_data :method_name :: STRING = 'near_deposit', receipt_receiver_id, receipt_predecessor_id) AS from_address,
+        IFF(action_data :method_name :: STRING = 'near_deposit', receipt_predecessor_id, receipt_receiver_id) AS to_address,
         action_data :method_name :: STRING AS method_name,
         COALESCE(
             action_data :args :amount,
