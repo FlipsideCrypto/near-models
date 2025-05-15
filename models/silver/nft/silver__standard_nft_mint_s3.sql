@@ -1,9 +1,9 @@
 {{ config(
     materialized = "incremental",
-    incremental_predicates = ["dynamic_range_predicate_custom", "block_timestamp::DATE"],
     cluster_by = ["block_timestamp::DATE"],
     unique_key = "mint_action_id",
     incremental_strategy = "merge",
+    incremental_predicates = ["dynamic_range_predicate_custom","block_timestamp::date"],
     merge_exclude_columns = ["inserted_timestamp"],
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,tx_signer,tx_receiver,receipt_object_id,receiver_id,signer_id,owner_id,token_id);",
     tags = ['scheduled_non_core']
@@ -240,3 +240,5 @@ SELECT
     '{{ invocation_id }}' AS _invocation_id
 FROM
     mint_events
+
+qualify(row_number() over (partition by mint_action_id order by modified_timestamp desc)) = 1
