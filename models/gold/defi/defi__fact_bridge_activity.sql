@@ -13,6 +13,7 @@
 -- depends on {{ ref('silver__bridge_wormhole') }}
 -- depends on {{ ref('silver__bridge_multichain') }}
 -- depends on {{ ref('silver__bridge_allbridge') }}
+-- depends on {{ ref('silver__bridge_omni') }}
 
 {% if execute %}
 
