@@ -62,7 +62,7 @@ WITH native_transfers AS (
         predecessor_id AS from_address,
         receiver_id AS to_address,
         NULL AS memo,
-        amount_unadj,
+        amount_unadj :: STRING AS amount_unadj,
         'native' AS transfer_type,
         _partition_by_block_number,
         modified_timestamp
@@ -87,7 +87,7 @@ native_deposits AS (
         predecessor_id AS from_address,
         receiver_id AS to_address,
         NULL AS memo,
-        amount_unadj,
+        amount_unadj :: STRING AS amount_unadj,
         'native' AS transfer_type,
         _partition_by_block_number,
         modified_timestamp
@@ -112,7 +112,7 @@ ft_transfers_method AS (
         from_address,
         to_address,
         memo,
-        amount_unadj,
+        amount_unadj :: STRING AS amount_unadj,
         'nep141' AS transfer_type,
         _partition_by_block_number,
         modified_timestamp
@@ -136,7 +136,7 @@ ft_transfers_event AS (
         from_address,
         to_address,
         memo,
-        amount_unadj,
+        amount_unadj :: STRING AS amount_unadj,
         'nep141' AS transfer_type,
         _partition_by_block_number,
         modified_timestamp
@@ -160,7 +160,7 @@ mints AS (
         from_address,
         to_address,
         memo,
-        amount_unadj,
+        amount_unadj :: STRING AS amount_unadj,
         'nep141' AS transfer_type,
         _partition_by_block_number,
         modified_timestamp
@@ -184,7 +184,7 @@ orders AS (
         from_address,
         to_address,
         memo,
-        amount_unadj,
+        amount_unadj :: STRING AS amount_unadj,
         'nep141' AS transfer_type,
         _partition_by_block_number,
         modified_timestamp
@@ -208,7 +208,7 @@ liquidity AS (
         from_address,
         to_address,
         memo,
-        amount_unadj,
+        amount_unadj :: STRING AS amount_unadj,
         'nep141' AS transfer_type,
         _partition_by_block_number,
         modified_timestamp
@@ -232,7 +232,7 @@ wrapped_near AS (
         from_address,
         to_address,
         memo,
-        amount_unadj,
+        amount_unadj :: STRING AS amount_unadj,
         'nep141' AS transfer_type,
         _partition_by_block_number,
         modified_timestamp
