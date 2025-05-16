@@ -13,6 +13,7 @@
 -- depends on {{ ref('silver__bridge_wormhole') }}
 -- depends on {{ ref('silver__bridge_multichain') }}
 -- depends on {{ ref('silver__bridge_allbridge') }}
+-- depends on {{ ref('silver__bridge_omni') }}
 
 {% if execute %}
 
@@ -158,6 +159,29 @@ allbridge AS (
         {% endif %}
     {% endif %}
 ),
+omni AS (
+    SELECT
+        block_id,
+        block_timestamp,
+        tx_hash,
+        token_address,
+        amount_raw,
+        amount_adj,
+        destination_address,
+        source_address,
+        platform,
+        bridge_address,
+        destination_chain_id AS destination_chain,
+        source_chain_id AS source_chain,
+        method_name,
+        direction,
+        receipt_succeeded,
+        bridge_omni_id AS fact_bridge_activity_id,
+        inserted_timestamp,
+        modified_timestamp
+    FROM
+        {{ ref('silver__bridge_omni') }}
+),
 FINAL AS (
     SELECT
         *
@@ -178,6 +202,11 @@ FINAL AS (
         *
     FROM
         allbridge
+    UNION ALL
+    SELECT
+        *
+    FROM
+        omni
 )
 SELECT
     block_id,
