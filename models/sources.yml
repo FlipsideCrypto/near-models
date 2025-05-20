@@ -43,3 +43,11 @@ sources:
       - name: chunks_v2
       - name: transactions_v2
       - name: nearblocks_ft_metadata
+  
+  - name: livetable_bronze
+    database: | 
+      {{ "NEAR_DEV" if var("STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES", False) else "NEAR" }} 
+    schema: bronze_live
+    tables:
+      - name: transactions
+      
