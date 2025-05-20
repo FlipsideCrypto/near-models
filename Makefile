@@ -24,7 +24,7 @@ rm_logs:
 deploy_livetable_udtfs: rm_logs
 	dbt run \
 	-s near_models.deploy.livetable \
-	--vars '{UPDATE_UDFS_AND_SPS: true, ENABLE_LIVE_TABLE: true, LIVE_TABLE_MATERIALIZATION: ephemeral}' \
+	--vars '{UPDATE_UDFS_AND_SPS: true, ENABLE_LIVE_TABLE: true, LIVE_TABLE_MATERIALIZATION: ephemeral, UDTF_TARGET: gold_core}' \
 	--profiles-dir ~/.dbt \
 	--profile near \
 	--target dev
