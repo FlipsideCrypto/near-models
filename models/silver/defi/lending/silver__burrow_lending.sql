@@ -53,31 +53,41 @@ withdrawals AS
 ),
 FINAL_UNION AS (
     SELECT
-        burrow_borrows_id as  burrow_lending_id,
+        {{ dbt_utils.generate_surrogate_key(
+        ['burrow_borrows_id', 'actions']
+        ) }} as  burrow_lending_id,
         *
     FROM
         borrows
     UNION ALL
     SELECT
-        burrow_collaterals_id as  burrow_lending_id,
+        {{ dbt_utils.generate_surrogate_key(
+        ['burrow_collaterals_id', 'actions']
+        ) }} as  burrow_lending_id,
         *
     FROM
         collaterals
     UNION ALL
     SELECT
-        burrow_deposits_id as  burrow_lending_id,
+        {{ dbt_utils.generate_surrogate_key(
+        ['burrow_deposits_id', 'actions']
+        ) }} as  burrow_lending_id,
         *
     FROM
         deposits
     UNION ALL
     SELECT
-        burrow_repays_id as  burrow_lending_id,
+        {{ dbt_utils.generate_surrogate_key(
+        ['burrow_repays_id', 'actions']
+        ) }} as  burrow_lending_id,
         *
     FROM
         repays
     UNION ALL
     SELECT
-        burrow_withdraws_id as  burrow_lending_id,
+        {{ dbt_utils.generate_surrogate_key(
+        ['burrow_withdraws_id', 'actions']
+        ) }} as  burrow_lending_id,
         *
     FROM
         withdrawals
