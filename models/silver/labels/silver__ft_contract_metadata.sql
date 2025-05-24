@@ -3,7 +3,7 @@
 
 {{ config(
     materialized = 'incremental',
-    unique_key = 'contract_address',
+    unique_key = ['omni_address', 'contract_address'],
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
     tags = ['scheduled_non_core']
@@ -46,13 +46,12 @@ nearblocks_metadata AS (
 omni AS (
     SELECT
         omni_address,
-        contract_address,
+        contract_address
     FROM
         {{ ref('silver__omni_metadata')}}
-
     {% if is_incremental() %}
     WHERE
-        _inserted_timestamp >= (
+        inserted_timestamp >= (
             SELECT
                 MAX(modified_timestamp)
             FROM
@@ -63,13 +62,12 @@ omni AS (
 final AS (
     -- Omni
     SELECT
-        o.omni_address,
-        o.contract_address,
-        n.decimals,
-        n.name,
-        n.symbol,
-        n.data,
-        'omni' AS source
+        o.omni_address::STRING AS omni_address,
+        o.contract_address::STRING AS contract_address,
+        n.decimals::INT AS decimals,
+        n.name::STRING AS name,
+        n.symbol::STRING AS symbol,
+        'omni'::STRING AS source
     FROM
         omni o
     LEFT JOIN nearblocks_metadata n
@@ -78,15 +76,13 @@ final AS (
     UNION ALL
 
     -- Nearblocks
-
     SELECT
-        NULL AS omni_address,
-        n.contract_address,
-        n.decimals,
-        n.name,
-        n.symbol,
-        n.data,
-        'nearblocks' AS source
+        NULL::STRING AS omni_address,
+        n.contract_address::STRING AS contract_address,
+        n.decimals::INT AS decimals,
+        n.name::STRING AS name,
+        n.symbol::STRING AS symbol,
+        'nearblocks'::STRING AS source
     FROM 
         nearblocks_metadata n
     WHERE n.contract_address NOT IN (SELECT contract_address FROM omni)
@@ -97,7 +93,6 @@ SELECT
     decimals,
     name,
     symbol,
-    data,
     source,
     {{ dbt_utils.generate_surrogate_key(['omni_address', 'contract_address']) }} AS ft_contract_metadata_id,
     SYSDATE() AS inserted_timestamp,
