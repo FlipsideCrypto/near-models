@@ -43,3 +43,4 @@ sources:
       - name: chunks_v2
       - name: transactions_v2
       - name: nearblocks_ft_metadata
+      - name: omni_metadata
