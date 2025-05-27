@@ -74,6 +74,7 @@ WITH ft_transfer_actions AS (
         receipt_predecessor_id AS predecessor_id,
         receipt_signer_id AS signer_id,
         receipt_succeeded,
+        action_data :method_name :: STRING AS method_name,
         _partition_by_block_number,
         modified_timestamp
     FROM 
@@ -126,7 +127,8 @@ ft_transfer_logs AS (
         a.predecessor_id,
         a.signer_id,
         a.action_index,
-        a.receipt_succeeded
+        a.receipt_succeeded,
+        a.method_name
     FROM
         logs l
     INNER JOIN ft_transfer_actions a
@@ -168,11 +170,12 @@ ft_transfers_final AS (
         REGEXP_SUBSTR(
             log_value,
             '\\d+'
-        ) :: variant AS amount_unadj,
+        ) :: STRING AS amount_unadj,
         '' AS memo,
         log_index + action_index AS event_index,
         _partition_by_block_number,
-        receipt_succeeded
+        receipt_succeeded,
+        method_name
     FROM
         ft_transfer_logs
     WHERE
@@ -194,6 +197,7 @@ SELECT
     amount_unadj,
     memo,
     event_index AS rn,
+    method_name,
     receipt_succeeded,
     _partition_by_block_number,
     {{ dbt_utils.generate_surrogate_key(

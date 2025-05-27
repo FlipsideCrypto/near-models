@@ -63,7 +63,7 @@ add_liquidity AS (
             1,
             'e',
             1
-        ) :: variant AS amount_unadj,
+        ) :: STRING AS amount_unadj,
         'add_liquidity' AS memo,
         log_index + INDEX AS event_index,
         predecessor_id,

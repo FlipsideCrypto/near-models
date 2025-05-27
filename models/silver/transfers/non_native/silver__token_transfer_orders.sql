@@ -52,7 +52,7 @@ orders_final AS (
         log_index,
         f.value :sell_token :: STRING AS contract_address,
         f.value :owner_id :: STRING AS from_address,
-        f.value :original_amount :: variant AS amount_unadj,
+        f.value :original_amount :: STRING AS amount_unadj,
         'order' AS memo,
         log_index + f.index AS event_index,
         _partition_by_block_number,

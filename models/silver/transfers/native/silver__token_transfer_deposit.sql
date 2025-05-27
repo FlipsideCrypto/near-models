@@ -18,7 +18,7 @@ WITH transfers AS (
         receipt_predecessor_id AS predecessor_id,
         receipt_signer_id AS signer_id,
         receipt_receiver_id AS receiver_id,
-        action_data :deposit :: INT AS amount_unadj,
+        action_data :deposit :: STRING AS amount_unadj,
         receipt_succeeded,
         _partition_by_block_number
     FROM

@@ -15,7 +15,7 @@
         SELECT
             MIN(DATE_TRUNC('day', block_timestamp)) AS block_timestamp_day
         FROM
-            {{ ref('silver__token_transfers_complete') }}
+            {{ ref('core__fact_token_transfers') }}
         WHERE
             modified_timestamp >= (
                 SELECT
@@ -93,9 +93,10 @@ SELECT
     C.symbol AS symbol,
     price AS token_price,
     transfer_type,
-    transfers_complete_id AS ez_token_transfers_id
+    transfer_action,
+    fact_token_transfers_id AS ez_token_transfers_id
 FROM
-    {{ ref('silver__token_transfers_complete') }}
+    {{ ref('core__fact_token_transfers') }}
     t
     ASOF JOIN hourly_prices p
     MATCH_CONDITION (t.block_timestamp >= p.HOUR)

@@ -58,7 +58,7 @@ ft_transfers_final AS (
             f.value :new_owner_id,
             f.value :owner_id
         ) :: STRING AS to_address,
-        f.value :amount :: variant AS amount_unadj,
+        f.value :amount :: STRING AS amount_unadj,
         f.value :memo :: STRING AS memo,
         log_index + f.index AS event_index,
         receipt_succeeded,
