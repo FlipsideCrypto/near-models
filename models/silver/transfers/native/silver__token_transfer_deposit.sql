@@ -25,7 +25,6 @@ WITH transfers AS (
         {{ ref('core__ez_actions') }}
     WHERE
         action_name = 'FunctionCall'
-        AND receipt_succeeded
         AND action_data :deposit :: INT > 0
 
     {% if var("MANUAL_FIX") %}

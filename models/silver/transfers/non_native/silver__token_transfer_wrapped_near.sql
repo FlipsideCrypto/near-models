@@ -25,6 +25,7 @@ WITH actions AS (
         ) :: STRING AS amount_unadj,
         NULL AS memo,
         action_index AS rn,
+        receipt_succeeded,
         FLOOR(
             block_id,
             -3
@@ -68,6 +69,7 @@ SELECT
     amount_unadj,
     memo,
     rn,
+    receipt_succeeded,
     _partition_by_block_number,
     {{ dbt_utils.generate_surrogate_key(
         ['receipt_id', 'amount_unadj', 'from_address', 'to_address', 'rn']

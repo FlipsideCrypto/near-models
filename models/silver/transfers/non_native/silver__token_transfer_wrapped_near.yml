@@ -81,6 +81,13 @@ models:
           - dbt_expectations.expect_column_values_to_be_of_type:
               column_type: NUMBER
 
+      - name: RECEIPT_SUCCEEDED
+        description: "{{doc('receipt_succeeded')}}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: BOOLEAN
+
       - name: _partition_by_block_number
         description: The block number used for partitioning
         tests:
