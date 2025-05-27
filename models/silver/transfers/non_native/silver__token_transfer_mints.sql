@@ -68,7 +68,7 @@ ft_mints_final AS (
             input => log_data :data
         ) f
     WHERE
-        amount_unadj :: INT > 0
+        amount_unadj :: DOUBLE > 0
 )
 SELECT
     block_timestamp,
