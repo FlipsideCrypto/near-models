@@ -1,7 +1,7 @@
 -- depends_on: {{ ref('bronze__blocks') }}
 -- depends_on: {{ ref('bronze__FR_blocks') }}
 {{ config (
-    materialized = "incremental",
+    materialized = var('LIVE_TABLE_MATERIALIZATION', 'incremental'),
     incremental_strategy = 'merge',
     incremental_predicates = ["dynamic_range_predicate","block_timestamp::date"],
     unique_key = "block_hash",

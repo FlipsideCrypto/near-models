@@ -46,6 +46,8 @@ models:
   +on_schema_change: "append_new_columns"
   near_models:
     +pre-hook: '{{ fsc_utils.set_query_tag() }}'
+    deploy:
+      +materialized: ephemeral
   livequery_models:
     deploy:
       core:
@@ -81,6 +83,10 @@ vars:
   EXTERNAL_FUNCTION_URI: '{{ var("config")[target.name]["EXTERNAL_FUNCTION_URI"] }}'
   API_AWS_ROLE_ARN: '{{ var("config")[target.name]["API_AWS_ROLE_ARN"] if var("config")[target.name] else var("config")["dev"]["API_AWS_ROLE_ARN"] }}'
   ROLES: '{{ var("config")[target.name]["ROLES"] }}'
+  
+  # Livetable config
+  DROP_UDFS_AND_SPS: false
+  
   config:
   # The keys correspond to dbt profiles and are case sensitive
     dev:
