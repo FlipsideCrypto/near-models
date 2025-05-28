@@ -4,7 +4,6 @@
     incremental_predicates = ["dynamic_range_predicate","modified_timestamp::date"],
     unique_key = "contract_address",
     cluster_by = ['modified_timestamp::DATE'],
-    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(contract_address)",
     tags = ['streamline_non_core']
 ) }}
 
@@ -13,8 +12,6 @@ WITH omni_token AS (
         DISTINCT lower(raw_token_id) AS contract_address
     FROM 
         {{ ref('silver__bridge_omni') }}
-    WHERE
-        source_chain_id NOT IN ('near', 'sol')
     
 {% if is_incremental() %}
 WHERE modified_timestamp >= (

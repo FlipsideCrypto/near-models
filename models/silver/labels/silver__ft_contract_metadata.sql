@@ -4,7 +4,7 @@
 
 {{ config(
     materialized = 'incremental',
-    unique_key = ['omni_address', 'contract_address'],
+    unique_key = 'ft_contract_metadata_id',
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
     tags = ['scheduled_non_core']
@@ -83,7 +83,7 @@ defuse AS (
 final AS (
     -- Omni
     SELECT
-        o.omni_address :: STRING AS omni_address,
+        o.omni_address :: STRING AS token_id,
         o.contract_address :: STRING AS contract_address,
         n.decimals :: INT AS decimals,
         n.name :: STRING AS name,
@@ -98,7 +98,7 @@ final AS (
 
     -- Nearblocks
     SELECT
-        NULL :: STRING AS omni_address,
+        n.contract_address :: STRING AS token_id,
         n.contract_address :: STRING AS contract_address,
         n.decimals :: INT AS decimals,
         n.name :: STRING AS name,
@@ -106,13 +106,12 @@ final AS (
         'nearblocks' AS source
     FROM 
         nearblocks_metadata n
-    WHERE n.contract_address NOT IN (SELECT contract_address FROM omni)
 
     UNION ALL
 
     -- Defuse
     SELECT
-        d.defuse_address :: STRING AS omni_address,
+        d.defuse_address :: STRING AS token_id,
         d.contract_address :: STRING AS contract_address,
         d.decimals :: INT AS decimals,
         NULL :: STRING AS name,
@@ -123,18 +122,18 @@ final AS (
 )
 SELECT
     contract_address,
-    omni_address,
+    token_id,
     decimals,
     name,
     symbol,
-    source,
-    {{ dbt_utils.generate_surrogate_key(['omni_address', 'contract_address']) }} AS ft_contract_metadata_id,
+    source as metadata_source,
+    {{ dbt_utils.generate_surrogate_key(['token_id', 'contract_address']) }} AS ft_contract_metadata_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
 FROM final
 
 qualify ROW_NUMBER() over (
-    PARTITION BY omni_address, contract_address
+    PARTITION BY token_id
     ORDER BY modified_timestamp DESC
 ) = 1

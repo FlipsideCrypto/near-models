@@ -21,6 +21,8 @@ WITH omni_token AS (
         contract_address
     FROM
         {{ ref('streamline__omni_tokenlist') }}
+    WHERE
+        source_chain_id NOT IN ('near', 'sol')
     EXCEPT
     SELECT
         contract_address
