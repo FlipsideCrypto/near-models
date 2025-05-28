@@ -62,12 +62,11 @@ logs AS (
         l._partition_by_block_number
     FROM
         {{ ref('silver__logs_s3') }} l
-    INNER JOIN actions a 
-    ON a.tx_hash = l.tx_hash
     WHERE
         l.is_standard
+        AND l.tx_hash in (select distinct tx_hash from actions)
     {% if var("MANUAL_FIX") %}
-      AND {{ partition_load_manual('no_buffer') }}
+      AND {{ partition_load_manual('no_buffer', 'l._partition_by_block_number') }}
     {% else %}
         {% if is_incremental() %}
         AND l.block_timestamp >= (
