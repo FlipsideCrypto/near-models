@@ -123,38 +123,32 @@ WITH intents AS (
 ),
 labels AS (
     SELECT
-        near_token_id AS contract_address_raw,
-        SPLIT(
-            defuse_asset_identifier,
-            ':'
-        ) [0] :: STRING AS ecosystem,
-        SPLIT(
-            defuse_asset_identifier,
-            ':'
-        ) [1] :: STRING AS chain_id,
-        SPLIT(
-            defuse_asset_identifier,
-            ':'
-        ) [2] :: STRING AS contract_address,
+        contract_address AS contract_address_raw,
+        CASE
+            WHEN source = 'defuse' THEN SPLIT(
+                omni_address,
+                ':'
+            ) [0] :: STRING
+            ELSE 'near'
+        END AS ecosystem,
+        CASE
+            WHEN source = 'defuse' THEN SPLIT(
+                omni_address,
+                ':'
+            ) [1] :: STRING
+            ELSE '397'
+        END AS chain_id,
+        CASE
+            WHEN source = 'defuse' THEN SPLIT(
+                omni_address,
+                ':'
+            ) [2] :: STRING
+            ELSE contract_address
+        END AS contract_address,
         asset_name AS symbol,
         decimals
-    FROM
-        {{ ref('silver__defuse_tokens_metadata') }}
-    UNION ALL
-    SELECT
-        contract_address AS contract_address_raw,
-        'near' AS ecosystem,
-        '397' AS chain_id,
-        contract_address,
-        symbol,
-        decimals
-    FROM
+    FROM 
         {{ ref('silver__ft_contract_metadata') }}
-    WHERE
-        contract_address not in (
-            select distinct near_token_id 
-            from {{ ref('silver__defuse_tokens_metadata') }}
-        )
 ),
 prices AS (
     SELECT
