@@ -9,9 +9,10 @@ WITH omni AS (
 
     SELECT
         VALUE:CONTRACT_ADDRESS::STRING AS omni_address,
+        VALUE:data:result:result::ARRAY AS result_array,
         DATA
     FROM
-        {{ ref('bronze__omni_metadata')}}
+        near_dev.bronze.omni_metadata
     WHERE
         typeof(DATA) != 'NULL_VALUE'
 
@@ -25,32 +26,31 @@ WITH omni AS (
         )
     {% endif %}
 ),
-flattened AS (
-    SELECT
+try_decode_hex AS (
+    SELECT 
         omni_address,
-        value::INT AS byte_val,
-        index
-    FROM 
-        omni,
-        LATERAL FLATTEN(input => DATA:result)
+        b.value AS raw,
+        b.index,
+        LPAD(TRIM(to_char(b.value::INT, 'XXXXXXX'))::STRING, 2, '0') AS hex,
+        ROW_NUMBER() OVER (PARTITION BY omni_address, raw, index, hex ORDER BY omni_address) AS rn
+    FROM omni o,
+    TABLE(FLATTEN(o.result_array, recursive => TRUE)) b
+    WHERE IS_ARRAY(o.result_array) = TRUE
+    ORDER BY 1, 3
 ),
-hex_strings AS (
-    SELECT
+decoded_response AS (
+    SELECT 
         omni_address,
-        LISTAGG(LPAD(TO_CHAR(byte_val, 'XX'), 2, '0'), '') WITHIN GROUP (ORDER BY index) AS hex_string
-    FROM 
-        flattened
-    GROUP BY 
-        omni_address
+        ARRAY_TO_STRING(ARRAY_AGG(hex) WITHIN GROUP (ORDER BY index ASC), '') AS decoded_response
+    FROM try_decode_hex
+    GROUP BY omni_address, rn
+    HAVING rn = 1
 ),
-decode AS (
+conversion AS (
     SELECT
         omni_address,
-        TRY_PARSE_JSON(
-            livequery.utils.udf_hex_to_string(hex_string)
-        ) AS decoded_result
-    FROM 
-        hex_strings
+        TRIM(livequery.utils.udf_hex_to_string(decoded_response), '"') AS decoded_result
+    FROM decoded_response
 )
 SELECT
     omni_address,
@@ -62,5 +62,5 @@ SELECT
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
 FROM
-    decode
+    conversion
 qualify(row_number() over (partition by omni_address order by inserted_timestamp asc)) = 1
