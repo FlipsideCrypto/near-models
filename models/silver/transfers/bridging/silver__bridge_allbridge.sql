@@ -41,7 +41,7 @@ WITH functioncall AS (
 ),
 metadata AS (
     SELECT
-        contract_address,
+        token_id as contract_address,
         NAME,
         symbol,
         decimals
