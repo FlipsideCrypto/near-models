@@ -12,6 +12,7 @@ WITH ft_contract_metadata AS (
 )
 SELECT
     contract_address,
+    token_id
     NAME,
     symbol,
     decimals,
