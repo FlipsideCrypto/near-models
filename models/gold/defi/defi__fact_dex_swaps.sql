@@ -31,7 +31,7 @@ FROM
     {{ ref('silver__dex_swaps_v2') }}
         
     {% if var("MANUAL_FIX") %}
-        AND {{ partition_load_manual('no_buffer', 'floor(block_id, -3)') }}
+        WHERE {{ partition_load_manual('no_buffer', 'floor(block_id, -3)') }}
     {% else %}
         {% if is_incremental() %}
             WHERE modified_timestamp > (

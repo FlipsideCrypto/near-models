@@ -24,8 +24,7 @@ WITH ft_transfer_logs AS (
     FROM 
         {{ ref('silver__logs_s3') }}
     WHERE 
-        receipt_succeeded
-        AND is_standard -- Only look at EVENT_JSON formatted logs
+        is_standard -- Only look at EVENT_JSON formatted logs
         AND try_parse_json(clean_log) :event :: STRING = 'ft_transfer'
 
     {% if var("MANUAL_FIX") %}
@@ -59,9 +58,10 @@ ft_transfers_final AS (
             f.value :new_owner_id,
             f.value :owner_id
         ) :: STRING AS to_address,
-        f.value :amount :: variant AS amount_unadj,
+        f.value :amount :: STRING AS amount_unadj,
         f.value :memo :: STRING AS memo,
         log_index + f.index AS event_index,
+        receipt_succeeded,
         _partition_by_block_number
     FROM
         ft_transfer_logs,
@@ -84,6 +84,7 @@ SELECT
     amount_unadj,
     memo,
     event_index AS rn,
+    receipt_succeeded,
     _partition_by_block_number,
     {{ dbt_utils.generate_surrogate_key(
         ['receipt_id', 'contract_address', 'amount_unadj', 'from_address', 'to_address', 'rn']

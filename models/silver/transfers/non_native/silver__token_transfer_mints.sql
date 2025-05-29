@@ -24,8 +24,7 @@ WITH ft_mint_logs AS (
     FROM 
         {{ ref('silver__logs_s3') }}
     WHERE 
-        receipt_succeeded
-        AND is_standard -- Only look at EVENT_JSON formatted logs
+        is_standard -- Only look at EVENT_JSON formatted logs
         AND try_parse_json(clean_log) :event :: STRING = 'ft_mint'
 
     {% if var("MANUAL_FIX") %}
@@ -58,17 +57,18 @@ ft_mints_final AS (
             f.value :new_owner_id,
             f.value :owner_id
         ) :: STRING AS to_address,
-        f.value :amount :: variant AS amount_unadj,
+        f.value :amount :: STRING AS amount_unadj,
         f.value :memo :: STRING AS memo,
         log_index + f.index AS event_index,
-        _partition_by_block_number
+        _partition_by_block_number,
+        receipt_succeeded
     FROM
         ft_mint_logs,
         LATERAL FLATTEN(
             input => log_data :data
         ) f
     WHERE
-        amount_unadj :: INT > 0
+        amount_unadj :: DOUBLE > 0
 )
 SELECT
     block_timestamp,
@@ -83,6 +83,7 @@ SELECT
     memo,
     event_index AS rn,
     predecessor_id,
+    receipt_succeeded,
     _partition_by_block_number,
     {{ dbt_utils.generate_surrogate_key(
         ['receipt_id', 'contract_address', 'amount_unadj', 'to_address', 'rn']

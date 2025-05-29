@@ -28,7 +28,6 @@ WITH transfers AS (
         {{ ref('core__ez_actions') }}
     WHERE
         action_name = 'Transfer'
-        AND receipt_succeeded
 
     {% if var("MANUAL_FIX") %}
       AND {{ partition_load_manual('no_buffer') }}

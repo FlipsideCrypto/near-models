@@ -64,7 +64,7 @@ logs AS (
         AND (event_type = 'nft_sale' OR event_type = 'nft_sold')
 
     {% if var("MANUAL_FIX") %}
-      AND {{ partition_load_manual('no_buffer') }}
+      AND {{ partition_load_manual('no_buffer', 'l._partition_by_block_number') }}
     {% else %}
         {% if is_incremental() %}
         AND modified_timestamp >= (
