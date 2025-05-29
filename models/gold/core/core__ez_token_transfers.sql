@@ -128,6 +128,7 @@ FROM
 )
 SELECT
     *,
+    receipt_id AS action_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp
 FROM

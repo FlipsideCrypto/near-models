@@ -290,8 +290,7 @@ final_transfers AS (
             ['receipt_id', 'contract_address', 'amount_unadj', 'from_address', 'to_address', 'rn']
         ) }} AS fact_token_transfers_id,
         SYSDATE() AS inserted_timestamp,
-        SYSDATE() AS modified_timestamp,
-        '{{ invocation_id }}' AS _invocation_id
+        SYSDATE() AS modified_timestamp
     FROM
         all_transfers
     {% if is_incremental() and not var("MANUAL_FIX") %}
