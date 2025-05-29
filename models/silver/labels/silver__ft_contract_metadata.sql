@@ -83,7 +83,8 @@ defuse AS (
 final AS (
     -- Omni
     SELECT
-        o.omni_address :: STRING AS token_id,
+        o.omni_address :: STRING AS raw_token_id,
+        SPLIT_PART(o.omni_address, ':', ARRAY_SIZE(SPLIT(o.omni_address, ':'))) AS token_id,
         o.contract_address :: STRING AS contract_address,
         n.decimals :: INT AS decimals,
         n.name :: STRING AS name,
@@ -99,6 +100,7 @@ final AS (
     -- Nearblocks
     SELECT
         n.contract_address :: STRING AS token_id,
+        n.contract_address :: STRING AS raw_token_id,
         n.contract_address :: STRING AS contract_address,
         n.decimals :: INT AS decimals,
         n.name :: STRING AS name,
@@ -112,6 +114,7 @@ final AS (
     -- Defuse
     SELECT
         d.defuse_address :: STRING AS token_id,
+        SPLIT_PART(d.defuse_address, ':', ARRAY_SIZE(SPLIT(d.defuse_address, ':'))) AS token_id,
         d.contract_address :: STRING AS contract_address,
         d.decimals :: INT AS decimals,
         NULL :: STRING AS name,
@@ -122,6 +125,7 @@ final AS (
 )
 SELECT
     contract_address,
+    raw_token_id,
     token_id,
     decimals,
     name,
