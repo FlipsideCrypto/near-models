@@ -142,10 +142,10 @@ labels AS (
         {{ ref('silver__defuse_tokens_metadata') }}
     UNION ALL
     SELECT
-        contract_address AS contract_address_raw,
+        token_id AS contract_address_raw,
         'near' AS ecosystem,
         '397' AS chain_id,
-        contract_address,
+        token_id AS contract_address,
         symbol,
         decimals
     FROM
