@@ -66,16 +66,15 @@ WITH native_transfers AS (
         amount_unadj AS amount_unadj,
         'native' AS transfer_type,
         'Transfer' AS transfer_action,
+        receipt_succeeded,
         _partition_by_block_number,
         modified_timestamp
     FROM
         {{ ref('silver__token_transfer_native') }}
-    WHERE
-        receipt_succeeded
         {% if var("MANUAL_FIX") %}
-            AND {{ partition_load_manual('no_buffer') }}
+            WHERE {{ partition_load_manual('no_buffer') }}
         {% elif is_incremental() %}
-            AND block_timestamp::DATE >= '{{min_bd}}'
+            WHERE block_timestamp::DATE >= '{{min_bd}}'
         {% endif %}
 ),
 native_deposits AS (
@@ -92,16 +91,15 @@ native_deposits AS (
         amount_unadj AS amount_unadj,
         'native' AS transfer_type,
         'Deposit' AS transfer_action,
+        receipt_succeeded,
         _partition_by_block_number,
         modified_timestamp
     FROM
         {{ ref('silver__token_transfer_deposit') }}
-    WHERE
-        receipt_succeeded
         {% if var("MANUAL_FIX") %}
-            AND {{ partition_load_manual('no_buffer') }}
+            WHERE {{ partition_load_manual('no_buffer') }}
         {% elif is_incremental() %}
-            AND block_timestamp::DATE >= '{{min_bd}}'
+            WHERE block_timestamp::DATE >= '{{min_bd}}'
         {% endif %}
 ),
 ft_transfers_method AS (
@@ -118,15 +116,15 @@ ft_transfers_method AS (
         amount_unadj AS amount_unadj,
         'nep141' AS transfer_type,
         method_name AS transfer_action,
+        receipt_succeeded,
         _partition_by_block_number,
         modified_timestamp
     FROM
         {{ ref('silver__token_transfer_ft_transfers_method') }}
-    WHERE 1=1
         {% if var("MANUAL_FIX") %}
-            AND {{ partition_load_manual('no_buffer') }}
+            WHERE {{ partition_load_manual('no_buffer') }}
         {% elif is_incremental() %}
-            AND block_timestamp::DATE >= '{{min_bd}}'
+            WHERE block_timestamp::DATE >= '{{min_bd}}'
         {% endif %}
 ),
 ft_transfers_event AS (
@@ -143,15 +141,15 @@ ft_transfers_event AS (
         amount_unadj AS amount_unadj,
         'nep141' AS transfer_type,
         'ft_transfer' AS transfer_action,
+        receipt_succeeded,
         _partition_by_block_number,
         modified_timestamp
     FROM
         {{ ref('silver__token_transfer_ft_transfers_event') }}
-    WHERE 1=1
         {% if var("MANUAL_FIX") %}
-            AND {{ partition_load_manual('no_buffer') }}
+            WHERE {{ partition_load_manual('no_buffer') }}
         {% elif is_incremental() %}
-            AND block_timestamp::DATE >= '{{min_bd}}'
+            WHERE block_timestamp::DATE >= '{{min_bd}}'
         {% endif %}
 ),
 mints AS (
@@ -168,15 +166,15 @@ mints AS (
         amount_unadj AS amount_unadj,
         'nep141' AS transfer_type,
         'ft_mint' AS transfer_action,
+        receipt_succeeded,
         _partition_by_block_number,
         modified_timestamp
     FROM
         {{ ref('silver__token_transfer_mints') }}
-    WHERE 1=1
         {% if var("MANUAL_FIX") %}
-            AND {{ partition_load_manual('no_buffer') }}
+            WHERE {{ partition_load_manual('no_buffer') }}
         {% elif is_incremental() %}
-            AND block_timestamp::DATE >= '{{min_bd}}'
+            WHERE block_timestamp::DATE >= '{{min_bd}}'
         {% endif %}
 ),
 orders AS (
@@ -193,15 +191,15 @@ orders AS (
         amount_unadj :: STRING AS amount_unadj,
         'nep141' AS transfer_type,
         'order_added' AS transfer_action,
+        receipt_succeeded,
         _partition_by_block_number,
         modified_timestamp
     FROM
         {{ ref('silver__token_transfer_orders') }}
-    WHERE 1=1
         {% if var("MANUAL_FIX") %}
-            AND {{ partition_load_manual('no_buffer') }}
+            WHERE {{ partition_load_manual('no_buffer') }}
         {% elif is_incremental() %}
-            AND block_timestamp::DATE >= '{{min_bd}}'
+            WHERE block_timestamp::DATE >= '{{min_bd}}'
         {% endif %}
 ),
 liquidity AS (
@@ -218,15 +216,15 @@ liquidity AS (
         amount_unadj AS amount_unadj,
         'nep141' AS transfer_type,
         'add_liquidity' AS transfer_action,
+        receipt_succeeded,
         _partition_by_block_number,
         modified_timestamp
     FROM
         {{ ref('silver__token_transfer_liquidity') }}
-    WHERE 1=1
         {% if var("MANUAL_FIX") %}
-            AND {{ partition_load_manual('no_buffer') }}
+            WHERE {{ partition_load_manual('no_buffer') }}
         {% elif is_incremental() %}
-            AND block_timestamp::DATE >= '{{min_bd}}'
+            WHERE block_timestamp::DATE >= '{{min_bd}}'
         {% endif %}
 ),
 wrapped_near AS (
@@ -243,15 +241,15 @@ wrapped_near AS (
         amount_unadj AS amount_unadj,
         'nep141' AS transfer_type,
         method_name AS transfer_action,
+        receipt_succeeded,
         _partition_by_block_number,
         modified_timestamp
     FROM
         {{ ref('silver__token_transfer_wrapped_near') }}
-    WHERE 1=1
         {% if var("MANUAL_FIX") %}
-            AND {{ partition_load_manual('no_buffer') }}
+            WHERE {{ partition_load_manual('no_buffer') }}
         {% elif is_incremental() %}
-            AND block_timestamp::DATE >= '{{min_bd}}'
+            WHERE block_timestamp::DATE >= '{{min_bd}}'
         {% endif %}
 ),
 all_transfers AS (
@@ -285,7 +283,7 @@ final_transfers AS (
         amount_unadj,
         transfer_type,
         transfer_action,
-        _partition_by_block_number,
+        receipt_succeeded,
         {{ dbt_utils.generate_surrogate_key(
             ['receipt_id', 'contract_address', 'amount_unadj', 'from_address', 'to_address', 'rn']
         ) }} AS fact_token_transfers_id,

@@ -58,6 +58,12 @@ models:
       - name: HAS_PRICE
         description: "Boolean value indicating if the token has a price"
 
+      - name: TRANSFER_ACTION
+        description: "{{ doc('transfer_action')}}"
+
+      - name: RECEIPT_SUCCEEDED
+        description: "{{ doc('receipt_succeeded')}}"
+
       - name: EZ_TOKEN_TRANSFERS_ID
         description: "{{doc('id')}}"
         tests:

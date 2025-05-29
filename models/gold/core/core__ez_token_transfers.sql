@@ -94,6 +94,7 @@ SELECT
     price AS token_price,
     transfer_type,
     transfer_action,
+    receipt_succeeded,
     fact_token_transfers_id AS ez_token_transfers_id
 FROM
     {{ ref('core__fact_token_transfers') }}
