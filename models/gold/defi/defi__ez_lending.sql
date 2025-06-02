@@ -26,7 +26,7 @@ WITH lending AS (
 ),
 labels AS (
     SELECT
-        token_id AS contract_address,
+        asset_identifier AS contract_address,
         NAME,
         symbol,
         IFF(

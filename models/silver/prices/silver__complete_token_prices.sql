@@ -86,4 +86,4 @@ FROM
     complete_token_prices p
     LEFT JOIN {{ ref('silver__ft_contract_metadata') }}
     ft
-    ON p.token_address = ft.token_id
+    ON p.token_address = ft.asset_identifier

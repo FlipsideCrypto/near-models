@@ -102,7 +102,7 @@ FROM
     ASOF JOIN hourly_prices p
     MATCH_CONDITION (t.block_timestamp >= p.HOUR)
     ON (t.contract_address = p.token_address)
-    LEFT JOIN {{ ref('silver__ft_contract_metadata') }} C ON (t.contract_address = C.token_id) 
+    LEFT JOIN {{ ref('silver__ft_contract_metadata') }} C ON (t.contract_address = C.asset_identifier) 
     {% if var("MANUAL_FIX") %}
     WHERE
         {{ partition_load_manual('no_buffer') }}
