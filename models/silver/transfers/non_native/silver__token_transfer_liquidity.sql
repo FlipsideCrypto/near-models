@@ -24,8 +24,7 @@ WITH liquidity_logs AS (
     FROM 
         {{ ref('silver__logs_s3') }}
     WHERE 
-        receipt_succeeded
-        AND log_index = 0 -- Liquidity logs are always first
+        log_index = 0 -- Liquidity logs are always first
         AND clean_log :: STRING like 'Liquidity added [%minted % shares'
 
     {% if var("MANUAL_FIX") %}
@@ -64,11 +63,12 @@ add_liquidity AS (
             1,
             'e',
             1
-        ) :: variant AS amount_unadj,
+        ) :: STRING AS amount_unadj,
         'add_liquidity' AS memo,
         log_index + INDEX AS event_index,
         predecessor_id,
         signer_id,
+        receipt_succeeded,
         _partition_by_block_number
     FROM
         liquidity_logs,
@@ -95,6 +95,7 @@ SELECT
     memo,
     event_index AS rn,
     predecessor_id,
+    receipt_succeeded,
     _partition_by_block_number,
     {{ dbt_utils.generate_surrogate_key(
         ['receipt_id', 'contract_address', 'amount_unadj', 'to_address', 'rn']

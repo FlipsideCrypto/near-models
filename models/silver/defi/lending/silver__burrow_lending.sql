@@ -115,7 +115,7 @@ FINAL AS (
         modified_timestamp
     FROM
         FINAL_UNION as f
-    JOIN metadata m ON
+    LEFT JOIN metadata m ON
         token_contract_address = m.contract_address
 
 )
