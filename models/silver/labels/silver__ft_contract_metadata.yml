@@ -11,44 +11,33 @@ models:
           interval: 8
 
     columns:
-      - name: CONTRACT_ADDRESS
-        description: "{{ doc('contract_address')}}"
+      - name: ASSET_IDENTIFIER
+        description: "{{ doc('asset_identifier') }}"
         tests:
           - not_null
           - unique
-          - dbt_expectations.expect_column_values_to_be_of_type:
-              column_type: VARCHAR
-
+      - name: SOURCE_CHAIN
+        description: "{{ doc('source_chain') }}"
+      - name: CROSSCHAIN_TOKEN_CONTRACT
+        description: "{{ doc('crosschain_token_contract') }}"
+      - name: NEAR_TOKEN_CONTRACT
+        description: "{{ doc('near_token_contract') }}"
       - name: DECIMALS
-        description: "{{ doc('decimals')}}"
-        tests:
-          - not_null
-
+        description: "{{ doc('decimals') }}"
       - name: NAME
-        description: "{{ doc('name')}}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_of_type:
-              column_type: VARCHAR
-
+        description: "{{ doc('name') }}"
       - name: SYMBOL
-        description: "{{ doc('symbol')}}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_of_type:
-              column_type: VARCHAR
-
-      - name: DATA
-        description: "{{ doc('data')}}"
-
+        description: "{{ doc('symbol') }}"
+      - name: METADATA_SOURCE
+        description: "Source of the metadata record (e.g., omni, nearblocks, defuse)."
       - name: FT_CONTRACT_METADATA_ID
         description: "{{doc('id')}}"
-
+        tests:
+          - not_null
+          - unique
       - name: INSERTED_TIMESTAMP
         description: "{{doc('inserted_timestamp')}}"
-
       - name: MODIFIED_TIMESTAMP
         description: "{{doc('modified_timestamp')}}"
-
       - name: _INVOCATION_ID
         description: "{{doc('invocation_id')}}"

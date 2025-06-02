@@ -9,7 +9,7 @@
 
 WITH omni_token AS (
     SELECT
-        DISTINCT lower(raw_token_id) AS contract_address
+        DISTINCT raw_token_id AS contract_address
     FROM 
         {{ ref('silver__bridge_omni') }}
     
@@ -23,6 +23,7 @@ WHERE modified_timestamp >= (
 )
 SELECT
     contract_address,
+    SPLIT_PART(contract_address, ':', 0) :: STRING AS source_chain_id,
     {{ dbt_utils.generate_surrogate_key(
         ['contract_address']
     ) }} AS omni_tokenlist_id,
