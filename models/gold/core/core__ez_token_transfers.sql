@@ -109,7 +109,7 @@ FROM
         ON (t.contract_address = p.token_address)
         AND date_trunc('hour', t.block_timestamp) = p.HOUR
     {% endif %}
-    LEFT JOIN {{ ref('silver__ft_contract_metadata') }} C USING (contract_address) 
+    LEFT JOIN {{ ref('silver__ft_contract_metadata') }} C on (t.contract_address = C.asset_identifier)
 
     {% if var("MANUAL_FIX") %}
     WHERE
