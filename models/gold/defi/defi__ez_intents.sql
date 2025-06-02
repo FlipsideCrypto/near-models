@@ -224,7 +224,7 @@ FINAL AS (
     FROM
         intents i
         LEFT JOIN labels l
-        ON i.asset_identifier = l.asset_identifier
+        ON i.token_id = l.asset_identifier
         ASOF JOIN prices p match_condition (
             i.block_timestamp >= p.hour
         )

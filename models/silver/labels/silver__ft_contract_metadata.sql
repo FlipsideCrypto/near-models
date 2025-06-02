@@ -94,7 +94,7 @@ omni_unmapped AS (
 ),
 defuse AS (
     SELECT
-        d.near_token_contract AS asset_identifier,
+        CONCAT_WS(':', 'nep141', d.near_token_contract) AS asset_identifier,
         d.source_chain,
         d.crosschain_token_contract,
         d.near_token_contract,   
