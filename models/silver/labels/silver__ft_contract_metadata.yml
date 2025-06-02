@@ -28,7 +28,7 @@ models:
         description: "{{ doc('name') }}"
       - name: SYMBOL
         description: "{{ doc('symbol') }}"
-      - name: METADATA_SOURCE
+      - name: METADATA_PROVIDER
         description: "Source of the metadata record (e.g., omni, nearblocks, defuse)."
       - name: FT_CONTRACT_METADATA_ID
         description: "{{doc('id')}}"
