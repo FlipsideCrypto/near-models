@@ -150,8 +150,15 @@ final AS (
     -- Nearblocks
     SELECT
         n.near_token_contract :: STRING AS asset_identifier,
-        'near' AS source_chain,
-        n.near_token_contract :: STRING AS crosschain_token_contract,
+        IFF(
+            n.near_token_contract ilike '%-0x%',
+            SPLIT_PART(n.near_token_contract, '-', 1) :: STRING,
+            'near'
+        ) AS source_chain,
+        COALESCE(
+            REGEXP_SUBSTR(n.near_token_contract, '0x[a-fA-F0-9]{40}') :: STRING,
+            n.near_token_contract
+        ) AS crosschain_token_contract,
         n.near_token_contract,
         n.decimals :: INT AS decimals,
         n.name :: STRING AS name,

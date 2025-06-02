@@ -9,7 +9,6 @@
     tags = ['scheduled_non_core']
 ) }}
 -- depends on {{ ref('defi__fact_intents') }}
--- depends on {{ ref('silver__defuse_tokens_metadata') }}
 -- depends on {{ ref('silver__ft_contract_metadata') }}
 -- depends on {{ ref('price__ez_prices_hourly') }}
 
@@ -85,12 +84,12 @@ WITH intents AS (
         token_id,
         REGEXP_SUBSTR(
             token_id,
-            'nep(141|245):(.*)',
+            'nep(141|171|245):(.*)',
             1,
             1,
             'e',
             2
-        ) AS contract_address_raw,
+        ) AS asset_identifier,
         referral,
         dip4_version,
         gas_burnt,
@@ -123,42 +122,19 @@ WITH intents AS (
 ),
 labels AS (
     SELECT
-        near_token_id AS contract_address_raw,
-        SPLIT(
-            defuse_asset_identifier,
-            ':'
-        ) [0] :: STRING AS ecosystem,
-        SPLIT(
-            defuse_asset_identifier,
-            ':'
-        ) [1] :: STRING AS chain_id,
-        SPLIT(
-            defuse_asset_identifier,
-            ':'
-        ) [2] :: STRING AS contract_address,
-        asset_name AS symbol,
-        decimals
-    FROM
-        {{ ref('silver__defuse_tokens_metadata') }}
-    UNION ALL
-    SELECT
-        asset_identifier AS contract_address_raw,
-        'near' AS ecosystem,
-        '397' AS chain_id,
-        asset_identifier AS contract_address,
+        asset_identifier,
+        source_chain,
+        crosschain_token_contract,
+        near_token_contract,
         symbol,
         decimals
     FROM
         {{ ref('silver__ft_contract_metadata') }}
-    WHERE
-        contract_address not in (
-            select distinct near_token_id 
-            from {{ ref('silver__defuse_tokens_metadata') }}
-        )
 ),
 prices AS (
     SELECT
         token_address AS contract_address,
+        blockchain,
         symbol,
         price,
         is_native,
@@ -227,12 +203,9 @@ FINAL AS (
         gas_burnt,
         receipt_succeeded,
         fact_intents_id AS ez_intents_id,
-        COALESCE(
-            dl.short_name,
-            l.ecosystem
-        ) AS blockchain,
-        l.contract_address,
-        l.contract_address = 'native' AS is_native,
+        l.source_chain AS blockchain,
+        l.crosschain_token_contract AS contract_address,
+        l.crosschain_token_contract = 'native' AS is_native,
         l.symbol,
         l.decimals,
         amount_raw / pow(
@@ -251,25 +224,51 @@ FINAL AS (
     FROM
         intents i
         LEFT JOIN labels l
-        ON i.contract_address_raw = l.contract_address_raw
-        LEFT JOIN EXTERNAL.defillama.dim_chains dl
-        ON l.chain_id = dl.chain_id 
+        ON i.asset_identifier = l.asset_identifier
         ASOF JOIN prices p match_condition (
             i.block_timestamp >= p.hour
         )
         ON (
-            l.contract_address = p.contract_address
+            l.crosschain_token_contract = p.contract_address
         )
         ASOF JOIN prices_native p2 match_condition (
             i.block_timestamp >= p2.hour
         )
         ON (
             upper(l.symbol) = upper(p2.symbol)
-            AND (l.contract_address = 'native') = p2.is_native
+            AND (l.crosschain_token_contract = 'native') = p2.is_native
         )
 )
 SELECT
-    *,
+    block_timestamp,
+    block_id,
+    tx_hash,
+    receipt_id,
+    receiver_id,
+    predecessor_id,
+    log_event,
+    token_id,
+    symbol,
+    amount_adj,
+    amount_usd,
+    owner_id,
+    old_owner_id,
+    new_owner_id,
+    amount_raw,
+    blockchain,
+    contract_address,
+    is_native,
+    price,
+    decimals,
+    gas_burnt,
+    memo,
+    referral,
+    dip4_version,
+    log_index,
+    log_event_index,
+    amount_index,
+    receipt_succeeded,
+    ez_intents_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp
 FROM
