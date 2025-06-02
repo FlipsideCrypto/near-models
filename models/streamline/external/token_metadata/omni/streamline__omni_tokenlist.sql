@@ -2,14 +2,14 @@
     materialized = "incremental",
     incremental_strategy = 'merge',
     incremental_predicates = ["dynamic_range_predicate","modified_timestamp::date"],
-    unique_key = "contract_address",
+    unique_key = "omni_tokenlist_id",
     cluster_by = ['modified_timestamp::DATE'],
     tags = ['streamline_non_core']
 ) }}
 
 WITH omni_token AS (
     SELECT
-        DISTINCT raw_token_id AS contract_address
+        DISTINCT raw_token_id AS omni_asset_identifier
     FROM 
         {{ ref('silver__bridge_omni') }}
     
@@ -22,16 +22,17 @@ WHERE modified_timestamp >= (
 {% endif %}
 )
 SELECT
-    contract_address,
-    SPLIT_PART(contract_address, ':', 0) :: STRING AS source_chain_id,
+    omni_asset_identifier,
+    SPLIT_PART(omni_asset_identifier, ':', 1) :: STRING AS source_chain,
+    SPLIT_PART(omni_asset_identifier, ':', 2) :: STRING AS crosschain_token_contract,
     {{ dbt_utils.generate_surrogate_key(
-        ['contract_address']
+        ['omni_asset_identifier']
     ) }} AS omni_tokenlist_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
 FROM
     omni_token
-QUALIFY (ROW_NUMBER() OVER (PARTITION BY contract_address
+QUALIFY (ROW_NUMBER() OVER (PARTITION BY omni_asset_identifier
     ORDER BY
         modified_timestamp ASC) = 1)

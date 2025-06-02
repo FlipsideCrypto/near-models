@@ -1,6 +1,6 @@
--- depends on: {{ ref('bronze__nearblocks_ft_metadata')}}
--- depends on: {{ ref('bronze__omni_metadata')}}
--- depends on: {{ ref('silver__defuse_tokens_metadata')}}
+-- depends on: {{ ref('silver__nearblocks_ft_metadata')}}
+-- depends on: {{ ref('silver__omni_ft_metadata')}}
+-- depends on: {{ ref('silver__defuse_ft_metadata')}}
 
 {{ config(
     materialized = 'incremental',
@@ -14,16 +14,19 @@
 WITH nearblocks AS (
 
     SELECT
-        VALUE :CONTRACT_ADDRESS :: STRING AS contract_address,
-        DATA
+        near_token_contract,
+        decimals,
+        name,
+        symbol,
+        source_chain,
+        crosschain_token_contract,
+        'nearblocks' AS source
     FROM
-        {{ ref('bronze__nearblocks_ft_metadata')}}
-    WHERE
-        typeof(DATA) != 'NULL_VALUE'
+        {{ ref('silver__nearblocks_ft_metadata')}}
 
     {% if is_incremental() %}
-    AND
-        _inserted_timestamp >= (
+    WHERE
+        modified_timestamp >= (
             SELECT
                 MAX(modified_timestamp)
             FROM
@@ -31,32 +34,26 @@ WITH nearblocks AS (
         )
     {% endif %}
 ),
-nearblocks_metadata AS (
-    SELECT
-        VALUE :contract :: STRING AS near_token_contract,
-        VALUE :decimals :: INT AS decimals,
-        VALUE :name :: STRING AS NAME,
-        VALUE :symbol :: STRING AS symbol
-    FROM
-        nearblocks,
-        LATERAL FLATTEN(
-            input => DATA :contracts
-        )
-),
 omni AS (
     SELECT
         omni_asset_identifier AS asset_identifier,
-        SPLIT_PART(omni_asset_identifier, ':', 1) :: STRING AS source_chain,
-        SPLIT_PART(omni_asset_identifier, ':', 2) :: STRING AS crosschain_token_contract,
-        contract_address AS near_token_contract
+        o.source_chain,
+        o.crosschain_token_contract,
+        o.near_token_contract,
+        n.decimals,
+        n.name,
+        n.symbol,
+        'omni' AS source
     FROM
-        {{ ref('silver__omni_metadata')}}
-
+        {{ ref('silver__omni_ft_metadata')}} o
+    LEFT JOIN {{ ref('silver__nearblocks_ft_metadata') }} n
+        ON o.near_token_contract = n.near_token_contract
+    
     {% if is_incremental() %}
     WHERE
-        modified_timestamp >= (
+        o.modified_timestamp >= (
             SELECT
-                MAX(modified_timestamp)
+                MAX(o.modified_timestamp)
             FROM
                 {{ this }}
         )
@@ -64,19 +61,32 @@ omni AS (
 ),
 omni_unmapped AS (
     SELECT
-        contract_address AS asset_identifier,
-        SPLIT_PART(contract_address, ':', 1) :: STRING AS source_chain,
-        SPLIT_PART(contract_address, ':', 2) :: STRING AS crosschain_token_contract
+        omni_asset_identifier AS asset_identifier,
+        o.source_chain,
+        o.crosschain_token_contract,
+        n.near_token_contract,
+        COALESCE(n.decimals, c.decimals) :: INT AS decimals,
+        COALESCE(n.name, c.name) :: STRING AS name,
+        COALESCE(n.symbol, c.symbol) :: STRING AS symbol,
+        'omni_unmapped' AS source
     FROM
-        {{ ref('streamline__omni_tokenlist')}}
+        {{ ref('streamline__omni_tokenlist')}} o
+    LEFT JOIN {{ ref('silver__nearblocks_ft_metadata') }} n
+        ON o.crosschain_token_contract = n.near_token_contract
+        AND o.source_chain = 'near'
+    LEFT JOIN {{ source('crosschain_silver', 'complete_token_asset_metadata')}} c
+        ON o.crosschain_token_contract = c.token_address
+        AND c.blockchain = 'solana'
+        -- note, this does not give use the Near token contract.
+        -- could join on symbol, but some symbols have multiple contract records as symbol is not unique
     WHERE
-        source_chain_id IN ('near', 'sol')
+        o.source_chain IN ('near', 'sol')
 
     {% if is_incremental() %}
-    WHERE
-        modified_timestamp >= (
+    AND
+        o.modified_timestamp >= (
             SELECT
-                MAX(modified_timestamp)
+                MAX(o.modified_timestamp)
             FROM
                 {{ this }}
         )
@@ -84,18 +94,18 @@ omni_unmapped AS (
 ),
 defuse AS (
     SELECT
-        defuse_asset_identifier AS asset_identifier,
-        CASE
-            WHEN SPLIT_PART(defuse_asset_identifier, ':', 0) = 'near' THEN 'near'
-            WHEN SPLIT_PART(defuse_asset_identifier, ':', ARRAY_SIZE(SPLIT(defuse_asset_identifier, ':'))) = 'native' THEN SPLIT_PART(near_token_id, '.', 0) :: STRING
-            ELSE SPLIT_PART(near_token_id, '-', 0) :: STRING
-        END AS source_chain,
-        SPLIT_PART(defuse_asset_identifier, ':', ARRAY_SIZE(SPLIT(defuse_asset_identifier, ':'))) AS crosschain_token_contract,
-        near_token_id AS near_token_contract,   
+        d.near_token_contract AS asset_identifier,
+        d.source_chain,
+        d.crosschain_token_contract,
+        d.near_token_contract,   
+        d.decimals,
+        n.name,
         asset_name AS symbol,
-        decimals
+        'defuse' AS source
     FROM
-        {{ ref('silver__defuse_tokens_metadata')}}
+        {{ ref('silver__defuse_ft_metadata')}} d
+    LEFT JOIN {{ ref('silver__nearblocks_ft_metadata') }} n
+        ON d.near_token_contract = n.near_token_contract
 
     {% if is_incremental() %}
     WHERE
@@ -108,81 +118,63 @@ defuse AS (
     {% endif %}
 ),
 final AS (
+    -- Nearblocks
+    SELECT
+        near_token_contract AS asset_identifier,
+        source_chain,
+        crosschain_token_contract,
+        near_token_contract,
+        decimals,
+        name,
+        symbol,
+        source
+    FROM 
+        nearblocks
+
+    UNION ALL
+
     -- Omni
     SELECT
-        o.asset_identifier,
-        o.source_chain,
-        o.crosschain_token_contract,
-        o.near_token_contract,
-        n.decimals :: INT AS decimals,
-        n.name :: STRING AS name,
-        n.symbol :: STRING AS symbol,
-        'omni' AS source
+        asset_identifier,
+        source_chain,
+        crosschain_token_contract,
+        near_token_contract,
+        decimals,
+        name,
+        symbol,
+        source
     FROM
-        omni o
-    LEFT JOIN nearblocks_metadata n
-        ON o.near_token_contract = n.near_token_contract
+        omni
     
     UNION ALL
 
     -- Omni unmapped
     SELECT
-        o.asset_identifier,
-        o.source_chain,
-        o.crosschain_token_contract,
-        n.near_token_contract,
-        COALESCE(n.decimals, c.decimals) :: INT AS decimals,
-        COALESCE(n.name, c.name) :: STRING AS name,
-        COALESCE(n.symbol, c.symbol) :: STRING AS symbol,
-        'omni_unmapped' AS source
+        asset_identifier,
+        source_chain,
+        crosschain_token_contract,
+        near_token_contract,
+        decimals,
+        name,
+        symbol,
+        source
     FROM
-        omni_unmapped o
-    LEFT JOIN nearblocks_metadata n
-        ON o.crosschain_token_contract = n.near_token_contract
-    LEFT JOIN {{ source('crosschain_silver', 'complete_token_asset_metadata')}} c
-        ON o.crosschain_token_contract = c.token_address
-        AND c.blockchain = 'solana'
-        -- note, this does not give use the Near token contract.
-        -- could join on symbol, but some symbols have multiple contract records as symbol is not unique
-
-    UNION ALL
-
-    -- Nearblocks
-    SELECT
-        n.near_token_contract :: STRING AS asset_identifier,
-        IFF(
-            n.near_token_contract ilike '%-0x%',
-            SPLIT_PART(n.near_token_contract, '-', 1) :: STRING,
-            'near'
-        ) AS source_chain,
-        COALESCE(
-            REGEXP_SUBSTR(n.near_token_contract, '0x[a-fA-F0-9]{40}') :: STRING,
-            n.near_token_contract
-        ) AS crosschain_token_contract,
-        n.near_token_contract,
-        n.decimals :: INT AS decimals,
-        n.name :: STRING AS name,
-        n.symbol :: STRING AS symbol,
-        'nearblocks' AS source
-    FROM 
-        nearblocks_metadata n
+        omni_unmapped
 
     UNION ALL
 
     -- Defuse
     SELECT
-        d.asset_identifier,
-        d.source_chain,
-        d.crosschain_token_contract,
-        d.near_token_contract,
-        d.decimals :: INT AS decimals,
-        n.name :: STRING AS name,
-        d.symbol :: STRING AS symbol,
-        'defuse' AS source
+        asset_identifier,
+        source_chain,
+        crosschain_token_contract,
+        near_token_contract,
+        decimals,
+        name,
+        symbol,
+        source
     FROM 
-        defuse d
-    LEFT JOIN nearblocks_metadata n
-        ON d.near_token_contract = n.near_token_contract
+        defuse
 )
 SELECT
     asset_identifier,
@@ -192,7 +184,7 @@ SELECT
     decimals,
     name,
     symbol,
-    source as metadata_source,
+    source as metadata_provider,
     {{ dbt_utils.generate_surrogate_key(['asset_identifier']) }} AS ft_contract_metadata_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
@@ -201,5 +193,7 @@ FROM final
 
 qualify ROW_NUMBER() over (
     PARTITION BY asset_identifier
-    ORDER BY modified_timestamp DESC
+    ORDER BY 
+        metadata_provider = 'defuse' DESC, -- prioritize defuse over nearblocks for those tokens
+        modified_timestamp DESC
 ) = 1

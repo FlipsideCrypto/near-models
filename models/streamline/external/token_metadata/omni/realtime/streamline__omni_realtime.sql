@@ -18,19 +18,19 @@
 WITH omni_token AS (
     
     SELECT
-        contract_address
+        omni_asset_identifier
     FROM
         {{ ref('streamline__omni_tokenlist') }}
     WHERE
-        source_chain_id NOT IN ('near', 'sol')
+        source_chain NOT IN ('near', 'sol')
     EXCEPT
     SELECT
-        contract_address
+        omni_asset_identifier
     FROM
         {{ ref('streamline__omni_complete')}}
 )
 SELECT
-    contract_address,
+    omni_asset_identifier,
     DATE_PART('EPOCH', SYSDATE()) :: INTEGER AS partition_key,
     {{ target.database }}.LIVE.UDF_API(
         'POST',
@@ -45,7 +45,7 @@ SELECT
                 'finality', 'final',
                 'account_id', 'omni.bridge.near',
                 'method_name', 'get_token_id',
-                'args_base64', BASE64_ENCODE(OBJECT_CONSTRUCT('address', contract_address) :: STRING)
+                'args_base64', BASE64_ENCODE(OBJECT_CONSTRUCT('address', omni_asset_identifier) :: STRING)
             )
         ),
         'Vault/prod/near/quicknode/mainnet'

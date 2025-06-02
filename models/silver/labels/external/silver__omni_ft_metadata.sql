@@ -1,14 +1,15 @@
 {{ config(
     materialized = 'incremental',
+    unique_key = 'omni_ft_metadata_id',
+    incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
-    unique_key = 'omni_asset_identifier',
     tags = ['scheduled_non_core']
 ) }}
 
 WITH omni AS (
 
     SELECT
-        VALUE:CONTRACT_ADDRESS::STRING AS omni_asset_identifier,
+        VALUE:OMNI_ASSET_IDENTIFIER::STRING AS omni_asset_identifier,
         VALUE:data:result:result::ARRAY AS result_array,
         DATA
     FROM
@@ -51,10 +52,12 @@ conversion AS (
 )
 SELECT
     omni_asset_identifier,
-    decoded_result AS contract_address,
+    SPLIT_PART(omni_asset_identifier, ':', 1) :: STRING AS source_chain,
+    SPLIT_PART(omni_asset_identifier, ':', 2) :: STRING AS crosschain_token_contract,
+    decoded_result AS near_token_contract,
     {{ dbt_utils.generate_surrogate_key(
         ['omni_asset_identifier']
-    ) }} AS omni_metadata_id,
+    ) }} AS omni_ft_metadata_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
