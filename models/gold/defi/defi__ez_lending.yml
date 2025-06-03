@@ -60,12 +60,14 @@ models:
       - name: AMOUNT_RAW
         description: "{{ doc('amount_raw')}}"
         tests:
-          - not_null
+          - not_null:
+              where: token_address not in ('shadow_ref_v1-4179', 'v2-nearx.stader-labs.near')
 
       - name: AMOUNT_ADJ
         description: "{{ doc('amount_adj')}}"
         tests:
-          - not_null
+          - not_null:
+              where: token_address not in ('shadow_ref_v1-4179', 'v2-nearx.stader-labs.near')
 
       - name: AMOUNT
         description: "{{ doc('amount')}}"

@@ -104,4 +104,4 @@ SELECT
 FROM
     FINAL
 WHERE
-    actions != 'fee_detail'
+    actions not in ('fee_detail', 'margin_benefits')
