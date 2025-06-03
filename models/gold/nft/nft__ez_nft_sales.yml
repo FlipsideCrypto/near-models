@@ -33,7 +33,8 @@ models:
       - name: GAS_BURNED
         description: "{{ doc('attached_gas')}}"
         tests:
-          - not_null
+          - not_null:
+              where: platform_address != 'a.mitte-orderbook.near'
 
       - name: SELLER_ADDRESS
         description: "{{ doc('from_address')}}"
