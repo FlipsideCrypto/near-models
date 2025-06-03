@@ -33,7 +33,7 @@ tbl AS (
         A.height_created,
         A.height_included
     FROM
-        {{ ref('seeds__impacted_blocks_060325') }} C
+        {{ ref('seeds__impacted_blocks_060325-2') }} C
         LEFT JOIN {{ ref('streamline__transactions') }} A ON A.block_id = C.block_id
         LEFT JOIN {{ ref('streamline__transactions_complete') }} B ON A.tx_hash = B.tx_hash
     WHERE
