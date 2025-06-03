@@ -10,7 +10,7 @@
         target = "{{this.schema}}.{{this.identifier}}",
         params = {
             "external_table": "transactions_v2",
-            "sql_limit": "300000",
+            "sql_limit": "500000",
             "producer_batch_size": "75000",
             "worker_batch_size": "25000",
             "sql_source": "{{this.identifier}}",
