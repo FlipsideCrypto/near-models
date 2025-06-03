@@ -28,7 +28,7 @@ tbl AS (
         A.block_timestamp_epoch,
         A.chunk_hash
     FROM
-        {{ ref('seeds__impacted_blocks_060325-2') }} C
+        {{ ref('seeds__impacted_blocks_060325_2') }} C
     LEFT JOIN {{ ref('streamline__chunks') }} A ON A.block_id = C.block_id
     LEFT JOIN {{ ref('streamline__chunks_complete') }} B ON A.chunk_hash = B.chunk_hash
     WHERE

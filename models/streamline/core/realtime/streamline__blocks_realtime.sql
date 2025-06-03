@@ -24,7 +24,7 @@ WITH
         SELECT
             A.block_id
         FROM
-            {{ ref('seeds__impacted_blocks_060325-2') }} A 
+            {{ ref('seeds__impacted_blocks_060325_2') }} A 
         LEFT JOIN {{ ref('streamline__blocks_complete') }} B ON A.block_id = B.block_id
         WHERE B.block_id IS NULL
     )
