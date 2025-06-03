@@ -53,9 +53,10 @@ ft_mints_final AS (
             f.value :old_owner_id,
             NULL
         ) :: STRING AS from_address,
-        NVL(
+        COALESCE(
             f.value :new_owner_id,
-            f.value :owner_id
+            f.value :owner_id,
+            f.value :user_id
         ) :: STRING AS to_address,
         f.value :amount :: STRING AS amount_unadj,
         f.value :memo :: STRING AS memo,

@@ -50,13 +50,15 @@ ft_transfers_final AS (
         predecessor_id,
         signer_id,
         log_index,
-        NVL(
+        COALESCE(
             f.value :old_owner_id,
+            f.value :sender_id,
             NULL
         ) :: STRING AS from_address,
-        NVL(
+        COALESCE(
             f.value :new_owner_id,
-            f.value :owner_id
+            f.value :owner_id,
+            f.value :receiver_id
         ) :: STRING AS to_address,
         f.value :amount :: STRING AS amount_unadj,
         f.value :memo :: STRING AS memo,
