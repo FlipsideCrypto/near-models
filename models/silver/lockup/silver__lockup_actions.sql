@@ -99,7 +99,7 @@ lockup_actions AS (
       AND {{ partition_load_manual('no_buffer') }}
     {% else %}
     {% if is_incremental() %}
-        AND block_timestamp :: DATE >= '{{min_bd}}'
+        AND block_timestamp :: DATE >= GREATEST('{{min_bd}}', SYSDATE() :: DATE - interval '1 day')
     {% endif %}
     {% endif %}
 
@@ -122,7 +122,7 @@ xfers AS (
       AND {{ partition_load_manual('no_buffer') }}
     {% else %}
     {% if is_incremental() %}
-        AND block_timestamp :: DATE >= '{{min_bd}}'
+        AND block_timestamp :: DATE >= GREATEST('{{min_bd}}', SYSDATE() :: DATE - interval '1 day')
     {% endif %}
     {% endif %}
 ),

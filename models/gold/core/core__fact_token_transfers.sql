@@ -74,7 +74,7 @@ WITH native_transfers AS (
         {% if var("MANUAL_FIX") %}
             WHERE {{ partition_load_manual('no_buffer') }}
         {% elif is_incremental() %}
-            WHERE block_timestamp::DATE >= '{{min_bd}}'
+            WHERE block_timestamp::DATE >= GREATEST('{{min_bd}}', SYSDATE() :: DATE - interval '1 day')
         {% endif %}
 ),
 native_deposits AS (
@@ -99,7 +99,7 @@ native_deposits AS (
         {% if var("MANUAL_FIX") %}
             WHERE {{ partition_load_manual('no_buffer') }}
         {% elif is_incremental() %}
-            WHERE block_timestamp::DATE >= '{{min_bd}}'
+            WHERE block_timestamp::DATE >= GREATEST('{{min_bd}}', SYSDATE() :: DATE - interval '1 day')
         {% endif %}
 ),
 ft_transfers_method AS (
@@ -124,7 +124,7 @@ ft_transfers_method AS (
         {% if var("MANUAL_FIX") %}
             WHERE {{ partition_load_manual('no_buffer') }}
         {% elif is_incremental() %}
-            WHERE block_timestamp::DATE >= '{{min_bd}}'
+            WHERE block_timestamp::DATE >= GREATEST('{{min_bd}}', SYSDATE() :: DATE - interval '1 day')
         {% endif %}
 ),
 ft_transfers_event AS (
@@ -149,7 +149,7 @@ ft_transfers_event AS (
         {% if var("MANUAL_FIX") %}
             WHERE {{ partition_load_manual('no_buffer') }}
         {% elif is_incremental() %}
-            WHERE block_timestamp::DATE >= '{{min_bd}}'
+            WHERE block_timestamp::DATE >= GREATEST('{{min_bd}}', SYSDATE() :: DATE - interval '1 day')
         {% endif %}
 ),
 mints AS (
@@ -174,7 +174,7 @@ mints AS (
         {% if var("MANUAL_FIX") %}
             WHERE {{ partition_load_manual('no_buffer') }}
         {% elif is_incremental() %}
-            WHERE block_timestamp::DATE >= '{{min_bd}}'
+            WHERE block_timestamp::DATE >= GREATEST('{{min_bd}}', SYSDATE() :: DATE - interval '1 day')
         {% endif %}
 ),
 orders AS (
@@ -199,7 +199,7 @@ orders AS (
         {% if var("MANUAL_FIX") %}
             WHERE {{ partition_load_manual('no_buffer') }}
         {% elif is_incremental() %}
-            WHERE block_timestamp::DATE >= '{{min_bd}}'
+            WHERE block_timestamp::DATE >= GREATEST('{{min_bd}}', SYSDATE() :: DATE - interval '1 day')
         {% endif %}
 ),
 liquidity AS (
@@ -224,7 +224,7 @@ liquidity AS (
         {% if var("MANUAL_FIX") %}
             WHERE {{ partition_load_manual('no_buffer') }}
         {% elif is_incremental() %}
-            WHERE block_timestamp::DATE >= '{{min_bd}}'
+            WHERE block_timestamp::DATE >= GREATEST('{{min_bd}}', SYSDATE() :: DATE - interval '1 day')
         {% endif %}
 ),
 wrapped_near AS (
@@ -249,7 +249,7 @@ wrapped_near AS (
         {% if var("MANUAL_FIX") %}
             WHERE {{ partition_load_manual('no_buffer') }}
         {% elif is_incremental() %}
-            WHERE block_timestamp::DATE >= '{{min_bd}}'
+            WHERE block_timestamp::DATE >= GREATEST('{{min_bd}}', SYSDATE() :: DATE - interval '1 day')
         {% endif %}
 ),
 all_transfers AS (

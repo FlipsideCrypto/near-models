@@ -173,7 +173,7 @@ AND
     DATE_TRUNC(
         'day',
         HOUR
-    ) >= '{{ min_bd }}'
+    ) >= GREATEST('{{ min_bd }}', SYSDATE() :: DATE - interval '1 day')
 {% endif %}
 
 qualify(ROW_NUMBER() over (PARTITION BY COALESCE(token_address, symbol), HOUR
@@ -197,7 +197,7 @@ AND
     DATE_TRUNC(
         'day',
         HOUR
-    ) >= '{{ min_bd }}'
+    ) >= GREATEST('{{ min_bd }}', SYSDATE() :: DATE - interval '1 day')
 {% endif %}
 
 qualify(ROW_NUMBER() over (PARTITION BY COALESCE(token_address, symbol), HOUR

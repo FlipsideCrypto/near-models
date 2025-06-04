@@ -83,7 +83,7 @@ WITH transactions AS (
             {{ partition_load_manual('front') }}
         {% else %}
         {% if is_incremental() %}
-            WHERE block_timestamp :: DATE >= '{{min_bd}}'
+            WHERE block_timestamp :: DATE >= GREATEST('{{min_bd}}', SYSDATE() :: DATE - interval '1 day')
         {% endif %}
     {% endif %}
 ),
@@ -110,7 +110,7 @@ receipts AS (
             {{ partition_load_manual('no_buffer') }}
         {% else %}
         {% if is_incremental() %}
-            WHERE block_timestamp :: DATE >= '{{min_bd}}'
+            WHERE block_timestamp :: DATE >= GREATEST('{{min_bd}}', SYSDATE() :: DATE - interval '1 day')
         {% endif %}
     {% endif %}
 ),
