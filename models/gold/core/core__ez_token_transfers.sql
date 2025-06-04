@@ -99,6 +99,7 @@ SELECT
 FROM
     {{ ref('core__fact_token_transfers') }}
     t
+
     {% if is_incremental() %}
         ASOF JOIN hourly_prices p
         MATCH_CONDITION (t.block_timestamp >= p.HOUR)
@@ -108,7 +109,8 @@ FROM
         ON (t.contract_address = p.token_address)
         AND date_trunc('hour', t.block_timestamp) = p.HOUR
     {% endif %}
-    LEFT JOIN {{ ref('silver__ft_contract_metadata') }} C USING (contract_address) 
+    LEFT JOIN {{ ref('silver__ft_contract_metadata') }} C on (t.contract_address = C.asset_identifier)
+
     {% if var("MANUAL_FIX") %}
     WHERE
         {{ partition_load_manual('no_buffer') }}

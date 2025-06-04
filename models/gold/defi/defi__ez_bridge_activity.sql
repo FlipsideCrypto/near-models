@@ -31,7 +31,7 @@ WITH fact_bridging AS (
 ),
 labels AS (
     SELECT 
-        contract_address,
+        asset_identifier AS contract_address,
         name,
         symbol,
         decimals 

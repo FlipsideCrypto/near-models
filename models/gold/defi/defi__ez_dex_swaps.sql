@@ -29,7 +29,7 @@ WITH dex_swaps AS (
 ),
 labels AS (
     SELECT
-        contract_address,
+        asset_identifier AS contract_address,
         NAME,
         symbol,
         decimals
