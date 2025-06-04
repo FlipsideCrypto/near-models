@@ -23,7 +23,7 @@
         {% do log('max_mod: ' ~ max_mod, info=True) %}
         {% set min_block_date_query %}
         SELECT
-            MIN(origin_block_timestamp :: DATE) block_timestamp
+            GREATEST(MIN(origin_block_timestamp :: DATE), SYSDATE() - INTERVAL '1 day') block_timestamp
         FROM
             {{ ref('silver__transactions_v2') }}
         WHERE
