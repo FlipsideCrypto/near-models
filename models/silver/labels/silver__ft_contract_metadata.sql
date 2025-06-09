@@ -53,7 +53,7 @@ omni AS (
     WHERE
         o.modified_timestamp >= (
             SELECT
-                MAX(o.modified_timestamp)
+                MAX(modified_timestamp)
             FROM
                 {{ this }}
         )
@@ -86,7 +86,7 @@ omni_unmapped AS (
     AND
         o.modified_timestamp >= (
             SELECT
-                MAX(o.modified_timestamp)
+                MAX(modified_timestamp)
             FROM
                 {{ this }}
         )
@@ -109,7 +109,7 @@ defuse AS (
 
     {% if is_incremental() %}
     WHERE
-        modified_timestamp >= (
+        d.modified_timestamp >= (
             SELECT
                 MAX(modified_timestamp)
             FROM

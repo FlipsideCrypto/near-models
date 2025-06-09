@@ -1,9 +1,9 @@
 {{ config (
     materialized = "incremental",
     incremental_strategy = 'merge',
-    incremental_predicates = ["dynamic_range_predicate","modified_timestamp::date"],
-    unique_key = "omni_tokenlist_id",
+    unique_key = "omni_asset_identifier",
     cluster_by = ['modified_timestamp::DATE'],
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(omni_asset_identifier);",
     tags = ['streamline_non_core']
 ) }}
 

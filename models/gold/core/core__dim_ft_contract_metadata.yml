@@ -19,12 +19,8 @@ models:
         description: "{{ doc('contract_address') }}"
       - name: NAME
         description: "{{ doc('name') }}"
-        tests:
-          - not_null
       - name: SYMBOL
         description: "{{ doc('symbol') }}"
-        tests:
-          - not_null
       - name: DECIMALS
         description: "{{ doc('decimals') }}"
       - name: DIM_FT_CONTRACT_METADATA_ID

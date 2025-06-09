@@ -17,4 +17,4 @@ SELECT
 FROM
     {{ ref('silver__ft_contract_metadata') }}
 WHERE
-    name is not null OR symbol is not null
+    name is not null OR symbol is not null OR decimals is not null
