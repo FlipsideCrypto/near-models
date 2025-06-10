@@ -46,8 +46,6 @@ omni AS (
         'omni' AS source
     FROM
         {{ ref('silver__omni_ft_metadata')}} o
-    LEFT JOIN {{ ref('silver__nearblocks_ft_metadata') }} n
-        ON o.near_token_contract = n.near_token_contract
     
     {% if is_incremental() %}
     WHERE
@@ -71,9 +69,6 @@ omni_unmapped AS (
         'omni_unmapped' AS source
     FROM
         {{ ref('streamline__omni_tokenlist')}} o
-    LEFT JOIN {{ ref('silver__nearblocks_ft_metadata') }} n
-        ON o.crosschain_token_contract = n.near_token_contract
-        AND o.source_chain = 'near'
     LEFT JOIN {{ source('crosschain_silver', 'complete_token_asset_metadata')}} c
         ON o.crosschain_token_contract = c.token_address
         AND c.blockchain = 'solana'
@@ -104,8 +99,6 @@ defuse AS (
         'defuse' AS source
     FROM
         {{ ref('silver__defuse_ft_metadata')}} d
-    LEFT JOIN {{ ref('silver__nearblocks_ft_metadata') }} n
-        ON d.near_token_contract = n.near_token_contract
 
     {% if is_incremental() %}
     WHERE
@@ -175,6 +168,30 @@ final AS (
         source
     FROM 
         defuse
+),
+final_joined AS (
+     SELECT 
+        f.asset_identifier,
+        f.source_chain,
+        f.crosschain_token_contract,
+        f.near_token_contract,
+        CASE 
+            WHEN f.source = 'omni_unmapped' AND f.source_chain != 'near' THEN f.decimals
+            ELSE COALESCE(f.decimals, n.decimals)
+        END AS decimals,
+        CASE 
+            WHEN f.source = 'omni_unmapped' AND f.source_chain != 'near' THEN f.name
+            ELSE COALESCE(f.name, n.name)
+        END AS name,
+        CASE 
+            WHEN f.source = 'omni_unmapped' AND f.source_chain != 'near' THEN f.symbol
+            ELSE COALESCE(f.symbol, n.symbol)
+        END AS symbol,
+        f.source AS metadata_provider
+    FROM final f
+    LEFT JOIN {{ ref('silver__nearblocks_ft_metadata') }} n
+        ON f.near_token_contract = n.near_token_contract
+        AND NOT (f.source = 'omni_unmapped' AND f.source_chain != 'near')
 )
 SELECT
     asset_identifier,
