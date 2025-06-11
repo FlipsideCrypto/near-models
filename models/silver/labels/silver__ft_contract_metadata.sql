@@ -1,6 +1,7 @@
 -- depends on: {{ ref('silver__nearblocks_ft_metadata')}}
 -- depends on: {{ ref('silver__omni_ft_metadata')}}
 -- depends on: {{ ref('silver__defuse_ft_metadata')}}
+-- depends on: {{ ref('streamline__omni_tokenlist')}}
 
 {{ config(
     materialized = 'incremental',
@@ -40,9 +41,9 @@ omni AS (
         o.source_chain,
         o.crosschain_token_contract,
         o.near_token_contract,
-        n.decimals,
-        n.name,
-        n.symbol,
+        NULL AS decimals,
+        NULL AS name,
+        NULL AS symbol,
         'omni' AS source
     FROM
         {{ ref('silver__omni_ft_metadata')}} o
@@ -69,6 +70,9 @@ omni_unmapped AS (
         'omni_unmapped' AS source
     FROM
         {{ ref('streamline__omni_tokenlist')}} o
+    LEFT JOIN {{ ref('silver__nearblocks_ft_metadata') }} n
+        ON o.crosschain_token_contract = n.near_token_contract
+        AND o.source_chain = 'near'
     LEFT JOIN {{ source('crosschain_silver', 'complete_token_asset_metadata')}} c
         ON o.crosschain_token_contract = c.token_address
         AND c.blockchain = 'solana'
@@ -94,7 +98,7 @@ defuse AS (
         d.crosschain_token_contract,
         d.near_token_contract,   
         d.decimals,
-        n.name,
+        NULL AS name,
         asset_name AS symbol,
         'defuse' AS source
     FROM
@@ -170,27 +174,19 @@ final AS (
         defuse
 ),
 final_joined AS (
-     SELECT 
+         SELECT 
         f.asset_identifier,
         f.source_chain,
         f.crosschain_token_contract,
         f.near_token_contract,
-        CASE 
-            WHEN f.source = 'omni_unmapped' AND f.source_chain != 'near' THEN f.decimals
-            ELSE COALESCE(f.decimals, n.decimals)
-        END AS decimals,
-        CASE 
-            WHEN f.source = 'omni_unmapped' AND f.source_chain != 'near' THEN f.name
-            ELSE COALESCE(f.name, n.name)
-        END AS name,
-        CASE 
-            WHEN f.source = 'omni_unmapped' AND f.source_chain != 'near' THEN f.symbol
-            ELSE COALESCE(f.symbol, n.symbol)
-        END AS symbol,
+        COALESCE(f.decimals, n.decimals) AS decimals,
+        COALESCE(f.name, n.name) AS name,
+        COALESCE(f.symbol, n.symbol) AS symbol,
         f.source AS metadata_provider
     FROM final f
     LEFT JOIN {{ ref('silver__nearblocks_ft_metadata') }} n
         ON f.near_token_contract = n.near_token_contract
+        AND f.source IN ('omni', 'defuse')
         AND NOT (f.source = 'omni_unmapped' AND f.source_chain != 'near')
 )
 SELECT
@@ -201,12 +197,13 @@ SELECT
     decimals,
     name,
     symbol,
-    source as metadata_provider,
+    metadata_provider,
     {{ dbt_utils.generate_surrogate_key(['asset_identifier']) }} AS ft_contract_metadata_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
-FROM final
+FROM 
+    final_joined
 
 qualify ROW_NUMBER() over (
     PARTITION BY asset_identifier
