@@ -6,7 +6,7 @@
 
 WITH metadata  AS (
     SELECT
-        contract_address,
+        asset_identifier as contract_address,
         NAME,
         symbol,
         decimals

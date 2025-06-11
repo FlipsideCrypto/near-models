@@ -6,46 +6,30 @@ models:
       Fungible Token contract metadata provided by the Nearblocks NFT endpoint.
 
     columns:
-      - name: CONTRACT_ADDRESS
-        description: "{{ doc('contract_address')}}"
+      - name: ASSET_IDENTIFIER
+        description: "{{ doc('asset_identifier') }}"
         tests:
           - not_null
-
+          - unique
+      - name: SOURCE_CHAIN
+        description: "{{ doc('source_chain') }}"
+      - name: CROSSCHAIN_TOKEN_CONTRACT
+        description: "{{ doc('crosschain_token_contract') }}"
+      - name: CONTRACT_ADDRESS
+        description: "{{ doc('contract_address') }}"
       - name: NAME
-        description: "{{ doc('name')}}"
-        tests: 
-          - not_null
-
+        description: "{{ doc('name') }}"
       - name: SYMBOL
-        description: "{{ doc('symbol')}}"
-        tests: 
-          - not_null
-
-      - name: DATA
-        description: "{{ doc('data')}}"
-        tests: 
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - VARIANT
-                - OBJECT
-                - ARRAY
-
+        description: "{{ doc('symbol') }}"
       - name: DECIMALS
-        description: "{{ doc('decimals')}}"
-
-      - name: DATA
-        description: "{{ doc('data')}}"
-
+        description: "{{ doc('decimals') }}"
       - name: DIM_FT_CONTRACT_METADATA_ID
         description: "{{doc('id')}}"
         tests:
           - not_null
           - unique:
               where: inserted_timestamp >= SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days'
-
       - name: INSERTED_TIMESTAMP
         description: "{{doc('inserted_timestamp')}}"
-
       - name: MODIFIED_TIMESTAMP
         description: "{{doc('modified_timestamp')}}"

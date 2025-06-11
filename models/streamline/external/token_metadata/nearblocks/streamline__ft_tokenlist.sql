@@ -1,7 +1,6 @@
 {{ config (
     materialized = "incremental",
     incremental_strategy = 'merge',
-    incremental_predicates = ["dynamic_range_predicate","modified_timestamp::date"],
     unique_key = "contract_address",
     cluster_by = ['modified_timestamp::DATE'],
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(contract_address)",
