@@ -208,3 +208,5 @@ SELECT
     '{{ invocation_id }}' AS _invocation_id
 FROM
     ft_transfers_final
+    
+QUALIFY(row_number() over (partition by transfers_id order by modified_timestamp desc)) = 1
