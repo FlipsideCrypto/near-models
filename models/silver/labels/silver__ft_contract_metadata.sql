@@ -47,7 +47,6 @@ omni AS (
         'omni' AS source
     FROM
         {{ ref('silver__omni_ft_metadata')}} o
-    
     {% if is_incremental() %}
     WHERE
         o.modified_timestamp >= (
@@ -103,9 +102,10 @@ defuse AS (
         'defuse' AS source
     FROM
         {{ ref('silver__defuse_ft_metadata')}} d
-
-    {% if is_incremental() %}
     WHERE
+        NOT (d.source_chain = 'near' AND d.crosschain_token_contract = 'native' AND d.near_token_contract = 'wrap.near')
+    {% if is_incremental() %}
+    AND
         d.modified_timestamp >= (
             SELECT
                 MAX(modified_timestamp)
