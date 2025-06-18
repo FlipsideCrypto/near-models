@@ -77,12 +77,24 @@ WITH swap_logs AS (
         log_index,
         clean_log,
         _partition_by_block_number,
-        modified_timestamp
+        modified_timestamp,
+        -- Determine swap type based on log format
+        CASE
+            WHEN clean_log LIKE 'Swapped%' THEN 'legacy_ref'
+            WHEN clean_log LIKE '%"event":"swap"%' 
+                AND clean_log LIKE '%"standard":"dcl.ref"%'
+                AND receiver_id = 'dclv2.ref-labs.near'
+                THEN 'rhea_finance'
+            ELSE 'unknown'
+        END AS swap_type
     FROM
         {{ ref('silver__logs_s3') }}
     WHERE
         receipt_succeeded
-        AND clean_log LIKE 'Swapped%'
+        AND (
+            clean_log LIKE 'Swapped%'
+            OR (clean_log LIKE '%"event":"swap"%' AND clean_log LIKE '%"standard":"dcl.ref"%' AND receiver_id = 'dclv2.ref-labs.near')
+        )
         AND receiver_id NOT LIKE '%dragon_bot.near' 
         
     {% if var("MANUAL_FIX") %}
@@ -154,9 +166,79 @@ swap_outcome AS (
             '\\1'
         ) :: STRING AS token_out,
         _partition_by_block_number,
-        modified_timestamp
+        modified_timestamp,
+        'legacy_ref' AS swap_format
     FROM
         swap_logs
+    WHERE
+        swap_type = 'legacy_ref'
+),
+rhea_swap_outcome AS (
+    SELECT
+        tx_hash,
+        receipt_id,
+        block_id,
+        block_timestamp,
+        receiver_id,
+        signer_id,
+        ROW_NUMBER() over (
+            PARTITION BY receipt_id
+            ORDER BY
+                log_index ASC
+        ) - 1 AS swap_index, -- keeping this as fallback but Rhea logs typically contain single swap / receipt
+        clean_log AS LOG,
+        TRY_PARSE_JSON(clean_log):data[0]:amount_in::INT AS amount_in_raw,
+        TRY_PARSE_JSON(clean_log):data[0]:token_in::STRING AS token_in,
+        TRY_PARSE_JSON(clean_log):data[0]:amount_out::INT AS amount_out_raw,
+        TRY_PARSE_JSON(clean_log):data[0]:token_out::STRING AS token_out,
+        _partition_by_block_number,
+        modified_timestamp,
+        'rhea_finance' AS swap_format
+    FROM
+        swap_logs
+    WHERE
+        swap_type = 'rhea_finance'
+),
+all_swap_outcomes AS (
+    SELECT
+        tx_hash,
+        receipt_id,
+        block_id,
+        block_timestamp,
+        receiver_id,
+        signer_id,
+        swap_index,
+        LOG,
+        amount_in_raw,
+        token_in,
+        amount_out_raw,
+        token_out,
+        _partition_by_block_number,
+        modified_timestamp,
+        swap_format
+    FROM
+        swap_outcome
+
+    UNION ALL
+
+    SELECT
+        tx_hash,
+        receipt_id,
+        block_id,
+        block_timestamp,
+        receiver_id,
+        signer_id,
+        swap_index,
+        LOG,
+        amount_in_raw,
+        token_in,
+        amount_out_raw,
+        token_out,
+        _partition_by_block_number,
+        modified_timestamp,
+        swap_format
+    FROM
+        rhea_swap_outcome
 ),
 parse_actions AS (
     SELECT
@@ -175,42 +257,58 @@ parse_actions AS (
         ARRAY_SIZE(
             receipt_actions :receipt :Action :actions
         ) AS action_ct,
-        TRY_PARSE_JSON(
-            TRY_BASE64_DECODE_STRING(
-                CASE
-                    -- Some swaps first have a register or storage action, then swap in final action (some may have both, so could be 2 or 3 actions)
-                    WHEN receipt_actions :receipt :Action :actions [0] :FunctionCall :method_name IN (
-                        'register_tokens',
-                        'storage_deposit'
-                    ) THEN receipt_actions :receipt :Action :actions [action_ct - 1] :FunctionCall :args -- <3,000 swaps across Ref and Refv2 execute multiple swaps in 1 receipt, with inputs spread across multiple action entities
-                    WHEN action_ct > 1 THEN receipt_actions :receipt :Action :actions [action_ct - 1] :FunctionCall :args -- most all other swaps execute multiswaps in 1 receipt, with 1 log and 1 action (that may contain an array of inputs for multiswap, per below)
-                    ELSE receipt_actions :receipt :Action :actions [0] :FunctionCall :args
-                END
-            )
-        ) AS decoded_action,
-        TRY_PARSE_JSON(
-            COALESCE(
+        CASE
+            WHEN swap_format = 'legacy_ref' THEN
+                TRY_PARSE_JSON(
+                    TRY_BASE64_DECODE_STRING(
+                        CASE
+                            -- Some swaps first have a register or storage action, then swap in final action (some may have both, so could be 2 or 3 actions)
+                            WHEN receipt_actions :receipt :Action :actions [0] :FunctionCall :method_name IN (
+                                'register_tokens',
+                                'storage_deposit'
+                            ) THEN receipt_actions :receipt :Action :actions [action_ct - 1] :FunctionCall :args -- <3,000 swaps across Ref and Refv2 execute multiple swaps in 1 receipt, with inputs spread across multiple action entities
+                            WHEN action_ct > 1 THEN receipt_actions :receipt :Action :actions [action_ct - 1] :FunctionCall :args -- most all other swaps execute multiswaps in 1 receipt, with 1 log and 1 action (that may contain an array of inputs for multiswap, per below)
+                            ELSE receipt_actions :receipt :Action :actions [0] :FunctionCall :args
+                        END
+                    )
+                )
+            WHEN swap_format = 'rhea_finance' THEN
+                -- Extract from ft_on_transfer action
+                TRY_PARSE_JSON(
+                    TRY_BASE64_DECODE_STRING(
+                        receipt_actions :receipt :Action :actions [0] :FunctionCall :args
+                    )
+                ):msg
+            ELSE NULL
+        END AS decoded_action,
+        CASE
+            WHEN swap_format = 'legacy_ref' THEN
                 TRY_PARSE_JSON(
                     COALESCE(
-                        -- input data is stored in the decoded action
-                        -- for multi-swaps, there is (often) one action with an array of input dicts that correspond with the swap index
+                        TRY_PARSE_JSON(
+                            COALESCE(
+                                -- input data is stored in the decoded action
+                                -- for multi-swaps, there is (often) one action with an array of input dicts that correspond with the swap index
+                                decoded_action :msg,
+                                -- Swap must be capitalized! Autoformat may change to "swap"
+                                decoded_action :operation: Swap,
+                                decoded_action
+                            )
+                        ) :actions [swap_index],
+                        -- may also be stored directly in msg key, rather than within an array of size 1
                         decoded_action :msg,
-                        -- Swap must be capitalized! Autoformat may change to "swap"
-                        decoded_action :operation: Swap,
-                        decoded_action
+                        -- signer test_near.near executed multistep swaps, with separate actions, and one encoded input per action
+                        decoded_action :actions [0]
                     )
-                ) :actions [swap_index],
-                -- may also be stored directly in msg key, rather than within an array of size 1
-                decoded_action :msg,
-                -- signer test_near.near executed multistep swaps, with separate actions, and one encoded input per action
-                decoded_action :actions [0]
-            )
-        ) AS swap_input_data,
+                )
+            WHEN swap_format = 'rhea_finance' THEN decoded_action
+            ELSE NULL
+        END AS swap_input_data,
         r.receiver_id AS receipt_receiver_id,
         r.signer_id AS receipt_signer_id,
         o._partition_by_block_number
     FROM
-        swap_outcome o
+        all_swap_outcomes o
         LEFT JOIN receipts r USING (receipt_id)
 
     {% if is_incremental() and not var("MANUAL_FIX") %}
