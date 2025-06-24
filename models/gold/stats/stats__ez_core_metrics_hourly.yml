@@ -1,7 +1,8 @@
 version: 2
 models:
   - name: stats__ez_core_metrics_hourly
-    description: '{{ doc("ez_core_metrics_hourly_table_doc") }}'
+    description: |-
+      Comprehensive easy-access table containing NEAR Protocol core blockchain metrics with hourly aggregation and USD fee calculations for streamlined analytics. This model serves as the primary analytics-ready table for blockchain performance data in the gold layer, providing normalized access to transaction volumes, success rates, unique address counts, and fee structures. The model transforms raw metrics data from silver_stats__core_metrics_block_hourly and silver_stats__core_metrics_hourly into structured columns with price data from silver__complete_token_prices for efficient querying and analysis. It includes critical metrics such as block counts, transaction volumes, success/failure rates, unique address activity, and fee collections in both native and USD terms. This table is essential for blockchain performance analytics, network health monitoring, user activity tracking, and economic activity analysis. The data flows from core blockchain data with hourly aggregation and price data joined to provide comprehensive metrics context. This table represents the most user-friendly view of NEAR network performance, enabling detailed analysis of network growth, user adoption, and economic activity patterns.
 
     columns:
       - name: BLOCK_TIMESTAMP_HOUR

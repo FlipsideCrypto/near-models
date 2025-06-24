@@ -1,7 +1,8 @@
 version: 2
 models:
   - name: price__ez_asset_metadata
-    description: '{{ doc("prices_ez_asset_metadata_table_doc") }}'
+    description: |-
+      Comprehensive easy-access table containing all NEAR Protocol token asset metadata with enhanced native token information and cross-chain mappings for streamlined analytics. This model serves as the primary analytics-ready table for token asset reference data in the gold layer, providing normalized access to token names, symbols, addresses, and blockchain associations with native token identification. The model transforms raw asset metadata from silver__complete_token_asset_metadata and silver__complete_native_asset_metadata into structured columns for efficient querying and analysis. It includes critical asset information such as token names, symbols, contract addresses, blockchain platforms, decimal precision, and native token flags. This table is essential for token identification, cross-chain mapping, asset discovery, and price provider management. The data flows from multiple price providers with native and non-native token metadata unified to provide comprehensive asset context. This table represents the most user-friendly view of token assets on NEAR, enabling detailed analysis of token diversity, cross-chain interoperability, and ecosystem growth patterns.
 
     columns:
       - name: ASSET_ID
