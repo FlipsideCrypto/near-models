@@ -1,0 +1,69 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Project Context
+
+This is a dbt project for analyzing NEAR Protocol blockchain data using Snowflake as the data warehouse.
+The models follow dimensional modeling principles with a focus on blockchain-specific patterns.
+
+## Domain Knowledge
+
+### NEAR Protocol
+- Account structure: implicit accounts vs named accounts
+- Transaction anatomy: signatures, actions, receipts, outcomes
+- Smart contract interactions: function calls, cross-contract calls
+- Gas mechanics: attached deposits, gas pricing, refunds
+- RPC methods: tx_status, block, receipt, access_key_changes
+- Sharding architecture: chunks, receipts across shards
+- Token standards: FT (NEP-141), NFT (NEP-171)
+
+### Data Structures
+- Blocks: height, timestamp, hash, author, chunks
+- Transactions: hash, signer_id, receiver_id, actions
+- Receipts: predecessor_id, receiver_id, action_kind
+- Execution Outcomes: status, gas_burnt, tokens_burnt
+- State Changes: account updates, code deployments, token transfers
+
+## Modeling Standards
+- Use snake_case for all objects
+- Implement incremental processing for core tables
+- Follow source/staging/core/mart layering
+- Handle chain reorganizations properly
+- Document chain-specific assumptions
+
+## Testing Requirements
+- Validate transaction integrity across receipt chains
+- Ensure proper token decimal handling
+- Test cross-shard transaction completeness
+- Verify action parsing accuracy
+- Monitor for chain reorganizations
+
+## Performance Guidelines
+- Optimize for NEAR's high TPS
+- Handle large state change volumes efficiently
+- Index frequently queried dimensions
+- Consider partition pruning strategies
+- Implement appropriate clustering keys
+
+## Documentation
+- Document RPC data sources
+- Explain transaction flow assumptions
+- Note sharding implications
+- Map entity relationships
+- Track known data anomalies
+
+## Metrics Focus
+- Transaction volumes and success rates
+- Active accounts and contract usage
+- Token transfers and balances
+- Gas consumption patterns
+- Protocol economics indicators
+
+## Error Handling
+- Handle invalid UTF-8 in contract data
+- Manage receipt execution failures
+- Track missing block segments
+- Monitor for RPC inconsistencies
+- Log unexpected action types

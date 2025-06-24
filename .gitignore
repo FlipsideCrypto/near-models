@@ -23,4 +23,4 @@ local*
 .user.yml
 .cursorignore
 .cursorrules
-.cursor/*
+.cursor/mcp.json
