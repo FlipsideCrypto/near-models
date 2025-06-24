@@ -17,7 +17,6 @@ env:
   DATABASE: "${{ vars.DATABASE }}"
   WAREHOUSE: "${{ vars.WAREHOUSE }}"
   SCHEMA: "${{ vars.SCHEMA }}"
-  REFRESH_ENDPOINT: "${{ secrets.DDM_REFRESH_CACHE_SBX }}"
 
 jobs:
   run_dbt_jobs:
@@ -75,7 +74,7 @@ jobs:
 
       - name: refresh endpoint
         run: |
-          curl -X POST ${{ secrets.REFRESH_ENDPOINT }} \
+          curl -X POST ${{ secrets.DDM_REFRESH_CACHE_SBX }} \
             -H "Content-Type: application/json" \
             -d '{"force": true, "resource_ids": ["near-models"]}'
 
