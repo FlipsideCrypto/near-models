@@ -8,7 +8,7 @@ This dbt project provides comprehensive analytics and data models for the NEAR P
 
 **Click on the links below to jump to the documentation for each schema.**
 
-### [Core Tables](`NEAR`.`CORE`)
+### Core Tables
 
 **Dimension Tables:**
 - [core__dim_address_labels](#!/model/model.near_models.core__dim_address_labels)
@@ -27,7 +27,7 @@ This dbt project provides comprehensive analytics and data models for the NEAR P
 - [core__ez_native_daily_balances](#!/model/model.near_models.core__ez_native_daily_balances)
 - [core__ez_token_transfers](#!/model/model.near_models.core__ez_token_transfers)
 
-### [DeFi Tables](`NEAR`.`DEFI`)
+### DeFi Tables
 
 **Fact Tables:**
 - [defi__fact_bridge_activity](#!/model/model.near_models.defi__fact_bridge_activity)
@@ -41,7 +41,7 @@ This dbt project provides comprehensive analytics and data models for the NEAR P
 - [defi__ez_intents](#!/model/model.near_models.defi__ez_intents)
 - [defi__ez_lending](#!/model/model.near_models.defi__ez_lending)
 
-### [NFT Tables](`NEAR`.`NFT`)
+### NFT Tables
 
 **Dimension Tables:**
 - [nft__dim_nft_contract_metadata](#!/model/model.near_models.nft__dim_nft_contract_metadata)
@@ -53,7 +53,7 @@ This dbt project provides comprehensive analytics and data models for the NEAR P
 **Easy Views:**
 - [nft__ez_nft_sales](#!/model/model.near_models.nft__ez_nft_sales)
 
-### [Price Tables](`NEAR`.`PRICE`)
+### Price Tables
 
 **Dimension Tables:**
 - [price__dim_asset_metadata](#!/model/model.near_models.price__dim_asset_metadata)
@@ -65,7 +65,7 @@ This dbt project provides comprehensive analytics and data models for the NEAR P
 - [price__ez_asset_metadata](#!/model/model.near_models.price__ez_asset_metadata)
 - [price__ez_prices_hourly](#!/model/model.near_models.price__ez_prices_hourly)
 
-### [Governance Tables](`NEAR`.`GOV`)
+### Governance Tables
 
 **Dimension Tables:**
 - [gov__dim_staking_pools](#!/model/model.near_models.gov__dim_staking_pools)
@@ -76,12 +76,12 @@ This dbt project provides comprehensive analytics and data models for the NEAR P
 - [gov__fact_staking_pool_balances](#!/model/model.near_models.gov__fact_staking_pool_balances)
 - [gov__fact_staking_pool_daily_balances](#!/model/model.near_models.gov__fact_staking_pool_daily_balances)
 
-### [Stats Tables](`NEAR`.`STATS`)
+### Stats Tables
 
 **Easy Views:**
 - [stats__ez_core_metrics_hourly](#!/model/model.near_models.stats__ez_core_metrics_hourly)
 
-### [Atlas Tables](`NEAR`.`ATLAS`)
+### Atlas Tables
 
 **Easy Views:**
 - [atlas__ez_supply](#!/model/model.near_models.atlas__ez_supply)
