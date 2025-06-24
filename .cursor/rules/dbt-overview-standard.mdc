@@ -24,12 +24,20 @@ The quicklinks section must be organized by schema and use the relative link to 
 
 **Click on the links below to jump to the documentation for each schema.**
 
-### [Schema Name] Tables (`[DATABASE]`.`[SCHEMA]`.`<table_name>`)
+### [Schema Name] Tables
 
 **[Model Type Tables:]**
 
 - model_1
 - model_2
+
+### CORE Tables 
+**Dimension Tables:**
+- [core__fact_blocks](relative/path/to/model)
+
+**Fact Tables:**
+- [model_1](relative/path/to/model)
+
 ```
 
 ### Schema Organization Rules:
@@ -69,6 +77,7 @@ The quicklinks section must be organized by schema and use the relative link to 
 - Model names must match the actual file names (without .sql extension)
 - Links must be organized by schema and model type
 - All links must be functional and point to valid dbt documentation
+- Do NOT add a hyperlink to the category headers. Only hyperlink individual models
 
 ## XML Tag Requirements
 Every `__overview__.md` file MUST include structured `<llm>` XML tags for easy interpretation by an LLM.
