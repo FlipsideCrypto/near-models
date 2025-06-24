@@ -1,0 +1,76 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# dbt Model Standards for Flipside Crypto
+
+## General Rules
+- Follow the existing code style and patterns in the codebase
+- Write clear, concise, and well-documented code
+- Use meaningful variable, function, column and model names
+- Handle errors gracefully and provide helpful error messages
+- Test your code thoroughly before submitting
+- Follow the existing project structure and conventions
+
+## Code Quality
+- Write self-documenting code with clear and consistent names
+- Use consistent formatting and indentation
+- Implement proper error handling and logging
+- Follow DRY (Don't Repeat Yourself) principles
+- Use meaningful commit messages
+- Use snake_case for all objects (tables, columns, models)
+- Maintain column naming consistency through the pipeline
+
+## dbt Model Structure
+- Models are connected through ref() and source() functions
+- Data flows from source -> bronze -> silver -> gold layers
+- Each model has upstream dependencies and downstream consumers
+- Column-level lineage is maintained through transformations
+- Parse ref() and source() calls to identify direct dependencies
+- Track column transformations from upstream models
+- Consider impact on downstream consumers
+- Preserve business logic across transformations
+
+## Model Naming and Organization
+- Follow naming patterns: bronze__, silver__, core__, fact_, dim__, ez__, where a double underscore indicates a break between a model schema and object name. I.e. core__fact_blocks equates to <database>.core.fact_blocks.
+- Organize by directory structure: bronze/, silver/, gold/, etc.
+- Upstream models appear on the LEFT side of the DAG
+- Current model is the focal point
+- Downstream models appear on the RIGHT side of the DAG
+
+## Modeling Standards
+- Use snake_case for all objects
+- Prioritize incremental processing always
+- Follow source/bronze/silver/gold layering
+- Document chain-specific assumptions
+- Include incremental predicates to improve performance
+- For gold layer models, include search optimization following Snowflake's recommended best practices
+- Cluster models on appropriate fields
+
+## Testing Requirements
+- Ensure proper token decimal handling
+- Implement unique tests for primary keys
+- Implement recency tests for tables that are expected to have frequent data updates
+- Add not_null tests for required columns
+- Use relationships tests for foreign keys
+
+## Performance Guidelines
+- Optimize for high TPS (blockchain data)
+- Handle large state change volumes efficiently
+- Index frequently queried dimensions
+- Consider partition pruning strategies
+- Implement appropriate clustering keys
+- Optimize database queries for large datasets
+- Use appropriate indexing strategies
+- Monitor resource usage and optimize accordingly
+- Consider the impact of changes on existing systems
+
+## Documentation
+- Document data sources
+- Map entity relationships
+- Include model descriptions in yml files per expanded rule [dbt-documentation-standards.mdc](mdc:.cursor/rules/dbt-documentation-standards.mdc)
+- Document column descriptions and business logic
+- Explain incremental logic and predicates
+- Note any data quality considerations
+
