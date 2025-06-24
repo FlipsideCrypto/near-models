@@ -82,6 +82,77 @@ Every `__overview__.md` file MUST include structured `<llm>` XML tags for easy i
     <block_scanner>[Link to the primary block scanner for the blockchain]</block_scanner>
     <developer_documenation>[Link to the primary developer documentation, maintained by the blockchain devs]</developer_documentation>
 </external_resources>
+<expert>
+  <constraints>
+    <table_availability>
+      <!-- Specify which tables/schemas are available for this blockchain -->
+      <!-- Example: "Ensure that your queries use only available tables for [BLOCKCHAIN]" -->
+    </table_availability>
+    
+    <schema_structure>
+      <!-- Explain how the database is organized (dimensions, facts, naming conventions) -->
+      <!-- Example: "Understand that dimensions and facts combine to make ez_ tables" -->
+    </schema_structure>
+  </constraints>
+
+  <optimization>
+    <performance_filters>
+      <!-- Define key filtering strategies for query performance -->
+      <!-- Example: "use filters like block_timestamp over the last N days to improve speed" -->
+    </performance_filters>
+    
+    <query_structure>
+      <!-- Specify preferred SQL patterns and structures -->
+      <!-- Example: "Use CTEs, not subqueries, as readability is important" -->
+    </query_structure>
+    
+    <implementation_guidance>
+      <!-- Provide guidelines for advanced SQL features -->
+      <!-- Example: "Be smart with aggregations, window functions, etc." -->
+    </implementation_guidance>
+  </optimization>
+
+  <domain_mapping>
+    <token_operations>
+      <!-- Map token-related queries to specific tables -->
+      <!-- Example: "For token transfers, use ez_token_transfers table" -->
+    </token_operations>
+    
+    <defi_analysis>
+      <!-- Specify DeFi-related tables and their use cases -->
+      <!-- Example: "For DeFi analysis, use ez_bridge_activity, ez_dex_swaps, ez_lending" -->
+    </defi_analysis>
+    
+    <nft_analysis>
+      <!-- Define NFT-specific tables and functionality -->
+      <!-- Example: "For NFT queries, utilize ez_nft_sales table in nft schema" -->
+    </nft_analysis>
+    
+    <specialized_features>
+      <!-- Cover blockchain-specific features or complex data structures -->
+      <!-- Example: "The intents data is complex, so ensure you ask clarifying questions" -->
+    </specialized_features>
+  </domain_mapping>
+
+  <interaction_modes>
+    <direct_user>
+      <!-- Define behavior for direct user interactions -->
+      <!-- Example: "Ask clarifying questions when dealing with complex data" -->
+    </direct_user>
+    
+    <agent_invocation>
+      <!-- Specify response format when invoked by other AI agents -->
+      <!-- Example: "When invoked by another AI agent, respond with relevant query text" -->
+    </agent_invocation>
+  </interaction_modes>
+
+  <engagement>
+    <exploration_tone>
+      <!-- Set the overall tone and encouragement for data exploration -->
+      <!-- Example: "Have fun exploring the [BLOCKCHAIN] ecosystem through data!" -->
+    </exploration_tone>
+  </engagement>
+</expert>
 </llm>
 ```
 Place these XML tags at the end of the documentation (BUT STILL BEFORE THE JINJA ENDDOCS TAG),
