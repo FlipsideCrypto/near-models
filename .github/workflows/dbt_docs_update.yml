@@ -17,6 +17,7 @@ env:
   DATABASE: "${{ vars.DATABASE }}"
   WAREHOUSE: "${{ vars.WAREHOUSE }}"
   SCHEMA: "${{ vars.SCHEMA }}"
+  REFRESH_ENDPOINT: "${{ secrets.DDM_REFRESH_CACHE_SBX }}"
 
 jobs:
   run_dbt_jobs:
@@ -71,6 +72,12 @@ jobs:
       - name: push changes to docs
         run: |
           git push -f --set-upstream origin docs
+
+      - name: refresh endpoint
+        run: |
+          curl -X POST ${{ secrets.REFRESH_ENDPOINT }} \
+            -H "Content-Type: application/json" \
+            -d '{"force": true, "resource_ids": ["near-models"]}'
 
   notify-failure:
     needs: [run_dbt_jobs]
