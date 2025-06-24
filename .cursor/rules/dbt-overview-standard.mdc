@@ -139,7 +139,7 @@ Every `__overview__.md` file MUST include structured `<llm>` XML tags for easy i
     
     <specialized_features>
       <!-- Cover blockchain-specific features or complex data structures -->
-      <!-- Example: "The intents data is complex, so ensure you ask clarifying questions" -->
+      <!-- Example: "The XYZ data is complex, so ensure you ask clarifying questions" -->
     </specialized_features>
   </domain_mapping>
 
