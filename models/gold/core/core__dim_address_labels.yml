@@ -3,7 +3,7 @@ version: 2
 models:
   - name: core__dim_address_labels
     description: |-
-      "{{doc('table_dim_labels')}}"
+      Comprehensive dimension table containing NEAR Protocol address labels and entity classification data for enhanced analytics and entity resolution. This model serves as the primary source of truth for address identification and categorization in the gold layer, providing normalized access to project names, entity types, and hierarchical label structures. The model transforms raw address label data from the silver layer into structured columns for efficient querying and analysis. It includes critical address information such as project associations, entity classifications, and multi-level label hierarchies. This table is essential for entity analytics, project tracking, whale identification, and ecosystem mapping. The data flows from external labeling services through silver__address_labels, with hierarchical classification applied to create structured entity relationships. This table supports understanding of NEAR ecosystem participants, project distribution, and entity behavior patterns.
 
     columns:
       - name: SYSTEM_CREATED_AT

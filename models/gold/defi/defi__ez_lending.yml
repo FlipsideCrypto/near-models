@@ -2,7 +2,7 @@ version: 2
 models:
   - name: defi__ez_lending
     description: |-
-      Modeled activity for lending, with token contract and price info joined in for ease of use.
+      Comprehensive easy-access table containing all NEAR Protocol lending protocol transactions with enhanced token metadata, price data, and decimal-adjusted amounts for streamlined analytics. This model serves as the primary analytics-ready table for lending activity in the gold layer, providing normalized access to lending actions with token symbols, USD valuations, and protocol context. The model transforms raw lending data from silver__burrow_lending into structured columns with token metadata from silver__ft_contract_metadata and price data from silver__complete_token_prices for efficient querying and analysis. It includes critical lending information such as platform identification, action types, token amounts with decimal adjustments, USD valuations, and user interactions. This table is essential for lending protocol analytics, borrowing/lending volume tracking, risk assessment, and capital efficiency analysis. The data flows from defi__fact_lending with token metadata and price data joined to provide comprehensive lending context. This table represents the most user-friendly view of lending activity on NEAR, enabling detailed analysis of borrowing patterns, lending volumes, and protocol adoption across all supported lending platforms.
     tests:
       - dbt_utils.recency:
           datepart: hours

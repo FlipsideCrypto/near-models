@@ -1,7 +1,8 @@
 version: 2
 models:
   - name: price__dim_asset_metadata
-    description: '{{ doc("prices_dim_asset_metadata_table_doc") }}'
+    description: |-
+      Comprehensive dimension table containing NEAR Protocol token asset metadata with detailed price provider information and cross-chain token mappings. This model serves as the primary source of truth for token asset reference data in the gold layer, providing normalized access to token names, symbols, addresses, and blockchain associations. The model transforms raw asset metadata from silver__complete_provider_asset_metadata into structured columns for efficient querying and analysis. It includes critical asset information such as token names, symbols, contract addresses, blockchain platforms, and provider attribution. This table is essential for token identification, cross-chain mapping, price provider management, and asset discovery. The data flows from multiple price providers through silver__complete_provider_asset_metadata, with standardized asset attributes extracted to provide comprehensive token context. This table supports understanding of NEAR ecosystem token diversity, cross-chain interoperability, and price provider coverage patterns.
 
     columns:
       - name: PROVIDER

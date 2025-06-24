@@ -3,9 +3,7 @@ version: 2
 models:
   - name: nft__ez_nft_sales
     description: |-
-      This view provides a standardized interface for all NFT sales across NEAR marketplaces.
-      It includes sales from Mintbase, Paras, and other marketplaces (Apollo42, TradePort, UniqArt, L2E, FewAndFar, Mitte).
-      The view handles price conversions to USD and includes platform fees, royalties, and affiliate information where available.
+      Comprehensive easy-access table containing all NEAR Protocol NFT marketplace sales with enhanced price data, platform fees, and royalty information for streamlined analytics. This model serves as the primary analytics-ready table for NFT sales data in the gold layer, providing normalized access to marketplace transactions with USD valuations, fee structures, and platform context. The model transforms raw NFT sales data from silver__nft_complete_nft_sales into structured columns for efficient querying and analysis. It includes critical sales information such as buyer/seller addresses, token details, prices with USD conversions, platform fees, royalties, and affiliate information. This table is essential for NFT marketplace analytics, sales volume tracking, platform performance analysis, and creator royalty monitoring. The data flows from multiple marketplace protocols (Mintbase, Paras, Apollo42, TradePort, UniqArt, L2E, FewAndFar, Mitte) through silver__nft_complete_nft_sales, with standardized pricing and fee structures applied. This table represents the most comprehensive view of NFT trading activity on NEAR, enabling detailed analysis of marketplace dynamics, pricing trends, and ecosystem growth across all supported NFT marketplaces.
 
     columns:
       - name: RECEIPT_ID

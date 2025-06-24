@@ -3,8 +3,7 @@ version: 2
 models:
   - name: core__ez_actions
     description: |-
-      This table extracts and processes executed Actions from NEAR receipts - storing the argument data under action_data. FunctionCall data is decoded, where possible, and returned to the action_data object under args.
-      It combines transaction and receipt information to provide a comprehensive view on each of the actions events.
+      Comprehensive easy-access table containing all NEAR Protocol blockchain actions with decoded function call arguments and enhanced execution context. This model serves as the primary analytics-ready table for action-level data in the gold layer, providing normalized access to action types, decoded parameters, and cross-receipt execution metadata. The model transforms raw action data from transactions and receipts into structured columns with decoded function call arguments for efficient querying and analysis. It includes critical action information such as action types, decoded parameters, gas consumption, execution context, and cross-receipt relationships. This table is essential for smart contract analytics, DeFi protocol analysis, NFT transaction tracking, and cross-contract interaction monitoring. The data flows from silver__transactions_final and silver__receipts_final, with action flattening and function call decoding applied to extract structured action data. This table represents the most granular level of NEAR execution analysis, enabling detailed understanding of on-chain activity patterns and smart contract behavior.
 
     tests:
       - dbt_utils.recency:

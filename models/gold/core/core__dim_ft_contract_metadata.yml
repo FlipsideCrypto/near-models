@@ -3,7 +3,7 @@ version: 2
 models:
   - name: core__dim_ft_contract_metadata
     description: |-
-      Fungible Token contract metadata provided by the Nearblocks NFT endpoint.
+      Comprehensive dimension table containing NEAR Protocol fungible token contract metadata with cross-chain token mapping information. This model serves as the primary source of truth for token contract reference data in the gold layer, providing normalized access to token names, symbols, decimal precision, and cross-chain contract mappings. The model transforms raw token metadata from the silver layer into structured columns for efficient querying and analysis. It includes critical token information such as contract addresses, token standards, decimal precision, and cross-chain bridge mappings. This table is essential for token analytics, DeFi protocol integration, cross-chain bridge tracking, and token transfer analysis. The data flows from external token metadata APIs through silver__ft_contract_metadata, with validation applied to ensure complete token information. This table supports understanding of NEAR ecosystem token diversity and cross-chain interoperability patterns.
 
     columns:
       - name: ASSET_IDENTIFIER
