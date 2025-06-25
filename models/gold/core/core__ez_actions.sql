@@ -1,5 +1,5 @@
 {{ config(
-    materialized = 'incremental',
+    materialized = var('LIVE_TABLE_MATERIALIZATION', 'incremental'),
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
     incremental_predicates = ["dynamic_range_predicate_custom","block_timestamp::date"],
