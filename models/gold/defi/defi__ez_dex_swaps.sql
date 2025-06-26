@@ -9,7 +9,7 @@ WITH dex_swaps AS (
 
     SELECT
         tx_hash,
-        receipt_object_id,
+        receipt_id,
         block_id,
         block_timestamp,
         receiver_id,
@@ -53,7 +53,7 @@ prices AS (
 FINAL AS (
     SELECT
         s.tx_hash,
-        s.receipt_object_id,
+        s.receipt_id,
         s.block_id,
         s.block_timestamp,
         s.receiver_id AS platform,

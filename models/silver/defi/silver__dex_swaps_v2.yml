@@ -21,7 +21,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: RECEIPT_OBJECT_ID
+      - name: RECEIPT_ID
         description: "{{ doc('receipt_object_id')}}"
         tests:
           - not_null

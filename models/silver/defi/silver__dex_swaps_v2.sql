@@ -80,9 +80,9 @@ WITH swap_logs AS (
         modified_timestamp,
         -- Determine swap type based on log format
         CASE
-            WHEN clean_log LIKE 'Swapped%' THEN 'legacy_ref'
-            WHEN clean_log LIKE '%"event":"swap"%' 
-                AND clean_log LIKE '%"standard":"dcl.ref"%'
+            WHEN clean_log LIKE 'Swapped%' THEN 'ref_finance'
+            WHEN TRY_PARSE_JSON(clean_log):event::STRING = 'swap'
+                AND TRY_PARSE_JSON(clean_log):standard::STRING = 'dcl.ref'
                 AND receiver_id = 'dclv2.ref-labs.near'
                 THEN 'rhea_finance'
             ELSE 'unknown'
@@ -93,7 +93,7 @@ WITH swap_logs AS (
         receipt_succeeded
         AND (
             clean_log LIKE 'Swapped%'
-            OR (clean_log LIKE '%"event":"swap"%' AND clean_log LIKE '%"standard":"dcl.ref"%' AND receiver_id = 'dclv2.ref-labs.near')
+            OR (TRY_PARSE_JSON(clean_log):event::STRING = 'swap' AND TRY_PARSE_JSON(clean_log):standard::STRING = 'dcl.ref' AND receiver_id = 'dclv2.ref-labs.near')
         )
         AND receiver_id NOT LIKE '%dragon_bot.near' 
         
@@ -167,11 +167,11 @@ swap_outcome AS (
         ) :: STRING AS token_out,
         _partition_by_block_number,
         modified_timestamp,
-        'legacy_ref' AS swap_format
+        'ref_finance' AS swap_format
     FROM
         swap_logs
     WHERE
-        swap_type = 'legacy_ref'
+        swap_type = 'ref_finance'
 ),
 rhea_swap_outcome AS (
     SELECT
@@ -258,7 +258,7 @@ parse_actions AS (
             receipt_actions :receipt :Action :actions
         ) AS action_ct,
         CASE
-            WHEN swap_format = 'legacy_ref' THEN
+            WHEN swap_format = 'ref_finance' THEN
                 TRY_PARSE_JSON(
                     TRY_BASE64_DECODE_STRING(
                         CASE
@@ -282,7 +282,7 @@ parse_actions AS (
             ELSE NULL
         END AS decoded_action,
         CASE
-            WHEN swap_format = 'legacy_ref' THEN
+            WHEN swap_format = 'ref_finance' THEN
                 TRY_PARSE_JSON(
                     COALESCE(
                         TRY_PARSE_JSON(
@@ -322,7 +322,7 @@ parse_actions AS (
 FINAL AS (
     SELECT
         tx_hash,
-        receipt_id AS receipt_object_id, -- slated for rename to receipt_id
+        receipt_id, -- slated for rename to receipt_id
         block_id,
         block_timestamp,
         receiver_id,
