@@ -42,6 +42,6 @@ WHERE
 {% endif %}
 
 --handle potential duplicates introduced by the hevo
-qualify(ROW_NUMBER() over (PARTITION BY account_id, epoch_date
+qualify(ROW_NUMBER() over (PARTITION BY ez_near_daily_balances_id
 ORDER BY
     modified_timestamp DESC) = 1)
