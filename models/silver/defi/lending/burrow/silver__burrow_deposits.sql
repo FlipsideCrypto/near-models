@@ -50,7 +50,6 @@ logs AS (
     FROM {{ ref('silver__logs_s3') }}
     WHERE 
         receiver_id = 'contract.main.burrow.near'
-        AND log_index = 0  -- deposits always uses logs[0]
         AND receipt_id IN (SELECT receipt_id FROM actions)
         {% if var("MANUAL_FIX") %}
         AND {{ partition_load_manual('no_buffer') }}
@@ -81,6 +80,8 @@ FINAL AS (
         LEFT JOIN logs l
         ON a.tx_hash = l.tx_hash
         AND a.receipt_id = l.receipt_id
+    WHERE
+        actions in ('deposit', 'deposit_to_reserve')
 )
 SELECT
     tx_hash,
