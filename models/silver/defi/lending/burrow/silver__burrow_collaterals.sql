@@ -94,12 +94,26 @@ FINAL AS (
         AND a.target_log_index = l.log_index
     WHERE
         (
-        (method_name = 'ft_on_transfer'
-        AND args:msg != ''
-        AND actions = 'increase_collateral') -- increase_collateral
-            OR
-        (method_name = 'oracle_on_call'
-        AND actions = 'decrease_collateral') -- decrease_collateral
+            (method_name = 'ft_on_transfer'
+            AND args:msg != ''
+            AND (
+                -- increase_collateral
+                (actions = 'increase_collateral' OR actions = 'IncreaseCollateral')
+                OR
+                TRY_PARSE_JSON(args:msg):Execute:actions[0]:IncreaseCollateral IS NOT NULL
+                OR
+                CONTAINS(UPPER(args:msg::STRING), 'INCREASECOLLATERAL')
+            ))
+                OR
+            (method_name = 'oracle_on_call'
+            AND (
+                -- decrease_collateral
+                (actions = 'decrease_collateral' OR actions = 'DecreaseCollateral')
+                OR
+                TRY_PARSE_JSON(args:msg):Execute:actions[0]:DecreaseCollateral IS NOT NULL
+                OR
+                CONTAINS(UPPER(args:msg::STRING), 'DECREASECOLLATERAL')
+            ))
         )
     )
 SELECT
@@ -123,5 +137,3 @@ SELECT
     '{{ invocation_id }}' AS _invocation_id
 FROM
     FINAL
-WHERE
-    actions != 'fee_detail'
