@@ -107,7 +107,7 @@ WITH swap_logs AS (
 ),
 receipts AS (
     SELECT
-        receipt_id, -- slated for rename to receipt_id
+        receipt_id,
         receipt_json AS receipt_actions,
         receiver_id,
         receipt_json :receipt :Action :signer_id :: STRING AS signer_id,
@@ -322,7 +322,7 @@ parse_actions AS (
 FINAL AS (
     SELECT
         tx_hash,
-        receipt_id, -- slated for rename to receipt_id
+        receipt_id,
         block_id,
         block_timestamp,
         receiver_id,
@@ -341,7 +341,7 @@ FINAL AS (
 SELECT
     *,
     {{ dbt_utils.generate_surrogate_key(
-        ['receipt_object_id', 'swap_index']
+        ['receipt_id', 'swap_index']
     ) }} AS dex_swaps_v2_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
