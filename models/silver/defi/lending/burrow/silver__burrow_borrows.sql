@@ -29,7 +29,7 @@ borrows AS (
         receipt_receiver_id = 'contract.main.burrow.near'
         AND action_name = 'FunctionCall'
         AND receipt_succeeded
-        AND action_data :method_name :: STRING = 'oracle_on_call'
+        AND (action_data :method_name :: STRING = 'oracle_on_call' OR action_data :method_name :: STRING = 'callback_execute_with_pyth')
 
         {% if var("MANUAL_FIX") %}
         AND {{ partition_load_manual('no_buffer', 'floor(block_id, -3)') }}
@@ -46,13 +46,27 @@ borrows AS (
 
 ),
 FINAL AS (
-    SELECT
+SELECT
         *,
-        args :sender_id :: STRING AS sender_id,
+        CASE
+            WHEN method_name = 'oracle_on_call' THEN 
+                args :sender_id :: STRING
+            WHEN method_name = 'callback_execute_with_pyth' THEN
+                args :account_id :: STRING
+            ELSE
+                NULL
+        END AS sender_id,
         receiver_id AS contract_address,
-        PARSE_JSON(
-            args :msg
-        ) :Execute :actions [0] : Borrow :: OBJECT  AS segmented_data,
+        CASE
+            WHEN method_name = 'oracle_on_call' THEN
+                PARSE_JSON(
+                    args :msg
+                ) :Execute :actions [0] : Borrow :: OBJECT
+            WHEN method_name = 'callback_execute_with_pyth' THEN
+                args :actions [0] :Borrow :: OBJECT -- first index (contains amount, max_amount, and token_id) is borrow. second is withdraw
+            ELSE
+                NULL
+        END AS segmented_data,
         segmented_data :token_id AS token_contract_address,
         COALESCE( segmented_data :amount,segmented_data :max_amount)  AS amount_raw,
         'borrow' :: STRING AS actions
@@ -82,5 +96,3 @@ SELECT
     '{{ invocation_id }}' AS _invocation_id
 FROM
     FINAL
-WHERE
-    actions != 'fee_detail'
