@@ -5,14 +5,14 @@
     merge_exclude_columns = ["inserted_timestamp"],
     unique_key = 'fact_dex_swaps_id',
     cluster_by = ['block_timestamp::DATE'],
-    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,receipt_object_id,receiver_id,signer_id,token_out,token_in);",
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,receipt_id,receiver_id,signer_id,token_out,token_in);",
     tags = ['scheduled_non_core'],
     meta ={ 'database_tags':{ 'table':{ 'PURPOSE': 'DEFI, SWAPS' }} },
 ) }}
 
 SELECT
     tx_hash,
-    receipt_object_id,
+    receipt_id,
     block_id,
     block_timestamp,
     receiver_id,

@@ -15,13 +15,13 @@ models:
         description: "{{ doc('tx_hash')}}"
         tests:
           - not_null:
-              where: _inserted_timestamp <= CURRENT_TIMESTAMP - interval '1 hour'
+              where: inserted_timestamp <= CURRENT_TIMESTAMP - interval '1 hour'
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
                 - VARCHAR
 
-      - name: RECEIPT_OBJECT_ID
+      - name: RECEIPT_ID
         description: "{{ doc('receipt_object_id')}}"
         tests:
           - not_null
@@ -33,7 +33,7 @@ models:
         description: "{{ doc('block_timestamp')}}"
         tests:
           - not_null:
-              where: _inserted_timestamp <= CURRENT_TIMESTAMP - interval '1 hour'
+              where: inserted_timestamp <= CURRENT_TIMESTAMP - interval '1 hour'
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - TIMESTAMP_NTZ
