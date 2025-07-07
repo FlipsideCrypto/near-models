@@ -14,6 +14,7 @@ SELECT
     blockchain,
     FALSE AS is_native,
     is_deprecated,
+    COALESCE(is_verified, FALSE) AS token_is_verified,
     inserted_timestamp,
     modified_timestamp,
     complete_token_asset_metadata_id AS ez_asset_metadata_id
@@ -29,6 +30,7 @@ SELECT
     blockchain,
     is_deprecated,
     TRUE AS is_native,
+    FALSE AS token_is_verified,
     inserted_timestamp,
     modified_timestamp,
     complete_native_asset_metadata_id AS ez_asset_metadata_id

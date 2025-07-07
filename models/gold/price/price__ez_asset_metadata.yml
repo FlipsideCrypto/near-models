@@ -18,6 +18,8 @@ models:
         description: '{{ doc("prices_decimals") }}'
       - name: IS_NATIVE
         description: '{{ doc("prices_is_native") }}'
+      - name: TOKEN_IS_VERIFIED
+        description: "{{ doc('token_is_verified') }}"
       - name: IS_DEPRECATED
         description: '{{ doc("prices_is_deprecated") }}'
       - name: EZ_ASSET_METADATA_ID

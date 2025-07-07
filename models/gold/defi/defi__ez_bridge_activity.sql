@@ -46,7 +46,8 @@ prices AS (
             ) AS block_timestamp,
         token_address AS contract_address,
         AVG(price) AS price_usd,
-        MAX(SYMBOL) AS symbol
+        MAX(symbol) AS symbol,
+        MAX(is_verified) AS token_is_verified
     FROM
         {{ ref('silver__complete_token_prices') }}
     GROUP BY
@@ -65,7 +66,8 @@ prices_mapping AS (
             ELSE contract_address
         END AS contract_address,
         symbol,
-        price_usd
+        price_usd,
+        token_is_verified
     FROM
         prices
 ),
@@ -83,6 +85,7 @@ FINAL AS (
             l1.decimals
         ) AS amount,
         amount * p1.price_usd AS amount_usd,
+        p1.token_is_verified AS token_is_verified,
         b.destination_address,
         b.source_address,
         b.platform,
@@ -105,6 +108,7 @@ FINAL AS (
             AND DATE_TRUNC('hour', b.block_timestamp) = p1.block_timestamp
 )
 SELECT
-    *
+    *,
+    COALESCE(token_is_verified, FALSE) AS token_is_verified
 FROM
     FINAL

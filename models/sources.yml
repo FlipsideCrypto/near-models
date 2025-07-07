@@ -21,6 +21,12 @@ sources:
       - name: complete_native_asset_metadata
       - name: complete_native_prices
 
+  - name: crosschain_price
+    database: crosschain
+    schema: price
+    tables:
+      - name: ez_prices_hourly
+
   - name: streamline
     database: streamline
     schema: near_lake
