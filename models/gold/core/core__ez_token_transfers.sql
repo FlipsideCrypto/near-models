@@ -48,8 +48,7 @@
             token_address,
             price,
             HOUR,
-            modified_timestamp,
-            token_is_verified
+            modified_timestamp
         FROM
             {{ ref('price__ez_prices_hourly') }}
 
@@ -93,7 +92,6 @@ SELECT
     C.decimals AS decimals,
     C.symbol AS symbol,
     price AS token_price,
-    token_is_verified,
     transfer_type,
     transfer_action,
     receipt_succeeded,
