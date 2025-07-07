@@ -16,6 +16,7 @@ SELECT
     FALSE AS is_native,
     is_deprecated,
     is_imputed,
+    COALESCE(is_verified, FALSE) AS token_is_verified,
     inserted_timestamp,
     modified_timestamp,
     complete_token_prices_id AS ez_prices_hourly_id
@@ -33,6 +34,7 @@ SELECT
     TRUE AS is_native,
     is_deprecated,
     is_imputed,
+    TRUE AS token_is_verified,
     inserted_timestamp,
     modified_timestamp,
     complete_native_prices_id AS ez_prices_hourly_id

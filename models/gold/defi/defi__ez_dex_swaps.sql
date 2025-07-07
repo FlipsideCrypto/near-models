@@ -43,7 +43,8 @@ prices AS (
             hour
         ) AS block_timestamp,
         token_address AS contract_address,
-        AVG(price) AS price_usd
+        AVG(price) AS price_usd,
+        MAX(is_verified) AS token_is_verified
     FROM
         {{ ref('silver__complete_token_prices') }}
     GROUP BY
@@ -68,6 +69,7 @@ FINAL AS (
         amount_out * p1.price_usd AS amount_out_usd,
         s.token_out AS token_out_contract,
         l1.symbol AS symbol_out,
+        p1.token_is_verified AS token_out_is_verified,
         s.amount_in_raw,
         s.amount_in_raw / pow(
             10,
@@ -76,6 +78,7 @@ FINAL AS (
         amount_in * p2.price_usd AS amount_in_usd,
         s.token_in AS token_in_contract,
         l2.symbol AS symbol_in,
+        p2.token_is_verified AS token_in_is_verified,
         s.swap_input_data,
         s.log,
         s.ez_dex_swaps_id,
@@ -101,6 +104,8 @@ FINAL AS (
         AND s.token_in = p2.contract_address
 )
 SELECT
-    *
+    *,
+    COALESCE(token_in_is_verified, FALSE) AS token_in_is_verified,
+    COALESCE(token_out_is_verified, FALSE) AS token_out_is_verified
 FROM
     FINAL

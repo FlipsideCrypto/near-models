@@ -79,3 +79,6 @@ models:
         description: "{{ doc('id')}}"
         tests:
           - not_null
+
+      - name: TOKEN_IS_VERIFIED
+        description: "{{ doc('token_is_verified') }}"

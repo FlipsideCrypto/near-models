@@ -20,6 +20,8 @@ models:
         description: '{{ doc("prices_is_native") }}'
       - name: IS_IMPUTED
         description: '{{ doc("prices_is_imputed") }}'
+      - name: TOKEN_IS_VERIFIED
+        description: "{{ doc('token_is_verified') }}"
       - name: IS_DEPRECATED
         description: '{{ doc("prices_is_deprecated") }}'
       - name: EZ_PRICES_HOURLY_ID

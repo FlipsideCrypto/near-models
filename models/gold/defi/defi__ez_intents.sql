@@ -138,9 +138,10 @@ prices AS (
         symbol,
         price,
         is_native,
+        is_verified,
         HOUR
     FROM
-        {{ ref('price__ez_prices_hourly') }}
+        {{ source('crosschain_price', 'ez_prices_hourly') }}
     WHERE
         NOT is_native
 
@@ -162,9 +163,10 @@ prices_native AS (
         symbol,
         price,
         is_native,
+        is_verified,
         HOUR
     FROM
-        {{ ref('price__ez_prices_hourly') }}
+        {{ source('crosschain_price', 'ez_prices_hourly') }}
     WHERE
         is_native
 
@@ -220,7 +222,8 @@ FINAL AS (
                 COALESCE(p.price, 1),
                 COALESCE(p.price, p2.price)
             )
-        ) AS amount_usd
+        ) AS amount_usd,
+        COALESCE(p.is_verified, p2.is_verified, FALSE) AS token_is_verified
     FROM
         intents i
         LEFT JOIN labels l
@@ -268,6 +271,7 @@ SELECT
     log_event_index,
     amount_index,
     receipt_succeeded,
+    token_is_verified,
     ez_intents_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp

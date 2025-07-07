@@ -93,3 +93,9 @@ models:
 
       - name: MODIFIED_TIMESTAMP
         description: "{{doc('modified_timestamp')}}"
+
+      - name: TOKEN_OUT_IS_VERIFIED
+        description: "{{ doc('token_is_verified') }}"
+
+      - name: TOKEN_IN_IS_VERIFIED
+        description: "{{ doc('token_is_verified') }}"

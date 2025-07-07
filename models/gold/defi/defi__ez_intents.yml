@@ -154,6 +154,13 @@ models:
                 - NUMBER
                 - FLOAT
 
+      - name: TOKEN_IS_VERIFIED
+        description: "{{ doc('token_is_verified') }}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - BOOLEAN
+
       - name: EZ_INTENTS_ID
         description: "{{ doc('id') }}"
         tests:

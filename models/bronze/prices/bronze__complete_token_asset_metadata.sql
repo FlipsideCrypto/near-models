@@ -12,6 +12,7 @@ SELECT
     blockchain_name,
     blockchain_id,
     is_deprecated,
+    is_verified,
     provider,
     source,
     _inserted_timestamp,
@@ -24,8 +25,5 @@ FROM
         'crosschain_silver',
         'complete_token_asset_metadata'
     ) }}
--- WHERE
---     blockchain IN (
---         'near',
---         'near protocol'
---     )
+WHERE
+    lower(blockchain) IN ('near', 'near protocol')

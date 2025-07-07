@@ -55,7 +55,8 @@ prices AS (
             HOUR
         ) AS block_timestamp,
         token_address AS contract_address,
-        AVG(price) AS price_usd
+        AVG(price) AS price_usd,
+        MAX(is_verified) AS token_is_verified
     FROM
         {{ ref('silver__complete_token_prices') }}
     GROUP BY
@@ -81,6 +82,7 @@ FINAL AS (
             lb.decimals
         ) AS amount,
         p.price_usd,
+        p.token_is_verified AS token_is_verified,
         amount * p.price_usd AS amount_usd,
         l.ez_lending_id,
         l.inserted_timestamp,
@@ -97,6 +99,7 @@ FINAL AS (
         AND l.token_address = p.contract_address
 )
 SELECT
-    *
+    *,
+    COALESCE(token_is_verified, FALSE) AS token_is_verified
 FROM
     FINAL
