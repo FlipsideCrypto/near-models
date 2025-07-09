@@ -25,7 +25,7 @@ WITH actions AS (
     WHERE
         receipt_receiver_id = 'contract.main.burrow.near'
         AND action_name = 'FunctionCall'
-        AND action_data :method_name :: STRING IN ('ft_on_transfer', 'oracle_on_call')
+        AND (action_data :method_name :: STRING IN ('ft_on_transfer', 'oracle_on_call') OR (action_data :method_name :: STRING = 'execute_with_pyth' AND CONTAINS(UPPER(args::STRING), 'REPAY')))
         AND receipt_succeeded
 
         {% if var("MANUAL_FIX") %}
@@ -50,7 +50,6 @@ logs AS (
     FROM {{ ref('silver__logs_s3') }}
     WHERE 
         receiver_id = 'contract.main.burrow.near'
-        AND log_index = 1  -- repays always uses logs[1]
         AND receipt_id IN (SELECT receipt_id FROM actions)
         {% if var("MANUAL_FIX") %}
         AND {{ partition_load_manual('no_buffer') }}
@@ -69,7 +68,10 @@ logs AS (
 FINAL AS (
     SELECT
         a.*,
-        args :sender_id:: STRING AS sender_id,
+        CASE
+            WHEN method_name IN ('ft_on_transfer', 'oracle_on_call') THEN args :sender_id :: STRING
+            WHEN method_name = 'execute_with_pyth' THEN l.parsed_log :data [0] :account_id :: STRING
+        END AS sender_id,
         receiver_id AS contract_address,
         l.parsed_log AS segmented_data,
         segmented_data :data [0] :account_id AS account_id,
@@ -88,6 +90,8 @@ FINAL AS (
                 AND args:msg != ''
             ) OR (
                 method_name = 'oracle_on_call' -- repay_from_decrease_collateral
+            ) OR (
+                method_name = 'execute_with_pyth' -- new repay method (?)
             )
         )
         AND actions = 'repay'
