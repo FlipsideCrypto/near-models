@@ -20,7 +20,7 @@ actions AS (
         receipt_predecessor_id AS predecessor_id,
         receipt_receiver_id AS receiver_id,
         action_data :method_name :: STRING AS method_name,
-        (action_data :method_name :: STRING = 'ft_on_transfer') :: INT AS target_log_index,
+        (action_data :method_name :: STRING = 'ft_on_transfer' OR action_data :method_name :: STRING = 'callback_execute_with_pyth') :: INT AS target_log_index,
         action_data :args ::VARIANT AS args,
         receipt_succeeded,
         FLOOR(block_id, -3) AS _partition_by_block_number
@@ -30,7 +30,12 @@ actions AS (
         receipt_receiver_id = 'contract.main.burrow.near'
         AND action_name = 'FunctionCall'
         AND receipt_succeeded
-        AND method_name in ('ft_on_transfer', 'oracle_on_call')
+        AND method_name in ('ft_on_transfer', 'oracle_on_call', 'callback_execute_with_pyth')
+        AND (
+            CONTAINS(UPPER(args :: STRING), 'INCREASECOLLATERAL') 
+            OR 
+            CONTAINS(UPPER(args :: STRING), 'DECREASECOLLATERAL')
+        )
         {% if var("MANUAL_FIX") %}
         AND {{ partition_load_manual('no_buffer', 'floor(block_id, -3)') }}
         {% else %}
@@ -77,7 +82,10 @@ FINAL AS (
         action_index,
         predecessor_id,
         receiver_id AS contract_address,
-        args :sender_id :: STRING AS sender_id,
+        CASE
+            WHEN method_name = 'ft_on_transfer' THEN args :sender_id :: STRING
+            WHEN method_name = 'callback_execute_with_pyth' THEN args :account_id :: STRING
+        END AS sender_id,
         method_name,
         args,
         TRY_PARSE_JSON(l.clean_log) :: OBJECT AS segmented_data,
@@ -91,30 +99,8 @@ FINAL AS (
     LEFT JOIN logs l
         ON a.tx_hash = l.tx_hash
         AND a.receipt_id = l.receipt_id
-        AND a.target_log_index = l.log_index
     WHERE
-        (
-            (method_name = 'ft_on_transfer'
-            AND args:msg != ''
-            AND (
-                -- increase_collateral
-                (actions = 'increase_collateral' OR actions = 'IncreaseCollateral')
-                OR
-                TRY_PARSE_JSON(args:msg):Execute:actions[0]:IncreaseCollateral IS NOT NULL
-                OR
-                CONTAINS(UPPER(args:msg::STRING), 'INCREASECOLLATERAL')
-            ))
-                OR
-            (method_name = 'oracle_on_call'
-            AND (
-                -- decrease_collateral
-                (actions = 'decrease_collateral' OR actions = 'DecreaseCollateral')
-                OR
-                TRY_PARSE_JSON(args:msg):Execute:actions[0]:DecreaseCollateral IS NOT NULL
-                OR
-                CONTAINS(UPPER(args:msg::STRING), 'DECREASECOLLATERAL')
-            ))
-        )
+                actions in ('increase_collateral', 'decrease_collateral')
     )
 SELECT
     tx_hash,
