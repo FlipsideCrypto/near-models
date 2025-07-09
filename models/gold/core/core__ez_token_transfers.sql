@@ -93,7 +93,7 @@ SELECT
     C.decimals AS decimals,
     C.symbol AS symbol,
     price AS token_price,
-    p.token_is_verified,
+    COALESCE(p.token_is_verified, FALSE) AS token_is_verified,
     transfer_type,
     transfer_action,
     receipt_succeeded,
