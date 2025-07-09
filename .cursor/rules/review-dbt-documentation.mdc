@@ -1,10 +1,15 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
 # Review dbt Documentation Process
 
 ## Overview
 This document outlines the comprehensive process for reviewing and improving column and table descriptions for gold models in dbt projects. The goal is to provide robust, rich details that improve context for LLM-driven analytics workflows, ensuring that documentation is complete, accurate, and self-contained without requiring external expert files.
 
 ## Objectives
-- Create comprehensive documentation that supports LLM understanding of blockchain data
+- Create clear, detailed documentation that supports LLM understanding of blockchain data
 - Ensure technical accuracy by referencing official protocol documentation
 - Provide rich context for each table and column to enable effective analytics
 - Maintain consistency across all models and schemas
@@ -56,14 +61,15 @@ This document outlines the comprehensive process for reviewing and improving col
 - Identify missing context or unclear explanations
 
 **Required Elements for Table Descriptions**
-- Clear explanation of what the model maps from the blockchain
+- Start with a clear, direct opening sentence that avoids repetitive or boilerplate language (do not use 'comprehensive' or similar adjectives as the opener)
+- Explain what the model maps from the blockchain
 - Scope and coverage of the data (time range, entities, etc.)
 - Relationships to other models in the lineage
 - Important transformations or business logic applied
 - Any data quality considerations or limitations
 
 **Improvement Actions**
-- Rewrite table description to be more comprehensive
+- Rewrite table description to be clear, direct, and non-repetitive
 - Add context about the blockchain data being modeled
 - Explain the business purpose and use cases
 - Include information about data freshness and update frequency
@@ -108,7 +114,7 @@ For each column in the model:
 **Documentation File Format**
 ```markdown
 {% docs column_name %}
-[Rich, comprehensive description including:
+[Rich, detailed description including:
 - Clear definition
 - Data format and examples
 - Business context
@@ -132,7 +138,7 @@ version: 2
 models:
   - name: [model_name]
     description: |-
-      [Comprehensive table description]
+      [Clear, direct table description]
     
     columns:
       - name: [COLUMN_NAME_IN_UPPERCASE]
@@ -144,7 +150,7 @@ models:
 ## Quality Standards
 
 ### Completeness
-- Every column must have a comprehensive description
+- Every column must have a clear, detailed description
 - Table descriptions must explain the model's purpose and scope
 - Documentation must be self-contained without requiring external context
 - All business logic and transformations must be explained

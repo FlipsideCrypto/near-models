@@ -3,7 +3,7 @@ version: 2
 models:
   - name: gov__fact_lockup_actions
     description: |-
-      This table records all disbursements by the contract lockup.near.
+      Comprehensive fact table containing all NEAR Protocol lockup contract disbursements with detailed vesting schedules and release timing information for governance analytics. This model serves as the primary source of truth for lockup activity data in the gold layer, providing normalized access to token disbursements, vesting schedules, and release mechanisms from the lockup.near contract. The model transforms raw lockup data from silver__lockup_actions into structured columns for efficient querying and analysis. It includes critical lockup information such as deposit amounts, lockup durations, vesting schedules, release timings, and account relationships. This table is essential for governance analytics, token release tracking, vesting schedule monitoring, and economic impact analysis. The data flows from blockchain transactions through silver__lockup_actions, with lockup contract parsing applied to extract structured disbursement data. This table represents the most comprehensive view of NEAR lockup activity, enabling detailed analysis of token release patterns, governance participation, and economic distribution mechanisms.
 
     columns:
       - name: TX_HASH
