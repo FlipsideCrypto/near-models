@@ -2,8 +2,7 @@ version: 2
 
 models:
   - name: core__dim_ft_contract_metadata
-    description: |-
-      Fungible Token contract metadata provided by the Nearblocks NFT endpoint.
+    description: "{{ doc('core__dim_ft_contract_metadata') }}"
 
     columns:
       - name: ASSET_IDENTIFIER

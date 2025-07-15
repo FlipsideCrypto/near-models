@@ -3,9 +3,7 @@ version: 2
 models:
   - name: gov__fact_staking_pool_balances
     description: |-
-      Staking pool balances as extracted from receipt logs when an individual makes a staking action.
-      To calculate balance at a point in time, isolate a single record for each pool. This table is transactional-based, so balances are updated with every staking event by users.
-      Note - the amount in balance is decimal adjusted by 10^24.
+      Comprehensive fact table containing all NEAR Protocol staking pool balance changes with transaction-based updates and decimal-adjusted amounts for governance analytics. This model serves as the primary source of truth for staking pool balance data in the gold layer, providing normalized access to pool balance updates triggered by individual staking actions. The model transforms raw pool balance data from silver__pool_balances into structured columns for efficient querying and analysis. It includes critical balance information such as pool addresses, balance amounts with decimal adjustments (10^24), and transaction context. This table is essential for staking pool analytics, validator performance tracking, balance history analysis, and governance participation monitoring. The data flows from blockchain logs through silver__pool_balances, with transaction-based balance updates captured for each staking event. This table represents the most comprehensive view of staking pool balance changes on NEAR, enabling detailed analysis of pool growth, validator competition, and staking distribution patterns across all supported staking pools.
     tests:
       - dbt_utils.recency:
           datepart: day

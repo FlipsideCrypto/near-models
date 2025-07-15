@@ -2,7 +2,7 @@ version: 2
 
 models:
   - name: core__ez_token_transfers
-    description: This table records all native token transfers and nep-141
+    description: "{{ doc('core__ez_token_transfers') }}"
     tests:
       - dbt_utils.recency:
           datepart: hour

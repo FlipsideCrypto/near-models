@@ -2,7 +2,7 @@ version: 2
 
 models:
   - name: core__fact_receipts
-    description: Decoded and flattened transaction receipts from the block shards.
+    description: "{{ doc('core__fact_receipts') }}"
     tests:
       - dbt_utils.recency:
           datepart: hours

@@ -3,7 +3,8 @@ version: 2
 models:
   - name: gov__dim_staking_pools
     description: |-
-      This table contains registered staking pools with NEAR.
+      Comprehensive dimension table containing NEAR Protocol registered staking pools with detailed ownership and fee structure information for governance analytics. This model serves as the primary source of truth for staking pool reference data in the gold layer, providing normalized access to pool addresses, owners, reward fee structures, and registration events. The model transforms raw staking pool data from silver__staking_pools_s3 into structured columns for efficient querying and analysis. It includes critical pool information such as pool addresses, owner accounts, reward fee fractions, transaction types (Create/Update), and registration timestamps. This table is essential for staking pool analytics, validator identification, fee structure analysis, and governance participation tracking. The data flows from blockchain transactions through silver__staking_pools_s3, with pool registration and update events captured to provide comprehensive pool context. This table supports understanding of NEAR staking ecosystem structure, validator competition, and governance participation patterns across all registered staking pools.
+
     tests:
       - dbt_utils.recency:
           datepart: day

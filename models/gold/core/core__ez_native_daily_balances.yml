@@ -2,9 +2,7 @@ version: 2
 
 models:
   - name: core__ez_native_daily_balances
-    description: |
-      This table records daily balances for NEAR Accounts, according to the parameters set by the Near team's balances indexer. More details around the source data can be found by reading about the NEAR Public Lakehouse on their documentation site: https://docs.near.org/tools/indexing.
-      Please Note - Flipside does not index or curate the data in this table, we simply provide it as-is from the NEAR Public Lakehouse with a daily sync from the public access table located at `bigquery-public-data.crypto_near_mainnet_us.ft_balances_daily`.
+    description: "{{ doc('core__ez_native_daily_balances') }}"
     tests:
       - dbt_utils.recency:
           datepart: day

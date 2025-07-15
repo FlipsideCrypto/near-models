@@ -2,9 +2,7 @@ version: 2
 
 models:
   - name: core__fact_token_transfers
-
-    description: |-
-      This table records all Native Token and Fungible Token (FT) transfers on the NEAR blockchain. It combines data from multiple sources including native transfers, deposits, NEP-141 method calls, events, mints, orders, and liquidity operations.
+    description: "{{ doc('core__fact_token_transfers') }}"
     columns:
       - name: BLOCK_ID
         description: "{{ doc('block_id')}}"

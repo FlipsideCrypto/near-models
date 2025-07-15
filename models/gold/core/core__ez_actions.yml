@@ -2,9 +2,7 @@ version: 2
 
 models:
   - name: core__ez_actions
-    description: |-
-      This table extracts and processes executed Actions from NEAR receipts - storing the argument data under action_data. FunctionCall data is decoded, where possible, and returned to the action_data object under args.
-      It combines transaction and receipt information to provide a comprehensive view on each of the actions events.
+    description: "{{ doc('core__ez_actions') }}"
 
     tests:
       - dbt_utils.recency:

@@ -2,8 +2,7 @@ version: 2
 
 models:
   - name: core__fact_transactions
-    description: |-
-      Transactions on the NEAR blockchain.
+    description: "{{ doc('core__fact_transactions') }}"
 
     tests:
       - dbt_utils.recency:

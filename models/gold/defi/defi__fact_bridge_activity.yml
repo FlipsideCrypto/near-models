@@ -2,8 +2,7 @@ version: 2
 
 models:
   - name: defi__fact_bridge_activity
-    description: |-
-      Modeled bridge activity, tracking tokens through the NEAR Ecosystem.
+    description: "{{ doc('defi__fact_bridge_activity') }}"
     tests:
       - dbt_utils.recency:
           datepart: day
