@@ -49,9 +49,9 @@ Table documentation must include 4 standard elements, formatted in markdown. As 
 
 The 4 standard categories (designed for LLM client consumption to aid in data model discovery and selection):
 
-1. **Description** (the "what"): What the model is mapping from the blockchain, data scope and coverage, transformations and business logic applied. Do not explain the dbt model lineage. This is not important for the use case of LLM-driven blockchain analytics.
+1. **Description** (the "what"): What the model is mapping from the blockchain, data scope and coverage, transformations and business logic applied. DO NOT EXPLAIN THE DBT MODEL LINEAGE. This is not important for the use case of LLM-driven blockchain analytics.
 2. **Key Use Cases**: Examples of when this table might be used and for what analysis, specific analytical scenarios and applications
-3. **Important Relationships**: How this table might be used alongside OTHER GOLD LEVEL models, dependencies and connections to other key gold models. For example, a table like logs, events, or receipts may contain information from a larget transactions. To build this description, you SHOULD review the dbt model lineage to understand genuine model relationships.
+3. **Important Relationships**: How this table might be used alongside OTHER GOLD LEVEL models, dependencies and connections to other key gold models. For example, a table like logs, events, or receipts may contain information from a larget transactions. To build this description, you SHOULD review the dbt model lineage to understand genuine model relationships. You must convert the model name to a database object, for example `core__fact_blocks.sql` = `core.fact_blocks` = `<schema>__<table_name>.sql`
 4. **Commonly-used Fields**: Fields most important to condicting analytics. Determining these requires an understanding of the data model, what the columns are (via their descriptions) and how those fields aid in analytics. One way an understanding can be inferred is by analyzing curated models (anything that is not a core model in the gold/core/ directory is curated. Core models clean and map basic data objects of the blockchain like blocks, transactions, events, logs, etc. Curated models map specialized areas of activity like defi, nfts, governance, etc.). Blockchain data is often logged to a data table as a json object with a rich mapping of event-based details.
 
 ### Lineage Analysis
@@ -61,6 +61,7 @@ Before writing table descriptions:
 - Review source models and transformations
 - Understand the business context and use cases
 - Review the column descriptions to estabish an understanding of the model, as a whole.
+- At the gold level, an ez_ table typically sources data from a fact_ table and this relationship should be documented. Ez_ tables add business logic such as (but not limited to) labels and USD price information
 
 ## Column Documentation Standards
 
