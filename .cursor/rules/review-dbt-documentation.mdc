@@ -50,7 +50,8 @@ This document outlines the comprehensive process for reviewing and improving col
 **Lineage Analysis**
 - Map the complete data lineage from source to gold model
 - Identify key transformations and their purposes
-- Understand relationships between related models
+- Understand relationships between related models for the sole purpose of generating a robust description
+- Do not include data lineage analysis in the table description
 
 ### Step 2: Column Description Review
 **Individual Column Analysis**
