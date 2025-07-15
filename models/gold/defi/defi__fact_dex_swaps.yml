@@ -2,8 +2,7 @@ version: 2
 
 models:
   - name: defi__fact_dex_swaps
-    description: |-
-      This fact table contains all NEAR Protocol decentralized exchange (DEX) swap transactions with detailed token flow and execution metadata. It serves as the primary source of truth for DEX swap data in the gold layer, providing normalized access to swap amounts, token pairs, execution details, and transaction context. The model transforms raw log data from silver__dex_swaps_v2 into structured columns for efficient querying and analysis. It includes critical swap information such as input/output amounts, token addresses, swap indices, and execution context. This table is essential for DeFi analytics, DEX volume tracking, token pair analysis, and trading pattern monitoring. The data flows from blockchain logs through silver__dex_swaps_v2, with log parsing applied to extract actual swap execution data rather than input parameters. This table represents the most accurate view of DEX trading activity on NEAR, enabling detailed analysis of liquidity flows, trading volumes, and market dynamics across all supported DEX protocols.
+    description: "{{ doc('defi__fact_dex_swaps') }}"
     tests:
       - dbt_utils.recency:
           datepart: hours

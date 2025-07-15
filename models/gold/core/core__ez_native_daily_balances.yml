@@ -2,9 +2,7 @@ version: 2
 
 models:
   - name: core__ez_native_daily_balances
-    description: |-
-      This easy-access table contains NEAR Protocol account balance snapshots with detailed staking and lockup information on a daily epoch basis. It serves as the primary analytics-ready table for account balance data in the gold layer, providing normalized access to liquid balances, staked amounts, rewards, and lockup account relationships. The model transforms raw balance data from the NEAR Public Lakehouse through silver__native_daily_balances into structured columns for efficient querying and analysis. It includes critical balance information such as liquid NEAR, staked amounts, accumulated rewards, storage usage, and lockup account relationships. This table is essential for account analytics, staking analysis, whale tracking, and economic activity monitoring. The data flows from the NEAR Public Lakehouse (bigquery-public-data.crypto_near_mainnet_us.ft_balances_daily) through silver__native_daily_balances, with epoch-based snapshots providing daily balance history. This table represents the most complete view of NEAR account financial positions, enabling detailed analysis of staking patterns, capital allocation, and economic behavior.
-      Please Note - Flipside does not index or curate the data in this table, we simply provide it as-is from the NEAR Public Lakehouse with a daily sync from the public access table located at `bigquery-public-data.crypto_near_mainnet_us.ft_balances_daily`.
+    description: "{{ doc('core__ez_native_daily_balances') }}"
     tests:
       - dbt_utils.recency:
           datepart: day

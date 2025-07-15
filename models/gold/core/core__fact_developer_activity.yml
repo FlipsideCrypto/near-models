@@ -2,8 +2,7 @@ version: 2
 
 models:
   - name: core__fact_developer_activity
-    description: |-
-      This fact table contains NEAR Protocol ecosystem developer activity metrics sourced from GitHub and other development platforms. It serves as the primary source of truth for developer engagement data in the gold layer, providing normalized access to repository activity, code contributions, and ecosystem development metrics. The model transforms raw GitHub API data from the silver layer into structured columns for efficient querying and analysis. It includes critical developer activity information such as repository metrics, contribution patterns, and ecosystem growth indicators. This table is essential for ecosystem analytics, developer engagement tracking, project health monitoring, and community growth analysis. The data flows from external GitHub APIs through silver__github_data, with endpoint-specific parsing applied to extract structured development metrics. This table supports understanding of NEAR ecosystem development velocity and community engagement patterns.
+    description: "{{ doc('core__fact_developer_activity') }}"
 
     columns:
       - name: REPO_OWNER

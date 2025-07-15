@@ -2,8 +2,7 @@ version: 2
 
 models:
   - name: core__fact_logs
-    description: |-
-      This fact table contains all NEAR Protocol blockchain event logs with standardized event parsing and metadata. It serves as the primary source of truth for log-level data in the gold layer, providing normalized access to smart contract events, cross-contract communication, and execution traces. The model transforms raw log data from the silver layer into structured columns for efficient querying and analysis. It includes critical log information such as event standards, parsed event data, gas consumption, and execution context. This table is essential for DeFi analytics, NFT event tracking, smart contract monitoring, and cross-contract interaction analysis. The data flows from bronze__transactions through silver__logs_s3, with event parsing applied to identify standard event formats and extract structured event data. Logs represent the primary mechanism for smart contracts to communicate state changes and events, making this table critical for understanding on-chain activity patterns.
+    description: "{{ doc('core__fact_logs') }}"
     tests:
       - dbt_utils.recency:
           datepart: hours

@@ -2,8 +2,7 @@ version: 2
 
 models:
   - name: nft__dim_nft_contract_metadata
-    description: |-
-      This dimension table contains NEAR Protocol NFT contract metadata with detailed collection information and contract-level attributes. It serves as the primary source of truth for NFT contract reference data in the gold layer, providing normalized access to collection names, symbols, base URIs, and contract configurations. The model transforms raw NFT contract metadata from silver__nft_contract_metadata into structured columns for efficient querying and analysis. It includes critical contract information such as collection names, token symbols, metadata URIs, contract icons, and token counts. This table is essential for NFT collection analytics, contract identification, metadata management, and collection discovery. The data flows from external NFT metadata APIs through silver__nft_contract_metadata, with contract-level attributes extracted to provide complete collection context. This table supports understanding of NEAR ecosystem NFT diversity, collection characteristics, and contract standardization patterns.
+    description: "{{ doc('nft__dim_nft_contract_metadata') }}"
 
     columns:
       - name: CONTRACT_ADDRESS

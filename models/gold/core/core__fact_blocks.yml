@@ -2,8 +2,7 @@ version: 2
 
 models:
   - name: core__fact_blocks
-    description: |-
-      This fact table contains all NEAR Protocol blockchain blocks with detailed header information and consensus metadata. It serves as the primary source of truth for block-level data in the gold layer, providing normalized access to block headers, consensus parameters, and sharding information. The model transforms raw JSON block data from the silver layer into structured columns for efficient querying and analysis. It includes critical consensus information such as epoch boundaries, validator proposals, gas pricing, and total supply tracking. This table is essential for blockchain analytics, network health monitoring, and consensus mechanism analysis. The data flows from bronze__blocks through silver__blocks_final, with JSON parsing applied to extract structured fields from the block header and chunks data.
+    description: "{{ doc('core__fact_blocks') }}"
     tests:
       - dbt_utils.recency:
           datepart: hours
