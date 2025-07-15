@@ -103,20 +103,6 @@ The gold layer is organized into domain-specific schemas:
 - **Stats**: Aggregated metrics and KPIs
 - **Atlas**: Supply and economic indicators
 
-## Using dbt docs
-
-To explore the complete data lineage and documentation:
-
-1. Run `dbt docs generate` to create the documentation
-2. Run `dbt docs serve` to start the documentation server
-3. Navigate to the generated documentation in your browser
-
-The documentation includes:
-- Table and column descriptions
-- Data lineage graphs
-- Test results and data quality metrics
-- Model dependencies and relationships
-
 <llm>
 <blockchain>NEAR Protocol</blockchain>
 <aliases>NEAR, NEAR Protocol</aliases>

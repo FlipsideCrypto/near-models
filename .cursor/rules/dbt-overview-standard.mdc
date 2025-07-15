@@ -11,7 +11,7 @@ The file `models/descriptions/__overview__.md` is the entry point to the model d
 The file MUST START AND END WITH DBT JINJA DOCS TAGS `{% docs __overview__ %}` and `{% ENDDOCS %}`
 
 ## Quick Links Section Requirements
-The `__overview__.md` file MUST contain a "Quick Links to Table Documentation" section that provides direct navigation to all gold model documentation. This section must include a simple list, organized by gold schema, with the models and a hyperlink to the model documentation.
+The `__overview__.md` file MUST contain a "Quick Links to Table Documentation" section that provides direct navigation to all gold model documentation. This section must include a simple list, organized by gold schema, with the models and a hyperlink to the model documentation. If there is an existing section like "using dbt docs" that instructs the user on how to navigate dbt docs or a list of links to flipside and dbt, remove it! These are outdated.
 
 ### Required Elements:
 **Hyperlinks to Gold Model Documentation** - A comprehensive list of all gold models organized by schema. The schema can be inferred from the model name as the slug before the double underscore. For example, `core__fact_blocks` is a model named `fact_blocks` in the schema `core`.  
