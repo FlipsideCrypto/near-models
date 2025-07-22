@@ -2,8 +2,8 @@ version: 2
 
 models:
   - name: gov__dim_staking_pools
-    description: |-
-      This table contains registered staking pools with NEAR.
+    description: "{{ doc('gov__dim_staking_pools') }}"
+
     tests:
       - dbt_utils.recency:
           datepart: day

@@ -1,7 +1,7 @@
 version: 2
 models:
   - name: stats__ez_core_metrics_hourly
-    description: '{{ doc("ez_core_metrics_hourly_table_doc") }}'
+    description: "{{ doc('stats__ez_core_metrics_hourly') }}"
 
     columns:
       - name: BLOCK_TIMESTAMP_HOUR

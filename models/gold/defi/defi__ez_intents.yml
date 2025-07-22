@@ -2,10 +2,7 @@ version: 2
 
 models:
   - name: defi__ez_intents
-    description: |-
-      Enhanced view of NEAR Intents data with token metadata and USD pricing.
-      This model enriches the fact_intents data with token symbols, decimals, and USD values,
-      making it easier to analyze token transfers and financial metrics within the Intents protocol.
+    description: "{{ doc('defi__ez_intents') }}"
 
     tests:
       - dbt_utils.recency:

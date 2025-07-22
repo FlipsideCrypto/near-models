@@ -2,8 +2,7 @@ version: 2
 
 models:
   - name: core__dim_address_labels
-    description: |-
-      "{{doc('table_dim_labels')}}"
+    description: "{{ doc('core__dim_address_labels') }}"
 
     columns:
       - name: SYSTEM_CREATED_AT

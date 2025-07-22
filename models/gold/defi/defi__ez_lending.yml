@@ -1,8 +1,7 @@
 version: 2
 models:
   - name: defi__ez_lending
-    description: |-
-      Modeled activity for lending, with token contract and price info joined in for ease of use.
+    description: "{{ doc('defi__ez_lending') }}"
     tests:
       - dbt_utils.recency:
           datepart: hours

@@ -2,8 +2,7 @@ version: 2
 
 models:
   - name: core__fact_blocks
-    description: |-
-      This table records all the blocks of Near blockchain.
+    description: "{{ doc('core__fact_blocks') }}"
     tests:
       - dbt_utils.recency:
           datepart: hours

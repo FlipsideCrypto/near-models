@@ -2,9 +2,7 @@ version: 2
 
 models:
   - name: atlas__ez_supply
-    description: |-
-      Deprecating Soon - these tables previously supported NEAR Atlas which is no longer live. These tables will be removed on Febreary 1, 2025.
-      This EZ_SUPPLY table will be retained and migrated to CORE.
+    description: "{{ doc('atlas__ez_supply') }}"
     tests:
       - dbt_utils.recency:
           datepart: days

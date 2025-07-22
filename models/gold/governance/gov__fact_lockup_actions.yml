@@ -2,8 +2,7 @@ version: 2
 
 models:
   - name: gov__fact_lockup_actions
-    description: |-
-      This table records all disbursements by the contract lockup.near.
+    description: "{{ doc('gov__fact_lockup_actions') }}"
 
     columns:
       - name: TX_HASH

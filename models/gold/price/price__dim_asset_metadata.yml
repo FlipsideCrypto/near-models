@@ -1,7 +1,7 @@
 version: 2
 models:
   - name: price__dim_asset_metadata
-    description: '{{ doc("prices_dim_asset_metadata_table_doc") }}'
+    description: "{{ doc('price__dim_asset_metadata') }}"
 
     columns:
       - name: PROVIDER

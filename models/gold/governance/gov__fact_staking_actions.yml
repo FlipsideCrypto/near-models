@@ -2,10 +2,7 @@ version: 2
 
 models:
   - name: gov__fact_staking_actions
-    description: |-
-      An updated version of the staking actions table which looks at all logs, instead of just the first receipt.
-      There are four actions taken when staking: staking->deposit->unstaking->withdraw.
-      Note - in this core view the amount is decimal adjusted by 10^24.
+    description: "{{ doc('gov__fact_staking_actions') }}"
     tests:
       - dbt_utils.recency:
           datepart: day

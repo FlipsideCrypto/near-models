@@ -2,8 +2,7 @@ version: 2
 
 models:
   - name: defi__fact_dex_swaps
-    description: |-
-      Parses log output data for swap information. It was determined logs must be used over inputs in a FunctionCall as only the output contains actual swap information. See tx AfvgkUxP8taJNBLaZYvFumFrrePpJujb2gjQJz7YbRiM as an example.
+    description: "{{ doc('defi__fact_dex_swaps') }}"
     tests:
       - dbt_utils.recency:
           datepart: hours

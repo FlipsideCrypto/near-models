@@ -2,10 +2,7 @@ version: 2
 
 models:
   - name: nft__ez_nft_sales
-    description: |-
-      This view provides a standardized interface for all NFT sales across NEAR marketplaces.
-      It includes sales from Mintbase, Paras, and other marketplaces (Apollo42, TradePort, UniqArt, L2E, FewAndFar, Mitte).
-      The view handles price conversions to USD and includes platform fees, royalties, and affiliate information where available.
+    description: "{{ doc('nft__ez_nft_sales') }}"
 
     columns:
       - name: RECEIPT_ID

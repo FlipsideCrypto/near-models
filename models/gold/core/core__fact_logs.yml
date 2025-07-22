@@ -2,8 +2,7 @@ version: 2
 
 models:
   - name: core__fact_logs
-    description: |-
-      This table extracts all logs from receipts and decodes the arguments for easy use.
+    description: "{{ doc('core__fact_logs') }}"
     tests:
       - dbt_utils.recency:
           datepart: hours

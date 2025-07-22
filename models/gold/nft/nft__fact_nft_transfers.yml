@@ -2,7 +2,7 @@ version: 2
 
 models:
   - name: nft__fact_nft_transfers
-    description: This table contains all the NFT transfers
+    description: "{{ doc('nft__fact_nft_transfers') }}"
     columns:
       - name: BLOCK_ID
         description: "{{ doc('block_id')}}"

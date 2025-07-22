@@ -1,8 +1,7 @@
 version: 2
 models:
   - name: defi__fact_lending
-    description: |-
-      Modeled activity for lending
+    description: "{{ doc('defi__fact_lending') }}"
     tests:
       - dbt_utils.recency:
           datepart: hours

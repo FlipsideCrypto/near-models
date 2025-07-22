@@ -1,7 +1,7 @@
 version: 2
 models:
   - name: price__fact_prices_ohlc_hourly
-    description: '{{ doc("prices_fact_prices_ohlc_hourly_table_doc") }}'
+    description: "{{ doc('price__fact_prices_ohlc_hourly') }}"
 
     columns:
       - name: HOUR

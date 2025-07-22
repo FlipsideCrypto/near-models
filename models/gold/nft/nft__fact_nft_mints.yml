@@ -2,8 +2,7 @@ version: 2
 
 models:
   - name: nft__fact_nft_mints
-    description: |-
-      This table records all the NFT Mints per the NEP171 standard, across various methods.
+    description: "{{ doc('nft__fact_nft_mints') }}"
 
     columns:
       - name: RECEIPT_OBJECT_ID

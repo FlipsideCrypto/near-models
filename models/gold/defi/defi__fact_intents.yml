@@ -2,9 +2,7 @@ version: 2
 
 models:
   - name: defi__fact_intents
-    description: |-
-      Parsed NEP245 logs from executed Intents onchain. 
-      As the Near Intents protocol is in active development, this table may be subject to modification to maintain data integrity. The version of the DIP4 standard that is emitted with the executed intent logs is included, as a result.
+    description: "{{ doc('defi__fact_intents') }}"
 
     tests:
       - dbt_utils.recency:

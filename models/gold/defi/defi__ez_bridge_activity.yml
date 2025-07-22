@@ -2,9 +2,7 @@ version: 2
 
 models:
   - name: defi__ez_bridge_activity
-    description: >
-      Modeled bridge activity, tracking tokens through the NEAR Ecosystem.
-      Token labels and USD Price appended to record, where available.
+    description: "{{ doc('defi__ez_bridge_activity') }}"
     tests:
       - dbt_utils.recency:
           datepart: day
