@@ -2,8 +2,7 @@ version: 2
 
 models:
   - name: atlas__ez_supply
-    description: |-
-      This easy-access table contains NEAR Protocol token supply metrics with detailed breakdowns of staked, locked, and circulating supply for economic analytics. It serves as the primary analytics-ready table for NEAR supply data in the gold layer, providing normalized access to total supply, staking distribution, lockup allocations, and circulating supply metrics. The model transforms raw supply data from silver__atlas_supply into structured columns for efficient querying and analysis. It includes critical supply information such as total supply, staked/non-staked breakdowns, locked/liquid allocations, circulating supply metrics, and percentage distributions. This table is essential for economic analytics, supply distribution analysis, staking participation monitoring, and market liquidity assessment. The data flows from supply calculation models through silver__atlas_supply, with detailed supply categorization applied to provide economic context. This table represents the most complete view of NEAR token supply dynamics, enabling detailed analysis of supply distribution, economic behavior, and market structure patterns. Note: This table is being migrated to the core schema and will be retained while other atlas tables are deprecated.
+    description: "{{ doc('atlas__ez_supply') }}"
     tests:
       - dbt_utils.recency:
           datepart: days

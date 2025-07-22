@@ -2,8 +2,7 @@ version: 2
 
 models:
   - name: nft__fact_nft_mints
-    description: |-
-      This fact table contains all NEAR Protocol NFT minting transactions with detailed NEP-171 standard metadata and execution context. It serves as the primary source of truth for NFT minting data in the gold layer, providing normalized access to mint transactions, token creation details, and ownership assignments. The model transforms raw NFT mint data from silver__standard_nft_mint_s3 into structured columns for efficient querying and analysis. It includes critical mint information such as token IDs, mint methods, ownership details, gas consumption, transaction fees, and execution status. This table is essential for NFT analytics, collection tracking, creator activity monitoring, and market dynamics analysis. The data flows from blockchain transactions through silver__standard_nft_mint_s3, with NEP-171 standard parsing applied to extract structured mint data. This table represents the most complete view of NFT creation activity on NEAR, enabling detailed analysis of minting patterns, collection growth, and creator behavior across all supported NFT standards.
+    description: "{{ doc('nft__fact_nft_mints') }}"
 
     columns:
       - name: RECEIPT_OBJECT_ID

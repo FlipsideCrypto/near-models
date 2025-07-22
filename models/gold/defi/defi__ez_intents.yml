@@ -2,8 +2,7 @@ version: 2
 
 models:
   - name: defi__ez_intents
-    description: |-
-      Comprehensive easy-access table containing all NEAR Protocol intent-based transactions with enhanced token metadata, price data, and decimal-adjusted amounts for streamlined analytics. This model serves as the primary analytics-ready table for intent protocol data in the gold layer, providing normalized access to intent execution with token symbols, USD valuations, and multi-token operation context. The model transforms raw intent data from defi__fact_intents into structured columns with token metadata from silver__ft_contract_metadata and price data from price__ez_prices_hourly for efficient querying and analysis. It includes critical intent information such as token amounts with decimal adjustments, USD valuations, referral codes, DIP-4 versions, and multi-token operation details. This table is essential for intent protocol analytics, multi-token transaction tracking, referral program analysis, and user experience optimization. The data flows from defi__fact_intents with token metadata and price data joined to provide comprehensive intent context. This table represents the most user-friendly view of NEAR's intent-based transaction system, enabling detailed analysis of user transaction patterns, referral adoption, and protocol evolution as the standard continues active development.
+    description: "{{ doc('defi__ez_intents') }}"
 
     tests:
       - dbt_utils.recency:

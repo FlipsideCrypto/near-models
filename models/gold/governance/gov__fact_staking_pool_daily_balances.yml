@@ -2,8 +2,7 @@ version: 2
 
 models:
   - name: gov__fact_staking_pool_daily_balances
-    description: |-
-      Comprehensive fact table containing NEAR Protocol staking pool daily balance snapshots with end-of-day aggregation for governance analytics. This model serves as the primary source of truth for daily staking pool balance data in the gold layer, providing normalized access to daily balance snapshots for each staking pool. The model transforms raw daily balance data from silver__pool_balance_daily into structured columns for efficient querying and analysis. It includes critical daily balance information such as pool addresses, end-of-day balances, and date context. This table is essential for staking pool analytics, daily balance tracking, validator performance monitoring, and governance participation analysis. The data flows from transaction-based balance updates with daily aggregation applied to capture the last reported balance for each pool per day, excluding the current date. This table represents the most comprehensive view of daily staking pool balances on NEAR, enabling detailed analysis of pool growth trends, validator competition, and staking distribution patterns over time.
+    description: "{{ doc('gov__fact_staking_pool_daily_balances') }}"
     tests:
       - dbt_utils.recency:
           datepart: day

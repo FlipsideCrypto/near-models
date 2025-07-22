@@ -2,11 +2,7 @@ version: 2
 
 models:
   - name: defi__ez_dex_swaps
-    description: |-
-      Comprehensive easy-access table containing all NEAR Protocol DEX swap transactions with enhanced token metadata, price data, and decimal-adjusted amounts for streamlined analytics. This model serves as the primary analytics-ready table for DEX activity in the gold layer, providing normalized access to swap details with token symbols, USD valuations, and pool information. The model transforms raw swap data from silver__dex_swaps_v2 into structured columns with token metadata from silver__ft_contract_metadata and price data from silver__complete_token_prices for efficient querying and analysis. It includes critical swap information such as input/output amounts with decimal adjustments, USD valuations, token symbols, pool IDs, and trader addresses. This table is essential for DEX analytics, trading volume analysis, token pair performance tracking, and market dynamics monitoring. The data flows from defi__fact_dex_swaps with token metadata and price data joined to provide comprehensive swap context. This table represents the most user-friendly view of DEX trading activity on NEAR, enabling detailed analysis of trading patterns, liquidity flows, and market efficiency across all supported DEX protocols.
-      Note - view updated February 2024 to use the same v2 Swaps model as fact_dex_swaps.
-      TOKEN_IN and TOKEN_OUT are now SYMBOL_IN/OUT.
-      POOL ID is found in the SWAP_INPUT_DATA, where available.
+    description: "{{ doc('defi__ez_dex_swaps') }}"
 
     columns:
       - name: TX_HASH

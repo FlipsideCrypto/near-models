@@ -2,8 +2,7 @@ version: 2
 
 models:
   - name: gov__fact_staking_actions
-    description: |-
-      Comprehensive fact table containing all NEAR Protocol staking actions with detailed pool interactions and decimal-adjusted amounts for governance analytics. This model serves as the primary source of truth for staking activity data in the gold layer, providing normalized access to staking, deposit, unstaking, and withdrawal actions across all staking pools. The model transforms raw staking data from silver__staking_actions_v2 into structured columns for efficient querying and analysis. It includes critical staking information such as action types, pool addresses, amounts with decimal adjustments (10^24), and transaction context. This table is essential for staking analytics, validator performance tracking, governance participation monitoring, and economic activity analysis. The data flows from blockchain logs through silver__staking_actions_v2, with comprehensive log parsing applied to capture all staking-related actions rather than just first receipts. This table represents the most comprehensive view of NEAR staking activity, enabling detailed analysis of staking patterns, validator behavior, and governance participation across all supported staking pools.
+    description: "{{ doc('gov__fact_staking_actions') }}"
     tests:
       - dbt_utils.recency:
           datepart: day

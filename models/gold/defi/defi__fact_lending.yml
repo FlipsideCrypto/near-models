@@ -1,8 +1,7 @@
 version: 2
 models:
   - name: defi__fact_lending
-    description: |-
-      This fact table contains all NEAR Protocol lending protocol transactions with detailed borrowing and lending activity metadata. It serves as the primary source of truth for lending protocol data in the gold layer, providing normalized access to lending actions, amounts, token types, and protocol interactions. The model transforms raw lending data from silver__burrow_lending into structured columns for efficient querying and analysis. It includes critical lending information such as platform identification, action types, token amounts, contract addresses, and user interactions. This table is essential for DeFi lending analytics, protocol usage tracking, risk assessment, and capital efficiency analysis. The data flows from blockchain transactions through silver__burrow_lending, with action parsing applied to extract structured lending activity data. This table represents the most complete view of lending activity on NEAR, enabling detailed analysis of borrowing patterns, lending volumes, and protocol adoption across all supported lending platforms.
+    description: "{{ doc('defi__fact_lending') }}"
     tests:
       - dbt_utils.recency:
           datepart: hours

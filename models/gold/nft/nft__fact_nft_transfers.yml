@@ -2,8 +2,7 @@ version: 2
 
 models:
   - name: nft__fact_nft_transfers
-    description: |-
-      This fact table contains all NEAR Protocol NFT transfer transactions with detailed ownership change metadata and execution context. It serves as the primary source of truth for NFT transfer data in the gold layer, providing normalized access to ownership transfers, contract interactions, and token movement patterns. The model transforms raw NFT transfer data from silver__nft_transfers into structured columns for efficient querying and analysis. It includes critical transfer information such as sender/receiver addresses, token IDs, contract addresses, and transaction context. This table is essential for NFT analytics, ownership tracking, market activity monitoring, and collection movement analysis. The data flows from blockchain transactions through silver__nft_transfers, with transfer parsing applied to extract structured ownership change data. This table represents the most complete view of NFT ownership transfers on NEAR, enabling detailed analysis of trading patterns, collection liquidity, and market dynamics across all supported NFT standards.
+    description: "{{ doc('nft__fact_nft_transfers') }}"
     columns:
       - name: BLOCK_ID
         description: "{{ doc('block_id')}}"

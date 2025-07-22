@@ -2,8 +2,7 @@ version: 2
 
 models:
   - name: defi__fact_intents
-    description: |-
-      Comprehensive fact table containing all NEAR Protocol intent-based transactions with detailed NEP-245 and DIP-4 standard metadata. This model serves as the primary source of truth for intent protocol data in the gold layer, providing normalized access to intent execution, multi-token operations, and referral tracking. The model transforms raw intent logs from silver__logs_s3 into structured columns for efficient querying and analysis. It includes critical intent information such as token amounts, owner transfers, referral codes, DIP-4 versions, and execution context. This table is essential for intent protocol analytics, multi-token transaction tracking, referral program analysis, and user experience optimization. The data flows from blockchain logs through silver__logs_s3, with NEP-245 and DIP-4 standard parsing applied to extract structured intent data. This table represents the most comprehensive view of NEAR's intent-based transaction system, enabling detailed analysis of user transaction patterns, referral adoption, and protocol evolution as the standard continues active development.
+    description: "{{ doc('defi__fact_intents') }}"
 
     tests:
       - dbt_utils.recency:

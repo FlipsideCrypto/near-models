@@ -1,8 +1,7 @@
 version: 2
 models:
   - name: price__fact_prices_ohlc_hourly
-    description: |-
-      This fact table contains NEAR Protocol token price data with hourly OHLC (Open, High, Low, Close) candlestick information for market analysis. It serves as the primary source of truth for token price data in the gold layer, providing normalized access to price movements, volatility metrics, and market performance indicators. The model transforms raw price data from silver__complete_provider_prices into structured OHLC columns for efficient querying and analysis. It includes critical price information such as hourly price ranges, opening/closing prices, and provider attribution. This table is essential for token price analytics, market volatility analysis, trading performance tracking, and economic activity monitoring. The data flows from multiple price providers through silver__complete_provider_prices, with hourly aggregation applied to create standardized OHLC candlesticks. This table represents the most complete view of token price movements on NEAR, enabling detailed analysis of market dynamics, price trends, and trading patterns across all supported tokens.
+    description: "{{ doc('price__fact_prices_ohlc_hourly') }}"
 
     columns:
       - name: HOUR
