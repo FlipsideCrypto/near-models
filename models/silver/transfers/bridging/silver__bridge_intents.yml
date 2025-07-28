@@ -1,0 +1,107 @@
+version: 2
+
+models:
+  - name: silver__bridge_intents
+    description: Silver layer model that processes bridge intent events from NEAR blockchain, specifically tracking mint/burn operations for cross-chain token transfers through the Intents protocol.
+
+    columns:
+      - name: BLOCK_ID
+        description: "{{ doc('block_id') }}"
+        tests:
+          - not_null
+
+      - name: BLOCK_TIMESTAMP
+        description: "{{ doc('block_timestamp') }}"
+        tests:
+          - not_null
+
+      - name: TX_HASH
+        description: "{{ doc('tx_hash') }}"
+        tests:
+          - not_null
+
+      - name: TOKEN_ADDRESS
+        description: "{{ doc('token_address') }}"
+        tests:
+          - not_null
+
+      - name: TOKEN_ADDRESS_RAW
+        description: "{{ doc('token_address_raw') }}"
+        tests:
+          - not_null
+
+      - name: AMOUNT_UNADJ
+        description: "{{ doc('amount_unadj') }}"
+        tests:
+          - not_null
+
+      - name: AMOUNT_ADJ
+        description: "{{ doc('amount_adj') }}"
+        tests:
+          - not_null
+
+      - name: DESTINATION_ADDRESS
+        description: "{{ doc('destination_address') }}"
+        tests:
+          - not_null
+
+      - name: SOURCE_ADDRESS
+        description: "{{ doc('source_address') }}"
+        tests:
+          - not_null
+
+      - name: PLATFORM
+        description: "{{ doc('platform') }}"
+        tests:
+          - not_null
+
+      - name: BRIDGE_ADDRESS
+        description: "{{ doc('bridge_address') }}"
+        tests:
+          - not_null
+
+      - name: DESTINATION_CHAIN
+        description: "{{ doc('destination_chain') }}"
+        tests:
+          - not_null
+
+      - name: SOURCE_CHAIN
+        description: "{{ doc('source_chain') }}"
+        tests:
+          - not_null
+
+      - name: METHOD_NAME
+        description: "{{ doc('method_name') }}"
+        tests:
+          - not_null
+
+      - name: DIRECTION
+        description: "{{ doc('direction') }}"
+        tests:
+          - not_null
+
+      - name: RECEIPT_SUCCEEDED
+        description: "{{ doc('receipt_succeeded') }}"
+        tests:
+          - not_null
+
+      - name: BRIDGE_INTENTS_ID
+        description: "{{ doc('id') }}"
+        tests:
+          - not_null
+          - unique
+
+      - name: INSERTED_TIMESTAMP
+        description: "{{ doc('_inserted_timestamp') }}"
+        tests:
+          - not_null
+
+      - name: MODIFIED_TIMESTAMP
+        description: "{{ doc('_modified_timestamp') }}"
+        tests:
+          - not_null
+
+      - name: _INVOCATION_ID
+        description: "{{ doc('_invocation_id') }}"
+        tests:
+          - not_null
