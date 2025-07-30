@@ -5,7 +5,6 @@
     merge_exclude_columns = ['inserted_timestamp'],
     cluster_by = ['block_timestamp::DATE'],
     incremental_predicates = ["dynamic_range_predicate_custom","block_timestamp::date"],
-    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,token_address,destination_address,source_address,bridge_address,destination_chain,source_chain,method_name,direction,receipt_succeeded);",
     tags = ['scheduled_non_core']
 ) }}
 -- depends on {{ ref('defi__fact_intents') }}
