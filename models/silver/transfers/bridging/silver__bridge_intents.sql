@@ -34,6 +34,7 @@ WITH bridge_intents AS (
         predecessor_id,
         log_event,
         log_index,
+        log_event_index,
         owner_id,
         token_id,
         amount_raw,
@@ -79,6 +80,8 @@ bridge_intents_mapped AS (
         predecessor_id,
         log_event,
         'execute_intents' AS method_name, -- Unnecessary to join actions just to get this
+        log_index,
+        log_event_index,
         owner_id,
         contract_address_raw AS token_address,
         token_id AS token_address_raw,
@@ -114,6 +117,8 @@ SELECT
     block_id,
     block_timestamp,
     tx_hash,
+    log_index,
+    log_event_index,
     token_address,
     token_address_raw,
     amount_unadj,
@@ -128,7 +133,7 @@ SELECT
     direction,
     receipt_succeeded,
     {{ dbt_utils.generate_surrogate_key(
-        ['tx_hash', 'source_chain', 'destination_address', 'token_address', 'amount_unadj']
+        ['tx_hash', 'log_index', 'log_event_index', 'source_chain', 'destination_address', 'token_address', 'amount_unadj']
     ) }} AS bridge_intents_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
