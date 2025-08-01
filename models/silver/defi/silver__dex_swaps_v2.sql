@@ -10,7 +10,7 @@
 
 -- depends on {{ ref('silver__logs_s3') }}
 -- depends on {{ ref('silver__receipts_final') }}
--- depends on {{ ref('silver__intents_swaps') }}
+-- depends on {{ ref('silver__swap_intents') }}
 
 {% if execute %}
 
