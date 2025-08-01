@@ -356,7 +356,7 @@ intents_swaps AS (
         log AS LOG,
         _partition_by_block_number
     FROM
-        {{ ref('silver__intents_swaps') }}
+        {{ ref('silver__swap_intents') }}
         
     {% if var("MANUAL_FIX") %}
         WHERE {{ partition_load_manual('no_buffer', 'block_timestamp::date') }}
