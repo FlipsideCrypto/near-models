@@ -10,6 +10,7 @@
 
 -- depends on {{ ref('silver__logs_s3') }}
 -- depends on {{ ref('silver__receipts_final') }}
+-- depends on {{ ref('silver__intents_swaps') }}
 
 {% if execute %}
 
@@ -319,7 +320,7 @@ parse_actions AS (
             ) >= '{{max_mod}}'
     {% endif %}
 ),
-FINAL AS (
+dex_swaps AS (
     SELECT
         tx_hash,
         receipt_id,
@@ -337,11 +338,45 @@ FINAL AS (
         _partition_by_block_number
     FROM
         parse_actions
+),
+intents_swaps AS (
+    SELECT
+        tx_hash,
+        receipt_id,
+        block_id,
+        block_timestamp,
+        receiver_id,
+        signer_id,
+        swap_index,
+        amount_out_raw,
+        token_out,
+        amount_in_raw,
+        token_in,
+        swap_input_data,
+        log AS LOG,
+        _partition_by_block_number
+    FROM
+        {{ ref('silver__intents_swaps') }}
+        
+    {% if var("MANUAL_FIX") %}
+        WHERE {{ partition_load_manual('no_buffer', 'block_timestamp::date') }}
+    {% else %}
+        {% if is_incremental() %}
+            WHERE modified_timestamp > (
+                SELECT MAX(modified_timestamp) FROM {{ this }}
+            )
+        {% endif %}
+    {% endif %}
+),
+FINAL AS (
+    SELECT * FROM dex_swaps
+    UNION ALL
+    SELECT * FROM intents_swaps
 )
 SELECT
     *,
     {{ dbt_utils.generate_surrogate_key(
-        ['receipt_id', 'swap_index']
+        ['tx_hash', 'receipt_id', 'swap_index', 'receiver_id']
     ) }} AS dex_swaps_v2_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
