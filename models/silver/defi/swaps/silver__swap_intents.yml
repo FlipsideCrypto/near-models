@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: silver__intents_swaps
+  - name: silver__swap_intents
     description: Silver layer model that processes intent-based swap events from NEAR blockchain, specifically tracking token exchanges through the Intents protocol on intents.near.
 
     columns:
