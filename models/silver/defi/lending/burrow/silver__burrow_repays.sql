@@ -110,7 +110,7 @@ SELECT
     token_contract_address,
     _partition_by_block_number,
     {{ dbt_utils.generate_surrogate_key(
-        ['receipt_id', 'action_index']
+        ['receipt_id', 'action_index', 'token_contract_address']
     ) }} AS burrow_repays_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
