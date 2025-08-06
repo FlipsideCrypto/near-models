@@ -60,7 +60,7 @@ WHERE
 
 qualify(ROW_NUMBER() over (PARTITION BY token_address, HOUR
 ORDER BY
-    HOUR DESC) = 1)
+    HOUR DESC, IS_VERIFIED DESC) = 1)
 ),
 FINAL AS (
 SELECT

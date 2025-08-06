@@ -19,7 +19,7 @@ WITH prices AS (
         qualify ROW_NUMBER() over (
             PARTITION BY block_timestamp_hour
             ORDER BY
-                HOUR DESC
+                HOUR DESC, IS_VERIFIED DESC
         ) = 1
 )
 SELECT
