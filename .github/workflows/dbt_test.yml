@@ -48,4 +48,4 @@ jobs:
 
       - name: Log test results
         run: |
-          python python_scripts/test_alert/dbt_test_alert.py
+          python python/test_alert/dbt_test_alert.py
