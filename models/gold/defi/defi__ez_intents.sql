@@ -155,7 +155,7 @@ AND
 
 qualify(ROW_NUMBER() over (PARTITION BY COALESCE(token_address, symbol), HOUR
 ORDER BY
-    HOUR DESC) = 1)
+    HOUR DESC, IS_VERIFIED DESC) = 1)
 ),
 prices_native AS (
     SELECT
@@ -180,7 +180,7 @@ AND
 
 qualify(ROW_NUMBER() over (PARTITION BY COALESCE(token_address, symbol), HOUR
 ORDER BY
-    HOUR DESC) = 1)
+    HOUR DESC, IS_VERIFIED DESC) = 1)
 ),
 FINAL AS (
     SELECT
