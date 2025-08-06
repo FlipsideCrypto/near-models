@@ -24,3 +24,6 @@ local*
 .cursorignore
 .cursorrules
 .cursor/mcp.json
+CLAUDE.local.md
+
+__pycache__/
