@@ -27,6 +27,34 @@ WITH dex_swaps AS (
     FROM
         {{ ref('silver__dex_swaps_v2') }}
 ),
+
+intents_swaps AS (
+    SELECT
+        tx_hash,
+        receipt_id,
+        block_id,
+        block_timestamp,
+        receiver_id,
+        signer_id,
+        swap_index,
+        amount_out_raw,
+        token_out,
+        amount_in_raw,
+        token_in,
+        swap_input_data,
+        log AS LOG,
+        intents_swap_id AS ez_dex_swaps_id,
+        inserted_timestamp,
+        modified_timestamp
+    FROM
+        {{ ref('silver__swap_intents') }}
+),
+
+all_swaps AS (
+    SELECT * FROM dex_swaps
+    UNION ALL
+    SELECT * FROM intents_swaps
+),
 labels AS (
     SELECT
         asset_identifier AS contract_address,
@@ -85,7 +113,7 @@ FINAL AS (
         s.inserted_timestamp,
         s.modified_timestamp
     FROM
-        dex_swaps s
+        all_swaps s
         LEFT JOIN labels l1
         ON s.token_out = l1.contract_address
         LEFT JOIN labels l2
