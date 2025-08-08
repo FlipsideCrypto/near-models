@@ -33,43 +33,57 @@ labels AS (
     SELECT 
         asset_identifier AS contract_address,
         name,
+        source_chain,
+        crosschain_token_contract,
+        near_token_contract,
         symbol,
-        decimals 
+        decimals
     FROM 
         {{ ref('silver__ft_contract_metadata') }}
+    WHERE crosschain_token_contract IS NOT NULL
+    QUALIFY(ROW_NUMBER() OVER (
+        PARTITION BY asset_identifier
+        ORDER BY asset_identifier
+    ) = 1)
 ),
-prices AS (
-        SELECT
-            DATE_TRUNC(
-                'hour',
-                hour
-            ) AS block_timestamp,
-        token_address AS contract_address,
-        AVG(price) AS price_usd,
-        MAX(symbol) AS symbol,
-        MAX(is_verified) AS token_is_verified
-    FROM
-        {{ ref('silver__complete_token_prices') }}
-    GROUP BY
-        1,
-        2
-),
-prices_mapping AS (
-    SELECT
-        block_timestamp,
-        CASE
-            WHEN contract_address = '0xf7413489c474ca4399eee604716c72879eea3615' THEN 'apys.token.a11bd.near'
-            WHEN contract_address = '0x3294395e62f4eb6af3f1fcf89f5602d90fb3ef69' THEN 'celo.token.a11bd.near'
-            WHEN contract_address = '0xd2877702675e6ceb975b4a1dff9fb7baf4c91ea9' THEN 'luna.token.a11bd.near'
-            WHEN contract_address = '0xa47c8bf37f92abed4a126bda807a7b7498661acd' THEN 'ust.token.a11bd.near'
-            WHEN contract_address = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' THEN 'aurora'
-            ELSE contract_address
-        END AS contract_address,
+prices_crosschain AS (
+    SELECT DISTINCT
+        token_address,
+        blockchain,
         symbol,
-        price_usd,
-        token_is_verified
+        price,
+        decimals,
+        is_native,
+        is_verified,
+        hour
     FROM
-        prices
+        {{ source('crosschain_price', 'ez_prices_hourly') }}
+    WHERE
+        NOT is_native
+        AND is_verified
+    QUALIFY(ROW_NUMBER() OVER (
+        PARTITION BY token_address, DATE_TRUNC('hour', hour)
+        ORDER BY hour DESC
+    ) = 1)
+),
+prices_native AS (
+    SELECT DISTINCT
+        'native' AS token_address,
+        symbol,
+        price,
+        decimals,
+        is_native,
+        is_verified,
+        hour
+    FROM
+        {{ source('crosschain_price', 'ez_prices_hourly') }}
+    WHERE
+        is_native
+        AND is_verified
+    QUALIFY(ROW_NUMBER() OVER (
+        PARTITION BY name, DATE_TRUNC('hour', hour)
+        ORDER BY hour DESC
+    ) = 1)
 ),
 FINAL AS (
     SELECT
@@ -78,14 +92,14 @@ FINAL AS (
         b.tx_hash,
         COALESCE(w.near_contract_address, b.token_address) AS token_address,
         b.amount_unadj,
-        b.amount_adj,
-        COALESCE(w.symbol, l1.symbol) as symbol,
+        COALESCE(w.symbol, l1.symbol, p1.symbol, p2.symbol) as symbol,
         b.amount_adj / pow(
             10,
-            l1.decimals
+            COALESCE(l1.decimals, p1.decimals, p2.decimals)
         ) AS amount,
-        amount * p1.price_usd AS amount_usd,
-        p1.token_is_verified AS token_is_verified,
+        COALESCE(p1.price, p2.price) AS price,
+        amount * COALESCE(p1.price, p2.price) AS amount_usd,
+        COALESCE(p1.is_verified, p2.is_verified, FALSE) AS token_is_verified,
         b.destination_address,
         b.source_address,
         b.platform,
@@ -101,14 +115,20 @@ FINAL AS (
     FROM fact_bridging b
         LEFT JOIN {{ ref('seeds__portalbridge_tokenids') }} w
             ON b.token_address = w.wormhole_contract_address
-        LEFT JOIN labels l1
-            ON COALESCE(w.near_contract_address, b.token_address) = l1.contract_address
-        LEFT JOIN prices_mapping p1
-            ON COALESCE(w.near_contract_address, b.token_address) = p1.contract_address
-            AND DATE_TRUNC('hour', b.block_timestamp) = p1.block_timestamp
+        LEFT JOIN labels l1 ON (
+            COALESCE(w.near_contract_address, b.token_address) = l1.contract_address
+        )
+        LEFT JOIN prices_crosschain p1 ON (
+            COALESCE(l1.crosschain_token_contract, b.token_address) = p1.token_address
+            AND DATE_TRUNC('hour', b.block_timestamp) = DATE_TRUNC('hour', p1.hour)
+        )
+        LEFT JOIN prices_native p2 ON (
+            UPPER(l1.symbol) = UPPER(p2.symbol)
+            AND l1.crosschain_token_contract = p2.token_address
+            AND DATE_TRUNC('hour', b.block_timestamp) = DATE_TRUNC('hour', p2.hour)
+        )
 )
 SELECT
-    *,
-    COALESCE(token_is_verified, FALSE) AS token_is_verified
+    *
 FROM
     FINAL
