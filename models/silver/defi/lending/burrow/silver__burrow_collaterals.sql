@@ -85,6 +85,7 @@ FINAL AS (
         CASE
             WHEN method_name = 'ft_on_transfer' THEN args :sender_id :: STRING
             WHEN method_name = 'callback_execute_with_pyth' THEN args :account_id :: STRING
+            WHEN method_name = 'oracle_on_call' THEN args :sender_id :: STRING
         END AS sender_id,
         method_name,
         args,
