@@ -53,14 +53,13 @@ prices AS (
         symbol,
         price,
         decimals,
-        is_native,
+        False AS is_native,
         is_verified,
         hour
     FROM
         {{ ref('silver__complete_token_prices') }}
     WHERE
-        NOT is_native
-        AND is_verified
+        is_verified
     QUALIFY(ROW_NUMBER() OVER (
         PARTITION BY token_address, DATE_TRUNC('hour', hour)
         ORDER BY hour DESC
@@ -72,14 +71,12 @@ prices_native AS (
         symbol,
         price,
         decimals,
-        is_native,
-        is_verified,
+        True AS is_native,
+        True AS is_verified,
         hour
     FROM
         {{ ref('silver__complete_native_prices') }}
-    WHERE
-        is_native
-        AND is_verified
+
     QUALIFY(ROW_NUMBER() OVER (
         PARTITION BY name, DATE_TRUNC('hour', hour)
         ORDER BY hour DESC
