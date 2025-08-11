@@ -56,7 +56,8 @@ ft_mints_final AS (
         COALESCE(
             f.value :new_owner_id,
             f.value :owner_id,
-            f.value :user_id
+            f.value :user_id,
+            f.value :accountId
         ) :: STRING AS to_address,
         f.value :amount :: STRING AS amount_unadj,
         f.value :memo :: STRING AS memo,

@@ -72,11 +72,11 @@ jobs:
         run: |
           git push -f --set-upstream origin docs
 
-      - name: refresh endpoint
-        run: |
-          curl -X POST ${{ secrets.DDM_REFRESH_CACHE_SBX }} \
-            -H "Content-Type: application/json" \
-            -d '{"force": true, "resource_ids": ["near-models"]}'
+      # - name: refresh endpoint
+      #   run: |
+      #     curl -X POST ${{ secrets.DDM_REFRESH_CACHE_SBX }} \
+      #       -H "Content-Type: application/json" \
+      #       -d '{"force": true, "resource_ids": ["near-models"]}'
 
   notify-failure:
     needs: [run_dbt_jobs]
