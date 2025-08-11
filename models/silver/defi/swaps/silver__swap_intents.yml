@@ -1,0 +1,100 @@
+version: 2
+
+models:
+  - name: silver__swap_intents
+    description: Silver layer model that processes intent-based swap events from NEAR blockchain, specifically tracking token exchanges through the Intents protocol on intents.near.
+
+    columns:
+      - name: BLOCK_ID
+        description: "{{ doc('block_id') }}"
+        tests:
+          - not_null
+
+      - name: BLOCK_TIMESTAMP
+        description: "{{ doc('block_timestamp') }}"
+        tests:
+          - not_null
+
+      - name: TX_HASH
+        description: "{{ doc('tx_hash') }}"
+        tests:
+          - not_null
+
+      - name: RECEIPT_ID
+        description: "{{ doc('receipt_id') }}"
+        tests:
+          - not_null
+
+      - name: RECEIVER_ID
+        description: "{{ doc('receiver_id') }}"
+        tests:
+          - not_null
+
+      - name: SIGNER_ID
+        description: "{{ doc('signer_id') }}"
+        tests:
+          - not_null
+
+      - name: INTENT_HASH
+        description: "Unique identifier for the intent transaction, used to track the specific swap intent"
+        tests:
+          - not_null
+
+      - name: ACCOUNT_ID
+        description: "Account ID of the user who initiated the intent swap"
+        tests:
+          - not_null
+
+      - name: REFERRAL
+        description: "Referral account ID for the swap transaction, if applicable"
+
+      - name: SWAP_INDEX
+        description: "Index of the swap within the transaction, starting from 0"
+        tests:
+          - not_null
+
+      - name: AMOUNT_OUT_RAW
+        description: "{{ doc('amount_unadj') }}"
+        tests:
+          - not_null
+
+      - name: TOKEN_OUT
+        description: "Token contract address for the output token (token being sent to user)"
+        tests:
+          - not_null
+
+      - name: AMOUNT_IN_RAW
+        description: "{{ doc('amount_unadj') }}"
+        tests:
+          - not_null
+
+      - name: TOKEN_IN
+        description: "Token contract address for the input token (token being received by platform)"
+        tests:
+          - not_null
+
+      - name: SWAP_INPUT_DATA
+        description: "JSON object containing detailed swap information including intent metadata, token details, and amounts"
+        tests:
+          - not_null
+
+      - name: LOG
+        description: "Raw log data from the blockchain event"
+        tests:
+          - not_null
+
+      - name: INTENTS_SWAP_ID
+        description: "{{ doc('id') }}"
+        tests:
+          - not_null
+          - unique
+
+      - name: INSERTED_TIMESTAMP
+        description: "{{ doc('_inserted_timestamp') }}"
+        tests:
+          - not_null
+
+      - name: MODIFIED_TIMESTAMP
+        description: "{{ doc('_modified_timestamp') }}"
+        tests:
+          - not_null

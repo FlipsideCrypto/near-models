@@ -14,6 +14,7 @@
 -- depends on {{ ref('silver__bridge_multichain') }}
 -- depends on {{ ref('silver__bridge_allbridge') }}
 -- depends on {{ ref('silver__bridge_omni') }}
+-- depends on {{ ref('silver__bridge_intents') }}
 
 {% if execute %}
 
@@ -182,6 +183,36 @@ omni AS (
     FROM
         {{ ref('silver__bridge_omni') }}
 ),
+intents AS (
+    SELECT
+        block_id,
+        block_timestamp,
+        tx_hash,
+        token_address,
+        amount_unadj AS amount_raw,
+        amount_adj,
+        destination_address,
+        source_address,
+        platform,
+        bridge_address,
+        destination_chain,
+        source_chain,
+        method_name,
+        direction,
+        receipt_succeeded,
+        bridge_intents_id AS fact_bridge_activity_id,
+        inserted_timestamp,
+        modified_timestamp
+    FROM
+        {{ ref('silver__bridge_intents') }}
+    {% if var('MANUAL_FIX') %}
+        WHERE {{ partition_load_manual('no_buffer', 'floor(block_id, -3)') }}
+    {% else %}
+        {% if is_incremental() %}
+            WHERE modified_timestamp > '{{ max_mod }}'
+        {% endif %}
+    {% endif %}
+),
 FINAL AS (
     SELECT
         *
@@ -207,6 +238,11 @@ FINAL AS (
         *
     FROM
         omni
+    UNION ALL
+    SELECT
+        *
+    FROM
+        intents
 )
 SELECT
     block_id,
