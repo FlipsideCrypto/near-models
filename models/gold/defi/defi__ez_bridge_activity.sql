@@ -118,7 +118,7 @@ FINAL AS (
         LEFT JOIN labels l1 ON (
             COALESCE(w.near_contract_address, b.token_address) = l1.contract_address
         )
-        LEFT JOIN prices_crosschain p1 ON (
+        LEFT JOIN prices p1 ON (
             COALESCE(l1.crosschain_token_contract, b.token_address) = p1.token_address
             AND DATE_TRUNC('hour', b.block_timestamp) = DATE_TRUNC('hour', p1.hour)
         )
