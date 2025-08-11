@@ -20,6 +20,8 @@ SELECT
     complete_token_asset_metadata_id AS ez_asset_metadata_id
 FROM
     {{ ref('silver__complete_token_asset_metadata') }}
+WHERE
+    lower(blockchain) IN ('near', 'near protocol')
 UNION ALL
 SELECT
     NULL AS token_address,
@@ -36,3 +38,6 @@ SELECT
     complete_native_asset_metadata_id AS ez_asset_metadata_id
 FROM
     {{ ref('silver__complete_native_asset_metadata') }}
+WHERE
+    blockchain = 'near protocol'
+    AND symbol = 'NEAR'

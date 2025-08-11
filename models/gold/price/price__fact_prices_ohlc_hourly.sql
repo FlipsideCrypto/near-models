@@ -18,3 +18,8 @@ SELECT
     complete_provider_prices_id AS fact_prices_ohlc_hourly_id
 FROM
     {{ ref('silver__complete_provider_prices') }}
+WHERE platform IN (
+    'NEAR Protocol',
+    'Near',
+    'near-protocol'
+)

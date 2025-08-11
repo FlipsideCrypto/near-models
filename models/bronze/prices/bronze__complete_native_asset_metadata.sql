@@ -21,6 +21,3 @@ FROM
         'crosschain_silver',
         'complete_native_asset_metadata'
     ) }}
-WHERE
-    blockchain = 'near protocol'
-    AND symbol = 'NEAR'

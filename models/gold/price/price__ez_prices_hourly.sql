@@ -22,6 +22,8 @@ SELECT
     complete_token_prices_id AS ez_prices_hourly_id
 FROM
     {{ ref('silver__complete_token_prices') }}
+WHERE
+    lower(blockchain) IN ('near', 'near protocol')
 UNION ALL
 SELECT
     HOUR,
@@ -40,3 +42,6 @@ SELECT
     complete_native_prices_id AS ez_prices_hourly_id
 FROM
     {{ ref('silver__complete_native_prices') }}
+WHERE
+    blockchain = 'near protocol'
+    AND symbol = 'NEAR'
