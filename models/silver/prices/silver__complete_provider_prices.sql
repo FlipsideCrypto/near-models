@@ -14,6 +14,7 @@ SELECT
     high,
     low,
     CLOSE,
+    m.platform,
     p.provider,
     p.source,
     p._inserted_timestamp,

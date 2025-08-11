@@ -46,7 +46,7 @@ labels AS (
         ORDER BY asset_identifier
     ) = 1)
 ),
-prices_crosschain AS (
+prices AS (
     SELECT DISTINCT
         token_address,
         blockchain,
@@ -57,7 +57,7 @@ prices_crosschain AS (
         is_verified,
         hour
     FROM
-        {{ source('crosschain_price', 'ez_prices_hourly') }}
+        {{ ref('silver__complete_token_prices') }}
     WHERE
         NOT is_native
         AND is_verified
@@ -76,7 +76,7 @@ prices_native AS (
         is_verified,
         hour
     FROM
-        {{ source('crosschain_price', 'ez_prices_hourly') }}
+        {{ ref('silver__complete_native_prices') }}
     WHERE
         is_native
         AND is_verified

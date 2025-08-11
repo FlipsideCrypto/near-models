@@ -18,3 +18,9 @@ SELECT
     complete_provider_asset_metadata_id AS dim_asset_metadata_id
 FROM
     {{ ref('silver__complete_provider_asset_metadata') }}
+WHERE
+    platform IN (
+        'NEAR Protocol',
+        'Near',
+        'near-protocol'
+    )

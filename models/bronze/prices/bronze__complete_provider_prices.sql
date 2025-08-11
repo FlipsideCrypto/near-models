@@ -21,4 +21,3 @@ FROM
         'crosschain_silver',
         'complete_provider_prices'
     ) }}
--- prices for all ids

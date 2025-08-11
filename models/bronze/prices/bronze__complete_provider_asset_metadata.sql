@@ -21,9 +21,3 @@ FROM
         'crosschain_silver',
         'complete_provider_asset_metadata'
     ) }}
-WHERE
-    platform IN (
-        'NEAR Protocol',
-        'Near',
-        'near-protocol'
-    )

@@ -25,5 +25,3 @@ FROM
         'crosschain_silver',
         'complete_token_asset_metadata'
     ) }}
-WHERE
-    lower(blockchain) IN ('near', 'near protocol')
