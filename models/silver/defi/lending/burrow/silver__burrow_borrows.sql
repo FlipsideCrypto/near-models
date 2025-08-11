@@ -68,7 +68,10 @@ SELECT
                 NULL
         END AS segmented_data,
         segmented_data :token_id AS token_contract_address,
-        COALESCE( segmented_data :amount,segmented_data :max_amount)  AS amount_raw,
+        COALESCE( 
+            segmented_data :amount :: VARCHAR,
+            segmented_data :max_amount :: VARCHAR
+        ) AS amount_raw,
         'borrow' :: STRING AS actions
     FROM
         borrows
