@@ -1,5 +1,8 @@
 {% docs core__ez_token_transfers %}
-
+This table records daily balances for NEAR Accounts, according to the parameters set by the Near team's balances indexer. More details around the source data can be found by reading about the NEAR Public Lakehouse on their documentation site: https://docs.near.org/tools/indexing.
+  
+Please Note - Flipside does not index or curate the data in this table, we simply provide it as-is from the NEAR Public Lakehouse with a daily sync from the public access table located at `bigquery-public-data.crypto_near_mainnet_us.ft_balances_daily`.
+  
 ## Description
 This table provides an enhanced view of all token transfers on the NEAR Protocol blockchain, combining raw transfer data with token metadata, pricing information, and decimal adjustments. The table includes both raw and adjusted amounts, USD values, and comprehensive token context, making it the primary table for token flow analysis and economic calculations. This easy view eliminates the need for complex joins and calculations, providing ready-to-use data for analytics, reporting, and business intelligence workflows.
 
