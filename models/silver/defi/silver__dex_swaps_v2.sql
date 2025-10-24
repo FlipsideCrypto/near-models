@@ -149,7 +149,7 @@ swap_outcome AS (
             LOG,
             '.*Swapped (\\d+) (.*) for (\\d+) (.*)',
             '\\1'
-        ) :: NUMERIC(38,0) AS amount_in_raw,
+        ) :: STRING AS amount_in_raw,
         REGEXP_REPLACE(
             LOG,
             '.*Swapped \\d+ (\\S+) for (\\d+) (.*)',
@@ -159,7 +159,7 @@ swap_outcome AS (
             LOG,
             '.*Swapped \\d+ \\S+ for (\\d+) (.*)',
             '\\1'
-        ) :: NUMERIC(38,0) AS amount_out_raw,
+        ) :: STRING AS amount_out_raw,
         REGEXP_REPLACE(
             LOG,
             '.*Swapped \\d+ \\S+ for \\d+ (.*)',
@@ -187,9 +187,9 @@ rhea_swap_outcome AS (
                 log_index ASC
         ) - 1 AS swap_index, -- keeping this as fallback but Rhea logs typically contain single swap / receipt
         clean_log AS LOG,
-        TRY_PARSE_JSON(clean_log):data[0]:amount_in::NUMERIC(38,0) AS amount_in_raw,
+        TRY_PARSE_JSON(clean_log):data[0]:amount_in::STRING AS amount_in_raw,
         TRY_PARSE_JSON(clean_log):data[0]:token_in::STRING AS token_in,
-        TRY_PARSE_JSON(clean_log):data[0]:amount_out::NUMERIC(38,0) AS amount_out_raw,
+        TRY_PARSE_JSON(clean_log):data[0]:amount_out::STRING AS amount_out_raw,
         TRY_PARSE_JSON(clean_log):data[0]:token_out::STRING AS token_out,
         _partition_by_block_number,
         modified_timestamp,
