@@ -49,7 +49,7 @@ ft_burns_final AS (
         contract_address,
         predecessor_id,
         signer_id,
-        NVL(
+        COALESCE(
             f.value :owner_id,
             f.value :account_id,
             NULL
