@@ -52,6 +52,7 @@ ft_burns_final AS (
         COALESCE(
             f.value :owner_id,
             f.value :account_id,
+            f.value :accountId,
             NULL
         ) :: STRING AS from_address,
         NULL AS to_address,
