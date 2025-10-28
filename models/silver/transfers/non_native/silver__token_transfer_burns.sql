@@ -51,6 +51,7 @@ ft_burns_final AS (
         signer_id,
         NVL(
             f.value :owner_id,
+            f.value :account_id,
             NULL
         ) :: STRING AS from_address,
         NULL AS to_address,
