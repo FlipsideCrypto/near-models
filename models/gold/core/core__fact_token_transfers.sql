@@ -40,6 +40,8 @@
             SELECT MIN(block_timestamp) block_timestamp FROM {{ ref('silver__token_transfer_liquidity') }} WHERE modified_timestamp >= '{{max_mod}}'
             UNION ALL
             SELECT MIN(block_timestamp) block_timestamp FROM {{ ref('silver__token_transfer_wrapped_near') }} WHERE modified_timestamp >= '{{max_mod}}'
+            UNION ALL
+            SELECT MIN(block_timestamp) block_timestamp FROM {{ ref('silver__token_transfer_burns') }} WHERE modified_timestamp >= '{{max_mod}}'
         )
         {% endset %}
 
@@ -177,6 +179,31 @@ mints AS (
             WHERE block_timestamp::DATE >= '{{min_bd}}'
         {% endif %}
 ),
+burns AS (
+    SELECT
+        block_id,
+        block_timestamp,
+        tx_hash,
+        receipt_id,
+        rn,
+        contract_address,
+        from_address,
+        to_address,
+        memo,
+        amount_unadj AS amount_unadj,
+        'nep141' AS transfer_type,
+        'ft_burn' AS transfer_action,
+        receipt_succeeded,
+        _partition_by_block_number,
+        modified_timestamp
+    FROM
+        {{ ref('silver__token_transfer_burns') }}
+        {% if var("MANUAL_FIX") %}
+            WHERE {{ partition_load_manual('no_buffer') }}
+        {% elif is_incremental() %}
+            WHERE block_timestamp::DATE >= '{{min_bd}}'
+        {% endif %}
+),
 orders AS (
     SELECT
         block_id,
@@ -262,6 +289,8 @@ all_transfers AS (
     SELECT * FROM ft_transfers_event
     UNION ALL
     SELECT * FROM mints
+    UNION ALL
+    SELECT * FROM burns
     UNION ALL
     SELECT * FROM orders
     UNION ALL

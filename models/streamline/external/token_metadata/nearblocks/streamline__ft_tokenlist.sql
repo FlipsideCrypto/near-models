@@ -38,11 +38,29 @@ AND modified_timestamp >= (
     )
 {% endif %}
 ,
+mints AS (
+    SELECT
+        DISTINCT lower(contract_address) AS contract_address
+    FROM
+        {{ ref('silver__token_transfer_mints') }}
+{% if is_incremental() %}
+WHERE modified_timestamp >= (
+    SELECT
+        COALESCE(MAX(modified_timestamp), '1970-01-01')
+    FROM
+        {{ this }})
+    {% endif %}
+),
 FINAL AS (
     SELECT
         contract_address
     FROM
         ft_transfers
+    UNION
+    SELECT
+        contract_address
+    FROM
+        mints
 
     {% if not is_incremental() %}
     UNION
