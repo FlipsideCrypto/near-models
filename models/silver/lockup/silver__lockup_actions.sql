@@ -94,6 +94,10 @@ lockup_actions AS (
             OR receipt_predecessor_id = 'lockup.near'
             OR receipt_receiver_id ILIKE '%lockup.near'
         )
+        AND (
+            receipt_predecessor_id != 'ft-lockup.near'
+            OR receipt_predecessor_id not ilike '%.ft-lockup.near'
+        )
 
     {% if var("MANUAL_FIX") %}
       AND {{ partition_load_manual('no_buffer') }}
