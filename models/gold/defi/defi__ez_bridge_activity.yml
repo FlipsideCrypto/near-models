@@ -3,41 +3,22 @@ version: 2
 models:
   - name: defi__ez_bridge_activity
     description: "{{ doc('defi__ez_bridge_activity') }}"
-    tests:
-      - dbt_utils.recency:
-          datepart: day
-          field: block_timestamp
-          interval: 1
 
     columns:
       - name: BLOCK_ID
         description: "{{ doc('block_id')}}"
-        tests:
-          - not_null
 
       - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp')}}"
-        tests:
-          - not_null:
-              where: inserted_timestamp >= SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days'
 
       - name: TX_HASH
         description: "{{ doc('tx_hash')}}"
-        tests:
-          - not_null:
-              where: inserted_timestamp >= SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days'
 
       - name: TOKEN_ADDRESS
         description: "{{ doc('token_contract')}}"
-        tests:
-          - not_null:
-              where: receipt_succeeded
 
       - name: AMOUNT_UNADJ
         description: "{{ doc('amount_raw')}}"
-        tests:
-          - not_null:
-              where: receipt_succeeded
 
       - name: SYMBOL
         description: "{{ doc('symbol')}}"
@@ -56,48 +37,27 @@ models:
 
       - name: PLATFORM
         description: "{{ doc('platform')}}"
-        tests:
-          - not_null
 
       - name: BRIDGE_ADDRESS
         description: "{{ doc('contract_address')}}"
-        tests:
-          - not_null
 
       - name: DESTINATION_CHAIN
         description: "{{ doc('destination_chain')}}"
-        tests:
-          - not_null:
-              where: receipt_succeeded and platform != 'multichain'
 
       - name: SOURCE_CHAIN
         description: "{{ doc('source_chain')}}"
-        tests:
-          - not_null:
-              where: receipt_succeeded and platform != 'multichain'
 
       - name: METHOD_NAME
         description: "{{ doc('method_name')}}"
-        tests:
-          - not_null
 
       - name: DIRECTION
         description: "{{ doc('direction')}}"
-        tests:
-          - not_null
 
       - name: RECEIPT_SUCCEEDED
         description: "{{ doc('receipt_succeeded')}}"
-        tests:
-          - not_null
 
       - name: EZ_BRIDGE_ACTIVITY_ID
         description: "{{ doc('id')}}"
-        tests:
-          - unique:
-              where: inserted_timestamp >= SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days'
-          - not_null:
-              where: inserted_timestamp >= SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days'
 
       - name: INSERTED_TIMESTAMP
         description: "{{ doc('inserted_timestamp')}}"

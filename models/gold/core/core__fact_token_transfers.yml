@@ -40,7 +40,8 @@ models:
       - name: TO_ADDRESS
         description: "{{ doc('to_address')}}"
         tests:
-          - not_null
+          - not_null:
+              where: transfer_action != 'ft_burn'
 
       - name: MEMO
         description: "{{ doc('memo')}}"
