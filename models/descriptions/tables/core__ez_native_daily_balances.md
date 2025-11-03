@@ -1,7 +1,9 @@
 {% docs core__ez_native_daily_balances %}
 
 ## Description
-This table provides daily balance snapshots for all accounts on the NEAR Protocol blockchain, capturing liquid balances, staking positions, lockup accounts, and storage usage. The data includes both regular accounts and lockup accounts (used for vesting schedules and staking), providing comprehensive balance tracking across different account types and balance categories. This table enables historical balance analysis, staking behavior tracking, and economic analysis of the NEAR ecosystem.
+This table records daily balances for NEAR Accounts, according to the parameters set by the Near team's balances indexer. More details around the source data can be found by reading about the NEAR Public Lakehouse on their documentation site: https://docs.near.org/tools/indexing.
+  
+Please Note - Flipside does not index or curate the data in this table, we simply provide it as-is from the NEAR Public Lakehouse with a daily sync from the public access table located at `bigquery-public-data.crypto_near_mainnet_us.ft_balances_daily`.
 
 ## Key Use Cases
 - Historical balance analysis and account growth tracking
