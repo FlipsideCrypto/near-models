@@ -1,0 +1,62 @@
+version: 2
+
+models:
+  - name: core__ez_cex_flows
+    description: "An EZ view that filters down to transfers involving centralized exchanges -- full ez_token_transfers continued here: {{ doc('core__ez_token_transfers') }}"
+
+    columns:
+      - name: BLOCK_ID
+        description: "{{ doc('block_id')}}"
+
+      - name: BLOCK_TIMESTAMP
+        description: "{{ doc('block_timestamp')}}"
+      - name: TX_HASH
+        description: "{{ doc('tx_hash')}}"
+
+      - name: CONTRACT_ADDRESS
+        description: "{{ doc('contract_address')}}"
+
+      - name: FROM_ADDRESS
+        description: "{{ doc('from_address')}}"
+
+      - name: TO_ADDRESS
+        description: "{{ doc('to_address')}}"
+
+      - name: MEMO
+        description: "{{ doc('memo')}}"
+
+      - name: AMOUNT_RAW
+        description: "{{ doc('amount_raw')}}"
+
+      - name: AMOUNT_RAW_PRECISE
+        description: "{{ doc('amount_adj')}}"
+
+      - name: TRANSFER_TYPE
+        description: "{{ doc('transfer_type')}}"
+
+      - name: HAS_PRICE
+        description: "Boolean value indicating if the token has a price"
+
+      - name: TRANSFER_ACTION
+        description: "{{ doc('transfer_action')}}"
+
+      - name: RECEIPT_SUCCEEDED
+        description: "{{ doc('receipt_succeeded')}}"
+
+      - name: EZ_TOKEN_TRANSFERS_ID
+        description: "{{doc('id')}}"
+
+      - name: INSERTED_TIMESTAMP
+        description: "{{doc('inserted_timestamp')}}"
+
+      - name: MODIFIED_TIMESTAMP
+        description: "{{doc('modified_timestamp')}}"
+
+      - name: TOKEN_IS_VERIFIED
+        description: "{{ doc('token_is_verified') }}"
+
+      - name: EXCHANGE_NAME
+        description: "The name of the centralized exchange associated with the address label"
+
+      - name: DIRECTION
+        description: "The direction of the transfer relative to the exchange (withdrawal or deposit or internal_transfer)"
