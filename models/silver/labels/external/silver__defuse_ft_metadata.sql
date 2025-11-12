@@ -15,7 +15,6 @@ WITH api_call AS (
 ),
 flattened AS (
 SELECT
-    TRY_PARSE_JSON(VALUE) AS token_metadata,
     VALUE :defuse_asset_identifier :: STRING AS defuse_asset_identifier,
     VALUE :intents_token_id :: STRING AS intents_token_id,
     VALUE :standard :: STRING AS standard,
@@ -33,16 +32,12 @@ FROM
 ),
 chain_mapping AS (
     -- Map EVM chain IDs to blockchain names
-    SELECT '1' AS chain_id, 'eth' AS blockchain_name UNION ALL
-    SELECT '10', 'op' UNION ALL
-    SELECT '56', 'bsc' UNION ALL
-    SELECT '100', 'gnosis' UNION ALL
-    SELECT '137', 'pol' UNION ALL
-    SELECT '8453', 'base' UNION ALL
-    SELECT '42161', 'arb' UNION ALL
-    SELECT '43114', 'avax' UNION ALL
-    SELECT '80094', 'bera' UNION ALL
-    SELECT '196', 'okx'
+    SELECT
+        chain_id :: STRING AS chain_id,
+        LOWER(chain) AS blockchain_name
+    FROM
+        {{ ref('silver__chainlist_ids') }}
+
 ),
 parsed AS (
     SELECT
@@ -95,9 +90,7 @@ parsed AS (
                 END
             ELSE
                 SPLIT_PART(defuse_asset_identifier, ':', ARRAY_SIZE(SPLIT(defuse_asset_identifier, ':')))
-        END AS crosschain_token_contract,
-        -- Extract chain_id for mapping (second part of defuse_asset_identifier)
-        SPLIT_PART(defuse_asset_identifier, ':', 2) AS chain_id_for_mapping
+        END AS crosschain_token_contract
     FROM
         flattened
     LEFT JOIN chain_mapping cm
