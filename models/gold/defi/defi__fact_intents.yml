@@ -60,6 +60,9 @@ models:
       - name: REFERRAL
         description: "{{ doc('referral') }}"
 
+      - name: FEES_COLLECTED_RAW
+        description: "{{ doc('fees_collected_raw') }}"
+
       - name: DIP4_VERSION
         description: "{{ doc('dip4_version') }}"
 
