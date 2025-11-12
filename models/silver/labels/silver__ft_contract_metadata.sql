@@ -92,10 +92,10 @@ omni_unmapped AS (
 ),
 defuse AS (
     SELECT
-        d.near_token_contract AS asset_identifier,
+        d.asset_identifier,
         d.source_chain,
         d.crosschain_token_contract,
-        d.near_token_contract,   
+        d.near_token_contract,
         d.decimals,
         NULL AS name,
         asset_name AS symbol,

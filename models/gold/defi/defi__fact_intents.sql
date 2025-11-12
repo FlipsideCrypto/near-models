@@ -113,6 +113,7 @@ dip4_logs AS (
     SELECT 
         lb.*,
         try_parse_json(lb.clean_log):data[0]:referral::string as referral,
+        try_parse_json(lb.clean_log):data[0]:fees_collected as fees_collected_raw,
         try_parse_json(lb.clean_log):version :: string as version
     FROM 
         logs_base lb
@@ -197,6 +198,7 @@ SELECT
     final.amount_raw,
     final.token_id,
     dip4.referral,
+    dip4.fees_collected_raw,
     dip4.version AS dip4_version,
     final.gas_burnt,
     final.receipt_succeeded,
