@@ -74,9 +74,9 @@ logs_base AS(
         predecessor_id,
         signer_id,
         gas_burnt,
-        clean_log,
-        TRY_PARSE_JSON(clean_log) :event :: STRING AS log_event,
-        TRY_PARSE_JSON(clean_log) :data :: ARRAY AS log_data,
+        TRY_PARSE_JSON(clean_log) AS log_json,
+        log_json :event :: STRING AS log_event,
+        log_json :data :: ARRAY AS log_data,
         ARRAY_SIZE(log_data) AS log_data_len,
         receipt_succeeded,
         modified_timestamp
@@ -102,7 +102,7 @@ nep245_logs AS (
     FROM 
         logs_base lb
     WHERE
-        TRY_PARSE_JSON(lb.clean_log) :standard :: STRING = 'nep245'
+        lb.log_json :standard :: STRING = 'nep245'
 
     {% if is_incremental() and not var("MANUAL_FIX") %}
         AND 
@@ -112,12 +112,13 @@ nep245_logs AS (
 dip4_logs AS (
     SELECT 
         lb.*,
-        try_parse_json(lb.clean_log):data[0]:referral::string as referral,
-        try_parse_json(lb.clean_log):version :: string as version
+        lb.log_json:data[0]:referral::string as referral,
+        lb.log_json:data[0]:fees_collected as fees_collected_raw,
+        lb.log_json:version :: string as version
     FROM 
         logs_base lb
     WHERE
-        TRY_PARSE_JSON(lb.clean_log) :standard :: STRING = 'dip4'
+        lb.log_json :standard :: STRING = 'dip4'
     {% if is_incremental() and not var("MANUAL_FIX") %}
         AND 
             COALESCE(lb.modified_timestamp, '1970-01-01') >= '{{max_mod}}'
@@ -197,6 +198,7 @@ SELECT
     final.amount_raw,
     final.token_id,
     dip4.referral,
+    dip4.fees_collected_raw,
     dip4.version AS dip4_version,
     final.gas_burnt,
     final.receipt_succeeded,

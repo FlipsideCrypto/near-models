@@ -1,7 +1,7 @@
 {% docs defi__fact_intents %}
 
 ## Description
-This table contains all intent-based transactions on the NEAR Protocol blockchain, capturing user intents for token transfers, swaps, and other DeFi operations through the intents.near protocol. The data includes both NEP-245 and DIP-4 standard intents, providing comprehensive tracking of intent creation, execution, and fulfillment. This table enables analysis of intent-based trading patterns, MEV protection mechanisms, and user behavior in intent-driven DeFi protocols.
+This table contains all intent-based transactions on the NEAR Protocol blockchain, capturing user intents for token transfers, swaps, and other DeFi operations through the intents.near protocol. The data includes both NEP-245 and DIP-4 standard intents, providing comprehensive tracking of intent creation, execution, and fulfillment. This table enables analysis of intent-based trading patterns, MEV protection mechanisms, and user behavior in intent-driven DeFi protocols. This table includes all intent execution within a transaction, which may include several intermediate steps interacting with solvers.
 
 ## Key Use Cases
 - Intent-based trading analysis and pattern recognition

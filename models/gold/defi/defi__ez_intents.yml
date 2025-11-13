@@ -59,6 +59,23 @@ models:
       - name: REFERRAL
         description: "{{ doc('referral') }}"
 
+      - name: FEES_COLLECTED_RAW
+        description: "{{ doc('fees_collected_raw') }}"
+
+      - name: FEE_TOKEN
+        description: "{{ doc('fee_token') }}"
+
+      - name: FEE_AMOUNT_ADJ
+        description: "{{ doc('fee_amount_adj') }}"
+
+      - name: FEE_AMOUNT_USD
+        description: "{{ doc('fee_amount_usd') }}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
+
       - name: DIP4_VERSION
         description: "{{ doc('dip4_version') }}"
 

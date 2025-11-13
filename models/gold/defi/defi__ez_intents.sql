@@ -92,6 +92,16 @@ WITH intents AS (
         ) AS asset_identifier,
         referral,
         dip4_version,
+        fees_collected_raw,
+        REGEXP_SUBSTR(
+            object_keys(try_parse_json(fees_collected_raw))[0]::string,
+            'nep(141|171|245):(.*)',
+            1,
+            1,
+            'e',
+            2
+        ) AS fee_asset_identifier,
+        try_parse_json(fees_collected_raw)[object_keys(try_parse_json(fees_collected_raw))[0]]::string as fee_amount_raw,
         gas_burnt,
         receipt_succeeded,
         fact_intents_id,
@@ -223,11 +233,32 @@ FINAL AS (
                 COALESCE(p.price, p2.price)
             )
         ) AS amount_usd,
-        COALESCE(p.is_verified, p2.is_verified, FALSE) AS token_is_verified
+        COALESCE(p.is_verified, p2.is_verified, FALSE) AS token_is_verified,
+        -- fee information
+        fees_collected_raw,
+        l2.symbol AS fee_token,
+        i.fee_asset_identifier,
+        i.fee_amount_raw,
+        l2.decimals AS fee_decimals,
+        i.fee_amount_raw :: NUMBER / pow(
+            10,
+            l2.decimals
+        ) AS fee_amount_adj,
+        ZEROIFNULL(
+            i.fee_amount_raw :: NUMBER / pow(10, l2.decimals) * IFF(
+                l2.symbol ilike 'USD%',
+                COALESCE(p_fee.price, 1),
+                COALESCE(p_fee.price, p2_fee.price)
+            )
+        ) AS fee_amount_usd
     FROM
         intents i
         LEFT JOIN labels l
         ON i.asset_identifier = l.asset_identifier
+        -- label the fee token
+        LEFT JOIN labels l2
+        ON i.fee_asset_identifier = l2.asset_identifier
+        -- price the main token
         ASOF JOIN prices p match_condition (
             i.block_timestamp >= p.hour
         )
@@ -240,6 +271,20 @@ FINAL AS (
         ON (
             upper(l.symbol) = upper(p2.symbol)
             AND (l.crosschain_token_contract = 'native') = p2.is_native
+        )
+        -- price the fee token
+        ASOF JOIN prices p_fee match_condition (
+            i.block_timestamp >= p_fee.hour
+        )
+        ON (
+            l2.crosschain_token_contract = p_fee.contract_address
+        )
+        ASOF JOIN prices_native p2_fee match_condition (
+            i.block_timestamp >= p2_fee.hour
+        )
+        ON (
+            upper(l2.symbol) = upper(p2_fee.symbol)
+            AND (l2.crosschain_token_contract = 'native') = p2_fee.is_native
         )
 )
 SELECT
@@ -266,6 +311,10 @@ SELECT
     gas_burnt,
     memo,
     referral,
+    fees_collected_raw,
+    fee_token,
+    fee_amount_adj,
+    fee_amount_usd,
     dip4_version,
     log_index,
     log_event_index,
