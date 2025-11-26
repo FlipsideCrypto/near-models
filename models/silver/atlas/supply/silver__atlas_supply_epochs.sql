@@ -2,7 +2,7 @@
     materialized = "table",
     cluster_by = ["epoch_id"],
     unique_key = "atlas_epochs_id",
-    tags = ['scheduled_non_core', 'atlas']
+    enabled = False
 ) }}
 
 WITH blocks AS (
