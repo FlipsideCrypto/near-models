@@ -1,8 +1,8 @@
 version: 2
 
 models:
-  - name: intents__fact_intent_transactions
-    description: "{{ doc('intents__fact_intent_transactions') }}"
+  - name: intents__fact_transactions
+    description: "{{ doc('intents__fact_transactions') }}"
 
     tests:
       - dbt_utils.recency:
@@ -141,7 +141,7 @@ models:
               column_type_list:
                 - BOOLEAN
 
-      - name: FACT_INTENT_TRANSACTIONS_ID
+      - name: FACT_TRANSACTIONS_ID
         description: "{{ doc('id') }}"
         tests:
           - unique:

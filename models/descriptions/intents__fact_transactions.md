@@ -1,4 +1,4 @@
-{% docs intents__fact_intent_transactions %}
+{% docs intents__fact_transactions %}
 
 ## Description
 This table provides granular transaction-level data for all intent executions on the NEAR blockchain using the NEP245 (multi-token) standard combined with DIP4 (Decentralized Intent Protocol v4) metadata. Each row represents a single token transfer, mint, or burn operation within an intent execution, capturing the complete lifecycle of multi-token movements through the intent protocol. The table combines flattened NEP245 event data with enriched DIP4 metadata including referral information and fee collection details. This fact table serves as the foundational source for intent transaction analysis, providing the raw event data that powers higher-level analytics and easy views.
@@ -15,7 +15,7 @@ This table provides granular transaction-level data for all intent executions on
 ## Important Relationships
 - Sources from `silver.logs_nep245` for flattened NEP245 multi-token event data
 - Enriched with `silver.logs_dip4` for referral tracking and fee collection metadata
-- Parent table for `intents.ez_intents` which provides user-friendly aggregated intent views
+- Parent table for `intents.ez_transactions` which provides user-friendly aggregated intent views
 - Parent table for `intents.ez_fees` which extracts and analyzes fee collection details
 - Can be joined with `core.fact_transactions` using tx_hash for complete transaction context
 - Can be joined with `core.fact_receipts` using receipt_id for receipt execution details

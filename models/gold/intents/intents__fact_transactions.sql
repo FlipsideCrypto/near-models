@@ -1,7 +1,7 @@
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'merge',
-    unique_key = ['fact_intent_transactions_id'],
+    unique_key = ['fact_transactions_id'],
     merge_exclude_columns = ['inserted_timestamp'],
     cluster_by = ['block_timestamp::DATE'],
     incremental_predicates = ["dynamic_range_predicate_custom","block_timestamp::date"],
@@ -154,7 +154,7 @@ SELECT
     nep.receipt_succeeded,
     {{ dbt_utils.generate_surrogate_key(
         ['nep.tx_hash', 'nep.receipt_id', 'nep.log_index', 'nep.log_event_index', 'nep.amount_index']
-    ) }} AS fact_intent_transactions_id,
+    ) }} AS fact_transactions_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
