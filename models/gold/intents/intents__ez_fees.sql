@@ -1,10 +1,10 @@
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'merge',
-    unique_key = ['fees_dip4_id'],
+    unique_key = ['ez_fees_id'],
     merge_exclude_columns = ['inserted_timestamp'],
     cluster_by = ['block_timestamp::DATE'],
-    tags = ['scheduled_non_core']
+    tags = ['scheduled_non_core', 'intents']
 ) }}
 -- depends on {{ ref('silver__logs_dip4') }}
 -- depends on {{ ref('silver__ft_contract_metadata') }}
@@ -226,7 +226,7 @@ SELECT
     COALESCE(p.is_verified, p2.is_verified, FALSE) AS fee_token_is_verified,
     {{ dbt_utils.generate_surrogate_key(
         ['f.tx_hash', 'f.receipt_id', 'f.log_index', 'f.log_event_index', 'f.fee_token_id']
-    ) }} AS fees_dip4_id,
+    ) }} AS ez_fees_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
@@ -249,6 +249,6 @@ FROM
         AND (l.crosschain_token_contract = 'native') = p2.is_native
     )
 
-qualify(ROW_NUMBER() over (PARTITION BY fees_dip4_id
+qualify(ROW_NUMBER() over (PARTITION BY ez_fees_id
 ORDER BY
     fee_price IS NOT NULL DESC, fee_is_native DESC) = 1)

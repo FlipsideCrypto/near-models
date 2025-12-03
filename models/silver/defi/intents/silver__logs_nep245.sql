@@ -4,7 +4,7 @@
     unique_key = ['nep245_id'],
     merge_exclude_columns = ['inserted_timestamp'],
     cluster_by = ['block_timestamp::DATE'],
-    tags = ['scheduled_non_core']
+    tags = ['scheduled_non_core', 'intents']
 ) }}
 
 WITH
