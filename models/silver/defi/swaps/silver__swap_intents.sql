@@ -5,7 +5,7 @@
     merge_exclude_columns = ["inserted_timestamp"],
     unique_key = 'intents_swap_id',
     cluster_by = ['block_timestamp::DATE'],
-    tags = ['scheduled_non_core']
+    tags = ['scheduled_non_core', 'intents']
 ) }}
 
 -- depends on {{ ref('silver__logs_s3') }}

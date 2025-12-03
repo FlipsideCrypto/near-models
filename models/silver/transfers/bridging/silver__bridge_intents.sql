@@ -5,7 +5,7 @@
     merge_exclude_columns = ['inserted_timestamp'],
     cluster_by = ['block_timestamp::DATE'],
     incremental_predicates = ["dynamic_range_predicate_custom","block_timestamp::date"],
-    tags = ['scheduled_non_core']
+    tags = ['scheduled_non_core', 'intents']
 ) }}
 -- depends on {{ ref('intents__fact_transactions') }}
 
