@@ -7,7 +7,7 @@
     incremental_predicates = ["dynamic_range_predicate_custom","block_timestamp::date"],
     tags = ['scheduled_non_core']
 ) }}
--- depends on {{ ref('defi__fact_intents') }}
+-- depends on {{ ref('intents__fact_transactions') }}
 
 {% if execute %}
     {% if is_incremental() %}
@@ -41,9 +41,9 @@ WITH bridge_intents AS (
         memo,
         gas_burnt,
         receipt_succeeded,
-        fact_intents_id,
+        fact_transactions_id AS fact_intents_id,
         modified_timestamp
-    FROM {{ ref('defi__fact_intents') }}
+    FROM {{ ref('intents__fact_transactions') }}
     WHERE 
         log_event IN ('mt_burn', 'mt_mint')
         AND memo IN ('deposit', 'withdraw') 

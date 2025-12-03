@@ -10,7 +10,7 @@
 
 -- depends on {{ ref('silver__logs_s3') }}
 -- depends on {{ ref('core__ez_actions') }}
--- depends on {{ ref('defi__fact_intents') }}
+-- depends on {{ ref('intents__fact_transactions') }}
 
 WITH intents_actions AS (
     SELECT
@@ -156,11 +156,11 @@ intents_events AS (
         log_index,
         log_event_index,
         amount_index,
-        fact_intents_id,
+        fact_transactions_id AS fact_intents_id,
         inserted_timestamp,
         modified_timestamp
     FROM
-        {{ ref('defi__fact_intents') }}
+        {{ ref('intents__fact_transactions') }}
     WHERE
         token_id IS NOT NULL
         
