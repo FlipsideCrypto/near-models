@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'view',
-    tags = ['scheduled_non_core']
+    tags = ['scheduled_non_core', 'intents']
 ) }}
 
 -- Backward compatibility view for defi__fact_intents
