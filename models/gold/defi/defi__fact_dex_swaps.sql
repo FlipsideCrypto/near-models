@@ -56,10 +56,10 @@ intents_swaps AS (
         token_in,
         swap_input_data,
         log AS LOG,
-        intents_swap_id AS fact_dex_swaps_id,
+        fact_swaps_id AS fact_dex_swaps_id,
         modified_timestamp
     FROM
-        {{ ref('silver__swap_intents') }}
+        {{ ref('intents__fact_swaps') }}
         
     {% if var("MANUAL_FIX") %}
         WHERE {{ partition_load_manual('no_buffer', 'block_timestamp::date') }}

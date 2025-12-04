@@ -5,8 +5,7 @@
     tags = ['scheduled_non_core']
 ) }}
 
-WITH dex_swaps AS (
-
+WITH fact_dex_swaps AS (
     SELECT
         tx_hash,
         receipt_id,
@@ -21,40 +20,13 @@ WITH dex_swaps AS (
         token_in,
         swap_input_data,
         LOG,
-        dex_swaps_v2_id AS ez_dex_swaps_id,
+        fact_dex_swaps_id AS ez_dex_swaps_id,
         inserted_timestamp,
         modified_timestamp
     FROM
-        {{ ref('silver__dex_swaps_v2') }}
+        {{ ref('defi__fact_dex_swaps') }}
 ),
 
-intents_swaps AS (
-    SELECT
-        tx_hash,
-        receipt_id,
-        block_id,
-        block_timestamp,
-        receiver_id,
-        signer_id,
-        swap_index,
-        amount_out_raw,
-        token_out,
-        amount_in_raw,
-        token_in,
-        swap_input_data,
-        log AS LOG,
-        intents_swap_id AS ez_dex_swaps_id,
-        inserted_timestamp,
-        modified_timestamp
-    FROM
-        {{ ref('silver__swap_intents') }}
-),
-
-all_swaps AS (
-    SELECT * FROM dex_swaps
-    UNION ALL
-    SELECT * FROM intents_swaps
-),
 labels AS (
     SELECT
         asset_identifier AS contract_address,
@@ -64,6 +36,7 @@ labels AS (
     FROM
         {{ ref('silver__ft_contract_metadata') }}
 ),
+
 prices AS (
     SELECT
         DATE_TRUNC(
@@ -79,6 +52,7 @@ prices AS (
         1,
         2
 ),
+
 FINAL AS (
     SELECT
         s.tx_hash,
@@ -113,7 +87,7 @@ FINAL AS (
         s.inserted_timestamp,
         s.modified_timestamp
     FROM
-        all_swaps s
+        fact_dex_swaps s
         LEFT JOIN labels l1
         ON s.token_out = l1.contract_address
         LEFT JOIN labels l2
@@ -131,6 +105,7 @@ FINAL AS (
         ) = p2.block_timestamp
         AND s.token_in = p2.contract_address
 )
+
 SELECT
     *,
     COALESCE(token_in_is_verified, FALSE) AS token_in_is_verified,

@@ -41,6 +41,17 @@ This dbt project provides comprehensive analytics and data models for the NEAR P
 - [defi__ez_intents](#!/model/model.near_models.defi__ez_intents)
 - [defi__ez_lending](#!/model/model.near_models.defi__ez_lending)
 
+### Intents Tables
+
+**Fact Tables:**
+- [intents__fact_bridges](#!/model/model.near_models.intents__fact_bridges)
+- [intents__fact_swaps](#!/model/model.near_models.intents__fact_swaps)
+- [intents__fact_transactions](#!/model/model.near_models.intents__fact_transactions)
+
+**Easy Views:**
+- [intents__ez_fees](#!/model/model.near_models.intents__ez_fees)
+- [intents__ez_transactions](#!/model/model.near_models.intents__ez_transactions)
+
 ### NFT Tables
 
 **Dimension Tables:**
@@ -97,6 +108,7 @@ This project follows a dimensional modeling approach with the following layers:
 The gold layer is organized into domain-specific schemas:
 - **Core**: Fundamental blockchain data (blocks, transactions, transfers)
 - **DeFi**: Decentralized finance activities (swaps, lending, bridges)
+- **Intents**: Intent-based transaction protocol (DIP4 and NEP245 standards)
 - **NFT**: Non-fungible token operations
 - **Price**: Asset pricing and market data
 - **Governance**: Staking and protocol governance
@@ -115,7 +127,7 @@ The gold layer is organized into domain-specific schemas:
 <expert>
   <constraints>
     <table_availability>
-      Ensure that your queries use only available tables for NEAR Protocol. The available schemas are: NEAR.CORE, NEAR.DEFI, NEAR.NFT, NEAR.PRICE, NEAR.GOV, NEAR.STATS, and NEAR.ATLAS. Each schema contains specific domain data optimized for particular use cases.
+      Ensure that your queries use only available tables for NEAR Protocol. The available schemas are: NEAR.CORE, NEAR.DEFI, NEAR.INTENTS, NEAR.NFT, NEAR.PRICE, NEAR.GOV, NEAR.STATS, and NEAR.ATLAS. Each schema contains specific domain data optimized for particular use cases.
     </table_availability>
     
     <schema_structure>
@@ -143,15 +155,19 @@ The gold layer is organized into domain-specific schemas:
     </token_operations>
     
     <defi_analysis>
-      For DeFi analysis, use ez_bridge_activity, ez_dex_swaps, ez_lending, and ez_intents tables in the defi schema. These tables provide aggregated views of decentralized finance activities including cross-chain bridges, decentralized exchanges, lending protocols, and intent-based trading.
+      For DeFi analysis, use ez_bridge_activity, ez_dex_swaps, and ez_lending tables in the defi schema. For intent-based trading specifically, use the intents schema tables (intents__fact_transactions, intents__ez_transactions, intents__ez_fees) which provide detailed views of DIP4 and NEP245 protocol transactions.
     </defi_analysis>
+
+    <intents_analysis>
+      For intent-based transaction analysis, use intents__ez_transactions for enriched transaction data with token metadata and USD pricing, intents__ez_fees for fee collection tracking, and intents__fact_transactions for raw transaction events. The intents schema implements both DIP4 (token_diff events) and NEP245 (multi-token transfer) standards.
+    </intents_analysis>
     
     <nft_analysis>
       For NFT queries, utilize ez_nft_sales table in the nft schema. This table combines NFT mint and transfer events to provide a comprehensive view of NFT marketplace activity, including sales, transfers, and metadata.
     </nft_analysis>
     
     <specialized_features>
-      The intents data in the defi schema is complex, so ensure you ask clarifying questions about specific intent types and execution patterns. NEAR's sharding architecture may affect transaction ordering and cross-shard communication patterns.
+      The intents protocol data (DIP4 and NEP245 standards) is available in the dedicated intents schema. For backward compatibility, views exist in the defi schema (defi__fact_intents, defi__ez_intents) but new queries should use the intents schema tables directly. When analyzing intent-based transactions, consider both token_diff events (DIP4) for balance changes and multi-token transfers (NEP245) for the underlying movements. NEAR's sharding architecture may affect transaction ordering and cross-shard communication patterns.
     </specialized_features>
   </domain_mapping>
 

@@ -14,7 +14,7 @@
 -- depends on {{ ref('silver__bridge_multichain') }}
 -- depends on {{ ref('silver__bridge_allbridge') }}
 -- depends on {{ ref('silver__bridge_omni') }}
--- depends on {{ ref('silver__bridge_intents') }}
+-- depends on {{ ref('intents__fact_bridges') }}
 
 {% if execute %}
 
@@ -200,11 +200,11 @@ intents AS (
         method_name,
         direction,
         receipt_succeeded,
-        bridge_intents_id AS fact_bridge_activity_id,
+        fact_bridges_id AS fact_bridge_activity_id,
         inserted_timestamp,
         modified_timestamp
     FROM
-        {{ ref('silver__bridge_intents') }}
+        {{ ref('intents__fact_bridges') }}
     {% if var('MANUAL_FIX') %}
         WHERE {{ partition_load_manual('no_buffer', 'floor(block_id, -3)') }}
     {% else %}
