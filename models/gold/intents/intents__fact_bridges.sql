@@ -1,12 +1,13 @@
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'merge',
-    unique_key = ['bridge_intents_id'],
+    unique_key = ['fact_bridges_id'],
     merge_exclude_columns = ['inserted_timestamp'],
     cluster_by = ['block_timestamp::DATE'],
     incremental_predicates = ["dynamic_range_predicate_custom","block_timestamp::date"],
     tags = ['scheduled_non_core', 'intents']
 ) }}
+
 -- depends on {{ ref('intents__fact_transactions') }}
 
 {% if execute %}
@@ -25,7 +26,7 @@
 {% endif %}
 
 WITH bridge_intents AS (
-    SELECT 
+    SELECT
         block_id,
         block_timestamp,
         tx_hash,
@@ -41,12 +42,12 @@ WITH bridge_intents AS (
         memo,
         gas_burnt,
         receipt_succeeded,
-        fact_transactions_id AS fact_intents_id,
+        fact_transactions_id,
         modified_timestamp
     FROM {{ ref('intents__fact_transactions') }}
-    WHERE 
+    WHERE
         log_event IN ('mt_burn', 'mt_mint')
-        AND memo IN ('deposit', 'withdraw') 
+        AND memo IN ('deposit', 'withdraw')
         AND RIGHT(token_id, 10) = '.omft.near'
 
     {% if var('MANUAL_FIX') %}
@@ -59,11 +60,11 @@ WITH bridge_intents AS (
 ),
 
 bridge_intents_parsed AS (
-    SELECT 
+    SELECT
         *,
         REGEXP_SUBSTR(token_id, 'nep141:([^-\\.]+)', 1, 1, 'e', 1) AS blockchain,
-        CASE 
-            WHEN token_id LIKE '%-%' THEN 
+        CASE
+            WHEN token_id LIKE '%-%' THEN
                 REGEXP_SUBSTR(token_id, 'nep141:[^-]+-(.+)\\.omft\\.near', 1, 1, 'e', 1)
             ELSE SPLIT(token_id, ':')[1]
         END AS contract_address_raw
@@ -91,21 +92,21 @@ bridge_intents_mapped AS (
         owner_id AS source_address,
         'intents' AS platform,
         receiver_id AS bridge_address,
-        CASE 
+        CASE
             WHEN log_event = 'mt_mint' AND memo = 'deposit' THEN LOWER(blockchain)
             ELSE 'near'
         END AS source_chain,
-        CASE 
+        CASE
             WHEN log_event = 'mt_burn' AND memo = 'withdraw' THEN LOWER(blockchain)
             ELSE 'near'
         END AS destination_chain,
-        CASE 
+        CASE
             WHEN log_event = 'mt_mint' AND memo = 'deposit' THEN 'inbound'
             WHEN log_event = 'mt_burn' AND memo = 'withdraw' THEN 'outbound'
         END AS direction,
         receipt_succeeded,
         memo,
-        fact_intents_id,
+        fact_transactions_id,
         modified_timestamp
     FROM bridge_intents_parsed
     WHERE blockchain IS NOT NULL
@@ -132,9 +133,10 @@ SELECT
     method_name,
     direction,
     receipt_succeeded,
+    fact_transactions_id,
     {{ dbt_utils.generate_surrogate_key(
         ['tx_hash', 'log_index', 'log_event_index', 'source_chain', 'destination_address', 'token_address', 'amount_unadj']
-    ) }} AS bridge_intents_id,
+    ) }} AS fact_bridges_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id

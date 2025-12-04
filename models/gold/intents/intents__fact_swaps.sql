@@ -3,7 +3,7 @@
     incremental_strategy = 'merge',
     incremental_predicates = ["dynamic_range_predicate_custom","block_timestamp::date"],
     merge_exclude_columns = ["inserted_timestamp"],
-    unique_key = 'intents_swap_id',
+    unique_key = 'fact_swaps_id',
     cluster_by = ['block_timestamp::DATE'],
     tags = ['scheduled_non_core', 'intents']
 ) }}
@@ -37,7 +37,7 @@ WITH intents_actions AS (
         receipt_receiver_id = 'intents.near'
         AND receipt_succeeded
         AND tx_succeeded
-        
+
     {% if var("MANUAL_FIX") %}
         AND {{ partition_load_manual('no_buffer', 'block_timestamp::date') }}
     {% else %}
@@ -73,7 +73,7 @@ intents_logs AS (
         receiver_id = 'intents.near'
         AND receipt_succeeded
         AND TRY_PARSE_JSON(clean_log):standard::STRING IN ('nep245', 'dip4')
-        
+
     {% if var("MANUAL_FIX") %}
         AND {{ partition_load_manual('no_buffer', 'block_timestamp::date') }}
     {% else %}
@@ -122,7 +122,7 @@ token_diff_flattened AS (
         event_index,
         token_key.key::STRING AS token_id,
         token_key.value::STRING AS token_amount_raw,
-        CASE 
+        CASE
             WHEN token_key.value::NUMERIC < 0 THEN 'token_in'
             WHEN token_key.value::NUMERIC > 0 THEN 'token_out'
             ELSE 'no_change'
@@ -156,14 +156,14 @@ intents_events AS (
         log_index,
         log_event_index,
         amount_index,
-        fact_transactions_id AS fact_intents_id,
+        fact_transactions_id,
         inserted_timestamp,
         modified_timestamp
     FROM
         {{ ref('intents__fact_transactions') }}
     WHERE
         token_id IS NOT NULL
-        
+
     {% if var("MANUAL_FIX") %}
         AND {{ partition_load_manual('no_buffer', 'block_timestamp::date') }}
     {% else %}
@@ -176,7 +176,7 @@ intents_events AS (
 ),
 
 intents_joined AS (
-    SELECT 
+    SELECT
         e.tx_hash,
         e.receipt_id,
         e.block_id,
@@ -193,7 +193,7 @@ intents_joined AS (
         e.log_index,
         e.log_event_index,
         e.amount_index,
-        e.fact_intents_id,
+        e.fact_transactions_id,
         e.inserted_timestamp,
         e.modified_timestamp,
         a.tx_signer,
@@ -236,7 +236,7 @@ intents_raw AS (
         ij.log_index,
         ij.log_event_index,
         ij.amount_index,
-        ij.fact_intents_id,
+        ij.fact_transactions_id,
         ij.inserted_timestamp,
         ij.modified_timestamp,
         -- Include joined data from actions and logs
@@ -286,11 +286,11 @@ intents_order AS (
 
         -- identify first and last tokens
         ROW_NUMBER() OVER (
-            PARTITION BY tx_hash 
+            PARTITION BY tx_hash
             ORDER BY log_index, log_event_index, amount_index
         ) AS token_order_asc,
         ROW_NUMBER() OVER (
-            PARTITION BY tx_hash 
+            PARTITION BY tx_hash
             ORDER BY log_index DESC, log_event_index DESC, amount_index DESC
         ) AS token_order_desc
     FROM intents_raw
@@ -327,6 +327,7 @@ token_aggregated AS (
     WHERE tdf.intent_hash IS NOT NULL
     GROUP BY tdf.tx_hash, tdf.receipt_id, tdf.intent_hash, tdf.account_id, tdf.referral, tdf.token_id
 ),
+
 intents_token_flows AS (
     SELECT
         ta.tx_hash,
@@ -359,6 +360,7 @@ intents_token_flows AS (
     LEFT JOIN intents_logs il ON ta.tx_hash = il.tx_hash AND ta.receipt_id = il.receipt_id AND il.log_event = 'token_diff'
     GROUP BY ta.tx_hash, ta.receipt_id, ta.intent_hash, ta.account_id, ta.referral
 ),
+
 intents_swaps_identified AS (
     SELECT
         tx_hash,
@@ -377,11 +379,12 @@ intents_swaps_identified AS (
         token_out,
         amount_out_raw
     FROM intents_token_flows
-    WHERE token_in IS NOT NULL 
+    WHERE token_in IS NOT NULL
         AND token_out IS NOT NULL
-        AND amount_in_raw > 0 
+        AND amount_in_raw > 0
         AND amount_out_raw > 0
 ),
+
 intents_mapped AS (
     SELECT
         tx_hash,
@@ -402,12 +405,13 @@ intents_mapped AS (
         log,
         _partition_by_block_number
     FROM intents_swaps_identified
-    WHERE token_in IS NOT NULL 
+    WHERE token_in IS NOT NULL
         AND token_out IS NOT NULL
-        AND amount_in_raw > 0 
+        AND amount_in_raw > 0
         AND amount_out_raw > 0
         AND intent_hash IS NOT NULL
 ),
+
 FINAL AS (
     SELECT
         tx_hash,
@@ -426,17 +430,18 @@ FINAL AS (
         token_in,
         swap_input_data,
         log,
-        _partition_by_block_number
-    FROM 
+        _partition_by_block_number,
+        {{ dbt_utils.generate_surrogate_key(
+            ['tx_hash', 'intent_hash', 'swap_index']
+        ) }} AS fact_swaps_id
+    FROM
         intents_mapped
 )
+
 SELECT
     *,
-    {{ dbt_utils.generate_surrogate_key(
-    ['tx_hash', 'intent_hash', 'swap_index']
-    ) }} AS intents_swap_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
-FROM 
+FROM
     FINAL

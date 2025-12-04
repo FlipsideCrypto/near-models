@@ -44,6 +44,8 @@ This dbt project provides comprehensive analytics and data models for the NEAR P
 ### Intents Tables
 
 **Fact Tables:**
+- [intents__fact_bridges](#!/model/model.near_models.intents__fact_bridges)
+- [intents__fact_swaps](#!/model/model.near_models.intents__fact_swaps)
 - [intents__fact_transactions](#!/model/model.near_models.intents__fact_transactions)
 
 **Easy Views:**
