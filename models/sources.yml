@@ -12,7 +12,6 @@ sources:
     schema: silver
     tables:
       - name: number_sequence
-      - name: github_activity
       - name: labels_combined
       - name: complete_token_asset_metadata
       - name: complete_token_prices
