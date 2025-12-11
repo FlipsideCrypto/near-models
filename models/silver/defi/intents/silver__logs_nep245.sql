@@ -119,7 +119,7 @@ SELECT
     gas_burnt,
     receipt_succeeded,
     {{ dbt_utils.generate_surrogate_key(
-        ['tx_hash', 'receipt_id', 'log_index', 'log_event_index']
+        ['tx_hash', 'receipt_id', 'log_index', 'log_event_index', 'amount_index']
     )}} AS nep245_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
