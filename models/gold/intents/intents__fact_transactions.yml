@@ -1,0 +1,159 @@
+version: 2
+
+models:
+  - name: intents__fact_transactions
+    description: "{{ doc('intents__fact_transactions') }}"
+
+    tests:
+      - dbt_utils.recency:
+          datepart: hours
+          field: block_timestamp
+          interval: 3
+
+    columns:
+      - name: BLOCK_TIMESTAMP
+        description: "{{ doc('block_timestamp') }}"
+        tests:
+          - not_null:
+              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days' AND SYSDATE() - INTERVAL '1 hour'
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
+
+      - name: BLOCK_ID
+        description: "{{ doc('block_id') }}"
+        tests:
+          - not_null:
+              where: inserted_timestamp BETWEEN SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days' AND SYSDATE() - INTERVAL '1 hour'
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
+
+      - name: TX_HASH
+        description: "{{ doc('tx_hash') }}"
+        tests:
+          - not_null
+
+      - name: RECEIPT_ID
+        description: "{{ doc('receipt_id') }}"
+        tests:
+          - not_null
+
+      - name: RECEIVER_ID
+        description: "{{ doc('receiver_id') }}"
+        tests:
+          - not_null
+
+      - name: PREDECESSOR_ID
+        description: "{{ doc('predecessor_id') }}"
+        tests:
+          - not_null
+
+      - name: LOG_EVENT
+        description: "{{ doc('log_event') }}"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['mt_transfer', 'mt_mint', 'mt_burn']
+
+      - name: LOG_INDEX
+        description: "{{ doc('log_index') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - INTEGER
+
+      - name: LOG_EVENT_INDEX
+        description: "{{ doc('log_event_index') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - INTEGER
+
+      - name: OWNER_ID
+        description: "{{ doc('owner_id_nep245') }}"
+        tests:
+          - not_null:
+              where: log_event in ('mt_mint', 'mt_burn')
+
+      - name: OLD_OWNER_ID
+        description: "{{ doc('old_owner_id') }}"
+        tests:
+          - not_null:
+              where: log_event = 'mt_transfer'
+
+      - name: NEW_OWNER_ID
+        description: "{{ doc('new_owner_id') }}"
+        tests:
+          - not_null:
+              where: log_event = 'mt_transfer'
+
+      - name: MEMO
+        description: "{{ doc('memo') }}"
+
+      - name: AMOUNT_INDEX
+        description: "{{ doc('amount_index') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - INTEGER
+
+      - name: AMOUNT_RAW
+        description: "{{ doc('amount_raw') }}"
+        tests:
+          - not_null
+
+      - name: TOKEN_ID
+        description: "{{ doc('token_id') }}"
+        tests:
+          - not_null
+
+      - name: REFERRAL
+        description: "{{ doc('referral') }}"
+
+      - name: FEES_COLLECTED_RAW
+        description: "{{ doc('fees_collected_raw') }}"
+
+      - name: DIP4_VERSION
+        description: "{{ doc('dip4_version') }}"
+
+      - name: GAS_BURNT
+        description: "{{ doc('gas_burnt') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - INTEGER
+
+      - name: RECEIPT_SUCCEEDED
+        description: "{{ doc('receipt_succeeded') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - BOOLEAN
+
+      - name: FACT_TRANSACTIONS_ID
+        description: "{{ doc('id') }}"
+        tests:
+          - unique:
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days'
+          - not_null:
+              where: inserted_timestamp >= SYSDATE() - INTERVAL '{{ var('DBT_TEST_LOOKBACK_DAYS', 14) }} days'
+
+      - name: INSERTED_TIMESTAMP
+        description: "{{ doc('inserted_timestamp') }}"
+
+      - name: MODIFIED_TIMESTAMP
+        description: "{{ doc('modified_timestamp') }}"
+
+      - name: _INVOCATION_ID
+        description: "{{ doc('invocation_id') }}"
